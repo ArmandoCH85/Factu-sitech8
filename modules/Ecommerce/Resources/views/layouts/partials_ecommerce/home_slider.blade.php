@@ -1,0 +1,24 @@
+{{-- 
+    - vista slider promociones
+    - var items definida en Modules\Ecommerce\Http\ViewComposers\PromotionsViewComposer
+--}}
+@php
+    $banners = $items->filter(fn($i) => $i->type !== 'spots');
+@endphp
+
+@if($banners->isNotEmpty())
+<div class="home-slider owl-carousel owl-carousel-lazy owl-theme owl-theme-light">    
+    @foreach ($banners as $item)
+        <div class="home-slide">
+            <div class="owl-lazy slide-bg" data-src="{{ asset('storage/uploads/promotions/'.$item->image) }}"></div>
+            <div class="home-slide-content text-white">
+                <h1>{{ $item->name }}</h1>
+                <p>{{ $item->description }}</p>
+                <a href="/ecommerce/item/{{ $item->item_id }}/{{ $item->id }}" class="btn btn-dark">
+                    Comprar Ahora!
+                </a>
+            </div>
+        </div>
+    @endforeach
+</div>
+@endif

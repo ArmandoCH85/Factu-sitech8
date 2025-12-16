@@ -16,7 +16,7 @@ class CreateItemModifierGroupTable extends Migration
         if (! Schema::hasTable('item_modifier_group')) {
             Schema::create('item_modifier_group', function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->unsignedBigInteger('item_id');
+                $table->unsignedInteger('item_id');
                 $table->unsignedBigInteger('modifier_group_id');
                 $table->boolean('default_open')->default(false);
                 $table->timestamps();

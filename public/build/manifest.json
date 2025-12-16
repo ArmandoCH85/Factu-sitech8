@@ -18,14 +18,14 @@
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
   "resources/js/app.css": {
-    "file": "assets/app-a4fe9d80.css",
+    "file": "assets/app-5aca7a43.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-a4fe9d80.css"
+      "assets/app-5aca7a43.css"
     ],
-    "file": "assets/app-85708e79.js",
+    "file": "assets/app-06e384f5.js",
     "imports": [
       "_vue-clipboard-ea58b9e5.js"
     ],
@@ -33,14 +33,14 @@
     "src": "resources/js/app.js"
   },
   "resources/js/system.css": {
-    "file": "assets/system-64a8d094.css",
+    "file": "assets/system-ec21572d.css",
     "src": "resources/js/system.css"
   },
   "resources/js/system.js": {
     "css": [
-      "assets/system-64a8d094.css"
+      "assets/system-ec21572d.css"
     ],
-    "file": "assets/system-b5d0507e.js",
+    "file": "assets/system-89d728ec.js",
     "imports": [
       "_vue-clipboard-ea58b9e5.js"
     ],

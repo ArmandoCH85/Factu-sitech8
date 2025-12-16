@@ -489,11 +489,42 @@
                                     <i class="fas fa-ellipsis-h" style="display: none;"></i>
                                 </button>
                                 <el-dropdown-menu slot="dropdown">
-                                    <template v-if="typeUser === 'admin'">
-                                        <el-dropdown-item @click.native.prevent="clickCreate(row.id)">Editar</el-dropdown-item>
-                                        <el-dropdown-item @click.native.prevent="clickBarcode(row)">Cod. Barras</el-dropdown-item>
-                                        <el-dropdown-item @click.native.prevent="clickPrintBarcode(row)">Etiquetas</el-dropdown-item>
-                                    </template>
+                                  <template v-if="typeUser === 'admin'">
+                                    <el-dropdown-item
+                                      @click.native.prevent="clickCreate(row.id)"
+                                    >
+                                      Editar
+                                    </el-dropdown-item>
+                                
+                                    <!-- <el-dropdown-item
+                                      @click.native.prevent="clickBarcode(row)"
+                                    >
+                                      Cod. Barras
+                                    </el-dropdown-item> -->
+                                
+                                    <!-- Item principal -->
+                                    <el-dropdown-item
+                                      @click.native.prevent="clickPrintBarcode(row)"
+                                      class="d-flex align-items-center justify-content-between"
+                                    >
+                                      <span class="d-flex align-items-center me-5">Etiquetas</span>
+                                
+                                      <!-- Botón interno -->
+                                      <el-tooltip
+                                        class="item"
+                                        effect="dark"
+                                        content="Generar código de barras"
+                                        placement="top-start"
+                                      >
+                                        <button
+                                          class="position-relative btn-icon btn-primary d-flex align-items-center justify-content-center"
+                                          @click.stop.prevent="clickBarcode(row)"
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-barcode"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7v-1a2 2 0 0 1 2 -2h2" /><path d="M4 17v1a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v1" /><path d="M16 20h2a2 2 0 0 0 2 -2v-1" /><path d="M5 11h1v2h-1z" /><path d="M10 11l0 2" /><path d="M14 11h1v2h-1z" /><path d="M19 11l0 2" /></svg>
+                                        </button>
+                                      </el-tooltip>                                      
+                                    </el-dropdown-item>
+                                  </template>
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </td>
@@ -566,6 +597,13 @@
 <style>
 .dropdown-menu.show {
     max-height: 130px;
+}
+.btn-icon{
+    border-radius: 8px;
+    padding: 2px !important;
+    line-height: normal;
+    width: 23px;
+    height: 23px;
 }
 </style>
 <script>

@@ -2629,7 +2629,7 @@ html.no-overflowscrolling.custom-scroll .nano > .nano-content {
     font-weight: 400;
     letter-spacing: normal;
     line-height: 50px;
-    margin: 0 0 0 -1px;
+    margin: 0 !important;
     padding: 0 22px 0 20px;
 }
 
@@ -21234,13 +21234,13 @@ tbody tr:hover,tfoot tr:hover {
 }
 
 .shadow-left {
-    left: 15px;
+    left: 0px;
     background: linear-gradient(to right, rgb(0 0 0 / 35%), transparent);
     border-radius: 6px 0 0 6px;
 }
 
 .shadow-right {
-    right: 15px;
+    right: 0px;
     background: linear-gradient(to left, rgb(0 0 0 / 35%), transparent);
     border-radius: 0 6px 6px 0;
 }
@@ -21813,6 +21813,9 @@ div.sub-title.text-muted {
 }
 .btn-add-new:hover{
     opacity: 1;
+}
+.el-dropdown-menu--small .el-dropdown-menu__item {
+    line-height: 32px !important;
 }
 @media (max-width: 768px) {
     .support-sidebar {

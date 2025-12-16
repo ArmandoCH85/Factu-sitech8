@@ -193,6 +193,9 @@ ul.nav-main li.nav-description {
 .border-left {
     border-left: none !important;
 }
+.card{
+    margin-bottom: 15px;
+}
 .card.card-dashboard {
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -453,6 +456,7 @@ span.badge.text-white.bg-success {
 }
 .page-header h2 {
     border-bottom: none;
+    margin: 0 !important;
 }
 .page-header {
     box-shadow: none !important;
@@ -1113,6 +1117,9 @@ html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:ho
 }
 .sidebar-toggle-container .sidebar-toggle:hover {
     background-color: var(--light-color) !important;
+}
+.el-tabs__content{
+    padding: 4px;
 }
 /* modo oscuro */
 html.dark .table-responsive.payment {

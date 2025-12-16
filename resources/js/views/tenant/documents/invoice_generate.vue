@@ -6051,6 +6051,26 @@ export default {
             this.filterCustomers();
             this.setDefaultSerieByDocument();
         },
+        setDefaultSerieByDocument() {
+            if (!this.authUser || !this.authUser.multiple_default_document_types)
+                return;
+
+            const default_document_type_serie = _.find(
+                this.authUser.default_document_types,
+                { document_type_id: this.form.document_type_id }
+            );
+
+            if (!default_document_type_serie || !Array.isArray(this.series))
+                return;
+
+            const exist_serie = _.find(this.series, {
+                id: default_document_type_serie.series_id
+            });
+
+            if (exist_serie) {
+                this.form.series_id = default_document_type_serie.series_id;
+            }
+        },
         cleanCustomer() {
             this.form.customer_id = null;
         },

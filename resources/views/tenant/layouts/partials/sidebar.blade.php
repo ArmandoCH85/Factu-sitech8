@@ -112,11 +112,18 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                 @endif
 
                                 @if(in_array('quotations', $vc_module_levels))
-
-                                    <li class="{{ ($firstLevel === 'quotations') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.quotations.index')}}">
+                                    <li class="{{ ($firstLevel === 'quotations') ? 'nav-active' : '' }} nav-item-with-action">
+                                        <a class="nav-link pe-5" href="{{ route('tenant.quotations.index') }}">
                                             Cotizaciones
                                         </a>
+                                        <button
+                                            type="button"
+                                            class="{{ ($firstLevel === 'quotations') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                            title="Crear cotización"
+                                            onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.quotations.create') }}';"
+                                        >
+                                            Nuevo
+                                        </button>
                                     </li>
                                 @endif
 
@@ -171,7 +178,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                 <span>VENTAS</span>
                             </a>
                             <ul class="nav nav-children" style="">
-                                @if(auth()->user()->type != 'integrator' && $vc_company->soap_type_id != '03')
+                                {{-- @if(auth()->user()->type != 'integrator' && $vc_company->soap_type_id != '03')
                                     @if(in_array('documents', $vc_modules))
                                         @if(in_array('new_document', $vc_module_levels))
                                             <li
@@ -180,21 +187,36 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             </li>
                                         @endif
                                     @endif
-                                @endif
+                                @endif --}}
 
                                 @if(in_array('documents', $vc_modules) && $vc_company->soap_type_id != '03')
                                     @if(in_array('list_document', $vc_module_levels))
                                         <li
-                                            class="{{ ($firstLevel === 'documents' && $secondLevel != 'create' && $secondLevel != 'not-sent' && $secondLevel != 'regularize-shipping') ? 'nav-active' : '' }}">
-                                            <a class="nav-link" href="{{route('tenant.documents.index')}}">Listado de
-                                                comprobantes</a>
+                                            class="{{ ($firstLevel === 'documents' && $secondLevel != 'create' && $secondLevel != 'not-sent' && $secondLevel != 'regularize-shipping') ? 'nav-active' : '' }} {{ ($firstLevel === 'documents' && $secondLevel === 'create') ? 'nav-active' : '' }} nav-item-with-action">
+                                            <a class="nav-link pe-5" href="{{route('tenant.documents.index')}}">Listado</a>
+                                            <button
+                                                type="button"
+                                                class="{{ ($firstLevel === 'documents') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                                title="Crear comprobante"
+                                                onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.documents.create') }}';"
+                                            >
+                                                Nuevo
+                                            </button>
                                         </li>
                                     @endif
                                 @endif
 
                                 @if(in_array('sale_notes', $vc_module_levels))
-                                    <li class="{{ ($firstLevel === 'sale-notes') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.sale_notes.index')}}">Notas de Venta</a>
+                                    <li class="{{ ($firstLevel === 'sale-notes') ? 'nav-active' : '' }} nav-item-with-action">
+                                        <a class="nav-link pe-5" href="{{route('tenant.sale_notes.index')}}">Notas de Venta</a>
+                                        <button
+                                            type="button"
+                                            class="{{ ($firstLevel === 'sale-notes') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                            title="Crear nota de venta"
+                                            onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.sale_notes.create') }}';"
+                                        >
+                                            Nuevo
+                                        </button>
                                     </li>
                                 @endif
 
@@ -243,28 +265,51 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                             <span>Compras</span>
                                                         </a>
                                                         <ul class="nav nav-children">
-                                                            @if(in_array('purchases_create', $vc_module_levels))
+                                                            {{-- @if(in_array('purchases_create', $vc_module_levels))
                                                                 <li
                                                                     class="{{ ($firstLevel === 'purchases' && $secondLevel === 'create') ? 'nav-active' : '' }}">
                                                                     <a class="nav-link" href="{{route('tenant.purchases.create')}}">Nuevo</a>
                                                                 </li>
-                                                            @endif
+                                                            @endif --}}
                                                             @if(in_array('purchases_list', $vc_module_levels))
                                                                 <li
-                                                                    class="{{ ($firstLevel === 'purchases' && $secondLevel != 'create') ? 'nav-active' : '' }}">
-                                                                    <a class="nav-link" href="{{route('tenant.purchases.index')}}">Listado</a>
+                                                                    class="{{ ($firstLevel === 'purchases' && $secondLevel != 'create') ? 'nav-active' : '' }} {{ ($firstLevel === 'purchases' && $secondLevel === 'create') ? 'nav-active' : '' }} nav-item-with-action">
+                                                                    <a class="nav-link pe-5" href="{{route('tenant.purchases.index')}}">Listado</a>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="{{ ($firstLevel === 'purchases') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                                                        title="Nuevo compra"
+                                                                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.purchases.create') }}';"
+                                                                    >
+                                                                        Nuevo
+                                                                    </button>
                                                                 </li>
                                                             @endif
                                                             @if(in_array('purchases_orders', $vc_module_levels))
-                                                                <li class="{{ ($firstLevel === 'purchase-orders') ? 'nav-active' : '' }}">
-                                                                    <a class="nav-link" href="{{route('tenant.purchase-orders.index')}}">Ordenes de
-                                                                        compra</a>
+                                                                <li class="{{ ($firstLevel === 'purchase-orders') ? 'nav-active' : '' }} nav-item-with-action">
+                                                                    <a class="nav-link pe-5" href="{{route('tenant.purchase-orders.index')}}">Ord. de compra</a>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="{{ ($firstLevel === 'purchase-orders') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                                                        title="Nueva orden de compra"
+                                                                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.purchase-orders.create') }}';"
+                                                                    >
+                                                                        Nuevo
+                                                                    </button>
                                                                 </li>
                                                             @endif
 
                                                             @if(in_array('purchases_expenses', $vc_module_levels))
-                                                                <li class="{{ ($firstLevel === 'expenses') ? 'nav-active' : '' }}">
-                                                                    <a class="nav-link" href="{{route('tenant.expenses.index')}}">Gastos diversos</a>
+                                                                <li class="{{ ($firstLevel === 'expenses') ? 'nav-active' : '' }} nav-item-with-action">
+                                                                    <a class="nav-link pe-5" href="{{route('tenant.expenses.index')}}">Gastos diversos</a>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="{{ ($firstLevel === 'expenses') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                                                        title="Nuevo gasto diverso"
+                                                                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.expenses.create') }}';"
+                                                                    >
+                                                                        Nuevo
+                                                                    </button>
                                                                 </li>
                                                             @endif
                                                             @if(in_array('purchases_suppliers', $vc_module_levels))
@@ -275,10 +320,18 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                 </li>
                                                             @endif
                                                             @if(in_array('purchases_quotations', $vc_module_levels))
-                                                                <li class="{{ ($firstLevel === 'purchase-quotations') ? 'nav-active' : '' }}">
-                                                                    <a class="nav-link" href="{{route('tenant.purchase-quotations.index')}}">
+                                                                <li class="{{ ($firstLevel === 'purchase-quotations') ? 'nav-active' : '' }} nav-item-with-action">
+                                                                    <a class="nav-link pe-5" href="{{route('tenant.purchase-quotations.index')}}">
                                                                         Solicitar cotización
                                                                     </a>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="{{ ($firstLevel === 'purchase-quotations') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                                                        title="Nueva solicitud de cotización"
+                                                                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.purchase-quotations.create') }}';"
+                                                                    >
+                                                                        Nuevo
+                                                                    </button>
                                                                 </li>
                                                             @endif
                                                             @if(in_array('purchases_fixed_assets_items', $vc_module_levels))
@@ -290,9 +343,16 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                             @endif
                                                             @if(in_array('purchases_fixed_assets_purchases', $vc_module_levels))
                                                                 <li
-                                                                    class="{{ ($firstLevel === 'fixed-asset' && $secondLevel === 'purchases') ? 'nav-active' : '' }}">
-                                                                    <a class="nav-link" href="{{ route('tenant.fixed_asset_purchases.index') }}">Comprar
-                                                                        activo fijo</a>
+                                                                    class="{{ ($firstLevel === 'fixed-asset' && $secondLevel === 'purchases') ? 'nav-active' : '' }} nav-item-with-action">
+                                                                    <a class="nav-link pe-5" href="{{ route('tenant.fixed_asset_purchases.index') }}">Comprar activo fijo</a>
+                                                                    <button
+                                                                        type="button"
+                                                                        class="{{ ($firstLevel === 'fixed-asset' && $secondLevel === 'purchases') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                                                        title="Nueva compra de activo fijo"
+                                                                        onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.fixed_asset_purchases.create') }}';"
+                                                                    >
+                                                                        Nuevo
+                                                                    </button>
                                                                 </li>
                                                             @endif
                                                         </ul>
@@ -381,7 +441,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                 @if(in_array('items_packs', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'item-sets') ? 'nav-active' : '' }}">
                                                         <a class="nav-link"
-                                                            href="{{route('tenant.item_sets.index')}}">Conjuntos/Packs/Promociones</a>
+                                                            href="{{route('tenant.item_sets.index')}}">Conjuntos y Packs</a>
                                                     </li>
                                                 @endif
                                                 @if(in_array('items_services', $vc_module_levels))
@@ -612,14 +672,29 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                             </a>
                             <ul class="nav nav-children" style="">
                                 @if(in_array('dispatches', $vc_module_levels))
-                                    <li class="{{ ($firstLevel === 'dispatches') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.dispatches.index')}}">G.R. Remitente</a>
+                                    <li class="{{ ($firstLevel === 'dispatches') ? 'nav-active' : '' }} nav-item-with-action">
+                                        <a class="nav-link pe-5" href="{{route('tenant.dispatches.index')}}">G.R. Remitente</a>
+                                        <button
+                                            type="button"
+                                            class="{{ ($firstLevel === 'dispatches') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                            title="Nueva guía de remisión"
+                                            onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ url('dispatches/create') }}';"
+                                        >
+                                            Nuevo
+                                        </button>
                                     </li>
                                 @endif
                                 @if(in_array('dispatch_carrier', $vc_module_levels))
-                                    <li class="{{ ($firstLevel === 'dispatch_carrier') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.dispatch_carrier.index')}}">G.R.
-                                            Transportista</a>
+                                    <li class="{{ ($firstLevel === 'dispatch_carrier') ? 'nav-active' : '' }} nav-item-with-action">
+                                        <a class="nav-link pe-5" href="{{route('tenant.dispatch_carrier.index')}}">G.R. Transportista</a>
+                                        <button
+                                            type="button"
+                                            class="{{ ($firstLevel === 'dispatch_carrier') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                            title="Nueva guía de remisión"
+                                            onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ url('dispatch_carrier/create') }}';"
+                                        >
+                                            Nuevo
+                                        </button>
                                     </li>
                                 @endif
                                 @if(in_array('dispatchers', $vc_module_levels))
@@ -897,7 +972,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
 
                                 <li class="{{ ($secondLevel === 'item-sets') ? 'nav-active' : '' }}">
                                     <a class="nav-link"
-                                        href="{{route('tenant.ecommerce.item_sets.index')}}">Conjuntos/Packs/Promociones</a>
+                                        href="{{route('tenant.ecommerce.item_sets.index')}}">Conjuntos y Packs</a>
                                 </li>
 
                                 @if(in_array('ecommerce_tags', $vc_module_levels))
@@ -1664,5 +1739,23 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
     .sidebar-blue .more-config a:hover,
     .sidebar-green .more-config a:hover {
         color: #fff !important;
+    }
+
+    .nav-main .nav-children li.nav-item-with-action {
+        position: relative;
+    }
+
+    .nav-main .nav-children li.nav-item-with-action > .nav-action {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        padding: 2px 6px;
+        line-height: 1.2;
+    }
+    .nav-item-with-action button{
+        padding: 0 6px 0 6px !important;
+        font-size: 13px !important;
     }
 </style>

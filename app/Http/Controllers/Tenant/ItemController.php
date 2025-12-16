@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
+use Illuminate\Support\Facades\DB;
 use App\Exports\DigemidItemExport;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
@@ -734,9 +735,27 @@ class ItemController extends Controller
         $column = $type_product === 'restaurant' ? 'apply_restaurant' : 'apply_store';
 
         try {
-            Item::whereNotNull('internal_id')->where($column, '=', 0)->update([
+            $items = Item::whereNotNull('internal_id')
+                ->where($column, 0);
+
+            if ($type_product === 'restaurant') {
+                $items->where(function ($q) {
+                    $q->where('unit_type_id', '!=', 'ZZ')
+                    ->orWhereExists(function ($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('restaurant_item_supplies')
+                            ->whereColumn(
+                                'restaurant_item_supplies.item_id',
+                                'items.id'
+                            );
+                    });
+                });
+            }
+
+            $items->update([
                 $column => true
             ]);
+
             return [
                 'success' => true,
                 'message' => 'Todo los productos son visible en el restaurante'

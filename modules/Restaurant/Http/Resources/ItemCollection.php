@@ -59,7 +59,13 @@ class ItemCollection extends ResourceCollection
                 'favorite' => (bool)$row->favorite,
                 'area_print' => $row->preparationArea->printer ?? null,
                 'has_supplies' => $row->restaurantSupplies()->exists(),
-                'restaurant_stock' => $row->restaurantSupplies()->exists() ? $row->getRestaurantStock() : $row->getStockByWarehouse(),
+                'has_sets' => $row->sets()->exists(),
+                'items_sets' => $row->items_sets ?? [],
+                'restaurant_stock' => $row->restaurantSupplies()->exists() 
+                    ? $row->getRestaurantStock() 
+                    : ($row->sets()->exists() 
+                        ? $row->getRestaurantStockSet() 
+                        : $row->getStockByWarehouse()),
                 'modifiers' => $row->modifiers ?? [],
             ];
         });

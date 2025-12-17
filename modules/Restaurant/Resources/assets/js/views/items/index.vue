@@ -102,17 +102,22 @@
                         <td
                             class="text-end"
                             :class="{
-                                'text-danger': row.has_supplies ? row.restaurant_stock <= 0 : stock(row.warehouses) <= 0,
-                                'text-warning': row.has_supplies ? row.restaurant_stock > 0 && row.restaurant_stock <= 5 : !row.has_supplies && stock(row.warehouses) > 0 && stock(row.warehouses) <=5,
+                                'text-danger': row.has_supplies ? row.restaurant_stock <= 0 : (row.has_sets ? row.restaurant_stock <= 0 : stock(row.warehouses) <= 0),
+                                'text-warning': row.has_supplies ? row.restaurant_stock > 0 && row.restaurant_stock <= 5 : (row.has_sets ? row.restaurant_stock > 0 && row.restaurant_stock <= 5 : stock(row.warehouses) > 0 && stock(row.warehouses) <=5),
                                 
                             }"
                         >
-                            {{ row.has_supplies ? row.restaurant_stock : stock(row.warehouses) }}
+                            {{ row.has_supplies ? row.restaurant_stock : ( row.has_sets ? row.restaurant_stock : stock(row.warehouses) ) }} 
                             <span v-if="row.has_supplies" class="ms-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-bowl-spoon">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M20 10a2 2 0 0 1 2 2v.5c0 1.694 -2.247 5.49 -3.983 6.983l-.017 .013v.504a2 2 0 0 1 -1.85 1.995l-.15 .005h-8a2 2 0 0 1 -2 -2v-.496l-.065 -.053c-1.76 -1.496 -3.794 -4.965 -3.928 -6.77l-.007 -.181v-.5a2 2 0 0 1 2 -2z"/>
                                     <path d="M8 2c1.71 0 3.237 .787 3.785 2h8.215a1 1 0 0 1 0 2l-8.216 .001c-.548 1.213 -2.074 1.999 -3.784 1.999c-2.144 0 -4 -1.237 -4 -3s1.856 -3 4 -3"/>
+                                </svg>
+                            </span>
+                            <span v-if="row.has_sets" class="ms-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 640 640">
+                                    <path d="M465.4 192L431.1 144L209 144L174.7 192L465.4 192zM96 212.5C96 199.2 100.2 186.2 107.9 175.3L156.9 106.8C168.9 90 188.3 80 208.9 80L431 80C451.7 80 471.1 90 483.1 106.8L532 175.3C539.8 186.2 543.9 199.2 543.9 212.5L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 212.5z"/>
                                 </svg>
                             </span>
                         </td>
@@ -342,7 +347,6 @@ export default {
             let stock = 0;
             items.forEach(item => {
                 stock += parseInt(item.stock);
-                console.log('stock item', item);
             });
             return stock;
         }

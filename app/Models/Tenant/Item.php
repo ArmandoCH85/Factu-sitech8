@@ -731,6 +731,52 @@ class Item extends ModelTenant
     }
 
     /**
+     * Relación muchos a muchos con los items que componen el set
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function items_sets()
+    {
+        return $this->belongsToMany(
+            Item::class,           // Queremos objetos de la tabla Items
+            'item_sets',           // A través de esta tabla
+            'item_id',             // La llave del combo
+            'individual_item_id'   // La llave del producto individual
+        )->withPivot('quantity');  // También trae la cantidad
+    }
+        
+    /**
+     * Calcula el stock disponible del set en base a los items que lo componen
+     * Retorna la cantidad máxima de sets que se pueden preparar con el stock actual de items
+     *
+     * Ejemplo: Si un set usa 2 unidades de item A y hay 10 en stock, y usa 3 unidades de item B y hay 9 en stock,
+     * retorna 3 (porque el item B es el limitante)
+     *
+     * @return int
+     */
+
+    public function getRestaurantStockSet() {
+        $items = $this->items_sets;
+        $possibleStocks = [];
+
+        foreach ($items as $item) {
+            if ($item->restaurantSupplies()->exists()) {
+                // Si el item del set tiene insumos asignados, se calcula su stock en base a esos insumos
+                $itemStock = $item->getRestaurantStock();
+                $possibleStocks[] = floor($itemStock / $item->pivot->quantity);
+                continue;
+            } else {
+                // Si el item del set no tiene insumos asignados, se toma su stock normal
+                $itemStock = $item->stock;
+                $possibleStocks[] = floor($itemStock / $item->pivot->quantity);
+                continue;
+            }
+        }
+
+        return min($possibleStocks);
+    }
+
+    /**
      * @param Builder $query
      *
      * @return Builder
@@ -1319,8 +1365,14 @@ class Item extends ModelTenant
         // Calcular stock de restaurant basado en insumos
         $restaurantStock = 0;
         if ($isRestaurant) {
-            $restaurantStock = $this->getRestaurantStock();
             $has_supplies = $this->restaurantSupplies()->exists();
+            if ($has_supplies) {
+                $restaurantStock = $this->getRestaurantStock();
+            }
+            $has_sets = $this->items_sets()->exists();
+            if ($has_sets) {
+                $restaurantStock = $this->getRestaurantStockSet();
+            }
         }
 
         return [
@@ -1373,6 +1425,7 @@ class Item extends ModelTenant
             'apply_restaurant' => (bool)$this->apply_restaurant,
             'restaurant_stock' => $restaurantStock,
             'has_supplies' => $isRestaurant ? $has_supplies : null,
+            'has_sets' => $isRestaurant ? $has_sets : null,
             'image_url' => ($this->image !== 'imagen-no-disponible.jpg')
                 ? asset('storage/uploads/items/' . $this->image)
                 : $defaultImagePath,

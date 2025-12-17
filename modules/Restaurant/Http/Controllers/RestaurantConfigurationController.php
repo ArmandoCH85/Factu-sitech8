@@ -140,8 +140,8 @@ class RestaurantConfigurationController extends Controller
 
     private function generateMesas()
     {
-        RestaurantTable::truncate();
-        RestaurantItemOrderStatus::truncate();
+        RestaurantTable::query()->delete();
+        RestaurantItemOrderStatus::query()->delete();
 
         $activeEnvironments = RestaurantTableEnv::where('active', true)->get();
 

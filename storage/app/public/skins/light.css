@@ -511,8 +511,8 @@ html.sidebar-light:not(.dark) .page-header .breadcrumbs span {
 }
 .card.card-reports .card-title {
     font-weight: bold;
-    color: #001f83;
-    background: #e8f1ff;
+    color: var(--dark-color);
+    background: var(--light-color);
     border-radius: 4px;
     padding: 8px 16px;
     margin-bottom: 20px;

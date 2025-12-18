@@ -43,6 +43,9 @@ class RestaurantConfiguration extends ModelTenant
         ->where('id', 3)
         ->where('active', 1)
         ->exists();
+
+        $configurations_global = DB::connection('tenant')->table('configurations')->first();
+
         return [
             'menu_pos' => (bool)$this->menu_pos,
             'menu_order' => (bool)$this->menu_order,
@@ -69,6 +72,7 @@ class RestaurantConfiguration extends ModelTenant
             'enabled_close_table_mozo' => (bool)$this->enabled_close_table_mozo,
             'restaurant_tip_factor' => $restaurant_tip_factor,
             'is_restaurant_active' => $is_restaurant_active,
+            'show_item_description_pack' => (bool)$configurations_global->show_item_description_pack,
         ];
     }
 }

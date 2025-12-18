@@ -111,18 +111,36 @@ class RestaurantItemOrderStatusController extends Controller
         $order = RestaurantItemOrderStatus::where('id', $id)->with('item')->first();
 
         $item = json_decode($order->item);
-        if($item->has_supplies && $order->status === self::STATUS_RECEIVED){
-            $item_model = $order->item()->first();
-            $item_supplies = $item_model->restaurantItemSupplies;
-            foreach($item_supplies as $item_supply) {
-                $supply_quantity = $item_supply->quantity;
-                $order_quantity = $order->quantity;
-                $total_to_discount = $supply_quantity * $order_quantity;
-                $supply = $item_supply->supply;
-                $supply->stock -= $total_to_discount;
-                $supply->save();
+
+        if($item->has_sets && $order->status === self::STATUS_RECEIVED){
+            $items_sets = $item->items_sets;
+            foreach($items_sets as $item_set) {
+                $item_model = Item::find($item_set->id);
+                $item_supplies = $item_model->restaurantItemSupplies;
+                foreach($item_supplies as $item_supply) {
+                    $supply_quantity = $item_supply->quantity;
+                    $order_quantity = $order->quantity * $item_set->pivot->quantity;
+                    $total_to_discount = $supply_quantity * $order_quantity;
+                    $supply = $item_supply->supply;
+                    $supply->stock -= $total_to_discount;
+                    $supply->save();
+                }
+            }
+        }else{
+            if($item->has_supplies && $order->status === self::STATUS_RECEIVED){
+                $item_model = $order->item()->first();
+                $item_supplies = $item_model->restaurantItemSupplies;
+                foreach($item_supplies as $item_supply) {
+                    $supply_quantity = $item_supply->quantity;
+                    $order_quantity = $order->quantity;
+                    $total_to_discount = $supply_quantity * $order_quantity;
+                    $supply = $item_supply->supply;
+                    $supply->stock -= $total_to_discount;
+                    $supply->save();
+                }
             }
         }
+
 
         if($order->status < 4){
             $order->status += 1;

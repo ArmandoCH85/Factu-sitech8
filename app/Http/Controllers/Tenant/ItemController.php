@@ -250,7 +250,7 @@ class ItemController extends Controller
         }
         else
         {   
-            if($isRestaurant)
+            if($isRestaurant === "true")
             {
                 $records = Item::whereTypeUser();
             } else {

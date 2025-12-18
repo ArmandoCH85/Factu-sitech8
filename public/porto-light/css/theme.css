@@ -7458,16 +7458,16 @@ html.sidebar-light:not(.dark) ul.nav-main li .nav-children li a:focus {
 
 /* Colors */
 .btn-primary {
-    background-color: var(--primary) !important;
-    border-color: var(--primary) !important;
-    color: #fff !important;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
 }
 
 .btn-primary:hover,
 .btn-primary.hover {
-    background-color: var(--primary) !important;
-    border-color: var(--primary) !important;
-    color: #fff !important;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
     opacity: 0.8;
 }
 

@@ -74,20 +74,22 @@
                             </el-input>
                         </template>
                     </div>
-                    <div class="col-lg-5 col-md-5 col-sm-12 pb-2 d-flex" v-if="showProductFilter">
-                        <div class="d-flex align-items-center col-4 justify-content-end">
-                            {{ filterLabel }}
-                        </div>
-                        <div class="col-8 pe-0">
+                    <div
+                        v-if="showProductFilter"
+                        class="col-lg-4 col-md-5 col-sm-12 pb-2 d-flex align-items-center justify-content-lg-end ms-auto"
+                    >
+                        <div class="datatable-product-filter">
+                            <span class="datatable-filter-label" :title="filterLabel">{{ filterLabel }}</span>
                             <el-select
-                              v-model="showDisabledValue"
-                              :placeholder="filterPlaceholder"
-                              size="small"
-                              @change="handleShowDisabledChange"
+                                class="datatable-filter-select"
+                                v-model="showDisabledValue"
+                                :placeholder="filterPlaceholder"
+                                size="small"
+                                @change="handleShowDisabledChange"
                             >
-                              <el-option label="Todos" value="all"></el-option>
-                              <el-option label="Habilitados" value="enabled"></el-option>
-                              <el-option label="Inhabilitados" value="disabled"></el-option>
+                                <el-option label="Todos" value="all"></el-option>
+                                <el-option label="Habilitados" value="enabled"></el-option>
+                                <el-option label="Inhabilitados" value="disabled"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -114,29 +116,30 @@
             </div>
             <div class="col-md-6 col-lg-6 col-xl-6">
                 <div class="row" v-if="fromRestaurant||fromEcommerce">
-                    <div class="col-lg-12 col-md-12 col-sm-12 pb-2 d-flex justify-content-end">
-                        <div class="d-flex col-5 ps-0" v-if="fromRestaurant||fromEcommerce">
-                            <div class="my-auto w-100">
-                                <el-button  @click="methodVisibleAllProduct" type="primary" icon="el-icon-check" class="w-100 button-truncate ps-2 pe-4 position-relative" style="padding-right: 25px !important;" title="Mostrar todos los productos">
-                                    Mostrar todos los productos
+                    <div class="col-lg-12 col-md-12 col-sm-12 pb-2 d-flex flex-wrap justify-content-end align-items-center">
+                        <div class="d-flex col-12 col-md-6 mb-2 mb-md-0 ps-0 pe-2" v-if="fromRestaurant||fromEcommerce">
+                            <div class="my-auto w-100 text-end">
+                                <el-button  @click="methodVisibleAllProduct" type="primary" class="button-truncate position-relative btn-show-all-products" title="Mostrar todos los productos">
+                                    <span class="d-inline d-lg-none">Mostrar todos</span>
+                                    <span class="d-none d-lg-inline">Mostrar todos los productos</span>
                                     <el-tooltip
                                         class="item"
                                         content="Solo se mostrarán productos con código interno registrado. Esta opción aplica para el canal actual."
                                         effect="dark"
                                         placement="top-start"
                                     >
-                                        <i class="fa fa-info-circle" style="position: absolute; right: 24px; top: 10px; color: #fff;"></i>
+                                        <i class="fa fa-info-circle ms-1"></i>
                                     </el-tooltip>
                                 </el-button>
                             </div>
                         </div>
 
-                        <div class="d-flex col-5 px-0">
+                        <div class="d-flex col-12 col-md-6 px-0">
                             <el-select
                                 class="pe-0"
                                 v-model="search.list_value"
                                 placeholder="Select"
-                                @change="getRecords"
+                                @change="handleListValueChange"
                             >
                                 <el-option
                                     v-for="(label, key) in list_columns"
@@ -203,6 +206,35 @@
 }
 .btn-show-filter.shift {
     display: block !important;
+}
+
+.datatable-product-filter {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 8px;
+    width: 100%;
+}
+
+.datatable-filter-label {
+    display: inline-block;
+    max-width: 140px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.datatable-filter-select {
+    width: 100%;
+    max-width: 220px;
+}
+
+.btn-show-all-products__info {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
 }
 </style>
 <script>
@@ -308,6 +340,16 @@ export default {
             this.list_columns = this.customListColumns;
         }
 
+        const storedShowDisabled = localStorage.getItem(this.getShowDisabledStorageKey());
+        if (['all', 'enabled', 'disabled'].includes(storedShowDisabled)) {
+            this.showDisabledValue = storedShowDisabled;
+        }
+
+        const storedListValue = localStorage.getItem(this.getListValueStorageKey());
+        if (storedListValue && Object.prototype.hasOwnProperty.call(this.list_columns, storedListValue)) {
+            this.search.list_value = storedListValue;
+        }
+
         this.$eventHub.$on("reloadData", () => {
             this.getRecords();
         });
@@ -338,8 +380,24 @@ export default {
         });
     },
     methods: {
+                handleListValueChange() {
+                        localStorage.setItem(this.getListValueStorageKey(), this.search.list_value);
+                        this.getRecords();
+                },
         handleShowDisabledChange() {
+          localStorage.setItem(this.getShowDisabledStorageKey(), this.showDisabledValue);
           this.getRecords();
+        },
+        getShowDisabledStorageKey() {
+            // Key única por recurso/tipo para evitar colisiones entre pantallas
+            const resourceKey = this.resource || 'resource';
+            const typeKey = this.productType || 'type';
+            return `datatable_show_disabled:${resourceKey}:${typeKey}`;
+        },
+        getListValueStorageKey() {
+            const resourceKey = this.resource || 'resource';
+            const typeKey = this.productType || 'type';
+            return `datatable_list_value:${resourceKey}:${typeKey}`;
         },
         async loadWarehouses() {
             try {
@@ -451,6 +509,29 @@ export default {
         }
     },
     watch: {
+        // Si el componente cambia de resource/tipo, recargar preferencia
+        resource() {
+            const storedShowDisabled = localStorage.getItem(this.getShowDisabledStorageKey());
+            this.showDisabledValue = ['all', 'enabled', 'disabled'].includes(storedShowDisabled)
+                ? storedShowDisabled
+                : 'all';
+
+            const storedListValue = localStorage.getItem(this.getListValueStorageKey());
+            this.search.list_value = (storedListValue && Object.prototype.hasOwnProperty.call(this.list_columns, storedListValue))
+                ? storedListValue
+                : 'all';
+        },
+        productType() {
+            const storedShowDisabled = localStorage.getItem(this.getShowDisabledStorageKey());
+            this.showDisabledValue = ['all', 'enabled', 'disabled'].includes(storedShowDisabled)
+                ? storedShowDisabled
+                : 'all';
+
+            const storedListValue = localStorage.getItem(this.getListValueStorageKey());
+            this.search.list_value = (storedListValue && Object.prototype.hasOwnProperty.call(this.list_columns, storedListValue))
+                ? storedListValue
+                : 'all';
+        },
         showDisabled(newVal) {
             if (newVal) {
               this.getRecords();

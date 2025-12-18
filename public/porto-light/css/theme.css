@@ -21817,6 +21817,16 @@ div.sub-title.text-muted {
 .el-dropdown-menu--small .el-dropdown-menu__item {
     line-height: 32px !important;
 }
+.text-danger.option-delete:hover {
+    background-color: color-mix(in hsl, var(--danger) 30%, #ffffff00) !important;
+    color: var(--danger) !important;
+}
+.el-dropdown-menu__item--divided{
+    pointer-events: none;
+}
+.el-dropdown-menu__item--divided:before{
+    background-color: transparent !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

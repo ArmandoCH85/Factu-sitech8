@@ -1121,6 +1121,10 @@ html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:ho
 .el-tabs__content{
     padding: 4px;
 }
+.text-danger.option-delete:hover {
+    background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
+    color: var(--danger) !important;
+}
 /* modo oscuro */
 html.dark .table-responsive.payment {
     border: 1px solid var(--inputs-dark);

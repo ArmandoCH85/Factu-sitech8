@@ -2109,6 +2109,10 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .dropdown-menu-desktop{
     color: var(--dark-color);
 }
+.text-danger.option-delete:hover {
+    background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
+    color: var(--danger) !important;
+}
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {
     background: #161d31d1;
@@ -3237,5 +3241,9 @@ html.dark .el-button--danger.hover {
 html.dark .card-body,
 html.dark .card.card-dashboard.border{
     border-color: transparent;
+}
+html.dark .text-danger.option-delete:hover {
+    background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
+    color: var(--danger) !important;
 }
 /* end */

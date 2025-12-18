@@ -735,6 +735,10 @@ div.el-tab-pane {
 .toggle-button.shift {
     z-index: 1023;
 }
+.text-danger.option-delete:hover {
+    background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
+    color: var(--danger) !important;
+}
 tbody tr:hover:not(:last-child) {
     background: #fafbfd;
 }

@@ -122,7 +122,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             title="Crear cotización"
                                             onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.quotations.create') }}';"
                                         >
-                                            Nuevo
+                                            Crear
                                         </button>
                                     </li>
                                 @endif
@@ -193,14 +193,14 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                     @if(in_array('list_document', $vc_module_levels))
                                         <li
                                             class="{{ ($firstLevel === 'documents' && $secondLevel != 'create' && $secondLevel != 'not-sent' && $secondLevel != 'regularize-shipping') ? 'nav-active' : '' }} {{ ($firstLevel === 'documents' && $secondLevel === 'create') ? 'nav-active' : '' }} nav-item-with-action">
-                                            <a class="nav-link pe-5" href="{{route('tenant.documents.index')}}">Listado</a>
+                                            <a class="nav-link pe-5" href="{{route('tenant.documents.index')}}">Boleta/factura</a>
                                             <button
                                                 type="button"
                                                 class="{{ ($firstLevel === 'documents') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
                                                 title="Crear comprobante"
                                                 onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.documents.create') }}';"
                                             >
-                                                Nuevo
+                                                Crear
                                             </button>
                                         </li>
                                     @endif
@@ -215,7 +215,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             title="Crear nota de venta"
                                             onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.sale_notes.create') }}';"
                                         >
-                                            Nuevo
+                                            Crear
                                         </button>
                                     </li>
                                 @endif
@@ -281,7 +281,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                         title="Nuevo compra"
                                                                         onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.purchases.create') }}';"
                                                                     >
-                                                                        Nuevo
+                                                                        Crear
                                                                     </button>
                                                                 </li>
                                                             @endif
@@ -294,7 +294,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                         title="Nueva orden de compra"
                                                                         onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.purchase-orders.create') }}';"
                                                                     >
-                                                                        Nuevo
+                                                                        Crear
                                                                     </button>
                                                                 </li>
                                                             @endif
@@ -308,7 +308,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                         title="Nuevo gasto diverso"
                                                                         onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.expenses.create') }}';"
                                                                     >
-                                                                        Nuevo
+                                                                        Crear
                                                                     </button>
                                                                 </li>
                                                             @endif
@@ -330,7 +330,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                         title="Nueva solicitud de cotización"
                                                                         onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.purchase-quotations.create') }}';"
                                                                     >
-                                                                        Nuevo
+                                                                        Crear
                                                                     </button>
                                                                 </li>
                                                             @endif
@@ -351,7 +351,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                         title="Nueva compra de activo fijo"
                                                                         onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('tenant.fixed_asset_purchases.create') }}';"
                                                                     >
-                                                                        Nuevo
+                                                                        Crear
                                                                     </button>
                                                                 </li>
                                                             @endif
@@ -680,7 +680,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             title="Nueva guía de remisión"
                                             onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ url('dispatches/create') }}';"
                                         >
-                                            Nuevo
+                                            Crear
                                         </button>
                                     </li>
                                 @endif
@@ -693,7 +693,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             title="Nueva guía de remisión"
                                             onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ url('dispatch_carrier/create') }}';"
                                         >
-                                            Nuevo
+                                            Crear
                                         </button>
                                     </li>
                                 @endif

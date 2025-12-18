@@ -80,7 +80,7 @@
                         <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
                         <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
                         <th class="text-end">Total</th>
-                        <th class="text-center">Descarga</th>
+                        <!-- <th class="text-center">Descarga</th> -->
                         <th class="text-end">Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
@@ -144,22 +144,26 @@
                                     <el-dropdown-item 
                                         v-if="row.btn_generate_oc && canGenerarte" 
                                         :command="{action: 'generateOC', id: row.id}">
-                                        <i class="fa fa-shopping-cart"></i> Generar O. Compra
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg> 
+                                        Generar O. Compra
                                     </el-dropdown-item>
                                     <el-dropdown-item 
                                         v-if="row.btn_generate && canGenerarte" 
                                         :command="{action: 'generateQuotation', id: row.id}">
-                                        <i class="fa fa-file-alt"></i> Generar Cotización
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-text me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg> 
+                                        Generar Cotización
                                     </el-dropdown-item>
+                                    <el-dropdown-item divided />
                                     <el-dropdown-item 
                                         v-if="row.state_type_id != '11' && (row.btn_generate && row.btn_generate_oc)" 
-                                        :command="{action: 'edit', id: row.id}" 
-                                        divided>
-                                        <i class="fa fa-edit"></i> Editar
+                                        :command="{action: 'edit', id: row.id}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg> 
+                                        Editar
                                     </el-dropdown-item>
                                     <el-dropdown-item 
                                         :command="{action: 'options', id: row.id}">
-                                        <i class="fa fa-cog"></i> Opciones
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-settings me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg> 
+                                        Opciones
                                     </el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>

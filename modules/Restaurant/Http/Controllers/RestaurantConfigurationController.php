@@ -513,47 +513,4 @@ class RestaurantConfigurationController extends Controller
         ]);
     }
 
-    /**
-     * Actualiza el nombre del cliente de una mesa
-     */
-    public function updateCliente(Request $request)
-    {
-        $request->validate([
-            'table_id' => 'required|integer|exists:tenant.restaurant_tables,id',
-            'cliente' => 'nullable|string|max:255'
-        ]);
-
-        try {
-            $table = RestaurantTable::findOrFail($request->table_id);
-            
-            // Solo permitir si la mesa está ocupada
-            if ($table->status !== 'notavailable') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Abrir mesa para editar cliente.'
-                ], 400);
-            }
-            
-            // Actualizar cliente
-            $table->cliente = $request->cliente ?? '';
-            $table->save();
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Cliente actualizado correctamente',
-                'data' => [
-                    'id' => $table->id,
-                    'cliente' => $table->cliente,
-                    'label' => $table->label
-                ]
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar cliente: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
 }

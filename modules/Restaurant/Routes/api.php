@@ -32,6 +32,9 @@ if ($hostname) {
                 Route::get('/tablesAndEnv', 'RestaurantConfigurationController@tablesAndEnv');
                 Route::post('/table/toggle-active', 'RestaurantConfigurationController@toggleActive'); // Nueva ruta para activar/desactivar mesa
                 
+                Route::post('/table/cambiar-ambiente', 'RestaurantConfigurationController@cambiarAmbiente');
+                Route::post('/table/restaurar-ambiente', 'RestaurantConfigurationController@restaurarAmbiente');
+
                 Route::post('/table/{id}', 'RestaurantConfigurationController@saveTable');
                 Route::get('/table/{id}', 'RestaurantConfigurationController@getTable');
                 Route::get('/notes', 'NotesController@records');

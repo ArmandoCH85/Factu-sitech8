@@ -513,4 +513,152 @@ class RestaurantConfigurationController extends Controller
         ]);
     }
 
+    /**
+     * Cambiar mesa a otro ambiente
+     * POST /restaurant/table/cambiar-ambiente
+     */
+    public function cambiarAmbiente(Request $request)
+    {
+        $request->validate([
+            'table_id' => 'required|integer|exists:tenant.restaurant_tables,id',
+            'nuevo_ambiente' => 'required|string|max:100',
+        ]);
+
+        $tableId = $request->input('table_id');
+        $nuevoAmbiente = $request->input('nuevo_ambiente');
+
+        DB::connection('tenant')->beginTransaction();
+
+        $mesa = RestaurantTable::findOrFail($tableId);
+
+        // Validaciones
+        if ($mesa->status !== 'available') {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede mover una mesa ocupada',
+            ], 400);
+        }
+
+        if (!$mesa->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede mover una mesa fuera de servicio',
+            ], 400);
+        }
+
+        if ($mesa->group_id !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede mover una mesa que está en un grupo. Primero sepárala del grupo.',
+            ], 400);
+        }
+
+        if ($mesa->environment === $nuevoAmbiente) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La mesa ya está en ese ambiente',
+            ], 400);
+        }
+
+        $ambienteExiste = RestaurantTableEnv::where('name', $nuevoAmbiente)
+            ->where('active', true)
+            ->exists();
+
+        if (!$ambienteExiste) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El ambiente destino no existe o no está activo',
+            ], 400);
+        }
+
+        // Guardar ambiente original (solo si es la primera vez)
+        if ($mesa->original_environment === null) {
+            $mesa->original_environment = $mesa->environment;
+        }
+
+        // Cambiar ambiente
+        $mesa->environment = $nuevoAmbiente;
+        $mesa->save();
+
+        DB::connection('tenant')->commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Mesa {$mesa->label} movida a {$nuevoAmbiente}",
+            'mesa' => [
+                'id' => $mesa->id,
+                'label' => $mesa->label,
+                'environment' => $mesa->environment,
+                'original_environment' => $mesa->original_environment,
+            ],
+        ]);
+    }
+
+    /**
+     * Restaurar mesa a su ambiente original
+     * POST /restaurant/table/restaurar-ambiente
+     */
+    public function restaurarAmbiente(Request $request)
+    {
+        $request->validate([
+            'table_id' => 'required|integer|exists:tenant.restaurant_tables,id',
+        ]);
+
+        $tableId = $request->input('table_id');
+
+        DB::connection('tenant')->beginTransaction();
+
+        $mesa = RestaurantTable::findOrFail($tableId);
+
+        // Validaciones
+        if ($mesa->original_environment === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La mesa no ha sido movida de su ambiente original',
+            ], 400);
+        }
+
+        if ($mesa->status !== 'available') {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede restaurar una mesa ocupada',
+            ], 400);
+        }
+
+        if (!$mesa->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede restaurar una mesa fuera de servicio',
+            ], 400);
+        }
+
+        if ($mesa->group_id !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede restaurar una mesa que está en un grupo. Primero sepárala del grupo.',
+            ], 400);
+        }
+
+        // Restaurar ambiente
+        $ambienteOriginal = $mesa->original_environment;
+
+        $mesa->environment = $ambienteOriginal;
+        $mesa->original_environment = null;
+        $mesa->save();
+
+        DB::connection('tenant')->commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Mesa {$mesa->label} restaurada a {$ambienteOriginal}",
+            'mesa' => [
+                'id' => $mesa->id,
+                'label' => $mesa->label,
+                'environment' => $mesa->environment,
+                'original_environment' => $mesa->original_environment,
+            ],
+        ]);
+    }
+
+
 }

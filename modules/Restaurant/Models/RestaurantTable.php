@@ -23,6 +23,7 @@ class RestaurantTable extends ModelTenant
         'order_status',
         'group_id',
         'is_active',
+        'original_environment',
     ];
 
 

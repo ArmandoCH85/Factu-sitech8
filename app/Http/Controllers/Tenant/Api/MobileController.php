@@ -86,6 +86,7 @@ class MobileController extends Controller
                 'is_business_turn_tap' => ($business_turn_tap)?$business_turn_tap->active:0,
             ],
             'app_configuration' => $this->getAppConfiguration(),
+            'permission_edit_item_prices' => $user->permission_edit_item_prices,
             'sellerId' => $user->id,
         ];
 

@@ -73,6 +73,7 @@ class RestaurantConfiguration extends ModelTenant
             'restaurant_tip_factor' => $restaurant_tip_factor,
             'is_restaurant_active' => $is_restaurant_active,
             'show_item_description_pack' => (bool)$configurations_global->show_item_description_pack,
+            'allow_edit_unit_price_to_seller' => (bool)$configurations_global->allow_edit_unit_price_to_seller,
         ];
     }
 }

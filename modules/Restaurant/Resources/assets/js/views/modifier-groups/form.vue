@@ -1,23 +1,28 @@
 <template>
-    <el-dialog :visible.sync="showDialog" title="Nuevo Modificador" width="700px" append-to-body>
-        <el-form :model="form" label-position="top">
+    <el-dialog title="Nuevo Modificador" :visible.sync="showDialog" width="60%" :close-on-click-modal="false" @close="close">
+        <div>
+            <!-- Información básica -->
             <div class="row">
                 <div class="col-md-6">
-                    <el-form-item label="Nombre de Categoría" required>
+                    <div class="form-group">
+                        <label class="control-label">Nombre de Categoría <span class="text-danger">*</span></label>
                         <el-input v-model="form.name" placeholder="Ej: Cremas"></el-input>
-                    </el-form-item>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <el-form-item label="Tipo de Selección" required>
+                    <div class="form-group">
+                        <label class="control-label">Tipo de Selección <span class="text-danger">*</span></label>
                         <el-select v-model="form.selection_type" class="w-100">
                             <el-option label="Única selección" value="single"></el-option>
                             <el-option label="Múltiple selección" value="multiple"></el-option>
                         </el-select>
-                    </el-form-item>
+                    </div>
                 </div>
             </div>
 
-            <el-form-item label="Buscar Producto" required>
+            <!-- Agregar opciones -->
+            <div class="form-group">
+                <label class="control-label">Agregar Modificadores <span class="text-danger">*</span></label>
                 <div class="row g-2 align-items-center">
                     <div class="col-auto">
                         <el-checkbox v-model="addManual" size="small">Manual</el-checkbox>
@@ -59,9 +64,11 @@
                         </el-button>
                     </div>
                 </div>
-            </el-form-item>
+            </div>
 
-            <el-form-item label="Modificadores agregados" v-if="form.items && form.items.length > 0">
+            <!-- Lista de modificadores -->
+            <div class="form-group" v-if="form.items && form.items.length > 0">
+                <label class="control-label">Modificadores Agregados</label>
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
@@ -101,15 +108,16 @@
                         </tr>
                     </tbody>
                 </table>
-            </el-form-item>
-            <div v-else class="text-muted text-center py-3">
-                <small>No hay opciones agregadas ({{ form.items?.length || 0 }})</small>
+            </div>
+            <div v-else class="text-muted text-center py-3 mb-3" style="background-color: #f5f7fa; border-radius: 4px;">
+                <small>No hay opciones agregadas</small>
             </div>
 
-            <el-form-item class="d-none">
+            <!-- Estado (oculto) -->
+            <div class="form-group d-none">
                 <el-checkbox v-model="form.active">Activo</el-checkbox>
-            </el-form-item>
-        </el-form>
+            </div>
+        </div>
 
         <span slot="footer" class="dialog-footer">
             <el-button @click="close" size="medium">Cancelar</el-button>

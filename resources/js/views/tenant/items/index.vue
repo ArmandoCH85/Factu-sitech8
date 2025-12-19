@@ -218,9 +218,14 @@
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table ref="DataTable" :productType="type" :resource="resource" :sort-field="sortField" :sort-direction="sortDirection" :showProductFilter="type !== 'ZZ'" @sort-change="handleSortChange">
+                <data-table ref="DataTable" :productType="type" :resource="resource" :sort-field="sortField" :sort-direction="sortDirection" :showProductFilter="type !== 'ZZ'" @sort-change="handleSortChange" @records-changed="handleRecordsChanged">
                     <tr slot="heading" width="100%" slot-scope="{ sort }">
-                        <th></th>
+                        <th class="text-center" style="width: 34px;">
+                            <el-checkbox
+                                :value="allSelectedInView"
+                                @change="toggleSelectAll"
+                            ></el-checkbox>
+                        </th>
                         <th class="text-end" style="max-width: 83px;">ID</th>
                         <th class="text-end">Cód. Interno</th>
                         <th>Unidad</th>
@@ -489,8 +494,7 @@
                                     <i class="fas fa-ellipsis-h" style="display: none;"></i>
                                 </button>
                                 <el-dropdown-menu slot="dropdown">
-                                  <template v-if="typeUser === 'admin'">
-                                    <!-- PRINCIPALES -->
+                                  <template v-if="typeUser === 'admin'">                                    
                                     <el-dropdown-item
                                       @click.native.prevent="clickCreate(row.id)"
                                     >
@@ -516,7 +520,6 @@
                                           class="position-relative btn-icon btn-primary d-flex align-items-center justify-content-center"
                                           @click.stop.prevent="clickBarcode(row)"
                                         >
-                                          <!-- icono barcode -->
                                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -541,10 +544,8 @@
                                       Duplicar
                                     </el-dropdown-item>
                                 
-                                    <!-- DIVISOR -->
                                     <el-dropdown-item divided />
                                 
-                                    <!-- ESTADO -->
                                     <el-dropdown-item
                                       v-if="row.active"
                                       @click.native.prevent="clickDisable(row.id)"
@@ -561,7 +562,6 @@
                                       Habilitar
                                     </el-dropdown-item>
                                 
-                                    <!-- DESTRUCTIVO -->
                                     <el-dropdown-item
                                       @click.native.prevent="clickDelete(row.id)"
                                       class="text-danger option-delete"
@@ -693,6 +693,7 @@ export default {
         return {
             selected: [],
             selectedMeta: {},
+            visibleRows: [],
             can_add_new_product: false,
             showDialog: false,
             showImportDialog: false,
@@ -834,8 +835,42 @@ export default {
                  this.selectedDisabledCount === this.selected.length &&
                  this.selectedEnabledCount === 0;
         },
+
+        selectedInViewCount() {
+            if (!this.visibleRows.length) return 0;
+            const visibleIds = new Set(this.visibleRows.map(r => r.id));
+            return this.selected.reduce((acc, id) => acc + (visibleIds.has(id) ? 1 : 0), 0);
+        },
+        allSelectedInView() {
+            return this.visibleRows.length > 0 && this.selectedInViewCount === this.visibleRows.length;
+        },
+        isIndeterminate() {
+            return this.selectedInViewCount > 0 && this.selectedInViewCount < this.visibleRows.length;
+        },
     },
     methods: {
+        handleRecordsChanged(records) {
+            this.visibleRows = Array.isArray(records) ? records : [];
+        },
+        toggleSelectAll(checked) {
+            if (!this.visibleRows.length) return;
+
+            if (checked) {
+                this.visibleRows.forEach(row => {
+                    if (!this.selected.includes(row.id)) {
+                        this.selected.push(row.id);
+                    }
+                    this.$set(this.selectedMeta, row.id, { active: !!row.active });
+                });
+                return;
+            }
+
+            this.visibleRows.forEach(row => {
+                const idx = this.selected.indexOf(row.id);
+                if (idx > -1) this.selected.splice(idx, 1);
+                if (this.selectedMeta[row.id] !== undefined) this.$delete(this.selectedMeta, row.id);
+            });
+        },
         reloadTable() {
           localStorage.setItem('filterDisabled', this.filterDisabled)
           this.$refs.DataTable.showDisabled = this.filterDisabled;

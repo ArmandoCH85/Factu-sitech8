@@ -2,12 +2,31 @@
     <div>
         <div class="page-header pr-0">
             <h2>
-                <a href="#">
-                    <span>Grupos de Modificadores</span>
+                <a href="/restaurant/modifier-groups">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="margin-top: -5px;"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-tools-kitchen-2"
+                    >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12zm0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3"
+                        />
+                    </svg>
                 </a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Grupos de Modificadores</span></li>
+                <li class="active">
+                    <span>Grupos de Modificadores</span>
+                </li>
             </ol>
             <div class="right-wrapper pull-right">
                 <button class="btn btn-custom btn-sm mt-2 me-2" @click.prevent="openCreate">
@@ -16,13 +35,13 @@
             </div>
         </div>
 
-        <div class="card mb-0">
+        <div class="card tab-content-default row-new mb-0">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <!-- <th>#</th> -->
                                 <th>Nombre</th>
                                 <th>Tipo</th>
                                 <th>Productos</th>
@@ -32,7 +51,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="(row, index) in records" :key="row.id">
-                                <td>{{ index + 1 }}</td>
+                                <!-- <td>{{ index + 1 }}</td> -->
                                 <td>{{ row.name }}</td>
                                 <td>{{ row.selection_type == 'single' ? 'Única selección' : 'Múltiple selección' }}</td>
                                 <td>
@@ -67,7 +86,9 @@
                                 </td>
                             </tr>
                             <tr v-if="records.length === 0">
-                                <td colspan="6" class="text-center text-muted">No hay registros</td>
+                                <td colspan="6" class="text-center text-muted">
+                                    <empty-state></empty-state>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -81,9 +102,10 @@
 
 <script>
 import ModifierGroupForm from './form.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 export default {
-    components: { ModifierGroupForm },
+    components: { ModifierGroupForm, EmptyState },
     data() {
         return {
             records: [],

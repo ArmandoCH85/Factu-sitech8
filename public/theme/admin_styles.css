@@ -359,6 +359,10 @@ html.sidebar-light:not(.dark) .configuration-nav ul.nav-main > li.nav-active > a
     color: var(--dark-color) !important;
     border-radius: 0 0 8px 8px !important;
 }
+.configuration-nav  .nav-main li a.nav-link{
+    border-radius: 8px !important;
+}
+
 /* html.sidebar-light:not(.dark) .configuration-nav ul.nav-main > li.nav-active > a{
     background-color: var(--primary-color);
     color: #fff !important;
@@ -626,7 +630,7 @@ html.sidebar-left-big-icons .sidebar-left{
 }
 html.sidebar-left-big-icons .sidebar-left .nano{
     overflow-y: auto;
-    height: calc(100% - 58px);
+    height: calc(100% - 66px);
 }
 .sidebar-left .nano::-webkit-scrollbar {
     display: none;
@@ -641,7 +645,8 @@ html.sidebar-left-big-icons .sidebar-left .nano{
 ul.nav-main > li a:hover{
     padding-left: 10px !important;
 }
-html.sidebar-left-big-icons.sidebar-light .sidebar-left .nano .nav-main > li.nav-active > a {
+html.sidebar-left-big-icons.sidebar-light .sidebar-left .nano .nav-main > li.nav-active > a,
+html.sidebar-left-big-icons.sidebar-light .sidebar-left .configuration-nav .nav-main > li.nav-active > a {
     background: var(--primary-color) !important;
     box-shadow: none !important;
     border-radius: 8px !important;
@@ -865,7 +870,15 @@ ul.nav-main li.nav-parent > a:after {
         background-color: var(--dark-color) !important;
     }
 }
-
+.btn-outline-primary{
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+}
+.btn-outline-primary:hover{
+    border-color: var(--primary-color) !important;
+    background-color: var(--primary-color) !important;
+    color: var(--light-color) !important;
+}
 .pricing-table .most-popular h3 {
     background-color: transparent;
     color: var(--dark-color);
@@ -909,7 +922,8 @@ html.sidebar-left-big-icons .sidebar-left a {
 html.sidebar-left-big-icons .sidebar-left a svg{
     margin-right: 10px;
 }
-html.sidebar-left-big-icons.sidebar-light .sidebar-left .nano .nav-main > li:hover > a {
+html.sidebar-left-big-icons.sidebar-light .sidebar-left .nano .nav-main > li:hover > a,
+html.sidebar-left-big-icons.sidebar-light .sidebar-left .configuration-nav .nav-main > li:hover > a {
     background: var(--light-color);
     border-radius: 8px !important;
 }

@@ -3,21 +3,24 @@
         :title="form.id ? 'Editar Insumo' : 'Nuevo Insumo'"
         :visible.sync="showDialog"
         width="60%"
+        :close-on-click-modal="false"
         @close="close"
     >
         <el-form :model="form" label-width="140px" size="small">
             <div class="row">
                 <div class="col-md-6">
-                    <el-form-item label="Nombre">
+                    <div class="form-group">
+                        <label class="control-label">Nombre</label>
                         <el-input
                             v-model="form.name"
                             placeholder="Nombre del insumo"
                         ></el-input>
-                    </el-form-item>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
-                    <el-form-item label="Unidad">
+                    <div class="form-group">
+                        <label class="control-label">Unidad</label>
                         <el-select
                             v-model="form.unit_type_id"
                             placeholder="Seleccionar"
@@ -31,13 +34,14 @@
                                 :value="unit.id"
                             ></el-option>
                         </el-select>
-                    </el-form-item>
+                    </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
-                    <el-form-item label="Costo">
+                    <div class="form-group">
+                        <label class="control-label">Costo</label>
                         <el-input
                             v-model="form.cost"
                             type="number"
@@ -46,11 +50,12 @@
                         >
                             <template slot="prepend">S/</template>
                         </el-input>
-                    </el-form-item>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
-                    <el-form-item label="Merma %">
+                    <div class="form-group">
+                        <label class="control-label">Merma %</label>
                         <el-input
                             v-model="form.waste_percentage"
                             type="number"
@@ -59,31 +64,33 @@
                         >
                             <template slot="append">%</template>
                         </el-input>
-                    </el-form-item>
+                    </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6">
-                    <el-form-item label="Stock">
+                    <div class="form-group">
+                        <label class="control-label">Stock</label>
                         <el-input
                             v-model="form.stock"
                             type="number"
                             step="0.01"
                             placeholder="0.00"
                         ></el-input>
-                    </el-form-item>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
-                    <el-form-item label="Stock Mínimo">
+                    <div class="form-group">
+                        <label class="control-label">Stock Mínimo</label>
                         <el-input
                             v-model="form.minimum_stock"
                             type="number"
                             step="0.01"
                             placeholder="0.00"
                         ></el-input>
-                    </el-form-item>
+                    </div>
                 </div>
             </div>
         </el-form>

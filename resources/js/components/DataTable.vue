@@ -442,6 +442,8 @@ export default {
                     this.pagination.per_page = parseInt(
                         response.data.meta.per_page
                     );
+
+                    this.$emit('records-changed', this.records);
                 })
                 .catch(error => {})
                 .then(() => {

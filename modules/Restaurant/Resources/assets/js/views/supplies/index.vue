@@ -2,7 +2,7 @@
     <div>
         <div class="page-header pr-0">
             <h2>
-                <a href="/restaurant/list/items">
+                <a href="/restaurant/supplies">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         style="margin-top: -5px;"
@@ -40,22 +40,22 @@
                 </template>
             </div>
         </div>
-        <div class="card mb-0">
+        <div class="card tab-content-default row-new mb-0">
             <div class="card-body">
                 <!-- Tabla de insumos -->
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <!-- <th>#</th> -->
                                 <th>Nombre</th>
-                                <th class="text-right">Costo</th>
-                                <th>Unidad</th>
-                                <th class="text-right">Merma %</th>
-                                <th class="text-right">Stock</th>
-                                <th class="text-right">Stock Mínimo</th>
+                                <th class="text-end">Costo</th>
+                                <th class="text-center">Unidad</th>
+                                <th class="text-end">Merma %</th>
+                                <th class="text-end">Stock</th>
+                                <th class="text-end">Stock Mínimo</th>
                                 <th class="text-center">Estado Stock</th>
-                                <th class="text-center">Acciones</th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,13 +64,13 @@
                                 :key="row.id"
                                 :class="{ 'table-warning': row.stock < row.minimum_stock }"
                             >
-                                <td>{{ index + 1 }}</td>
+                                <!-- <td>{{ index + 1 }}</td> -->
                                 <td>{{ row.name }}</td>
-                                <td class="text-right">S/ {{ formatNumber(row.cost) }}</td>
-                                <td>{{ row.unit_type ? row.unit_type.description : '-' }}</td>
-                                <td class="text-right">{{ formatNumber(row.waste_percentage) }}%</td>
-                                <td class="text-right">{{ formatNumber(row.stock) }}</td>
-                                <td class="text-right">{{ formatNumber(row.minimum_stock) }}</td>
+                                <td class="text-end">S/ {{ formatNumber(row.cost) }}</td>
+                                <td class="text-center">{{ row.unit_type ? row.unit_type.description : '-' }}</td>
+                                <td class="text-end">{{ formatNumber(row.waste_percentage) }}%</td>
+                                <td class="text-end">{{ formatNumber(row.stock) }}</td>
+                                <td class="text-end">{{ formatNumber(row.minimum_stock) }}</td>
                                 <td class="text-center">
                                     <el-tag
                                         v-if="row.stock < row.minimum_stock"
@@ -87,7 +87,7 @@
                                         Normal
                                     </el-tag>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-end">
                                     <button
                                         type="button"
                                         class="btn waves-effect waves-light btn-xs btn-info me-2"
@@ -107,7 +107,7 @@
 
                             <tr v-if="records.length === 0">
                                 <td colspan="9" class="text-center text-muted">
-                                    No hay insumos registrados
+                                    <empty-state/>
                                 </td>
                             </tr>
                         </tbody>
@@ -129,11 +129,13 @@
 <script>
 import { deletable } from "@mixins/deletable";
 import SupplyForm from './form.vue';
+import EmptyState from '@/components/EmptyState.vue';
 
 export default {
     mixins: [deletable],
     components: {
-        SupplyForm
+        SupplyForm,
+        EmptyState
     },
     data() {
         return {

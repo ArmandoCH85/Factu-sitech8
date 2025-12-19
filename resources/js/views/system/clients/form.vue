@@ -596,11 +596,13 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group p-t-20">
+                                <div class="form-group p-t-20 mt-3">
                                     <a
-                                        :href="'https://docs.google.com/document/d/1ix2vPsiqSoK9jNAOF2gPjWhNa3BdajU5x8I5aBvEz0o/edit?usp=sharing'"
-                                        class="control-label"
-                                        target="_new"
+                                        :href="'https://manual.uio.la/Pro7/guias-adicionales/configuracion-smtp-segura'"
+                                        class="btn btn-sm btn-outline-primary"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        role="button"
                                     >
                                         Para correos Gmail verificar el manual
                                     </a>

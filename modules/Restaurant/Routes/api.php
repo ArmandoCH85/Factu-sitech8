@@ -35,6 +35,7 @@ if ($hostname) {
                 Route::post('/table/cambiar-ambiente', 'RestaurantConfigurationController@cambiarAmbiente');
                 Route::post('/table/restaurar-ambiente', 'RestaurantConfigurationController@restaurarAmbiente');
 
+                Route::post('/table', 'RestaurantConfigurationController@createTable');
                 Route::post('/table/{id}', 'RestaurantConfigurationController@saveTable');
                 Route::get('/table/{id}', 'RestaurantConfigurationController@getTable');
                 Route::get('/table/{id}', 'RestaurantConfigurationController@getTable');

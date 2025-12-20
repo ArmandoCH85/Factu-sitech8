@@ -20,5 +20,19 @@ class RestaurantTableEnv extends ModelTenant
         'name',
         'active',
         'tables_quantity',
+        'is_delivery',
+        'is_takeaway',
+        'can_edit',
+        'can_deactivate',
+        'can_delete',
+    ];
+
+    protected $casts = [
+        'active' => 'boolean',
+        'is_delivery' => 'boolean',
+        'is_takeaway' => 'boolean',
+        'can_edit' => 'boolean',
+        'can_deactivate' => 'boolean',
+        'can_delete' => 'boolean',
     ];
 }

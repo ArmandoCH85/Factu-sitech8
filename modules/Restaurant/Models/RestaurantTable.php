@@ -24,6 +24,8 @@ class RestaurantTable extends ModelTenant
         'group_id',
         'is_active',
         'original_environment',
+        'is_paid',
+        'delivery',
     ];
 
 
@@ -48,6 +50,8 @@ class RestaurantTable extends ModelTenant
         'total' => 'float',
         'is_active' => 'boolean',
         'opening_date' => 'datetime',
+        'delivery' => 'array',
+        'is_paid' => 'boolean',
     ];
 
     public function group()

@@ -10,6 +10,7 @@
               content="Editar Nombre de Ambiente"
               effect="dark"
               placement="top-start"
+              v-if="environment.can_edit"
               v-show="!environment.is_editing">
               <el-button class="second-buton btn btn-sm float-right" @click="enableEdit(environment)">
                 <i class="el-icon-edit"></i>
@@ -38,20 +39,22 @@
               active-text="Si"
               inactive-text="No"
               @change="changeEnvironment(environment)"
-              :disabled="!environment.enabled_edit"></el-switch>
+              :disabled="!environment.can_deactivate"></el-switch>
             <small v-if="errors.active"
                     class="form-control-feedback"
                     v-text="errors.active[0]"></small>
             <br><br>
-            <label class="control-label tables-quantity">Cantidad de mesas <b>{{ environment.tables_quantity }}</b></label>
-            <el-slider
-              v-model="environment.tables_quantity"
-              :step="1"
-              :min="5"
-              :max="50"
-              show-stops
-              @change="changeEnvironment(environment)">
-            </el-slider>
+            <template v-if="!environment.is_delivery && !environment.is_takeaway">
+              <label class="control-label tables-quantity">Cantidad de mesas <b>{{ environment.tables_quantity }}</b></label>
+              <el-slider
+                v-model="environment.tables_quantity"
+                :step="1"
+                :min="2"
+                :max="50"
+                show-stops
+                @change="changeEnvironment(environment)">
+              </el-slider>
+            </template>
           </div>
         </div>
       </div>
@@ -101,7 +104,6 @@ export default {
       this.$http.get(`/${this.resource}/configuration/get-envs`)
         .then(({data}) => {
           this.environments = data.data
-          this.environments.forEach(env => env.is_editing = false)
         })
     },
     enableEdit(environment) {
@@ -117,7 +119,6 @@ export default {
         .then(({data}) => {
           this.$message.success(data.message);
           environment = data.data
-          environment.enabled_edit = false
         })
         .catch(({response}) => {
           this.errors = response.data.errors || {}

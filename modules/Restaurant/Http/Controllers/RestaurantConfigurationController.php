@@ -9,6 +9,7 @@ use Modules\Restaurant\Models\RestaurantConfiguration;
 use Modules\Restaurant\Models\RestaurantRole;
 use Modules\Restaurant\Models\RestaurantTable;
 use Modules\Restaurant\Models\RestaurantTableEnv;
+use Modules\Restaurant\Models\RestaurantTableGroup;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Company;
 use Modules\Restaurant\Models\RestaurantItemOrderStatus;
@@ -51,7 +52,7 @@ class RestaurantConfigurationController extends Controller
             // Verificar si es la mesa principal del grupo
             $isMainTable = false;
             if ($row->group_id) {
-                $group = \Modules\Restaurant\Models\RestaurantTableGroup::find($row->group_id);
+                $group = RestaurantTableGroup::find($row->group_id);
                 $isMainTable = $group && $group->main_table_id === $row->id;
             }
 
@@ -74,6 +75,8 @@ class RestaurantConfigurationController extends Controller
                 'quantityOrders' => (count((array)$row->products)>0)?$this->getQuantityOrdersByTable((array)$row->products):0,
                 'timeOpening' => ($row->opening_date)?$this->getTimeByDateOpening($row->opening_date):null,
                 'order_status' => $row->order_status,
+                'is_paid' => (bool)$row->is_paid,
+                'delivery' => $row->delivery,
             ];
         });
 
@@ -141,6 +144,7 @@ class RestaurantConfigurationController extends Controller
     private function generateMesas()
     {
         RestaurantTable::query()->delete();
+        RestaurantTableGroup::query()->delete();
         RestaurantItemOrderStatus::query()->delete();
 
         $activeEnvironments = RestaurantTableEnv::where('active', true)->get();
@@ -219,12 +223,64 @@ class RestaurantConfigurationController extends Controller
         ];
     }
 
+    public function createTable(Request $request)
+    {
+        $table = RestaurantTable::create([
+            'status' => $request->status ?? 'available',
+            'products' => $request->products ?? [],
+            'total' => $request->total ?? 0,
+            'personas' => $request->personas ?? 1,
+            'cliente' => $request->cliente,
+            'label' => $request->label,
+            'shape' => $request->shape ?? 'CUADRADO',
+            'environment' => $request->environment,
+            'waiter' => $request->waiter,
+            'order_status' => $request->order_status,
+            'delivery' => $request->delivery,
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Mesa creada con éxito.',
+            'data' => [
+                'id' => $table->id,
+                'status' => $table->status,
+                'products' => $table->products,
+                'total' => $table->total,
+                'personas' => $table->personas,
+                'cliente' => $table->cliente,
+                'label' => $table->label,
+                'shape' => $table->shape,
+                'environment' => $table->environment,
+                'waiter' => $table->waiter,
+                'order_status' => $table->order_status,
+                'delivery' => $table->delivery,
+            ],
+        ];
+    }
+
     public function saveTable($id, Request $request)
     {
         $table = RestaurantTable::findOrFail($id);
         //$data = $request->all();
         $data = $request->except(['group_id', 'is_main_table']); // Proteger campos de grupo
         $data['status'] = (count($data['products'])<1)?$data['status']:'notavailable';
+
+        $isDeliveryOrTakeaway = ($table->environment === 'Delivery' || $table->environment === 'Para Llevar');
+
+        if($isDeliveryOrTakeaway && $table->order_status === 'delivered' || $isDeliveryOrTakeaway && $data['order_status'] === 'deleted') {
+            $table->delete();
+
+            $itemsToDelete = RestaurantItemOrderStatus::where('table_id', $id);
+            if ($itemsToDelete->exists()) {
+                $itemsToDelete->delete();
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Pedido finalizado, entrega realizada',
+            ];
+        }
 
         if(isset($data['open'])&& $data['open']){
             $data['opening_date'] = Carbon::now();
@@ -293,6 +349,7 @@ class RestaurantConfigurationController extends Controller
             'cliente' => $row->cliente,
             'waiter' => $row->waiter,
             'order_status' => $row->order_status,
+            'delivery' => $row->delivery,
         ];
 
         return compact('table');
@@ -400,15 +457,18 @@ class RestaurantConfigurationController extends Controller
     public function getEnvs()
     {
         $envs = RestaurantTableEnv::get()->transform(function ($item) {
-            $enabled_edit = $item->id === 1 ? false : true;
             return [
                 'id' => $item->id,
                 'name' => $item->name,
                 'original_name' => $item->name,
                 'tables_quantity' => $item->tables_quantity,
-                'active' => (bool)$item->active,
-                'enabled_edit' => $enabled_edit,
-                'is_editing' => false,
+                'active' => $item->active,
+                'is_editing' => false, // only front
+                'is_delivery' => $item->is_delivery,
+                'is_takeaway' => $item->is_takeaway,
+                'can_edit' => $item->can_edit, // old enabled_edit
+                'can_deactivate' => $item->can_deactivate,
+                'can_delete' => $item->can_delete,
             ];
         });
 
@@ -434,7 +494,7 @@ class RestaurantConfigurationController extends Controller
         RestaurantTable::where('environment', $tableEnv->name)->update(['environment' => $request->name]);
 
         $tableEnv->name = $request->name;
-        $tableEnv->tables_quantity = $request->tables_quantity;
+        $tableEnv->tables_quantity = $request->tables_quantity ?? 0;
         $tableEnv->active = $request->active;
         $tableEnv->save();
 

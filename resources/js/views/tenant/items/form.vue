@@ -623,7 +623,7 @@
                                 <table class="table table-sm mb-0">
                                     <thead class="bg-light">
                                     <tr>
-                                        <th class="text-center">Código de barra</th>
+                                        <th class="text-center d-none">Código de barra</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
                                         <th class="text-center">
@@ -638,7 +638,7 @@
                                         <th class="text-center">{{ config.price1_label }}</th>
                                         <th class="text-center">{{ config.price2_label }}</th>
                                         <th class="text-center">{{ config.price3_label }}</th>
-                                        <th class="text-center">P. Defecto</th>
+                                        <th class="text-center d-none">P. Defecto</th>
                                         <th v-if="config.enable_list_product"></th>
                                     </tr>
                                     </thead>
@@ -646,7 +646,7 @@
                                     <tr v-for="(row, index) in form.item_unit_types"
                                         :key="index">
                                         <template v-if="row.id">
-                                            <td class="text-center"> {{row.barcode}} </td>
+                                            <td class="text-center d-none"> {{row.barcode}} </td>
                                             <td class="text-center">{{ row.unit_type_id }}</td>
                                             <td class="text-center">{{ row.description }}</td>
                                             <td class="text-center">{{ row.quantity_unit }}</td>
@@ -659,7 +659,7 @@
                                             <td class="text-center">
                                                 <el-input v-model="row.price3"></el-input>
                                             </td>
-                                            <td class="text-center">Precio {{ row.price_default }}</td>
+                                            <td class="text-center d-none">Precio {{ row.price_default }}</td>
                                             <td class="series-table-actions text-end" v-if="config.enable_list_product">
                                                 <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                         type="button"
@@ -669,12 +669,13 @@
                                             </td>
                                         </template>
                                         <template v-else>
-                                            <td class="text-center">
+                                            <td class="text-center d-none">
                                                 <el-input v-model="row.barcode"></el-input>
                                             </td>
                                             <td>
                                                 <div class="form-group">
                                                     <el-select v-model="row.unit_type_id"
+                                                               :disabled="!config.enable_list_product"
                                                                dusk="item_unit_type.unit_type_id">
                                                         <el-option v-for="option in unit_types"
                                                                    :key="option.id"
@@ -685,12 +686,14 @@
                                             </td>
                                             <td>
                                                 <div class="form-group">
-                                                    <el-input v-model="row.description"></el-input>
+                                                    <el-input v-model="row.description"
+                                                              :disabled="!config.enable_list_product"></el-input>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="form-group">
-                                                    <el-input v-model="row.quantity_unit"></el-input>
+                                                    <el-input v-model="row.quantity_unit"
+                                                              :disabled="!config.enable_list_product"></el-input>
                                                     <!-- <small class="form-control-feedback" v-if="errors.quantity_unit" v-text="errors.quantity_unit[0]"></small> -->
                                                 </div>
                                             </td>
@@ -712,7 +715,7 @@
                                                     <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td class="d-none">
                                                 <div>
                                                     <el-select v-model="row.price_default">
                                                         <el-option :key="1"
@@ -1463,6 +1466,23 @@ export default {
         this.$eventHub.$off('establishmentChanged');
     },
 
+    watch: {
+        'form.unit_type_id'(newValue) {
+            if (!this.config.enable_list_product && this.form.item_unit_types.length > 0) {
+                const selectedUnit = this.unit_types.find(u => u.id === newValue);
+                const unitDescription = selectedUnit ? selectedUnit.description : '';
+                
+                this.form.item_unit_types.forEach(item => {
+                    if (!item.id) {
+                        item.unit_type_id = newValue;
+                        item.description = unitDescription;
+                        item.quantity_unit = 1;
+                    }
+                });
+            }
+        }
+    },
+
     methods: {
 
         ...mapActions([
@@ -1570,11 +1590,22 @@ export default {
             }
         },
         clickAddRow() {
+            let unitTypeId = 'NIU';
+            let description = null;
+            let quantityUnit = 0;
+            
+            if (!this.config.enable_list_product) {
+                unitTypeId = this.form.unit_type_id;
+                const selectedUnit = this.unit_types.find(u => u.id === unitTypeId);
+                description = selectedUnit ? selectedUnit.description : null;
+                quantityUnit = 1;
+            }
+            
             this.form.item_unit_types.push({
                 id: null,
-                description: null,
-                unit_type_id: 'NIU',
-                quantity_unit: 0,
+                description: description,
+                unit_type_id: unitTypeId,
+                quantity_unit: quantityUnit,
                 price1: 0,
                 price2: 0,
                 price3: 0,

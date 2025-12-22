@@ -600,17 +600,17 @@ class RestaurantConfigurationController extends Controller
             ], 400);
         }
 
-        if (!$mesa->is_active) {
+        /*if (!$mesa->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'No se puede mover una mesa fuera de servicio',
             ], 400);
-        }
+        }*/
 
         if ($mesa->group_id !== null) {
             return response()->json([
                 'success' => false,
-                'message' => 'No se puede mover una mesa que está en un grupo. Primero sepárala del grupo.',
+                'message' => 'No se puede mover una mesa agrupada.',
             ], 400);
         }
 
@@ -639,6 +639,12 @@ class RestaurantConfigurationController extends Controller
 
         // Cambiar ambiente
         $mesa->environment = $nuevoAmbiente;
+
+        // Si la mesa vuelve a su ambiente original, limpiar campo original_environment
+        if ($mesa->environment === $mesa->original_environment) {
+            $mesa->original_environment = null;
+        }
+
         $mesa->save();
 
         DB::connection('tenant')->commit();

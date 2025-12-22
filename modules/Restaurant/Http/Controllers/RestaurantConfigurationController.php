@@ -72,6 +72,7 @@ class RestaurantConfigurationController extends Controller
                 'group_id' => $row->group_id,
                 'is_main_table' => $isMainTable, // Agregar la lógica de verificación antes
                 'is_active' => (bool)$row->is_active,
+                'original_environment' => $row->original_environment,
                 'quantityOrders' => (count((array)$row->products)>0)?$this->getQuantityOrdersByTable((array)$row->products):0,
                 'timeOpening' => ($row->opening_date)?$this->getTimeByDateOpening($row->opening_date):null,
                 'order_status' => $row->order_status,

@@ -2,7 +2,7 @@
     <div class="supplies-tab">
         <!-- Selector de insumos -->
         <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-md-6 form-group">
                 <label class="control-label">Seleccionar Insumo</label>
                 <el-select
                     v-model="selectedSupplyId"
@@ -17,7 +17,7 @@
                     </el-option>
                 </el-select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 form-group">
                 <label class="control-label">Cantidad</label>
                 <el-input
                     v-model.number="selectedQuantity"

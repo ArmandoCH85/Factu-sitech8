@@ -486,7 +486,7 @@
                                             <div :class="{'has-danger': errors.category_id}"
                                                 class="form-group">
                                                 <label class="control-label">Categoría
-                                                    <a v-if="form_category.add == false"
+                                                    <!-- <a v-if="form_category.add == false"
                                                         class="control-label font-weight-bold text-info"
                                                         href="#"
                                                         @click="form_category.add = true"> [ + Nuevo]</a>
@@ -497,17 +497,43 @@
                                                     <a v-if="form_category.add == true"
                                                         class="control-label font-weight-bold text-danger"
                                                         href="#"
-                                                        @click="form_category.add = false"> [ Cancelar]</a>
+                                                        @click="form_category.add = false"> [ Cancelar]</a> -->
                                                 </label>
                                                 <el-input v-if="form_category.add == true"
                                                         v-model="form_category.name"
                                                         dusk="item_code"
                                                         style="margin-bottom:1.5%;"></el-input>
-                                                <el-select v-model="form.category_id">
-                                                    <el-option v-for="category in categories"
-                                                            :key="category.id"
-                                                            :label="category.name"
-                                                            :value="category.id"></el-option>
+                                                <el-select v-if="form_category.add == false"
+                                                        v-model="form.category_id"
+                                                            clearable
+                                                            filterable
+                                                            :filter-method="filterCategories"
+                                                            @visible-change="onCategoryDropdownChange"
+                                                            @keydown.enter.native.prevent="createCategoryFromSearch">
+                                                    <el-option v-for="category in filteredCategories"
+                                                        :key="category.id"
+                                                        :label="category.name"
+                                                        :value="category.id"></el-option>
+                                                    <template slot="empty">
+                                                        <p v-if="loading_search" class="el-select-dropdown__empty">
+                                                            Cargando...
+                                                        </p>
+                                                        <p v-else-if="categorySearchQuery" class="el-select-dropdown__empty">
+                                                            No se encontraron resultados
+                                                        </p>
+                                                    
+                                                        <p v-else class="el-select-dropdown__empty">
+                                                            No hay categorías. <br> Escriba el nombre y presione Enter para crear
+                                                        </p>
+                                                    
+                                                        <div
+                                                            v-if="!loading_search && categorySearchQuery"
+                                                            class="el-select-dropdown__item new-option"
+                                                            @click.stop="createCategoryFromSearch"
+                                                        >
+                                                            <span>Crear categoría "{{ categorySearchQuery }}"</span>
+                                                        </div>
+                                                    </template>
                                                 </el-select>
                                                 <small v-if=" errors.category_id"
                                                     class="form-control-feedback"
@@ -692,13 +718,16 @@ export default {
     data() {
         return {
             activeTab: 'general',
+            loading_search: false,
             tags: [],
             categories: [],
             preparation_areas: [],
             form_category: {add: false, name: null, id: null},
             warehouses: [],
             loading_submit: false,
+            categorySearchQuery: '',
             showPercentagePerception: false,
+            filteredCategories: [],
             has_percentage_perception: false,
             percentage_perception: null,
             titleDialog: null,
@@ -746,6 +775,7 @@ export default {
 
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
+                this.filteredCategories = this.categories;
             })
 
         // Cargar áreas de preparación
@@ -774,6 +804,7 @@ export default {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.categories.push(response.data.data)
+                        this.filteredCategories = this.categories
                         this.form_category.name = null
                     } else {
                         this.$message.error('No se guardaron los cambios')
@@ -781,6 +812,56 @@ export default {
                 })
                 .catch(error => {
 
+                })
+        },
+        filterCategories(query) {
+            this.categorySearchQuery = query
+            
+            if (query) {
+                this.filteredCategories = this.categories.filter(category => {
+                    return category.name.toLowerCase().includes(query.toLowerCase())
+                })
+            } else {
+                this.filteredCategories = this.categories
+            }
+        },
+        onCategoryDropdownChange(visible) {
+            if (!visible) {
+                // Reset cuando se cierra
+                this.categorySearchQuery = ''
+            } else {
+                // Inicializar cuando se abre
+                this.filteredCategories = this.categories
+            }
+        },
+        createCategoryFromSearch() {
+            const categoryName = this.categorySearchQuery
+            
+            if (!categoryName || categoryName.trim() === '') {
+                return
+            }
+
+            this.form_category.name = categoryName
+            
+            this.$http.post(`/categories`, this.form_category)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.categories.push(response.data.data)
+                        this.filteredCategories = this.categories
+                        
+                        this.$nextTick(() => {
+                            this.form.category_id = response.data.data.id
+                        })
+                        
+                        this.form_category.name = null
+                        this.categorySearchQuery = ''
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+                    this.$message.error('Error al crear la categoría')
                 })
         },
         clickAddAttribute() {

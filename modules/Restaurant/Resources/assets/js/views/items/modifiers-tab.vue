@@ -1,7 +1,7 @@
 <template>
     <div class="modifiers-tab">
         <div class="row mb-3">
-            <div class="col-md-8">
+            <div class="col-md-8 form-group">
                 <label class="control-label">Grupos de Modificadores</label>
                 <el-select
                     v-model="selectedGroupIds"

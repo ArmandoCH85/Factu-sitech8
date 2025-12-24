@@ -13,9 +13,9 @@
       </ol>    
     </div>
 
-    <div class="row">
-      <div class="col-12 card-header d-flex justify-content-between align-items-center">
-        <h3 class="">Listado de Promociones</h3>
+    <div class="card tab-content-default row-new mb-0 bg-transparent promotions-section">
+      <div class="col-12 d-flex justify-content-between align-items-center bg-transparent promotions-header">
+        <h3 class="">Banners principales</h3>
         <div class="right-wrapper pull-right">
           <template>
             <button
@@ -28,17 +28,12 @@
           </template>
         </div>
       </div>
-    </div>
-    <div class="card tab-content-default row-new mb-0">
-      <!-- <div class="card-header bg-info">
-        <h3 class="my-0">Listado de Promociones Restaurante</h3>
-      </div> -->
       <div class="card-body">
         <data-table :apply-filter="false" :promotionType="'promotions'" :resource="resource">
           <tr slot="heading" width="100%">
             <!-- <th>#</th> -->
             <th>Nombre</th>
-            <th>Descripción</th>
+            <!-- <th>Descripción</th> -->
             <th class="text-center">Imagen</th>
             <th class="text-end">Acciones</th>
           </tr>
@@ -46,7 +41,7 @@
           <tr slot-scope="{ index, row }">
             <!-- <td>{{ index }}</td> -->
             <td>{{ row.name }}</td>
-            <td>{{ row.description }}</td>
+            <!-- <td>{{ row.description }}</td> -->
             <td class="text-center">
               <img :src="row.image_url" alt width="170" height="130" />
             </td>
@@ -72,9 +67,9 @@
       <promotions-form :showDialog.sync="showDialog" :recordId="recordId"></promotions-form>
     </div>
 
-    <div class="row">
-      <div class="col-12 card-header d-flex justify-content-between align-items-center">
-        <h3 class="">Listado de Anuncios publicitarios</h3>
+    <div class="card tab-content-default row-new mb-0 bg-transparent promotions-section">
+      <div class="col-12 d-flex justify-content-between align-items-center bg-transparent promotions-header">
+        <h3 class="">Listado de Promociones <small class="text-muted">(Hasta 4 imágenes)</small></h3>
         <div class="right-wrapper pull-right">
           <template>
             <button
@@ -87,16 +82,16 @@
           </template>
         </div>
       </div>
-    </div>
-    <div class="card tab-content-default row-new mb-0">
       <div class="card-body">
         <data-table :apply-filter="false" :promotionType="'spots'" :resource="resource">
-          <tr slot="heading" width="100%">            
+          <tr slot="heading" width="100%"> 
+            <th>Nombre</th>
             <th class="text-center">Imagen</th>
             <th class="text-end">Acciones</th>
           </tr>
           <tr></tr>
           <tr slot-scope="{ index, row }">
+            <td>{{ row.name }}</td>
             <td class="text-center">
               <img :src="row.image_url" alt width="170" height="130" />
             </td>

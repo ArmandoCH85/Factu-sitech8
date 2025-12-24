@@ -156,6 +156,7 @@ class ConfigurationController extends Controller
             'show_description' => (int) $request->input('show_description', 1),
             'show_stock' => (int) $request->input('show_stock', 0),
             'only_available_products' => (int) $request->input('only_available_products', 0),
+            'full_width_banner' => (int) $request->input('full_width_banner', 0),
         ];
         
         $configuration->save();

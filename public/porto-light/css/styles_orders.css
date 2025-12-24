@@ -949,11 +949,13 @@ textarea.form-control::placeholder {
  .home-slide div{
     border-radius: 18px;
 }
-.home-slide div a{
+.home-slide div a,
+.btn-buy-now{
     background: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
     border: 1px solid hsl(var(--primary-h), var(--primary-s), var(--primary-l));
 }
-.home-slide div a:hover{
+.home-slide div a:hover,
+.btn-buy-now:hover{
     background: var(--title-color);
 }
 /* Produc list */
@@ -2017,7 +2019,7 @@ ul.contact-info li a:hover {
     justify-content: center;
     gap: 20px;
     padding: 0 20px;
-    color#fff;
+    color: #fff;
     transition: transform 0.5s ease-in-out;
     /* background: hsl(var(--primary-h), var(--primary-s), var(--primary-l)); */
     height: 100%;
@@ -2310,4 +2312,146 @@ ul.contact-info li a:hover {
     .products-restaurant.grid-view {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+}
+
+/* Banner ancho completo */
+.restaurant-view .full-width-banner {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    min-height: 465px !important;
+}
+.full-width-banner .home-slide div{
+    border-radius: 0;
+}
+.restaurant-view .full-width-banner .home-slide {
+    min-height: 465px !important;
+}
+
+@media (min-width: 768px) {
+    .restaurant-view .full-width-banner .home-slide {
+        min-height: 50vh;
+    }
+}
+.banner-slider-wrapper{
+    position: relative;
+}
+.banner-slider-wrapper .banner-nav-prev {
+    position: absolute; 
+    left: 0; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    z-index: 100; 
+    background: transparent; 
+    color: white; 
+    border: none; 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    font-size: 24px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: background 0.3s;
+}
+.banner-slider-wrapper .banner-nav-next {
+    position: absolute; 
+    right: 0; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    z-index: 100; 
+    background: transparent; 
+    color: white; 
+    border: none; 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    font-size: 24px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: background 0.3s;
+}
+.banner-slider-wrapper .banner-nav-prev:hover,
+.banner-slider-wrapper .banner-nav-prev:focus,
+.banner-slider-wrapper .banner-nav-next:hover,
+.banner-slider-wrapper .banner-nav-next:focus {
+    outline: none; 
+}
+.full-width-banner .home-slide-content{
+    left: 16%;
+    padding-left: 0;
+}
+.home-slider.owl-carousel .owl-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 3.4rem;
+    transform: translateX(-50%);
+    margin: 0;
+    line-height: 0;
+    counter-reset: dot-counter;
+}
+.owl-theme .owl-dots .owl-dot {
+    counter-increment: dot-counter;
+}
+.owl-theme .owl-dots .owl-dot span{
+    width: 32px;
+    height: 32px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: 2px solid white;
+}
+.owl-theme .owl-dots .owl-dot.active span {
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+.owl-theme .owl-dots .owl-dot span::before {
+    content: counter(dot-counter);
+    position: absolute;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 400;
+    z-index: 1;
+}
+.home-slider.restaurante.owl-theme .owl-dots .owl-dot span::before {
+    content: none !important;
+    display: none !important;
+}
+.home-slider.restaurante.owl-theme .owl-dots .owl-dot span {
+    line-height: 1;
+    text-align: center;
+}
+.home-slider.restaurante.owl-theme .owl-dots .owl-dot.active span:empty::after {
+    color: #fff;
+}
+.home-slider.restaurante[data-dots-numbered="1"] .owl-dots .owl-dot span::before {
+    content: none;
+}
+.home-slider.restaurante[data-dots-numbered="1"] .owl-dots .owl-dot span {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.home-slider.restaurante[data-dots-numbered="1"] .owl-dots .owl-dot.active span {
+    color: #333;
+}
+.owl-theme.owl-theme-light .owl-dots .owl-dot span {
+    border-color: rgba(255,255,255,0.2);
+    background: transparent !important;
+}
+.home-slider.restaurante.owl-theme .owl-dots .owl-dot:hover span:empty::after {
+    color: #fff;
+}
+.home-slider.restaurante.owl-theme .owl-dots .owl-dot span:empty::after {
+    content: counter(dot-counter);
+    color: rgba(255,255,255,0.2);
+    font-size: 1.4rem;
+    font-weight: 400;
 }

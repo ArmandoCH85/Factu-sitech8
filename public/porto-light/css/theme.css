@@ -21827,6 +21827,20 @@ div.sub-title.text-muted {
 .el-dropdown-menu__item--divided:before{
     background-color: transparent !important;
 }
+.banner-img .avatar-uploader{
+    height: 91px;
+}
+.banner-img .avatar-uploader .el-upload{
+    height: 100%;
+}
+.banner-img .avatar-uploader .el-upload .avatar-uploader-icon{
+    line-height: 91px;
+}
+.banner-img .avatar-uploader .el-upload img.avatar{
+    height: auto;
+    object-fit: cover;
+    max-height: 91px;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

@@ -28,6 +28,11 @@ class Promotion extends ModelTenant
             $builder->where('status', 1);
         });
     }
+
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] = !empty($value) ? $value : 'Banner principal';
+    }
     
     public function getImageUrlAttribute()
     {

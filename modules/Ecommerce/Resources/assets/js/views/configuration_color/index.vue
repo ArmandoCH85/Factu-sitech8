@@ -19,22 +19,32 @@
                   </el-input> -->
                 </div>
               </div>
+              <div class="col-12 mt-3 mb-0">
+                <h5 class="mb-3 text-muted">Preferencias del Banner Principal</h5>
+                <div class="form-group form-modern mb-3">
+                  <el-switch v-model="form.full_width_banner" :active-value="1" :inactive-value="0"></el-switch>
+                  <label class="ms-2 mb-0">Activar ancho completo del banner</label>
+                  <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Las imágenes del carrusel ocuparán el 100% del ancho de la pantalla. 
+                    Aseguresé que sus imágenes tenga la proporción 5:2
+                  </small>
+                </div>                
+              </div>
               <div class="col-12 my-3">
                 <h5 class="mb-3 text-muted">Preferencias de Visualización</h5>
                 <div class="form-group form-modern mb-3">
                   <el-switch v-model="form.show_description" :active-value="1" :inactive-value="0"></el-switch>
                   <label class="ms-2 mb-0">Mostrar descripción del producto</label>
-                  <small class="d-block text-muted ms-5" style="padding: 0 !important;">Muestra el nombre adicional o descripción corta debajo del título del producto</small>
+                  <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Muestra el nombre adicional o descripción corta debajo del título del producto</small>
                 </div>
                 <div class="form-group form-modern mb-3">
                   <el-switch v-model="form.show_stock" :active-value="1" :inactive-value="0"></el-switch>
                   <label class="ms-2 mb-0">Mostrar stock disponible</label>
-                  <small class="d-block text-muted ms-5" style="padding: 0 !important;">Muestra la cantidad disponible en inventario de cada producto</small>
+                  <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Muestra la cantidad disponible en inventario de cada producto</small>
                 </div>
                 <div class="form-group form-modern mb-3">
                   <el-switch v-model="form.only_available_products" :active-value="1" :inactive-value="0"></el-switch>
                   <label class="ms-2 mb-0">Ocultar productos sin stock</label>                  
-                  <small class="d-block text-muted ms-5" style="padding: 0 !important;">Los productos agotados no aparecerán en el catálogo de la tienda</small>
+                  <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Los productos agotados no aparecerán en el catálogo de la tienda</small>
                 </div>
               </div>              
             </div>
@@ -72,7 +82,7 @@ export default {
         let data = response.data.data;
         
         // Cargar preferencias si existen
-        let preferences = { show_description: 1, show_stock: 0, only_available_products: 0 };
+        let preferences = { show_description: 1, show_stock: 0, only_available_products: 0, full_width_banner: 0 };
         if (data.preferences) {
           const prefs = typeof data.preferences === 'string' 
             ? JSON.parse(data.preferences) 
@@ -86,7 +96,8 @@ export default {
           color_ecommerce: data.color_ecommerce,
           show_description: parseInt(preferences.show_description) || 0,
           show_stock: parseInt(preferences.show_stock) || 0,
-          only_available_products: parseInt(preferences.only_available_products) || 0
+          only_available_products: parseInt(preferences.only_available_products) || 0,
+          full_width_banner: parseInt(preferences.full_width_banner) || 0
         };
       } else {
         this.initForm();
@@ -101,7 +112,8 @@ export default {
         color_ecommerce: null,
         show_description: 1,
         show_stock: 0,
-        only_available_products: 0
+        only_available_products: 0,
+        full_width_banner: 0
       };
     },
     submit() {

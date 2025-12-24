@@ -179,11 +179,10 @@ class PromotionController extends Controller
     public function storeSpotList(Request $request) {
         $id = $request->input('id');
 
-        // Validar solo la URL, la imagen se valida después
+        // Validar la URL solo si se proporciona
         $request->validate([
-            'spot_url' => 'required|url',
+            'spot_url' => 'nullable|url',
         ], [
-            'spot_url.required' => 'La URL es requerida',
             'spot_url.url' => 'Debe ingresar una URL válida',
         ]);
 

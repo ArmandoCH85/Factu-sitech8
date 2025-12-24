@@ -1784,6 +1784,20 @@ section.auth__form-right .auth__form .auth__social a{
     margin-left: 4px;
     cursor: pointer;
 }
+.banner-img .avatar-uploader{
+    height: 91px;
+}
+.banner-img .avatar-uploader .el-upload{
+    height: 100%;
+}
+.banner-img .avatar-uploader .el-upload .avatar-uploader-icon{
+    line-height: 91px;
+}
+.banner-img .avatar-uploader .el-upload img.avatar{
+    height: auto;
+    object-fit: cover;
+    max-height: 91px;
+}
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
 }
@@ -3245,5 +3259,8 @@ html.dark .card.card-dashboard.border{
 html.dark .text-danger.option-delete:hover {
     background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
     color: var(--danger) !important;
+}
+html.dark .promotions-section .promotions-header {
+    padding: 0 0.92rem;
 }
 /* end */

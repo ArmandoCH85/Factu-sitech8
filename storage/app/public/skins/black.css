@@ -2142,6 +2142,12 @@ html.sidebar-light:not(.dark) .style-switcher:before{
     background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
     color: var(--danger) !important;
 }
+.promotions-section .promotions-header {
+    padding: 0 20px;
+}
+.promotions-section .card-body{
+    padding-top: 0 !important;
+}
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {

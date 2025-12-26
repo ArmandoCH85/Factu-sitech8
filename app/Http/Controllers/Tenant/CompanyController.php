@@ -270,7 +270,7 @@ class CompanyController extends Controller
     public function deleteLogo(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:logo,logo_dark'
+            'type' => 'required|in:logo,logo_dark,favicon,app_logo'
         ]);
 
         $company = Company::active();
@@ -286,8 +286,9 @@ class CompanyController extends Controller
         $currentLogo = $company->$type;
         
         try {
-            // Para logos (modo claro y oscuro), la ruta es public/uploads/logos/
-            $filePath = 'public/uploads/logos/' . basename($currentLogo);
+            // Para logos: public/uploads/logos/, para favicon: public/uploads/favicons/
+            $baseDir = ($type === 'favicon') ? 'public/uploads/favicons/' : 'public/uploads/logos/';
+            $filePath = $baseDir . basename($currentLogo);
 
             // Eliminar el archivo físico si existe
             if (Storage::exists($filePath)) {
@@ -298,7 +299,12 @@ class CompanyController extends Controller
             $company->$type = null;
             $company->save();
 
-            $logoName = $type === 'logo' ? 'Logo (modo claro)' : 'Logo (modo oscuro)';
+            $logoName = match ($type) {
+                'logo' => 'Logo (modo claro)',
+                'logo_dark' => 'Logo (modo oscuro)',
+                'favicon' => 'Favicon (ícono web)',
+                'app_logo' => 'Logo APP',
+            };
 
             return [
                 'success' => true,

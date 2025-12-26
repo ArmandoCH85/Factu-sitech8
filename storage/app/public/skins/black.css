@@ -2148,6 +2148,18 @@ html.sidebar-light:not(.dark) .style-switcher:before{
 .promotions-section .card-body{
     padding-top: 0 !important;
 }
+.img-fluid-dark{
+    background-color: var(--black-accent);
+}
+.delete-logo-btn{
+    padding: 9px 12px !important;
+}
+.img-fluid{
+    border-color: var(--black-highlight);
+}
+.img-fluid-dashed{
+    border: 2px dashed var(--black-highlight);
+}
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {
@@ -2243,6 +2255,7 @@ html.dark .border-bottom {
     border-bottom: 1px solid var(--black-border-dark) !important;
 }
 html.dark label.control-label,
+html.dark .form-group label,
 html.dark .el-checkbox,
 html.dark .el-dropdown-menu__item,
 html.dark .el-dropdown-menu__item:not(.is-disabled):hover, 
@@ -2855,4 +2868,14 @@ html.dark .text-danger.option-delete:hover {
     html.dark .border.rounded-circle.text-center, .navigation-options {
         color: var(--black-light) !important;
     }
+}
+html.dark .img-thumbnail, html.dark .thumbnail{
+    background-color: var(--black-input-dark);
+    border-color: var(--black-borders-dark);
+}
+html.dark .form-group .overlay{
+    background-color: color-mix(in hsl, var(--black-bg-dark) 70%, #ffffff00);
+}
+html.dark .img-fluid-dashed{
+    border: 2px dashed var(--black-border-dark);
 }

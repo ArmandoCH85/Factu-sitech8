@@ -1798,6 +1798,18 @@ section.auth__form-right .auth__form .auth__social a{
     object-fit: cover;
     max-height: 91px;
 }
+.delete-logo-btn{
+    padding: 9px 12px !important;
+}
+.img-fluid-dark{
+    background-color: var(--accent-color);
+}
+.img-fluid{
+    border-color: var(--accent-color);
+}
+.img-fluid-dashed{
+    border: 2px dashed var(--accent-color);
+}
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
 }
@@ -3262,5 +3274,12 @@ html.dark .text-danger.option-delete:hover {
 }
 html.dark .promotions-section .promotions-header {
     padding: 0 0.92rem;
+}
+html.dark .img-thumbnail, html.dark .thumbnail{
+    background-color: var(--inputs-dark);
+    border-color: var(--borders-dark);
+}
+html.dark .form-group .overlay{
+    background-color: color-mix(in hsl, var(--contents-dark) 70%, #ffffff00);
 }
 /* end */

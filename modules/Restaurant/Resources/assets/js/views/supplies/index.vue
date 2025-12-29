@@ -62,7 +62,7 @@
                             <tr
                                 v-for="(row, index) in records"
                                 :key="row.id"
-                                :class="{ 'table-warning': row.stock < row.minimum_stock }"
+                                :class="{ 'disable_color': row.stock < row.minimum_stock }"
                             >
                                 <!-- <td>{{ index + 1 }}</td> -->
                                 <td>{{ row.name }}</td>

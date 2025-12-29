@@ -25,11 +25,11 @@
             </h2>
             <ol class="breadcrumbs">
                 <li class="active">
-                    <span>Grupos de Modificadores</span>
+                    <span>Modificadores</span>
                 </li>
             </ol>
             <div class="right-wrapper pull-right">
-                <button class="btn btn-custom btn-sm mt-2 me-2" @click.prevent="openCreate">
+                <button class="btn btn-custom btn-sm me-2" @click.prevent="openCreate">
                     <i class="fa fa-plus-circle"></i> Nuevo
                 </button>
             </div>

@@ -1056,7 +1056,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
 
                                 <li class="{{ ($secondLevel != null && $secondLevel == 'modifier-groups' && $firstLevel === 'restaurant') ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ url('restaurant/modifier-groups') }}">
-                                        Grupos de modificadores
+                                        Modificadores
                                     </a>
                                 </li>
 

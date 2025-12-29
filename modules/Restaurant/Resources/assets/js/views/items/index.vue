@@ -107,7 +107,6 @@
                                 
                             }"
                         >
-                            {{ row.has_supplies ? row.restaurant_stock : ( row.has_sets ? row.restaurant_stock : stock(row.warehouses) ) }} 
                             <span v-if="row.has_supplies" class="ms-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-bowl-spoon">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -120,6 +119,7 @@
                                     <path d="M465.4 192L431.1 144L209 144L174.7 192L465.4 192zM96 212.5C96 199.2 100.2 186.2 107.9 175.3L156.9 106.8C168.9 90 188.3 80 208.9 80L431 80C451.7 80 471.1 90 483.1 106.8L532 175.3C539.8 186.2 543.9 199.2 543.9 212.5L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 212.5z"/>
                                 </svg>
                             </span>
+                            {{ row.has_supplies ? row.restaurant_stock : ( row.has_sets ? row.restaurant_stock : stock(row.warehouses) ) }}
                         </td>
                         <td class="text-start">
                             {{ row.category_description }}

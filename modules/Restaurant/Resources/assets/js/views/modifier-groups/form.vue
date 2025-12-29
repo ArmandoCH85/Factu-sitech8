@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="Nuevo Modificador" :visible.sync="showDialog" width="60%" :close-on-click-modal="false" @close="close">
+    <el-dialog title="Nuevo Modificador" :visible.sync="showDialog" :close-on-click-modal="false" @close="close">
         <div>
             <!-- Información básica -->
             <div class="row">
@@ -18,37 +18,34 @@
                         </el-select>
                     </div>
                 </div>
-            </div>
-
-            <!-- Agregar opciones -->
-            <div class="form-group">
-                <label class="control-label">Agregar Modificadores <span class="text-danger">*</span></label>
-                <div class="row g-2 align-items-center">
-                    <div class="col-auto">
-                        <el-checkbox v-model="addManual" size="small">Manual</el-checkbox>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label d-flex control-label-modifier">Buscar Producto <span class="text-danger">*</span>
+                            <el-checkbox class="ms-auto" v-model="addManual" size="small">Manual</el-checkbox>
+                        </label>                    
+                        <div class="">
+                            <el-input v-if="addManual" v-model="addName" placeholder="Nombre..." size="small"></el-input>
+                            <el-autocomplete
+                                v-else
+                                v-model="addItemQuery"
+                                :fetch-suggestions="querySearchItems"
+                                placeholder="Buscar producto..."
+                                @select="onSelectItem"
+                                :trigger-on-focus="false"
+                                size="small"
+                                class="w-100"
+                                prefix-icon="el-icon-search"
+                            >                                
+                            </el-autocomplete>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <el-checkbox v-model="addFree" size="small">Gratis</el-checkbox>
-                    </div>
-                    <div class="col">
-                        <el-input v-if="addManual" v-model="addName" placeholder="Nombre..." size="small"></el-input>
-                        <el-autocomplete
-                            v-else
-                            v-model="addItemQuery"
-                            :fetch-suggestions="querySearchItems"
-                            placeholder="Buscar producto..."
-                            @select="onSelectItem"
-                            :trigger-on-focus="false"
-                            size="small"
-                            class="w-100"
-                        >
-                            <template slot="prefix">
-                                <i class="el-icon-search"></i>
-                            </template>
-                        </el-autocomplete>
-                    </div>
-                    <div class="col-auto" style="width: 120px;">
-                        <el-input-number
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label d-flex control-label-modifier">Precio
+                            <el-checkbox class="ms-auto" v-model="addFree" size="small">Gratis</el-checkbox>
+                        </label>
+                         <el-input-number
                             v-model.number="addPrice"
                             :min="0"
                             :disabled="addFree"
@@ -58,8 +55,11 @@
                             class="w-100"
                         ></el-input-number>
                     </div>
-                    <div class="col-auto">
-                        <el-button type="primary" @click="addOption" size="small" icon="el-icon-plus">
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="control-label opacity-0">Botón</label>
+                        <el-button class="w-100" type="primary" @click="addOption" size="small" icon="el-icon-plus">
                             Añadir
                         </el-button>
                     </div>
@@ -67,7 +67,7 @@
             </div>
 
             <!-- Lista de modificadores -->
-            <div class="form-group" v-if="form.items && form.items.length > 0">
+            <div class="form-group mt-3" v-if="form.items && form.items.length > 0">
                 <label class="control-label">Modificadores Agregados</label>
                 <table class="table table-sm table-bordered">
                     <thead>
@@ -109,7 +109,7 @@
                     </tbody>
                 </table>
             </div>
-            <div v-else class="text-muted text-center py-3 mb-3" style="background-color: #f5f7fa; border-radius: 4px;">
+            <div v-else class="text-muted text-center py-3 my-3" style="background-color: #f5f7fa; border-radius: 4px;">
                 <small>No hay opciones agregadas</small>
             </div>
 
@@ -146,7 +146,7 @@ export default {
                 items: [],
                 active: true
             },
-            addManual: true,
+            addManual: false,
             addFree: false,
             addName: '',
             addItemId: '',

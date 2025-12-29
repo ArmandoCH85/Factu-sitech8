@@ -24,7 +24,7 @@ class RestaurantItemOrderStatus extends ModelTenant
         return $this->belongsTo(RestaurantTable::class, 'table_id');
     }
 
-    public function item()
+    public function itemModel()
     {
         return $this->belongsTo(Item::class, 'item_id');
     }

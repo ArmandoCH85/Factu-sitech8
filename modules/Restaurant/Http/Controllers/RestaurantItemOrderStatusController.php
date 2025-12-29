@@ -56,7 +56,7 @@ class RestaurantItemOrderStatusController extends Controller
     private function getItemsByStatus($status, $table_id = 0, $limit = null, $desc = null)
     {
         $query = RestaurantItemOrderStatus::where('status', $status)
-            ->with(['table']);
+            ->with(['table', 'itemModel.preparationArea']);
 
         if ($table_id>0) {
             $query->where('table_id',$table_id);
@@ -103,12 +103,14 @@ class RestaurantItemOrderStatusController extends Controller
             'mesa' => $order->table->label ?? null,
             'environment_id' => $order->table->environment_id ?? null,
             'environment' => $order->table->environment ?? null,
+            'preparation_area_id' => $order->itemModel->preparation_area_id ?? null,
+            'preparation_area_name' => $order->itemModel->preparationArea->name ?? null,
         ];
     }
 
     public function setStatusItem($id)
     {
-        $order = RestaurantItemOrderStatus::where('id', $id)->with('item')->first();
+        $order = RestaurantItemOrderStatus::where('id', $id)->with('itemModel')->first();
 
         $item = json_decode($order->item);
 
@@ -128,7 +130,7 @@ class RestaurantItemOrderStatusController extends Controller
             }
         }else{
             if($item->has_supplies && $order->status === self::STATUS_RECEIVED){
-                $item_model = $order->item()->first();
+                $item_model = $order->itemModel()->first();
                 $item_supplies = $item_model->restaurantItemSupplies;
                 foreach($item_supplies as $item_supply) {
                     $supply_quantity = $item_supply->quantity;

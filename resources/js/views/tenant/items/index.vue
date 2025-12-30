@@ -304,7 +304,7 @@
                     </tr>
 
                     <tr></tr>
-                    <tr
+                    <tr valign="middle"
                         slot-scope="{ index, row }"
                         :class="{ disable_color: !row.active }"
                     >
@@ -517,10 +517,10 @@
                                         placement="top-start"
                                       >
                                         <button
-                                          class="position-relative btn-icon btn-primary d-flex align-items-center justify-content-center"
+                                          class="position-relative btn barcode d-flex align-items-center justify-content-center"
                                           @click.stop.prevent="clickBarcode(row)"
                                         >
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>

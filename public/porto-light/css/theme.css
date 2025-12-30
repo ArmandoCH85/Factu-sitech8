@@ -8126,7 +8126,8 @@ html:not(.sidebar-left-collapsed).boxed
     margin-top: -5px;
     background: #fff;
 }
-.product-item .card-footer {
+.product-item .card-footer,
+.product-item .card-body {
     background: #fff;
     border-width: 0 1px 0 1px; 
     border-style: solid;

@@ -1427,7 +1427,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         </li>
                     @endif
 
-                    {{-- Produccion --}}
+                    {{-- Produccion 
                     @if(in_array('production_app', $vc_modules))
 
                                         <li class=" nav-parent {{ (
@@ -1491,6 +1491,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                             </ul>
                                         </li>
                     @endif
+                    --}}
 
                     <!-- @if(in_array('generate_link_app', $vc_modules))
                 <li class="{{ ($firstLevel === 'payment-links')?'nav-active':'' }}">

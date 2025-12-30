@@ -49,6 +49,7 @@ use App\Models\System\PlanPeriod;
             $types = [['type' => 'admin', 'description' => 'Administrador'], ['type' => 'integrator', 'description' => 'Listar Documentos']];
             $modules = Module::with('levels')
                 ->where('sort', '<', 14)
+                ->where('value', '!=', 'production_app')
                 ->orderBy('sort')
                 ->get()
                 ->each(function ($module) {
@@ -57,6 +58,7 @@ use App\Models\System\PlanPeriod;
 
             $apps = Module::with('levels')
                 ->where('sort', '>', 13)
+                ->where('value', '!=', 'production_app')
                 ->orderBy('sort')
                 ->get()
                 ->each(function ($module) {

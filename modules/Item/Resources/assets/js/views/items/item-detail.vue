@@ -398,13 +398,13 @@
                                                         </el-checkbox>
                                                     </div>
                                                 </th>
-                                                <th width="25%">
+                                                <!-- <th width="25%">
                                                     <div v-show="form.unit_type_id !='ZZ' && canSeeProduction">
                                                         <el-checkbox v-model="form.is_for_production"
                                                                     @change="changeProductioTab">Este producto, ¿requiere insumos?
                                                         </el-checkbox>
                                                     </div>
-                                                </th>
+                                                </th> -->
                                             </tr>
                                                                                 </thead>
                                             <tbody>

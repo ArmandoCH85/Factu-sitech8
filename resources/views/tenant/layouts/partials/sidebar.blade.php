@@ -1756,7 +1756,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
         line-height: 1.2;
     }
     .nav-item-with-action button{
-        padding: 0 6px 0 6px !important;
-        font-size: 13px !important;
+        padding: 0 4px !important;
+        font-size: 12px !important;
     }
 </style>

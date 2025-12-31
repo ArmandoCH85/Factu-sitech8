@@ -92,7 +92,6 @@ class InventoryKardexServiceProvider extends ServiceProvider
     private function sale() {
 
         DocumentItem::created(function (DocumentItem $document_item) {
-
             // si es nota credito tipo 13, no se asocia a inventario
             if($document_item->document->isCreditNoteAndType13()) return;
 
@@ -146,6 +145,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                 }
             }
+
+            // Procesar productos fusionados desde data_json
+            $this->processMergedProducts($document_item);
 
             /*
              * Calculando el stock por lote por factor según la unidad
@@ -256,6 +258,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 }
 
             }
+
+            // Procesar productos fusionados desde item JSON
+            $this->processMergedProductsSaleNote($sale_note_item);
 
             // series
             if(isset($sale_note_item->item->lots) )
@@ -717,6 +722,147 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         });
 
+    }
+
+    /**
+     * Procesa los productos fusionados (merged_products) para descontar su stock
+     * Lee los datos desde document->data_json->items
+     * Excluye el producto raíz para evitar doble descuento
+     *
+     * @param DocumentItem $document_item
+     */
+    private function processMergedProducts(DocumentItem $document_item) {
+
+        $document = $document_item->document;
+
+        // Obtener data_json del documento
+        $data_json = $document->data_json;
+        if (!$data_json || !isset($data_json->items)) {
+            return;
+        }
+
+        // Buscar el item correspondiente en data_json
+        $item_data = null;
+        foreach ($data_json->items as $item) {
+            if (isset($item->codigo_interno) && $item->codigo_interno == $document_item->item->internal_id) {
+                $item_data = $item;
+                break;
+            }
+        }
+
+        // Si no se encuentra el item o no está fusionado, salir
+        if (!$item_data || !isset($item_data->esFusionado) || !$item_data->esFusionado) {
+            return;
+        }
+
+        // Verificar que tenga productosFusionados
+        if (!isset($item_data->productosFusionados) || empty($item_data->productosFusionados)) {
+            return;
+        }
+
+        $factor = ($document->document_type_id === '07') ? 1 : -1;
+        $warehouse = ($document_item->warehouse_id)
+            ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id)
+            : $this->findWarehouse();
+
+        // Procesar cada producto fusionado
+        foreach ($item_data->productosFusionados as $merged_product) {
+
+            $merged_item_id = $merged_product->id ?? null;
+            $merged_quantity = $merged_product->quantity ?? 1;
+
+            // Si no tiene id, no podemos procesar
+            if (!$merged_item_id) {
+                continue;
+            }
+
+            // Saltar el producto principal para evitar doble descuento
+            if ($merged_item_id == $document_item->item_id) {
+                continue;
+            }
+
+            $total_quantity = $merged_quantity;
+
+            // Crear registro en kardex
+            $this->createInventoryKardex(
+                $document,
+                $merged_item_id,
+                ($factor * $total_quantity),
+                $warehouse->id
+            );
+
+            // Actualizar stock si corresponde
+            if (!$document->sale_note_id && !$document->order_note_id && !$document->dispatch_id && !$document->sale_notes_relateds) {
+                $this->updateStock($merged_item_id, ($factor * $total_quantity), $warehouse->id);
+            } else {
+                if ($document->dispatch) {
+                    if (!$document->dispatch->transfer_reason_type->discount_stock) {
+                        $this->updateStock($merged_item_id, ($factor * $total_quantity), $warehouse->id);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Procesa los productos fusionados (merged_products) en nota de venta
+     * Lee los datos desde sale_note_item->item (campo JSON)
+     * Excluye el producto raíz para evitar doble descuento
+     *
+     * @param SaleNoteItem $sale_note_item
+     */
+    private function processMergedProductsSaleNote(SaleNoteItem $sale_note_item) {
+
+        // Obtener item del sale_note_item (campo JSON)
+        $item_data = $sale_note_item->item;
+
+        // Si no está fusionado, salir
+        if (!isset($item_data->esFusionado) || !$item_data->esFusionado) {
+            return;
+        }
+
+        // Verificar que tenga productosFusionados
+        if (!isset($item_data->productosFusionados) || empty($item_data->productosFusionados)) {
+            return;
+        }
+
+        $sale_note = $sale_note_item->sale_note;
+        $warehouse = ($sale_note_item->warehouse_id)
+            ? $this->findWarehouse($this->findWarehouseById($sale_note_item->warehouse_id)->establishment_id)
+            : $this->findWarehouse($sale_note->establishment_id);
+
+        // Procesar cada producto fusionado
+        foreach ($item_data->productosFusionados as $merged_product) {
+
+            $merged_item_id = $merged_product->id ?? null;
+            $merged_quantity = $merged_product->quantity ?? 1;
+
+            // Si no tiene id, no podemos procesar
+            if (!$merged_item_id) {
+                continue;
+            }
+
+            // Saltar el producto principal para evitar doble descuento
+            if ($merged_item_id == $sale_note_item->item_id) {
+                continue;
+            }
+
+            $total_quantity = $merged_quantity;
+
+            // Crear registro en kardex
+            $this->createInventoryKardexSaleNote(
+                $sale_note,
+                $merged_item_id,
+                (-1 * $total_quantity),
+                $warehouse->id,
+                $sale_note_item->id
+            );
+
+            // Actualizar stock si no viene de order_note
+            if (!$sale_note->order_note_id) {
+                $this->updateStock($merged_item_id, (-1 * $total_quantity), $warehouse->id);
+            }
+        }
     }
 
 }

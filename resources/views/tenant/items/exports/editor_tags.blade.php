@@ -42,7 +42,7 @@
             </div>
             @elseif ($field->column === 'image' && isset($field->image))
                 @php
-                    $url = asset('storage'.DIRECTORY_SEPARATOR.'tag_images'. DIRECTORY_SEPARATOR . rawurlencode($field->image));
+                    $url = public_path('storage'.DIRECTORY_SEPARATOR.'tag_images'. DIRECTORY_SEPARATOR . rawurlencode($field->image));
                 @endphp
                 <div style='display: block ; margin-top:20px;margin-bottom:20px; height:auto; position: absolute; top: {{ $y }}mm; left: {{ $x }}mm;'  >
                     <img src="{{ $url }}" width="{{ $width }}mm" height="{{ $height }}mm"  />

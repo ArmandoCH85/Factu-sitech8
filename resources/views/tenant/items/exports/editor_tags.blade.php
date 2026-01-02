@@ -42,7 +42,7 @@
             </div>
             @elseif ($field->column === 'image' && isset($field->image))
                 @php
-                    $url = asset('storage'.DIRECTORY_SEPARATOR.'tag_images'. DIRECTORY_SEPARATOR . $field->image);
+                    $url = asset('storage'.DIRECTORY_SEPARATOR.'tag_images'. DIRECTORY_SEPARATOR . rawurlencode($field->image));
                 @endphp
                 <div style='display: block ; margin-top:20px;margin-bottom:20px; height:auto; position: absolute; top: {{ $y }}mm; left: {{ $x }}mm;'  >
                     <img src="{{ $url }}" width="{{ $width }}mm" height="{{ $height }}mm"  />
@@ -77,8 +77,9 @@
                         <span style="white-space: nowrap;">
                             S/&nbsp;{{ $item->{$field->column} ?? '' }}
                         </span>
+
                         @else
-                            {{ $item->{$field->column} ?? '' }}
+                            {{ optional($item->{$field->column})->name ?? '' }}
                         @endif
                     @endif
 

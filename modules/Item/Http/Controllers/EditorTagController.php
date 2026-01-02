@@ -113,7 +113,7 @@ class EditorTagController extends Controller
             return [
                 'success' => true,
                 'message' => 'Imagen guardada correctamente',
-                'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'tag_images'. DIRECTORY_SEPARATOR . $name),
+                'image_url' => urlencode(asset('storage'.DIRECTORY_SEPARATOR.'tag_images'. DIRECTORY_SEPARATOR . $name)),
             ];
         }
 
@@ -152,7 +152,7 @@ class EditorTagController extends Controller
                             'path' => $field->image,
                             'content' => $field->style,
                             'barcode' => $field->barcode,
-                            'image' => $field->image ? asset('storage'.DIRECTORY_SEPARATOR.'tag_images'.DIRECTORY_SEPARATOR .$field->image) : null,
+                            'image' => $field->image ? asset('storage'.DIRECTORY_SEPARATOR.'tag_images'.DIRECTORY_SEPARATOR .rawurlencode($field->image)) : null,
                         ];
                     }),
                     'is_default' => $item->is_default,

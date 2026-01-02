@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Exception;
 use App\Models\Tenant\Item;
 use Modules\Restaurant\Models\RestaurantItemOrderStatus;
+use Modules\Restaurant\Services\RestaurantStockService;
 
 
 class RestaurantItemOrderStatusController extends Controller
@@ -19,10 +20,98 @@ class RestaurantItemOrderStatusController extends Controller
 
     public function saveItemOrder(Request $request) {
 
+        $itemData = $request->item;
+        $stockService = app(RestaurantStockService::class);
+
+        // Descontar supplies inmediatamente al crear la orden
+        try {
+            // Si el item es un set, descontar supplies de cada componente
+            if (isset($itemData['has_sets']) && $itemData['has_sets']) {
+                foreach ($itemData['items_sets'] as $itemSet) {
+                    $item_model = Item::find($itemSet['id']);
+                    if (!$item_model) continue;
+
+                    $item_supplies = $item_model->restaurantItemSupplies;
+                    foreach ($item_supplies as $item_supply) {
+                        $supply_quantity = $item_supply->quantity;
+                        $order_quantity = $request->quantity * $itemSet['pivot']['quantity'];
+                        $total_to_discount = $supply_quantity * $order_quantity;
+                        $supply = $item_supply->supply;
+                        $supply->stock -= $total_to_discount;
+                        $supply->save();
+                    }
+
+                    // Recalcular stock del componente después de descontar supplies
+                    $stockService->calculateAndUpdateStock($itemSet['id']);
+                }
+            } else if (isset($itemData['has_supplies']) && $itemData['has_supplies']) {
+                // Item con supplies: descontar insumos
+                $item_model = Item::find($request->item_id);
+                if ($item_model) {
+                    $item_supplies = $item_model->restaurantItemSupplies;
+                    foreach ($item_supplies as $item_supply) {
+                        $supply_quantity = $item_supply->quantity;
+                        $order_quantity = $request->quantity;
+                        $total_to_discount = $supply_quantity * $order_quantity;
+                        $supply = $item_supply->supply;
+                        $supply->stock -= $total_to_discount;
+                        $supply->save();
+                    }
+                }
+            }
+
+        } catch (Exception $e) {
+            \Log::error("Error descontando supplies: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Error al descontar insumos.'
+            ];
+        }
+
+        // Recalcular stock después de descontar supplies
+        $stockService->calculateAndUpdateStock($request->item_id);
+
+        // Reservar cantidades después de descontar supplies y recalcular stock
+        try {
+            // Si el item es un set, reservar cada componente
+            if (isset($itemData['has_sets']) && $itemData['has_sets']) {
+                foreach ($itemData['items_sets'] as $itemSet) {
+                    $componentQuantity = $itemSet['pivot']['quantity'] * $request->quantity;
+                    $stockService->reserveQuantity($itemSet['id'], $componentQuantity);
+                }
+            } else {
+                // Item simple: reservar cantidad directamente
+                $stockService->reserveQuantity($request->item_id, $request->quantity);
+            }
+
+            // Reservar stock de modificadores aplicados (si tienen type: "item" y item_id)
+            if (isset($itemData['modifiersApplied']) && is_array($itemData['modifiersApplied'])) {
+                foreach ($itemData['modifiersApplied'] as $group) {
+                    if (isset($group['items']) && is_array($group['items'])) {
+                        foreach ($group['items'] as $modifierItem) {
+                            // Solo reservar si es de tipo "item" y tiene item_id
+                            if (isset($modifierItem['type']) && $modifierItem['type'] === 'item'
+                                && isset($modifierItem['item_id']) && $modifierItem['item_id']) {
+                                $stockService->reserveQuantity($modifierItem['item_id'], $request->quantity);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception $e) {
+            \Log::error("Error reservando stock: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Error al reservar stock.'
+            ];
+        }
+
+        // Crear la orden
         $orderStatus = new RestaurantItemOrderStatus();
         $orderStatus->table_id = $request->table_id;
         $orderStatus->item_id = $request->item_id;
-        $orderStatus->item = json_encode($request->item);
+        $orderStatus->item = json_encode($itemData);
         $orderStatus->quantity = $request->quantity;
         $orderStatus->note = $request->note;
         $orderStatus->status = $request->status;
@@ -110,47 +199,23 @@ class RestaurantItemOrderStatusController extends Controller
 
     public function setStatusItem($id)
     {
-        $order = RestaurantItemOrderStatus::where('id', $id)->with('itemModel')->first();
+        $order = RestaurantItemOrderStatus::where('id', $id)->first();
 
-        $item = json_decode($order->item);
-
-        if($item->has_sets && $order->status === self::STATUS_RECEIVED){
-            $items_sets = $item->items_sets;
-            foreach($items_sets as $item_set) {
-                $item_model = Item::find($item_set->id);
-                $item_supplies = $item_model->restaurantItemSupplies;
-                foreach($item_supplies as $item_supply) {
-                    $supply_quantity = $item_supply->quantity;
-                    $order_quantity = $order->quantity * $item_set->pivot->quantity;
-                    $total_to_discount = $supply_quantity * $order_quantity;
-                    $supply = $item_supply->supply;
-                    $supply->stock -= $total_to_discount;
-                    $supply->save();
-                }
-            }
-        }else{
-            if($item->has_supplies && $order->status === self::STATUS_RECEIVED){
-                $item_model = $order->itemModel()->first();
-                $item_supplies = $item_model->restaurantItemSupplies;
-                foreach($item_supplies as $item_supply) {
-                    $supply_quantity = $item_supply->quantity;
-                    $order_quantity = $order->quantity;
-                    $total_to_discount = $supply_quantity * $order_quantity;
-                    $supply = $item_supply->supply;
-                    $supply->stock -= $total_to_discount;
-                    $supply->save();
-                }
-            }
+        if (!$order) {
+            return [
+                'success' => false,
+                'message' => 'Orden no encontrada'
+            ];
         }
 
-
-        if($order->status < 4){
+        // Solo incrementar el estado (supplies ya fueron descontados en saveItemOrder)
+        if ($order->status < 4) {
             $order->status += 1;
         }
         $order->save();
 
         return [
-            'success' => ($order)?true:false,
+            'success' => true,
             'message' => 'Estado cambiado con éxito'
         ];
     }

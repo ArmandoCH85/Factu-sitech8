@@ -178,13 +178,13 @@ class RestaurantItemSupplyController extends Controller
     {
         try {
             $query = Supply::with('unitType');
-            
+
             // Aplicar filtro de búsqueda si existe
             if ($request->has('search') && !empty($request->search)) {
                 $search = $request->search;
                 $query->where('name', 'like', '%' . $search . '%');
             }
-            
+
             $supplies = $query->orderBy('name')
                 ->get()
                 ->map(function ($supply) {

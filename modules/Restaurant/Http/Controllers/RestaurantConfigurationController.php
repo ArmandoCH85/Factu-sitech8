@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Tenant\UserResource;
 use Illuminate\Support\Str;
+use Modules\Restaurant\Services\RestaurantStockService;
 
 
 class RestaurantConfigurationController extends Controller
@@ -307,9 +308,42 @@ class RestaurantConfigurationController extends Controller
         }
 
         if(count($data['products']) < 1){
-            $itemsToDelete = RestaurantItemOrderStatus::where('table_id', $id);
-            if ($itemsToDelete->exists()) {
-                $itemsToDelete->delete();
+            // Liberar cantidades reservadas antes de eliminar las órdenes
+            $ordersToRelease = RestaurantItemOrderStatus::where('table_id', $id)->get();
+            $stockService = app(RestaurantStockService::class);
+
+            foreach($ordersToRelease as $order) {
+                $itemData = json_decode($order->item, true); // Decodificar como array
+
+                // Si el item es un set, liberar cada componente
+                if(isset($itemData['has_sets']) && $itemData['has_sets']) {
+                    foreach($itemData['items_sets'] as $itemSet) {
+                        $componentQuantity = $itemSet['pivot']['quantity'] * $order->quantity;
+                        $stockService->releaseQuantity($itemSet['id'], $componentQuantity);
+                    }
+                }
+
+                // SIEMPRE liberar el item principal
+                $stockService->releaseQuantity($order->item_id, $order->quantity);
+
+                // Liberar modificadores aplicados desde el mismo order->item
+                if(isset($itemData['modifiersApplied']) && is_array($itemData['modifiersApplied'])) {
+                    foreach($itemData['modifiersApplied'] as $group) {
+                        if(isset($group['items']) && is_array($group['items'])) {
+                            foreach($group['items'] as $modifierItem) {
+                                if(isset($modifierItem['type']) && $modifierItem['type'] === 'item'
+                                    && isset($modifierItem['item_id']) && $modifierItem['item_id']) {
+                                    $stockService->releaseQuantity($modifierItem['item_id'], $order->quantity);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Ahora eliminar las órdenes
+            if ($ordersToRelease->isNotEmpty()) {
+                RestaurantItemOrderStatus::where('table_id', $id)->delete();
             }
         }
 

@@ -23,6 +23,8 @@ use Modules\Restaurant\Models\RestaurantConfiguration;
 use Modules\Restaurant\Models\RestaurantNote;
 use Modules\Restaurant\Models\RestaurantTable;
 use Modules\Restaurant\Models\RestaurantItemOrderStatus;
+use Modules\Restaurant\Models\RestaurantStockProduct;
+use Modules\Restaurant\Services\RestaurantStockService;
 use Illuminate\Support\Facades\DB;
 use Modules\ApiPeruDev\Data\ServiceData;
 use App\Models\Tenant\Person;
@@ -334,7 +336,7 @@ class RestaurantController extends Controller
             $tableid_origin = $request->tableid_origin;
             $tableid_destination = $request->tableid_destination;
 
-            $defaultTableValues = [ 
+            $defaultTableValues = [
                 'status' => 'available',
                 'products' => [],
                 'total' => 0.0,
@@ -381,6 +383,36 @@ class RestaurantController extends Controller
 
         } catch(\Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Obtiene el stock disponible de todos los items del restaurante
+     * Versión optimizada para consultas frecuentes (websockets)
+     * Solo retorna: item_id, stock, quantity_reserved, available
+     *
+     * @return array
+     */
+    public function getStockStatus()
+    {
+        try {
+            $stockData = RestaurantStockProduct::select(
+                'item_id',
+                'stock',
+                'quantity_reserved',
+                DB::raw('GREATEST(0, stock - quantity_reserved) as available')
+            )->get();
+
+            return [
+                'success' => true,
+                'data' => $stockData
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error al obtener el stock: ' . $e->getMessage()
+            ];
         }
     }
 

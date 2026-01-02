@@ -26,6 +26,8 @@ if ($hostname) {
                 Route::post('/items/restaurant-favorite', 'RestaurantController@setRestaurantFavoriteItem');
                 Route::post('/order/change-table', 'RestaurantController@changeTablePedido');
 
+                Route::get('/items/stock', 'RestaurantController@getStockStatus');
+
                 Route::get('/categories', 'RestaurantController@categories');
                 Route::get('/configurations', 'RestaurantConfigurationController@record');
                 Route::get('/waiters', 'WaiterController@records');

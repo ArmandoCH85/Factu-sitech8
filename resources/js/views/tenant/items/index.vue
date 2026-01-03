@@ -195,7 +195,7 @@
                 </el-dropdown>
                 <el-dropdown :hide-on-click="false">
                     <el-button type="secondary">
-                        Mostrar/Ocultar columnas<i
+                        Mostrar columnas<i
                             class="el-icon-arrow-down el-icon--right"
                         ></i>
                     </el-button>

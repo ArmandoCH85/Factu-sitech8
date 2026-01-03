@@ -6,7 +6,7 @@
     --black-dark: #020618;
     --black-light: #f8fafc;
     --black-accent: #90a1b9;
-    --black-highlight: #efefef; 
+    --black-highlight: #EEF2F5; 
     --black-input-shadow: #d9d9d9;
 
     /* modo dark */
@@ -244,7 +244,7 @@ div.sub-title.text-muted{
 
 html,
 body {
-    background: var(--black-highlight);
+    background: var(--black-highlight) !important;
     font-family: var(--black-font-family, sans-serif) !important;
     color: var(--black-dark) !important;
 }
@@ -326,8 +326,14 @@ ul.nav-main li .nav-children li a:after {
     padding: 6px 15px;
 }
 .card-config{
-    border: 1px solid var(--black-highlight) !important;
+    /* border: 1px solid var(--black-highlight) !important; */
     border-radius: 13px !important;
+}
+.card.card-config .card-header {
+    background: var(--black-accent) !important;
+}
+.card.card-config .card-body {
+    background: #fff;
 }
 .card-config .card-body{
     border-radius: 12px !important;
@@ -1241,7 +1247,7 @@ html.sidebar-white ul.nav-main li.nav-active:not(.nav-parent)>a {
     padding: 7px 15px;
 }
 .data-table-visible-columns {
-    right: 15px;
+    /* right: 15px; */
     top: 15px;
 }
 .card-header.bg-success {
@@ -1872,7 +1878,7 @@ ul.nav.list-config li:hover {
 .page-header {
     margin: 0 21px !important;
     border-radius: 10px;
-    box-shadow: 0 0 25px -5px rgb(210 210 210) !important;
+    box-shadow: 0 0 15px 0 rgb(0 0 0 / 10%) !important;
 }
 .profile-info-pc,
 .svg-profile{

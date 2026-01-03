@@ -30,8 +30,8 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
         <div class="sidebar-toggle-container d-none d-md-flex">
             <div class="sidebar-toggle position-relative ms-0 p-0" data-toggle-class="sidebar-left-collapsed" data-target="html"
                 data-fire-event="sidebar-left-toggle" title="Colapsar menú lateral">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-sidebar-left-collapse fa-angle-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /> <path class="path-left" d="M15 10l-2 2l2 2" /> </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-sidebar-right-collapse fa-angle-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /><path class="path-right" d="M14 10l2 2l-2 2" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-sidebar-left-collapse fa-angle-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /> <path class="path-left" d="M15 10l-2 2l2 2" /> </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-sidebar-right-collapse fa-angle-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M9 4v16" /><path class="path-right" d="M14 10l2 2l-2 2" /></svg>
             </div>
         </div>
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html"
@@ -66,7 +66,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class="{{ ($firstLevel === 'dashboard') ? 'nav-active' : '' }}">
                             <a class="nav-link dashboard-link" href="{{ route('tenant.dashboard.index') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-dashboard">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -93,7 +93,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                 ">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -166,15 +166,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                             {{ ($firstLevel === 'pos') ? 'nav-active nav-expanded' : '' }}
                                                                                                                                                 ">
                             <a class="nav-link" href="#">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="feather feather-file-text">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14 2 14 8 20 8"></polyline>
-                                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                                    <polyline points="10 9 9 9 8 9"></polyline>
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-receipt-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg>
                                 <span>VENTAS</span>
                             </a>
                             <ul class="nav nav-children" style="">
@@ -254,7 +246,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ">
                                                         <a class="nav-link" href="#">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                                fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                                                 stroke-linejoin="round"
                                                                 class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag">
                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -369,7 +361,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ">
                                             <a class="nav-link" href="#">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     class="icon icon-tabler icons-tabler-outline icon-tabler-users-group">
                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -421,7 +413,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ">
                                             <a class="nav-link" href="#">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     class="icon icon-tabler icons-tabler-outline icon-tabler-category-2">
                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -483,7 +475,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ">
                                             <a class="nav-link" href="#">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     class="icon icon-tabler icons-tabler-outline icon-tabler-building-warehouse">
                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -565,7 +557,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     {{ ($firstLevel === 'bank_loan') ? 'nav-active nav-expanded' : '' }}">
                                             <a class="nav-link" href="#">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     class="icon icon-tabler icons-tabler-outline icon-tabler-calculator">
                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -661,7 +653,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                                     {{ ($firstLevel === 'dispatch_addresses') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-truck">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
@@ -738,7 +730,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                             {{ ($firstLevel === 'voided') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-file-unknown">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -797,7 +789,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                             {{ ($firstLevel === 'purchase-settlements') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-clipboard-text">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -851,7 +843,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                             class="nav-parent {{ ($firstLevel === 'account' || $firstLevel === 'accounting_ledger' || $firstLevel === 'sire') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-chart-histogram">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -917,7 +909,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                             --}}
                             <a class="nav-link dashboard-link" href="{{ url('list-reports') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-file-analytics">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -939,7 +931,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                                                                                                             {{ in_array($firstLevel, ['ecommerce', 'items_ecommerce', 'tags', 'promotions', 'orders', 'configuration']) ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1000,7 +992,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class=" nav-parent {{ ($firstLevel === 'restaurant') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-tools-kitchen-2">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1101,7 +1093,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class=" nav-parent {{ ($firstLevel === 'digemid') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-medicine-syrup">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1158,7 +1150,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class=" nav-parent {{ ($firstLevel === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-building-skyscraper">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1211,7 +1203,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class=" nav-parent {{ ($firstLevel === 'full_suscription') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-month">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1266,7 +1258,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class=" nav-parent {{ ($firstLevel === 'suscription') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                     stroke-linejoin="round"
                                     class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-user">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1358,12 +1350,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li
                             class=" nav-parent {{ ($firstLevel === 'documentary-procedure') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="feather feather-folder">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z">
-                                    </path>
-                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder-open"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19l2.757 -7.351a1 1 0 0 1 .936 -.649h12.307a1 1 0 0 1 .986 1.164l-.996 5.211a2 2 0 0 1 -1.964 1.625h-14.026a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v2" /></svg>
                                 <span>Trámite documentario</span>
                             </a>
                             <ul class="nav nav-children">
@@ -1440,7 +1427,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         ) ? 'nav-active nav-expanded' : '' }}">
                                             <a class="nav-link" href="#">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                     class="icon icon-tabler icons-tabler-outline icon-tabler-building-factory-2">
                                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -1503,7 +1490,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
+                            stroke-width="1.5"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             class="feather feather-share-2">
@@ -1548,7 +1535,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     <li>
                         <a class="nav-link">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                                 class="feather feather-settings">
                                 <circle cx="12" cy="12" r="3"></circle>
                                 <path
@@ -1567,7 +1554,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     <li>
                         <a class="nav-link" href="{{route('tenant.users.index')}}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-users">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
@@ -1582,7 +1569,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     <li>
                         <a class="nav-link" href="{{route('tenant.establishments.index')}}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-list-numbers">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M11 6h9" />
@@ -1598,7 +1585,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     <li>
                         <a class="nav-link" href="{{ route('tenant.liveapp.configuration') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-device-mobile">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14z" />
@@ -1613,7 +1600,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     <li>
                         <a class="nav-link" href="{{url('list-extras')}}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-packages">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M7 16.5l-5 -3l5 -3l5 3v5.5l-5 3z" />
@@ -1635,7 +1622,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         class="{{in_array($firstLevel, ['list-platforms', 'list-cards', 'list-currencies', 'list-bank-accounts', 'list-banks', 'list-attributes', 'list-detractions', 'list-units', 'list-payment-methods', 'list-incomes', 'list-payments', 'company_accounts', 'list-vouchers-type', 'companies', 'advanced', 'tasks', 'inventories', 'bussiness_turns', 'offline-configurations', 'series-configurations', 'configurations', 'login-page', 'list-settings']) ? 'nav-active' : ''}}">
                         <a class="nav-link" href="{{ url('list-settings') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                                 class="icon icon-tabler icons-tabler-outline icon-tabler-briefcase">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" />

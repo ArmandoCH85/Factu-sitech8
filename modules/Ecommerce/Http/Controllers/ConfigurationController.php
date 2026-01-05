@@ -9,6 +9,7 @@ use App\Models\Tenant\Company;
 use App\Http\Requests\Tenant\ConfigurationEcommerceRequest;
 use App\Http\Resources\Tenant\ConfigurationEcommerceResource;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Illuminate\Support\Facades\Storage;
 
 
 class ConfigurationController extends Controller
@@ -104,6 +105,14 @@ class ConfigurationController extends Controller
             $type = $request->input('type'); //logo_store
 
             $file = $request->file('file');
+
+            if (!$file->isValid() || empty($file->getPathname()) || !is_file($file->getPathname())) {
+                return [
+                    'success' => false,
+                    'message' =>  __('app.actions.upload.error'),
+                ];
+            }
+
             $ext = $file->getClientOriginalExtension();
             $name = $type.'_'.$company->number.'.'.$ext;
 
@@ -111,7 +120,9 @@ class ConfigurationController extends Controller
             
             UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
 
-            $file->storeAs('public/uploads/logos', $name);
+            $stream = fopen($file->getPathname(), 'r');
+            Storage::put('public/uploads/logos/'.$name, $stream);
+            if (is_resource($stream)) fclose($stream);
 
             $config->logo = $name;
 

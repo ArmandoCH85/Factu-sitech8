@@ -107,6 +107,14 @@ class CompanyController extends Controller
             $type = $request->input('type');
 
             $file = $request->file('file');
+
+            if (!$file->isValid() || empty($file->getPathname()) || !is_file($file->getPathname())) {
+                return [
+                    'success' => false,
+                    'message' => __('app.actions.upload.error'),
+                ];
+            }
+
             $ext = $file->getClientOriginalExtension();
             $name = $type . '_' . $company->number . '.' . $ext;
 
@@ -116,13 +124,17 @@ class CompanyController extends Controller
 
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
 
-                $file->storeAs(($type === 'logo') ? 'public/uploads/logos' : 'certificates', $name);
+                $stream = fopen($file->getPathname(), 'r');
+                Storage::put('public/uploads/logos/'.$name, $stream);
+                if (is_resource($stream)) fclose($stream);
             }
 
             if (($type === 'logo_dark')) {
                 $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
-                $file->storeAs('public/uploads/logos', $name);
+                $stream = fopen($file->getPathname(), 'r');
+                Storage::put('public/uploads/logos/'.$name, $stream);
+                if (is_resource($stream)) fclose($stream);
             }
 
             // if (($type === 'logo_store')) {
@@ -137,20 +149,26 @@ class CompanyController extends Controller
 
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true, 'png', ['image/png']);
 
-                $file->storeAs('public/uploads/favicons', $filename);
+                $stream = fopen($file->getPathname(), 'r');
+                Storage::put('public/uploads/favicons/'.$filename, $stream);
+                if (is_resource($stream)) fclose($stream);
             }
 
             if (($type === 'app_logo')) {
                 request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
-                $file->storeAs('public/uploads/logos', $name);
+                $stream = fopen($file->getPathname(), 'r');
+                Storage::put('public/uploads/logos/'.$name, $stream);
+                if (is_resource($stream)) fclose($stream);
             }
 
 
             if (($type === 'img_firm')) {
                 request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
-                $file->storeAs('public/uploads/firms', $name);
+                $stream = fopen($file->getPathname(), 'r');
+                Storage::put('public/uploads/firms/'.$name, $stream);
+                if (is_resource($stream)) fclose($stream);
             }
 
             // $file->storeAs(($type === 'img_firm') ? 'public/uploads/firms' : 'certificates', $name);

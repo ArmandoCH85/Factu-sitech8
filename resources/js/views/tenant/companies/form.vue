@@ -59,8 +59,8 @@
                             </div>
                         </div>
                         <div class="row mt-4">
-                            <h4 class="col-12 m-0 fw-medium mb-2">Logo y Marca</h4>
-                            <div class="col-md-6">
+                            <h4 class="col-12 m-0 fw-medium">Logo y Marca</h4>
+                            <div class="col-md-6 mt-2">
                                 <div class="form-group">
                                     <label class="">Logo (modo claro)</label>
                                     <div v-if="loading_company_record" class="img-thumbnail w-100 d-flex align-items-center justify-content-center bg-light image-skeleton">
@@ -71,7 +71,7 @@
                                         <img
                                             :src="logoLightPreviewUrl"
                                             alt="Vista previa"
-                                            class="img-fluid img-thumbnail w-100"
+                                            class="img-fluid img-small img-fluid-light img-thumbnail w-100"
                                         />
                                         <div class="overlay">
                                             <el-button
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <div class="form-group">
                                     <label class="">Logo (modo oscuro)</label>
                                     <div v-if="loading_company_record" class="img-thumbnail w-100 d-flex align-items-center justify-content-center bg-light image-skeleton">
@@ -119,7 +119,7 @@
                                         <img
                                             :src="logoDarkPreviewUrl"
                                             alt="Vista previa"
-                                            class="img-fluid img-fluid-dark img-thumbnail w-100"
+                                            class="img-fluid img-small img-fluid-dark img-thumbnail w-100"
                                         />
                                         <div class="overlay">
                                             <el-button
@@ -156,7 +156,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label class="">Favicon (ícono web)</label>
                                     <div v-if="loading_company_record" class="img-thumbnail w-100 d-flex align-items-center justify-content-center bg-light image-skeleton image-skeleton-small">
@@ -202,7 +202,7 @@
                                 </div>
                             </div>                            
 
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-3">
                                 <div class="form-group">
                                     <label class="">Logo APP</label>
                                     <div v-if="loading_company_record" class="img-thumbnail w-100 d-flex align-items-center justify-content-center bg-light image-skeleton image-skeleton-small">
@@ -837,17 +837,13 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgb(255 255 255 / 70%);
+    background-color: rgba(255, 255, 255, 0.908);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
     border-radius: 0.375rem;
-}
-.img-fluid {
-    max-height: 150px;
-    object-fit: contain;
 }
 .image-container:hover .overlay {
     opacity: 1;
@@ -856,7 +852,8 @@ export default {
     transform: translateY(0);
 }
 .img-small{
-    height: 65px;
+    height: auto;
+    max-height: 80px;
     object-fit: contain;
 }
 </style>

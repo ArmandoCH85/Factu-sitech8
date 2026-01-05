@@ -756,7 +756,10 @@ html.sidebar-light ul.nav-main > li > a {
 html.sidebar-left-collapsed .sidebar-left .nav-main>li>a {
     padding-left: 10px;
 }
-
+.topbar-links-container{
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
 .header .logo-container .topbar-links {
     margin-top: 0px;
     height: 100%;
@@ -1636,6 +1639,12 @@ html.sidebarMode-dark .nav-item-with-action .btn-primary{
     border: 1px solid #ffffff !important;
     color: var(--black-dark) !important;
 }
+html.sidebarMode-dark .logo-light {
+    display: var(--show-light-logo, none);
+}
+html.sidebarMode-dark .logo-dark {
+    display: var(--show-dark-logo, block);
+}
 /* end */
 /* --------------------------- tema noche --------------------------- */
 html.dark .header .logo-container .topbar-links {
@@ -2220,7 +2229,7 @@ html.sidebar-light:not(.dark) .style-switcher:before{
     padding-top: 0 !important;
 }
 .img-fluid-dark{
-    background-color: var(--black-accent);
+    background-color: var(--black-bg-dark);
 }
 .delete-logo-btn{
     padding: 9px 12px !important;
@@ -2947,11 +2956,14 @@ html.dark .text-danger.option-delete:hover {
 }
 html.dark .img-thumbnail, html.dark .thumbnail{
     background-color: var(--black-input-dark);
-    border-color: var(--black-borders-dark);
+    border-color: var(--black-border-dark);
 }
 html.dark .form-group .overlay{
     background-color: color-mix(in hsl, var(--black-bg-dark) 70%, #ffffff00);
 }
 html.dark .img-fluid-dashed{
     border: 2px dashed var(--black-border-dark);
+}
+html.dark .img-fluid-light{
+    background-color: #ffffff;
 }

@@ -123,6 +123,21 @@
                     </div>
                 </div>
 
+                <div class="mt-3 d-none sidebar-mode-selector">
+                    <h5>Tema del menú lateral</h5>
+                    <div>
+                        <el-switch
+                            v-model="form.sidebar_mode"
+                            active-text="Oscuro"
+                            inactive-text="Claro"
+                            active-value="dark"
+                            inactive-value="light"
+                            @change="submitSidebarMode"
+                        >
+                        </el-switch>
+                    </div>
+                </div>
+
                 <div class="mt-3">
                     <h5>Mostrar panel de bienvenida en el dashboard</h5>
                     <div>
@@ -342,6 +357,34 @@ export default {
             this.visuals.sidebar_theme = theme;
             this.submit();
         },
+        submitSidebarMode() {
+            this.$http
+                .post(`/${this.resource}/visual_settings`, {
+                    bg: this.visuals.bg,
+                    header: this.visuals.header,
+                    sidebars: this.visuals.sidebars,
+                    navbar: this.visuals.navbar,
+                    sidebar_theme: this.visuals.sidebar_theme,
+                    sidebar_mode: this.form.sidebar_mode
+                })
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        // Aplicar la clase inmediatamente
+                        const htmlElement = document.documentElement;
+                        if (this.form.sidebar_mode === 'dark') {
+                            htmlElement.classList.remove('sidebarMode-light');
+                            htmlElement.classList.add('sidebarMode-dark');
+                        } else {
+                            htmlElement.classList.remove('sidebarMode-dark');
+                            htmlElement.classList.add('sidebarMode-light');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
         initForm() {
             this.errors = {};
             this.form = {
@@ -350,7 +393,8 @@ export default {
                 colums_grid_item: 4,
                 enable_whatsapp: true,
                 phone_whatsapp: "",
-                skins: 1
+                skins: 1,
+                sidebar_mode: "light"
             };
         },
         async getRecords() {

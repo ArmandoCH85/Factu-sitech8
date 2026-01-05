@@ -37,7 +37,7 @@
               </el-button>
             </div>
         </header>
-        <div class="card mb-0 row-new bg-transparent">            
+        <div class="card mb-0 row-new bg-transparent dashboard-cards">            
             <div class="row" v-show="showFilters">
                 <div class="col-12">
                     <section class="card card-dashboard">

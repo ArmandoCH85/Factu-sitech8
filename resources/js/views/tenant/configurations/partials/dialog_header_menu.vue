@@ -1,5 +1,5 @@
 <template>
-    <div class="d-none ms-1 d-lg-block" style="height: inherit;">
+    <div class="d-none ms-1 d-lg-block pt-2" style="height: inherit; padding-bottom: 4px;">
         <a
             v-if="
                 menu.menu_a != '' &&

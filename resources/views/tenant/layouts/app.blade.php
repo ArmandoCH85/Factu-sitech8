@@ -4,10 +4,11 @@
     $path[1] = (array_key_exists(1, $path) > 0) ? $path[1] : '';
     $path[2] = (array_key_exists(2, $path) > 0) ? $path[2] : '';
     $path[0] = ($path[0] === '') ? 'documents' : $path[0];
-    $visual->sidebar_theme = property_exists($visual, 'sidebar_theme') ? $visual->sidebar_theme : ''
+    $visual->sidebar_theme = property_exists($visual, 'sidebar_theme') ? $visual->sidebar_theme : '';
+    $sidebar_mode = isset($vc_compact_sidebar) ? ($vc_compact_sidebar->sidebar_mode ?? 'light') : 'light';
 @endphp
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed no-mobile-device custom-scroll
-        sidebar-white sidebar-light
+        sidebar-white sidebar-light {{ $sidebar_mode === 'dark' ? 'sidebarMode-dark' : 'sidebarMode-light' }}
         {{$vc_compact_sidebar->compact_sidebar == true
     || $path[0] === 'pos'
     || $path[0] === 'pos' && $path[1] === 'fast'

@@ -386,6 +386,7 @@ class ConfigurationController extends Controller
                     'default_image' => $configuration->product_default_image,
                     'restaurant_tip_factor' => $configuration->restaurant_tip_factor,
                     'is_restaurant_active' => $is_restaurant_active,
+                    'sidebar_mode' => $configuration->sidebar_mode ?? 'light',
                 ]
             )
         ];
@@ -510,6 +511,9 @@ class ConfigurationController extends Controller
 
         $configuration = Configuration::find(1);
         $configuration->visual = $visuals;
+        if ($request->has('sidebar_mode')) {
+            $configuration->sidebar_mode = $request->sidebar_mode;
+        }
         $configuration->save();
 
         return [

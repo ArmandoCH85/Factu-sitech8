@@ -229,6 +229,7 @@ use Illuminate\Support\Facades\Log;
             'update_document_on_dispaches',
             'show_service_on_pos',
             'visual',
+            'sidebar_mode',
             'show_totals_on_cpe_list',
             'mi_tienda_pe',
             'detraction_amount_rounded_int',

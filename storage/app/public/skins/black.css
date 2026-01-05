@@ -41,6 +41,11 @@
 html.sidebar-left-big-icons .sidebar-left a {
     color: #2f2f31;
 }
+html.fixed.sidebar-white:not(.dark) .sidebar-left,
+html.fixed.sidebar-white:not(.dark) .sidebar-header, 
+html.fixed.sidebar-white:not(.dark) .sidebar-left .nano {
+  background-color: #ffffff !important;
+}
 .theme-color-selector{
     display: none;
 }
@@ -336,7 +341,7 @@ ul.nav-main li .nav-children li a:after {
     background: #fff;
 }
 .card-config .card-body{
-    border-radius: 12px !important;
+    border-radius: 0 0 12px 12px !important;
 }
 .card-config .card-header.bg-info{
     border-radius: 12px 12px 0 0 !important;
@@ -753,8 +758,8 @@ html.sidebar-left-collapsed .sidebar-left .nav-main>li>a {
 }
 
 .header .logo-container .topbar-links {
-    margin-top: 4px;
-    height: 50px;
+    margin-top: 0px;
+    height: 100%;
     background: #ffffff;
     border-radius: 4px;
     color: var(--black-dark) !important;
@@ -1580,6 +1585,58 @@ a.ws-flotante {
     border-top: 0 !important;
     border-bottom: 0 !important;
 }
+.sidebar-mode-selector{
+    display: block !important;
+}
+.dashboard-cards{
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: -18px;
+}
+/* sidebar dark styles */
+html.fixed.sidebarMode-dark:not(.dark) .sidebar-left,
+html.fixed.sidebarMode-dark:not(.dark) .sidebar-header, 
+html.fixed.sidebarMode-dark:not(.dark) .sidebar-left .nano {
+    background-color: var(--black-bg-dark) !important;
+    border-color: var(--black-border-dark) !important;
+}
+html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a,
+html.fixed.sidebarMode-dark:not(.dark) .sidebar-left a{
+    color: var(--black-light) !important;
+}
+html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a{
+    background: var(--black-content-dark) !important;
+}
+html.sidebarMode-dark ul.nav-main>li a:hover{
+    background: var(--black-content-dark) !important;
+}
+html.sidebarMode-dark ul.nav-main li.nav-parent>a:after{
+    color: var(--black-light) !important;
+}
+html.sidebarMode-dark .sidebar-toggle-container .sidebar-toggle{
+    border-color: var(--black-border-dark) !important;
+    background-color: var(--black-bg-dark) !important;
+    color: var(--black-light) !important;
+}
+html.sidebarMode-dark .sidebar-toggle-container .sidebar-toggle:hover{
+    background-color: var(--black-input-dark) !important;
+}
+html.sidebarMode-dark .sidebar-left ul.nav-children li:after{
+    background-color: var(--black-border-dark) !important;
+}
+html.sidebarMode-dark .list-config{
+    background-color: var(--black-input-dark);
+    border-color: var(--black-border-dark) !important;
+}
+html.sidebarMode-dark ul.nav.list-config li:hover{
+    background-color: var(--black-content-dark) !important;
+}
+html.sidebarMode-dark .nav-item-with-action .btn-primary{
+    background: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    color: var(--black-dark) !important;
+}
+/* end */
 /* --------------------------- tema noche --------------------------- */
 html.dark .header .logo-container .topbar-links {
     background: #161d31;
@@ -2177,7 +2234,7 @@ html.sidebar-light:not(.dark) .style-switcher:before{
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {
-    background-color: var(--black-bg-dark);
+    background-color: var(--black-bg-dark) !important;
 }
 html.dark body {
     color: var(--black-light) !important;
@@ -2247,7 +2304,8 @@ html.dark .header .logo-container .topbar-links {
 html.dark .header .logo-container .topbar-links:hover {
     color: var(--black-light) !important;
 }
-html.dark h1, html.dark .h1, html.dark h2, html.dark .h2, html.dark h3, html.dark .h3, html.dark h4, html.dark .h4, html.dark h5, html.dark .h5, html.dark h6, html.dark .h6 {
+html.dark h1, html.dark .h1, html.dark h2, html.dark .h2, html.dark h3, html.dark .h3, html.dark h4, html.dark .h4, html.dark h5, html.dark .h5, html.dark h6, html.dark .h6,
+html.dark .card-body {
     color: var(--black-light);
 }
 html.dark .card.card-dashboard .card-body,
@@ -2401,6 +2459,10 @@ html.dark .card-footer-fast-payment{
 html.dark ul.nav-main li a,
 html.dark a, html.dark a:hover, html.dark a:focus {
     color: var(--black-light) !important;
+}
+html.dark .table-responsive,
+html.dark .notifications > li .notification-icon{
+    background-color: var(--black-bg-dark);
 }
 html.dark .table-responsive,
 html.dark .border-light,

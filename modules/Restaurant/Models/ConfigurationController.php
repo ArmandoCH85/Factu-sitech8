@@ -449,6 +449,7 @@ class ConfigurationController extends Controller
 
         $configuration = Configuration::find(1);
         $configuration->visual = $visuals;
+        $configuration->sidebar_mode = $request->sidebar_mode ?? 'light';
         $configuration->save();
 
         return [

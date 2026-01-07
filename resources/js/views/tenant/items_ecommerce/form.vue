@@ -72,11 +72,13 @@
                                     class="form-group">
                                     <label class="control-label">Unidad</label>
                                     <el-select v-model="form.unit_type_id"
-                                            dusk="unit_type_id">
+                                            dusk="unit_type_id"
+                                            :disabled="form.is_dish">
                                         <el-option v-for="option in unit_types"
                                                 :key="option.id"
                                                 :label="option.description"
                                                 :value="option.id"></el-option>
+                                        <el-option v-if="fromRestaurant && form.is_dish" label="Plato" value="ZZ"></el-option>
                                     </el-select>
                                     <small v-if="errors.unit_type_id"
                                         class="form-control-feedback"
@@ -171,15 +173,22 @@
                                         v-text="errors.calculate_quantity[0]"></small>
                                 </div>
                             </div> -->
-                            <div v-show="show_has_igv"
-                                class="col-md-3 center-el-checkbox">
-                                <div :class="{'has-danger': errors.has_igv}"
-                                    class="form-group">
+                            <div class="col-md-3 center-el-checkbox" style="padding-top: 15px;">
+                                <div v-show="show_has_igv" :class="{'has-danger': errors.has_igv}"
+                                    class="form-group" style="margin: 0px 10px;">
                                     <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox>
                                     <br>
                                     <small v-if="errors.has_igv"
                                         class="form-control-feedback"
                                         v-text="errors.has_igv[0]"></small>
+                                </div>
+                                <div v-if="fromRestaurant" :class="{'has-danger': errors.is_dish}"
+                                    class="form-group">
+                                    <el-checkbox v-model="form.is_dish" @change="changeIsDish()">Es un plato</el-checkbox>
+                                    <br>
+                                    <small v-if="errors.is_dish"
+                                        class="form-control-feedback"
+                                        v-text="errors.is_dish[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -652,10 +661,10 @@
                     </div>
                 </form>
             </el-tab-pane>
-            <el-tab-pane :disabled="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ')" label="Insumos" name="supplies">
+            <el-tab-pane :disabled="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ' && form.is_dish == false)" label="Insumos" name="supplies">
                 <template #label>
                     <el-tooltip
-                        v-if="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ')"
+                        v-if="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ' && form.is_dish == false)"
                         content="Solo se puede colocar insumos a los Platos"
                         placement="top"
                     >
@@ -796,6 +805,18 @@ export default {
 
     },
     methods: {
+
+        changeIsDish() {
+            if (!this.form.is_dish) {
+                this.form.unit_type_id = 'NIU';
+            } else {
+                this.form.unit_type_id = 'ZZ';
+            }
+
+            console.log(this.form.is_dish);
+            console.log(this.form.unit_type_id);
+        },
+
         saveCategory() {
             this.form_category.add = false
 
@@ -948,6 +969,7 @@ export default {
                 stock: 0,
                 stock_min: 1,
                 has_igv: true,
+                is_dish: false,
                 item_unit_types: [],
                 percentage_of_profit: 0,
                 percentage_perception: 0,

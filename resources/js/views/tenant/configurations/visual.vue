@@ -138,6 +138,37 @@
                     </div>
                 </div>
 
+                <div class="pt-3 d-none sidebar-margin-selector-container">
+                    <h5>Sidebar</h5>
+                    <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
+                        <div
+                            class="sidebar-example"
+                            :class="{ 'sidebar-example-selected': visuals.sidebar_margin === true }"
+                            role="button"
+                            tabindex="0"
+                            @click="onChangeSidebarMargin(true)"
+                        >
+                            <div>
+                                <svg data-name="icon-sidebar-floating" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 79.86 51.14" class="fill-primary stroke-primary group-data-[state=unchecked]:fill-muted-foreground group-data-[state=unchecked]:stroke-muted-foreground w-100" aria-hidden="true"><rect x="5.89" y="5.15" width="19.74" height="40" rx="2" ry="2" opacity="0.8" stroke-linecap="round" stroke-miterlimit="10"></rect><g stroke="#fff" stroke-linecap="round" stroke-miterlimit="10"><path fill="none" opacity="0.72" stroke-width="2px" d="M9.81 18.36L22.04 18.36"></path><path fill="none" opacity="0.48" stroke-width="2px" d="M9.81 25.57L20.33 25.57"></path><path fill="none" opacity="0.55" stroke-width="2px" d="M9.81 21.85L19.18 21.85"></path><circle cx="11.76" cy="10.88" r="2.54" fill="#fff" opacity="0.8"></circle><path fill="none" opacity="0.8" stroke-width="2px" d="M16.31 9.62L22.04 9.62"></path><path fill="none" opacity="0.6" d="M16.1 12.27L21.16 12.27"></path></g><path fill="none" opacity="0.62" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3px" d="M30.59 9.62L35.85 9.62"></path><rect x="29.94" y="13.42" width="26.03" height="2.73" rx="0.64" ry="0.64" opacity="0.44" stroke-linecap="round" stroke-miterlimit="10"></rect><rect x="29.94" y="19.28" width="43.11" height="25.87" rx="2" ry="2" opacity="0.3" stroke-linecap="round" stroke-miterlimit="10"></rect></svg>
+                            </div>
+                            <span class="text-center">Flotando</span>
+                        </div>
+                        <div
+                            class="sidebar-example"
+                            :class="{ 'sidebar-example-selected': visuals.sidebar_margin === false }"
+                            role="button"
+                            tabindex="0"
+                            @click="onChangeSidebarMargin(false)"
+                        >
+                            <div>
+                                <svg data-name="icon-sidebar-sidebar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 79.86 51.14" class="fill-primary stroke-primary group-data-[state=unchecked]:fill-muted-foreground group-data-[state=unchecked]:stroke-muted-foreground w-100" aria-hidden="true"><path d="M23.42.51h51.99c2.21 0 4 1.79 4 4v42.18c0 2.21-1.79 4-4 4H23.42s-.04-.02-.04-.04V.55s.02-.04.04-.04z" opacity="0.2" stroke-linecap="round" stroke-miterlimit="10"></path><path fill="none" opacity="0.72" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2px" d="M5.56 14.88L17.78 14.88"></path><path fill="none" opacity="0.48" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2px" d="M5.56 22.09L16.08 22.09"></path><path fill="none" opacity="0.55" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2px" d="M5.56 18.38L14.93 18.38"></path><g stroke-linecap="round" stroke-miterlimit="10"><circle cx="7.51" cy="7.4" r="2.54" opacity="0.8"></circle><path fill="none" opacity="0.8" stroke-width="2px" d="M12.06 6.14L17.78 6.14"></path><path fill="none" opacity="0.6" d="M11.85 8.79L16.91 8.79"></path></g></svg>
+                            </div>
+                            <span class="text-center">Fijo</span>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="mt-3">
                     <h5>Mostrar panel de bienvenida en el dashboard</h5>
                     <div>
@@ -357,6 +388,23 @@ export default {
             this.visuals.sidebar_theme = theme;
             this.submit();
         },
+        onChangeSidebarMargin(value) {
+            this.$set(this.visuals, 'sidebar_margin', value);
+            this.applySidebarMargin(value);
+            this.submit();
+        },
+        applySidebarMargin(value) {
+            const htmlElement = document.documentElement;
+            if (!htmlElement) return;
+
+            if (value === true) {
+                htmlElement.classList.add('sidebar-left-floating');
+                htmlElement.classList.remove('sidebar-left-fixed');
+            } else {
+                htmlElement.classList.add('sidebar-left-fixed');
+                htmlElement.classList.remove('sidebar-left-floating');
+            }
+        },
         submitSidebarMode() {
             this.$http
                 .post(`/${this.resource}/visual_settings`, {
@@ -403,6 +451,12 @@ export default {
                     this.visuals = response.data.data.visual;
                     this.form = response.data.data;
                     this.skins = response.data.data.skins;
+
+                    if (typeof this.visuals.sidebar_margin === 'undefined') {
+                        this.$set(this.visuals, 'sidebar_margin', true);
+                    }
+
+                    this.applySidebarMargin(this.visuals.sidebar_margin);
 
                     if (this.form.default_image) {
                         this.fileName = this.form.default_image;
@@ -583,5 +637,21 @@ export default {
 
 .color-selector button.theme-selected {
    box-shadow: 0 0 0 4px var(--highlight-color);
+}
+.sidebar-example.sidebar-example-selected > div::after {
+    background-image: url("data:image/svg+xml;utf8,\
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>\
+        <polyline points='20 6 9 17 4 12' />\
+        </svg>");
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px;
+}
+html.dark .sidebar-example.sidebar-example-selected > div::after {
+    background-image: url("data:image/svg+xml;utf8,\
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>\
+        <polyline points='20 6 9 17 4 12' />\
+        </svg>");
 }
 </style>

@@ -17,7 +17,7 @@
                                 Tipo de etiqueta
                                 <a href="/" @click.prevent="showDialogEditor = true">[Abrir editor de etiqueta]</a>
                             </label>
-                            <div class="col-12">
+                            <div>
                                 <el-select v-model="form.template_id">
                                     <el-option
                                         v-for="option in templates"
@@ -93,22 +93,17 @@
                         </el-tab-pane>
                     </el-tabs>
                 </div>
-                <div class=" row text-right mt-4">
-                    <div class="col-md-6">
-                        <span>
-                            Total: {{ total_records }} etiquetas 
-                        </span>
-
-                    </div>
-                    <div class="col-md-6 d-flex justify-content-end">
-                        <div>
-                            <el-button class="second-buton" @click.prevent="close()">Cancelar</el-button>
-                            <el-button :loading="loading_submit"
-                                    native-type="submit"
-                                    type="primary">Procesar
-                            </el-button>
-                        </div>
-                    </div>
+                <div class="row text-end mt-4">
+                    <span>
+                        Total: {{ total_records }} etiquetas 
+                    </span>
+                </div>
+                <div class="form-actions text-end mt-4">
+                    <el-button class="second-buton me-2" @click.prevent="close()">Cancelar</el-button>
+                    <el-button :loading="loading_submit"
+                            native-type="submit"
+                            type="primary">Procesar
+                    </el-button>
                 </div>
             </div>
         </form>

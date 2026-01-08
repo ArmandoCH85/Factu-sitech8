@@ -32,7 +32,7 @@
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
                     <div class="btn-group flex-wrap dropdown">
-                        <button
+                        <!-- <button
                             aria-expanded="false"
                             class="btn btn-custom btn-sm mt-2 me-2 dropdown-toggle"
                             @click="showDialogTagsExports = true"
@@ -40,7 +40,7 @@
                         >
                             <i class="fa fa-download"></i> Etiquetas
                             <span class="caret"></span>
-                        </button>
+                        </button> -->
                         <button
                             aria-expanded="false"
                             class="btn btn-custom btn-sm mt-2 me-2 dropdown-toggle"
@@ -77,8 +77,8 @@
                             <a
                                 class="dropdown-item text-1"
                                 href="#"
-                                @click.prevent="clickExportBarcode()"
-                                >Etiquetas</a
+                                @click="showDialogTagsExports = true"
+                                >Etiquetas Personalizadas PDF</a
                             >
                             <template v-if="config.show_extra_info_to_item">
                                 <a
@@ -168,7 +168,7 @@
             <div class="data-table-visible-columns">                
                 <el-dropdown v-if="selected.length > 0">
                   <el-button aria-expanded="false"
-                    class="btn btn-custom btn-sm dropdown-toggle me-2"
+                    class="dropdown-toggle me-2"
                     data-toggle="dropdown"
                     type="button">
                     Acciones masivas

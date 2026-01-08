@@ -194,6 +194,8 @@ class RestaurantItemOrderStatusController extends Controller
             'environment' => $order->table->environment ?? null,
             'preparation_area_id' => $order->itemModel->preparation_area_id ?? null,
             'preparation_area_name' => $order->itemModel->preparationArea->name ?? null,
+            'created_at' => $order->created_at?->toISOString(),
+            'updated_at' => $order->updated_at?->toISOString(),
         ];
     }
 

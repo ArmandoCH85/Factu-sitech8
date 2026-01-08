@@ -6,8 +6,7 @@
     --black-dark: #020618;
     --black-light: #f8fafc;
     --black-accent: #90a1b9;
-    --black-highlight: #EEF2F5; 
-    --black-input-shadow: #d9d9d9;
+    --black-highlight: #f2f5f7; 
 
     /* modo dark */
     --black-bg-dark: #020617;
@@ -515,7 +514,7 @@ label.control-label {
 .btn-primary:not(:disabled):not(.disabled):active:focus,
 .btn-primary:not(:disabled):not(.disabled).active:focus,
 .show>.btn-primary.dropdown-toggle:focus {
-    box-shadow: 0 0 0 0.2rem var(--black-input-shadow);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--black-accent) 50%, #fff 50%);
 }
 
 .btn-primary:not(:disabled):not(.disabled):active,
@@ -676,15 +675,15 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left a {
 }
 .el-input__inner,
 .el-textarea__inner {
-    border: 1px solid var(--black-highlight) !important;
+    border: 1px solid color-mix(in srgb, var(--black-accent) 25%, #ffffff 75%) !important;
     color: var(--black-dark) !important;
-    background-color: #fcfcfc !important;
+    background-color: var(--black-highlight) !important;
     border-radius: 8px !important;
     transition: 0 !important;
 }
 .el-select .el-input.is-focus .el-input__inner {
     border-color: var(--black-accent) !important;
-    box-shadow: 0 0 0 0.2rem var(--black-input-shadow);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--black-accent) 50%, #fff 50%);
 }
 .el-select .el-input__inner:focus {
     border-color: var(--black-accent);
@@ -696,7 +695,7 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left a {
 
 .el-input__inner:focus {
     border-color: var(--black-accent) !important;
-    box-shadow: 0 0 0 0.2rem var(--black-input-shadow);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--black-accent) 50%, #fff 50%);
 }
 
 .el-checkbox {
@@ -762,10 +761,11 @@ html.sidebar-left-collapsed .sidebar-left .nav-main>li>a {
 }
 .header .logo-container .topbar-links {
     margin-top: 0px;
-    height: 100%;
+    height: 92%;
     background: #ffffff;
-    border-radius: 4px;
+    border-radius: 10px;
     color: var(--black-dark) !important;
+    padding: 0 .85rem;
 }
 
 .header .logo-container .topbar-links:last-of-type i {
@@ -1002,7 +1002,7 @@ a.text-info:focus {
 .el-textarea__inner:focus {
     outline: none;
     border-color: var(--black-accent);
-    box-shadow: 0 0 0 0.2rem var(--black-input-shadow);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--black-accent) 50%, #fff 50%);
 }
 .el-message-box {
     border-radius: 10px;
@@ -1399,7 +1399,7 @@ html body .text-primary {
 }
 
 .card-header{
-    border-bottom: 1px solid #f1f2f4;
+    border-bottom: 1px solid var(--black-highlight);
 }
 .header{
     background: var(--black-highlight);
@@ -1407,7 +1407,7 @@ html body .text-primary {
     left: 280px;
 }
 .card-footer {
-    border-top: 1px solid #f1f2f4;
+    border-top: 1px solid var(--black-highlight);
     border-radius: 10px;
 }
 
@@ -1419,7 +1419,11 @@ html.sidebar-light:not(.dark) .page-header .breadcrumbs span,
 }
 
 .page-header .breadcrumbs li {
-    color: #f1f2f4;
+    color: var(--black-highlight);
+}
+ol.breadcrumbs li span {
+    font-size: 1rem !important;
+    font-weight: bold;
 }
 
 .text-muted,
@@ -2505,6 +2509,8 @@ html.dark .card-header.bg-info{
 }
 html.dark .tab-content .invoice {
     border: 1px solid var(--black-border-dark) !important;
+    background-color: var(--black-bg-dark) !important;
+
 }
 html.dark .invoice header {
     border-bottom-color: var(--black-border-dark);

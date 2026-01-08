@@ -168,6 +168,11 @@ ul.nav-main li.nav-parent > a:after {
 .el-checkbox__inner:hover {
     border-color: var(--primary-color);
 }
+html.fixed.sidebar-white:not(.dark) .sidebar-left,
+html.fixed.sidebar-white:not(.dark) .sidebar-header, 
+html.fixed.sidebar-white:not(.dark) .sidebar-left .nano {
+  background-color: #ffffff !important;
+}
 html.fixed.sidebar-white .sidebar-left a:hover,
 html.fixed.sidebar-white .sidebar-left a:active,
 html.fixed.sidebar-white .sidebar-left a:focus {
@@ -1125,6 +1130,9 @@ html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:ho
     background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
     color: var(--danger) !important;
 }
+.style-switcher-open.close-config{
+    color: var(--light-color);
+}
 /* modo oscuro */
 html.dark .table-responsive.payment {
     border: 1px solid var(--inputs-dark);
@@ -1356,6 +1364,7 @@ html.dark .el-input__inner, html.dark .el-textarea__inner {
 html.dark .card-body, html.dark .card-footer {
     background: var(--contents-dark) !important;
     border-color: var(--borders-dark) !important;
+
 }
 html.dark .pos .product-item .card-body, .product-item .card-body {
     border: 1px solid var(--accent-color) !important;

@@ -189,6 +189,11 @@ ul.nav-main li.nav-parent > a:after,
     color: #031a6e;
     background-color: #f2f4fa61;
 }
+html.fixed.sidebar-white:not(.dark) .sidebar-left,
+html.fixed.sidebar-white:not(.dark) .sidebar-header, 
+html.fixed.sidebar-white:not(.dark) .sidebar-left .nano {
+  background-color: #ffffff !important;
+}
 html.fixed.sidebar-white:not(.dark) .sidebar-left a {
     color: #66789C !important;
 }

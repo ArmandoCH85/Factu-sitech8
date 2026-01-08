@@ -16,6 +16,37 @@
                     <div class="form-body">
                         <div class="row">
 
+                            <div class="col-md-3 center-el-checkbox">
+                                <div v-if="fromRestaurant" :class="{'has-danger': errors.is_dish}"
+                                    class="form-group">
+                                    <el-checkbox v-model="form.is_dish" @change="changeIsDish()">Producto con receta
+                                        <el-tooltip class="item"
+                                                    content="Este producto consume insumos del almacén al venderse."
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fa fa-info-circle" style="margin-left: 5px;"></i>
+                                        </el-tooltip></el-checkbox>
+                                    <br>
+                                    <small v-if="errors.is_dish"
+                                        class="form-control-feedback"
+                                        v-text="errors.is_dish[0]"></small>
+                                </div>
+                            </div>
+
+                            <div v-show="show_has_igv" class="col-md-3 center-el-checkbox">
+                                <div  :class="{'has-danger': errors.has_igv}"
+                                    class="form-group">
+                                    <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox>
+                                    <br>
+                                    <small v-if="errors.has_igv"
+                                        class="form-control-feedback"
+                                        v-text="errors.has_igv[0]"></small>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+
                             <!-- <div class="col-md-6">
                                 <div class="form-group" :class="{'has-danger': errors.description}">
                                     <label class="control-label">Descripción <span class="text-danger">*</span></label>
@@ -67,7 +98,7 @@
                             </div> -->
 
                             <!-- <div v-if="!fromRestaurant" class="col-md-3"> -->
-                            <div class="col-md-3">
+                            <div class="col-md-3" v-show="show_unit_type">
                                 <div :class="{'has-danger': errors.unit_type_id}"
                                     class="form-group">
                                     <label class="control-label">Unidad</label>
@@ -78,7 +109,6 @@
                                                 :key="option.id"
                                                 :label="option.description"
                                                 :value="option.id"></el-option>
-                                        <el-option v-if="fromRestaurant && form.is_dish" label="Plato" value="ZZ"></el-option>
                                     </el-select>
                                     <small v-if="errors.unit_type_id"
                                         class="form-control-feedback"
@@ -173,24 +203,7 @@
                                         v-text="errors.calculate_quantity[0]"></small>
                                 </div>
                             </div> -->
-                            <div class="col-md-3 center-el-checkbox" style="padding-top: 15px;">
-                                <div v-show="show_has_igv" :class="{'has-danger': errors.has_igv}"
-                                    class="form-group" style="margin: 0px 10px;">
-                                    <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox>
-                                    <br>
-                                    <small v-if="errors.has_igv"
-                                        class="form-control-feedback"
-                                        v-text="errors.has_igv[0]"></small>
-                                </div>
-                                <div v-if="fromRestaurant" :class="{'has-danger': errors.is_dish}"
-                                    class="form-group">
-                                    <el-checkbox v-model="form.is_dish" @change="changeIsDish()">Es un plato</el-checkbox>
-                                    <br>
-                                    <small v-if="errors.is_dish"
-                                        class="form-control-feedback"
-                                        v-text="errors.is_dish[0]"></small>
-                                </div>
-                            </div>
+
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.internal_id}"
                                     class="form-group">
@@ -665,7 +678,7 @@
                 <template #label>
                     <el-tooltip
                         v-if="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ' && form.is_dish == false)"
-                        content="Solo se puede colocar insumos a los Platos"
+                        content="Solo se puede colocar insumos a los productos con receta"
                         placement="top"
                     >
                         <span>Insumos</span>
@@ -750,6 +763,7 @@ export default {
             affectation_igv_types: [],
             accounts: [],
             show_has_igv: true,
+            show_unit_type: true,
             have_account: false,
             editors: {
                 classic: ClassicEditor
@@ -809,12 +823,11 @@ export default {
         changeIsDish() {
             if (!this.form.is_dish) {
                 this.form.unit_type_id = 'NIU';
+                this.show_unit_type = true;
             } else {
                 this.form.unit_type_id = 'ZZ';
+                this.show_unit_type = !this.form.is_dish;
             }
-
-            console.log(this.form.is_dish);
-            console.log(this.form.unit_type_id);
         },
 
         saveCategory() {

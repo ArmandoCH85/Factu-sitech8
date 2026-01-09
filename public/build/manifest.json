@@ -17,15 +17,62 @@
     "file": "assets/element-icons-ab40a589.woff",
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
+  "public/images/labeling_machines_img/Bartender.svg": {
+    "file": "assets/Bartender-f7840412.svg",
+    "src": "public/images/labeling_machines_img/Bartender.svg"
+  },
+  "public/images/labeling_machines_img/Cybra.png": {
+    "file": "assets/Cybra-0baac118.png",
+    "src": "public/images/labeling_machines_img/Cybra.png"
+  },
+  "public/images/labeling_machines_img/Honeywell.svg": {
+    "file": "assets/Honeywell-26b9a232.svg",
+    "src": "public/images/labeling_machines_img/Honeywell.svg"
+  },
+  "public/images/labeling_machines_img/Labeljoy.svg": {
+    "file": "assets/Labeljoy-77fd3f21.svg",
+    "src": "public/images/labeling_machines_img/Labeljoy.svg"
+  },
+  "public/images/labeling_machines_img/Nicelabel.svg": {
+    "file": "assets/Nicelabel-a678859a.svg",
+    "src": "public/images/labeling_machines_img/Nicelabel.svg"
+  },
+  "public/images/labeling_machines_img/Teklynx.svg": {
+    "file": "assets/Teklynx-df64a2cf.svg",
+    "src": "public/images/labeling_machines_img/Teklynx.svg"
+  },
+  "public/images/labeling_machines_img/Tlashford.png": {
+    "file": "assets/Tlashford-de70d63e.png",
+    "src": "public/images/labeling_machines_img/Tlashford.png"
+  },
+  "public/images/labeling_machines_img/Zebra.svg": {
+    "file": "assets/Zebra-54fe7d47.svg",
+    "src": "public/images/labeling_machines_img/Zebra.svg"
+  },
+  "public/images/labeling_machines_img/golabel.png": {
+    "file": "assets/golabel-6a3ee9ed.png",
+    "src": "public/images/labeling_machines_img/golabel.png"
+  },
   "resources/js/app.css": {
-    "file": "assets/app-3c00e73b.css",
+    "file": "assets/app-45e54658.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
-    "css": [
-      "assets/app-3c00e73b.css"
+    "assets": [
+      "assets/Bartender-f7840412.svg",
+      "assets/Cybra-0baac118.png",
+      "assets/golabel-6a3ee9ed.png",
+      "assets/Honeywell-26b9a232.svg",
+      "assets/Labeljoy-77fd3f21.svg",
+      "assets/Nicelabel-a678859a.svg",
+      "assets/Teklynx-df64a2cf.svg",
+      "assets/Tlashford-de70d63e.png",
+      "assets/Zebra-54fe7d47.svg"
     ],
-    "file": "assets/app-b33d98a3.js",
+    "css": [
+      "assets/app-45e54658.css"
+    ],
+    "file": "assets/app-20d76c17.js",
     "imports": [
       "_vue-clipboard-28f8ec86.js"
     ],

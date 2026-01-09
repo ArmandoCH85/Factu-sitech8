@@ -93,7 +93,7 @@
                                 class="dropdown-item text-1"
                                 href="#"
                                 @click.prevent="clickExportBartender()"
-                                >Bartender</a
+                                >TXT para impresoras tiqueteras</a
                             >
                         </div>
                     </div>

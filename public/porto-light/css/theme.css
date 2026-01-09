@@ -21842,6 +21842,7 @@ div.sub-title.text-muted {
     object-fit: cover;
     max-height: 91px;
 }
+
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

@@ -25,9 +25,9 @@
             </div>
             <div class="row row-sm mt-0">
             </div>
-            <div class="row page-pagination">
+            <div class="row page-pagination mt-2">
               <div class="col-md-12 col-lg-12 d-flex justify-content-end mb-4">
-                {{ $dataPaginate->links() }}
+                {{ $dataPaginate->onEachSide(1)->links('restaurant::layouts.partials.pagination') }}
               </div>
             </div>
             <div class="row">

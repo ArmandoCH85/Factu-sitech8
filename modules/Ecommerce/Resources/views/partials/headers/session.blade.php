@@ -1,6 +1,6 @@
 @php
     // Detectar contexto de restaurant por nombre de ruta
-    $isRestaurant = request()->routeIs('tenant.restaurant.*');
+    $isRestaurant = request()->routeIs('tenant.restaurant.*', 'restaurant.*');
 @endphp
 <div class="dropdown cart-dropdown" style="margin-left: 9px;">
 

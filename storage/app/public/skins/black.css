@@ -352,6 +352,9 @@ ul.nav-main li .nav-children li a:after {
     background: var(--black-highlight);
     padding: 1.3rem !important;
 }
+.invoice .card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
 .invoice .card-header, .invoice .card-body {
     background: #fff !important;
 }
@@ -1870,6 +1873,7 @@ html.fixed .sidebar-left a svg {
     0 1px 3px 0 rgba(0, 0, 0, 0.1),
     0 1px 2px -1px rgba(0, 0, 0, 0.1) !important; 
 }
+/* **************** sidebar fixed styles ******************* */
 html.sidebar-left-fixed .sidebar-left{
     margin: 0px !important;
     border-radius: 0px !important;
@@ -1888,10 +1892,17 @@ html.sidebar-left-fixed .sidebar-left{
     html.sidebar-left-fixed .header {
         left: 268px !important;
     }
+    html.sidebar-left-fixed.fixed.sidebar-left-collapsed .content-body {
+        margin-left: 58px;
+    }
     html.sidebar-left-fixed.sidebar-left-collapsed .header{
-        left: 82px !important;
+        left: 72px !important;
+    }
+    html.sidebar-left-fixed.fixed.sidebar-left-collapsed .page-header {
+        left: 58px !important;
     }
 }
+/* **************** end ****************** */
 .sidebar-header-desktop{
     border-radius: 12px;
 }
@@ -2364,7 +2375,8 @@ html.dark table, html.dark .table, html.dark .el-dialog__body, html.dark .invoic
 }
 html.dark ul.nav-main li.nav-expanded > a, html.dark ul.nav-main li.nav-parent > ul.nav-children,
 html.dark .header .logo-container .topbar-links,
-html.dark .card-body, html.dark .card-footer {
+html.dark .card-body, html.dark .card-footer,
+html.dark .invoice .card-header {
     background-color: var(--black-bg-dark) !important;
 }
 html.dark .header .logo-container .topbar-links:hover {

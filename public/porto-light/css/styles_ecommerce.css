@@ -2417,13 +2417,19 @@ ul.contact-info li a:hover {
     color: #1e293b !important;
 }
 .pagination .page-item .page-link {
-    border: none !important;
-    border-radius: 8px !important;
-    margin: 0 0.25rem !important;
-    padding: 0.75rem 1rem !important;
-    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 50% !important;
+    padding: 10px !important;
+    color: #64748b;
     font-weight: 600 !important;
     transition: all 0.3s ease !important;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pagination .page-item.active .page-link {
+    color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
 }
 .table.table-cart tr th{
     padding: 1rem !important;

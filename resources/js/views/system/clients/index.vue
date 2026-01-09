@@ -335,11 +335,11 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-end mt-2 me-2 data-table-visible-columns">
-                            <el-dropdown :hide-on-click="false">
+                            <el-dropdown :hide-on-click="false" placement="bottom-end">
                                 <el-button type="secondary">
                                     Mostrar columnas<i class="el-icon-arrow-down el-icon--right"></i>
                                 </el-button>
-                                <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-menu slot="dropdown" class="clients-columns-dropdown-menu">
                                     <el-dropdown-item v-for="(column, index) in columnsComputed" :key="index">
                                         <el-checkbox
                                             v-if="column.title !== undefined && column.visible !== undefined"
@@ -366,13 +366,15 @@
                             <th v-if="columns.ruc.visible">RUC</th>
                             <th v-if="columns.plan.visible">Plan</th>
                             <th v-if="columns.correo.visible">Correo</th>
-                            <th v-if="columns.entorno.visible">Entorno</th>
+                            <th v-if="columns.entorno.visible">Entorno</th>                            
                             <th v-if="columns.total_comprobantes.visible" class="text-center">Total de<br>Comprobantes</th>
                             <th v-if="columns.notificaciones.visible" class="text-center">Notificaciones</th>
-                            <th v-if="columns.comprobantes_ciclo.visible" class="text-center">Comprobantes<br>Ciclo Facturacion</th>
+                            <th v-if="columns.inicio_ciclo.visible" class="text-center">Inicio<br>Ciclo Facturación</th>
+                            <th v-if="columns.comprobantes_ciclo.visible" class="text-center">Comprobantes<br>Ciclo Facturación</th>
                             <th v-if="columns.usuarios.visible" class="text-center">Usuarios</th>
                             <th v-if="columns.sucursales.visible" class="text-center">Sucursales</th>
                             <th v-if="columns.ventas_mes.visible" class="text-center">Ventas (Mes)</th>
+                            <th v-if="columns.fecha_creacion.visible" class="text-center">F.Creación</th>
                             <th v-if="columns.consultas_api.visible" class="text-center">Consultas <br>API Peru <br>(mes)</th>
                             <th v-if="columns.notas_venta.visible" class="text-center">Cant. <br>Notas de venta</th>
                             <th v-if="columns.total_mes.visible" class="text-center">Total<br><small>(Comprobantes <br>por mes)</small></th>
@@ -482,6 +484,22 @@
                                 </template>
                             </td>
 
+                            <td v-if="columns.inicio_ciclo.visible" class="text-center">
+                                <template v-if="row.start_billing_cycle">
+                                    <span></span>
+                                    <span>{{ row.start_billing_cycle }}</span>
+                                </template>
+                                <template v-else>
+                                    <el-date-picker
+                                        v-model="row.select_date_billing"
+                                        placeholder="..."
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        @change="setStartBillingCycle($event, row.id)"
+                                    ></el-date-picker>
+                                </template>
+                            </td>
+
                             <td v-if="columns.comprobantes_ciclo.visible" class="text-center">
                                 <strong>
                                     <template v-if="row.sale_notes_quantity_if_include > 0">
@@ -553,7 +571,7 @@
 
                             </td>
 
-
+                            <td v-if="columns.fecha_creacion.visible" class="text-center">{{ row.created_at }}</td>
                             <td v-if="columns.consultas_api.visible">{{ row.queries_to_apiperu }}</td>
 
                             <td v-if="columns.notas_venta.visible" class="text-center"><strong>{{ row.count_sales_notes }}</strong></td>
@@ -775,6 +793,16 @@ th.sticky-column {
 }
 .page-header {
     position: relative;
+}
+.clients-columns-dropdown-menu {
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+.clients-columns-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
 }
 .page-header-actions {
     position: absolute;

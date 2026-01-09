@@ -1743,10 +1743,6 @@ section.auth__form-right .auth__form .auth__social a{
 .el-select-currency-container .input-with-select  .el-input__inner{
     padding-left: 70px;
 }
-.card-body-border-radius{
-    border-bottom: none !important;
-    border-radius: 12px 12px 0 0 !important;
-}
 .card-body-down{
     border-top: none !important;
     border-radius: 0 0 12px 12px !important;
@@ -2141,6 +2137,10 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .text-danger.option-delete:hover {
     background-color: color-mix(in hsl, var(--danger) 10%, #ffffff00) !important;
     color: var(--danger) !important;
+}
+.dialog-close-btn button{
+    border: none !important;
+    padding: 5px !important;
 }
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {

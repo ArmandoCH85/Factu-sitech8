@@ -782,43 +782,8 @@
                     </template>
                 </div>
             </div>
-            <!-- @todo: Mejorar evitando duplicar codigo -->
-            <!-- Mostrar en cel -->
 
-            <div class="row d-md-none form-actions text-center">
-                <div class="col-12">
-                    &nbsp;
-                </div>
-                <div class="col-6">
-                    <el-popover
-                        placement="top-start"
-                        :open-delay="1000"
-                        width="135"
-                        trigger="hover"
-                        content="Presiona ESC"
-                    >
-                        <el-button class="me-2" slot="reference" @click.prevent="close()">
-                            Cerrar
-                        </el-button>
-                    </el-popover>
-                </div>
-                <div class="col-6">
-                    <el-button
-                        v-if="form.item_id"
-                        class="add form-control btn btn-primary"
-                        native-type="submit"
-                        type="primary"
-                    >
-                        {{ titleAction }}
-                    </el-button>
-                </div>
-            </div>
-            <!-- @todo: Mejorar evitando duplicar codigo -->
-            <!-- Mostrar en cel -->
-            <!-- @todo: Mejorar evitando duplicar codigo -->
-            <!-- Ocultar en cel -->
-
-            <div class="form-actions text-end pt-2 d-none d-md-block">
+            <div class="form-actions text-end pt-2">
                 <el-popover
                     placement="top-start"
                     title="Acceso directo"

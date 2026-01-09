@@ -751,6 +751,10 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left, html.fixed.sidebar-white:not(
     border: none !important;
     box-shadow: 0 0 15px 0 rgb(34 41 47 / 5%);
 }
+.dialog-close-btn button{
+    border: none !important;
+    padding: 5px !important;
+}
 /* theme dark */
 html.dark .el-dialog,
 html.dark .support-sidebar {

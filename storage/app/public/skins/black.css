@@ -1888,6 +1888,9 @@ html.sidebar-left-fixed .sidebar-left{
     html.sidebar-left-fixed .header {
         left: 268px !important;
     }
+    html.sidebar-left-fixed.sidebar-left-collapsed .header{
+        left: 82px !important;
+    }
 }
 .sidebar-header-desktop{
     border-radius: 12px;
@@ -2312,6 +2315,10 @@ html.sidebar-light:not(.dark) .style-switcher:before{
 }
 .img-fluid-dashed{
     border: 2px dashed var(--black-highlight);
+}
+.dialog-close-btn button{
+    border: none !important;
+    padding: 5px !important;
 }
 /* ESTILOS MODO OSCURO */
 

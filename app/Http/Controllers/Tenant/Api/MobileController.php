@@ -78,7 +78,7 @@ class MobileController extends Controller
                 'address' => auth()->user()->establishment->department->description.', '.auth()->user()->establishment->province->description.', '.auth()->user()->establishment->district->description.', '.auth()->user()->establishment->address,
                 'phone' => auth()->user()->establishment->telephone,
                 'email' => auth()->user()->establishment->email,
-                'enable_list_product' => $configuration->enable_list_product,
+                'enable_list_product' => !$configuration->enable_list_product,
                 'qr_api_enable_ws' => $configuration->qr_api_enable,
                 'qr_api_url_ws' => $configuration->qr_api_url,
                 'qr_api_key_ws' => $configuration->qr_api_apiKey,

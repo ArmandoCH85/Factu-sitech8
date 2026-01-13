@@ -2884,7 +2884,9 @@ class Item extends ModelTenant
      */
     public function getSaleApiRowResource($warehouse)
     {
+        $configuration =  Configuration::first();
         $currency = $this->currency_type;
+        $decimal_units = (int)$configuration->decimal_quantity;
 
         return [
             'id' => $this->id,
@@ -2901,7 +2903,12 @@ class Item extends ModelTenant
             'unit_type_id' => $this->unit_type_id,
             'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
             'has_igv' => (bool) $this->has_igv,
+            'favorite' => $this->favorite,
             'quantity' => 0,
+            'item_unit_types' => $this->item_unit_types->transform(function ($row) use ($decimal_units) {
+                /** @var ItemUnitType $row */
+                return $row->getCollectionData($decimal_units);
+            }),
             'stock' => $this->getWarehouseCurrentStock($warehouse),
             'image_url' => $this->getImageUrl(),
             'brand_id' => $this->brand_id,

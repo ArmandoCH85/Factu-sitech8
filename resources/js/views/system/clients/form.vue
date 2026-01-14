@@ -26,6 +26,11 @@
                                              :identity_document_type_id="form.identity_document_type_id"
                                              @search="searchNumber"></x-input-service>
                         </div>
+                        <small
+                            v-if="errors.number"
+                            class="form-control-feedback"
+                            v-text="errors.number[0]">
+                        </small>
                     </div>
                     <div class="col-md-6">
                         <div :class="{'has-danger': errors.name}"

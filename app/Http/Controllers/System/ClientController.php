@@ -666,10 +666,11 @@ use App\Models\System\PlanPeriod;
                 if ($temp_path) {
                     \Log::info('Procesando certificado', ['temp_path' => $temp_path]);
                     try {
+                        $number = $request->input('number');
                         $password = $request->input('password_certificate');
                         $pfx = file_get_contents($temp_path);
                         $pem = GenerateCertificate::typePEM($pfx, $password);
-                        $name = 'certificate_' . 'admin_tenant' . '.pem';
+                        $name = 'certificate_' . 'admin_tenant'. "_$number" . '.pem';
                         if (!file_exists(storage_path('app' . DIRECTORY_SEPARATOR . 'certificates'))) {
                             mkdir(storage_path('app' . DIRECTORY_SEPARATOR . 'certificates'));
                         }

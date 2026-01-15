@@ -3097,6 +3097,19 @@ class Item extends ModelTenant
         return $this->unit_type_id === self::SERVICE_UNIT_TYPE;
     }
 
+    public static function getListPriceItems()
+    {
+        $prices = ['price1', 'price2', 'price3'];
+        $resource = [];
+
+        foreach ($prices as $price) {
+            $configuration = Configuration::first();
+            $resource[$price] = $configuration->{$price.'_label'};
+        }
+
+        return $resource;
+    }
+
 
 }
 

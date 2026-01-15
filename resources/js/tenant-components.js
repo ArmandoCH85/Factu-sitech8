@@ -372,6 +372,7 @@ import TenantReportPendingAccountCommissionsIndex from '@viewsModuleReport/pendi
 import TenantReportSaleByBrand from '../../modules/Report/Resources/assets/js/views/sales_by_brand/index.vue'
 import TenatnEditorTag from '../../modules/Item/Resources/assets/js/views/editor-tag/index.vue'
 import EmptyState from './components/EmptyState.vue'
+import TenantItemAffectations from './views/tenant/item_affectations/index.vue';
 
 //componente agregado para issue #93 añadir icono cuando no hay datos
 Vue.component('empty-state', EmptyState);   
@@ -462,6 +463,7 @@ Vue.component('tenant-dispatch_carrier-form', TenantDispatchCarrierForm)
 
 Vue.component('tenant-purchases-items', TenantPurchasesItems)
 Vue.component('tenant-attribute_types-index', TenantAttributeTypesIndex)
+Vue.component('tenant-item-affectations', TenantItemAffectations)
 Vue.component('tenant-calendar', TenantCalendar)
 Vue.component('tenant-warehouses', TenantWarehouses)
 Vue.component('tenant-calendar-quotation', TenantCalendarQuotation)

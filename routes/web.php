@@ -51,6 +51,7 @@ if ($hostname) {
             Route::get('list-payments', 'Tenant\SettingController@listPayments');
             Route::get('list-vouchers-type', 'Tenant\SettingController@listVouchersType');
             Route::get('list-transfer-reason-types', 'Tenant\SettingController@listTransferReasonTypes');
+            Route::get('list-item-affectations', 'Tenant\SettingController@listItemAffectations');
 
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index')->middleware('redirect.level');
 
@@ -504,6 +505,11 @@ if ($hostname) {
             Route::get('transfer-reason-types/record/{code}', 'Tenant\TransferReasonTypeController@record');
             Route::post('transfer-reason-types', 'Tenant\TransferReasonTypeController@store');
             Route::delete('transfer-reason-types/{code}', 'Tenant\TransferReasonTypeController@destroy');
+
+            // Affectation IGV types 
+            Route::get('item-affectations-igv/records', 'Tenant\ItemAffectationsIgvController@records');
+            Route::get('item-affectations-igv/active/{id}/{active}', 'Tenant\ItemAffectationsIgvController@changeActive');
+
 
             //Detractions
             Route::get('detraction_types/records', 'Tenant\DetractionTypeController@records');

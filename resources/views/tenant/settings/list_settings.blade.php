@@ -95,6 +95,12 @@
                         <a href="{{url('list-units')}}">Listado de unidades</a>
                     </li>
                     <li>
+                        <a href="{{url('list-item-affectations')}}">Listado de afectación por producto
+                                        <sup
+                                        style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{url('list-transfer-reason-types')}}">Tipos de motivos de transferencias</a>
                     </li>
                     @endif
@@ -185,7 +191,10 @@
                                     </li>
                                 @endif
                     <li>
-                        <a href="{{route('tenant.item-editor-tag.index')}}">Editor de etiqueta</a>
+                        <a href="{{route('tenant.item-editor-tag.index')}}">Editor de etiqueta
+                                        <sup
+                                        style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
+                        </a>
                     </li>
                 </ul>
             </div>

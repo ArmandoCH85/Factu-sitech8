@@ -558,6 +558,16 @@ label{
     background: #24da94;
     border-color: #24da94;
 }
+.modal button.btn.btn-primary,
+.dropdown-cart-action .btn,
+.btn.btn-block.btn-sm.btn-primary.cash,
+.btn-primary.login-link-pay  {
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 8px;
+    background: #24da94;
+    border-color: #24da94;
+}
 .btn {
     font-family: 'Rubik', sans-serif;
 }

@@ -165,7 +165,7 @@
                 @elseauth('ecommerce')
                 <button class="btn btn-block btn-sm btn-primary login-link culqi" onclick="execCulqi()"> Pagar con VISA </button>
 
-                <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary login-link">
+                <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary login-link-pay">
                     Pagar con EFECTIVO</button>
                 <div v-show="payment_cash.clicked" style="margin: 3%" class="form-group">
                     <div class="input-group mb-3">

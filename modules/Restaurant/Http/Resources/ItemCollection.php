@@ -59,6 +59,7 @@ class ItemCollection extends ResourceCollection
                 'favorite' => (bool)$row->favorite,
                 'area_print' => $row->preparationArea->printer ?? null,
                 'has_supplies' => $row->restaurantSupplies()->exists(),
+                'is_dish' => (bool)$row->is_dish,
                 'has_sets' => $row->sets()->exists(),
                 'items_sets' => $row->items_sets ?? [],
                 'restaurant_stock' => $row->restaurantSupplies()->exists() 

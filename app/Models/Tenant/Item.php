@@ -1426,6 +1426,7 @@ class Item extends ModelTenant
             'apply_restaurant' => (bool)$this->apply_restaurant,
             'restaurant_stock' => $restaurantStock,
             'has_supplies' => $isRestaurant ? $has_supplies : null,
+            'is_dish' => $isRestaurant ? $this->is_dish : null,
             'has_sets' => $isRestaurant ? $has_sets : null,
             'image_url' => ($this->image !== 'imagen-no-disponible.jpg')
                 ? asset('storage/uploads/items/' . $this->image)

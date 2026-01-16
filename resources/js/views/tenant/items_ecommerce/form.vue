@@ -98,7 +98,7 @@
                             </div> -->
 
                             <!-- <div v-if="!fromRestaurant" class="col-md-3"> -->
-                            <div class="col-md-3" v-show="show_unit_type">
+                            <div class="col-md-3" v-if="!form.is_dish" v-show="show_unit_type">
                                 <div :class="{'has-danger': errors.unit_type_id}"
                                     class="form-group">
                                     <label class="control-label">Unidad</label>

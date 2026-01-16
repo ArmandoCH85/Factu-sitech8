@@ -25,7 +25,7 @@ class ClientRequest extends FormRequest
             ],
             'number' => [
                 'required',
-                'digits:11'
+                'digits:11',
                  Rule::unique('system.clients')->ignore($id),
             ],
             'name' => [

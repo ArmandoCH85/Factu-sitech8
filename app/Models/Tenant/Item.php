@@ -159,6 +159,7 @@ class Item extends ModelTenant
         'date_of_due',
         'is_set',
         'sale_unit_price_set',
+        'is_dish',
         'apply_store',
         'apply_restaurant',
         'brand_id',

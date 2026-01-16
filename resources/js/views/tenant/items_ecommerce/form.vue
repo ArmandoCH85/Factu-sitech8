@@ -19,7 +19,7 @@
                             <div class="col-md-3 center-el-checkbox">
                                 <div v-if="fromRestaurant" :class="{'has-danger': errors.is_dish}"
                                     class="form-group">
-                                    <el-checkbox v-model="form.is_dish" @change="changeIsDish()">Producto con receta
+                                    <el-checkbox v-model="form.is_dish" :disabled="form.has_supplies" @change="changeIsDish()">Producto con receta
                                         <el-tooltip class="item"
                                                     content="Este producto consume insumos del almacén al venderse."
                                                     effect="dark"
@@ -674,10 +674,10 @@
                     </div>
                 </form>
             </el-tab-pane>
-            <el-tab-pane :disabled="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ' && form.is_dish == false)" label="Insumos" name="supplies">
+            <el-tab-pane :disabled="!fromRestaurant || (fromRestaurant && form.is_dish === false)" label="Insumos" name="supplies">
                 <template #label>
                     <el-tooltip
-                        v-if="!fromRestaurant || (fromRestaurant && form.unit_type_id !== 'ZZ' && form.is_dish == false)"
+                        v-if="!fromRestaurant || (fromRestaurant && form.is_dish == false)"
                         content="Solo se puede colocar insumos a los productos con receta"
                         placement="top"
                     >
@@ -982,6 +982,7 @@ export default {
                 stock: 0,
                 stock_min: 1,
                 has_igv: true,
+                has_supplies: false,
                 is_dish: false,
                 item_unit_types: [],
                 percentage_of_profit: 0,

@@ -182,6 +182,8 @@
                 'sanitary' => $this->sanitary,
                 'cod_digemid' => $this->cod_digemid,
                 'supplies' => $itemSupply,
+                'has_supplies' => (bool)$this->restaurantSupplies()->exists(),
+                'is_dish' => (bool)$this->is_dish,
 
                 'purchase_has_isc' => $this->purchase_has_isc,
                 'purchase_system_isc_type_id' => $this->purchase_system_isc_type_id,

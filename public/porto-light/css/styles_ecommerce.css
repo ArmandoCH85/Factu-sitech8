@@ -827,6 +827,12 @@ button.btn.btn-outline-danger.btn-sm:hover,
     padding: 14px;
     font-size: 18px;
 }
+
+.btn.btn-block.btn-sm.btn-primary.cash,
+.btn-primary.login-link-pay {
+    padding: 14px;
+    font-size: 18px;
+}
 .whatsapp-order{
     min-width: 50px;
     padding: 4px;
@@ -1351,6 +1357,17 @@ label {
     background: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
     border-color: hsl(var(--primary-h), var(--primary-s), 88%);
 }
+.modal button.btn.btn-primary,
+.dropdown-cart-action .btn,
+.btn.btn-block.btn-sm.btn-primary.cash,
+.btn-primary.login-link-pay {
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 8px;
+    background: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+    border-color: hsl(var(--primary-h), var(--primary-s), 88%);
+}
+
 .btn-primary.login-link:hover{
     background: var(--title-color);
 }

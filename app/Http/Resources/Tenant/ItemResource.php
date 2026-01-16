@@ -183,6 +183,7 @@
                 'cod_digemid' => $this->cod_digemid,
                 'supplies' => $itemSupply,
                 'has_supplies' => (bool)$this->restaurantSupplies()->exists(),
+                'has_sets' => (bool)$this->sets()->exists(),
                 'is_dish' => (bool)$this->is_dish,
 
                 'purchase_has_isc' => $this->purchase_has_isc,

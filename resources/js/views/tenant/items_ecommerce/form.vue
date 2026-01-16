@@ -16,8 +16,8 @@
                     <div class="form-body">
                         <div class="row">
 
-                            <div class="col-md-3 center-el-checkbox">
-                                <div v-if="fromRestaurant" :class="{'has-danger': errors.is_dish}"
+                            <div v-if="fromRestaurant && !form.has_sets" class="col-md-3 center-el-checkbox">
+                                <div :class="{'has-danger': errors.is_dish}"
                                     class="form-group">
                                     <el-checkbox v-model="form.is_dish" :disabled="form.has_supplies" @change="changeIsDish()">Producto con receta
                                         <el-tooltip class="item"
@@ -983,6 +983,7 @@ export default {
                 stock_min: 1,
                 has_igv: true,
                 has_supplies: false,
+                has_sets: false,
                 is_dish: false,
                 item_unit_types: [],
                 percentage_of_profit: 0,

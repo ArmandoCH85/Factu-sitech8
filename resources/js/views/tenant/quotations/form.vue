@@ -21,8 +21,8 @@
                                 :path_logo="getCurrentLogo"
                             ></logo>
                         </div>
-                        <div class="col-sm-5 text-left mt-3 mb-0">
-                            <address class="ib mr-2">
+                        <div class="col-sm-5 text-start mt-3 mb-0">
+                            <address class="ib me-2">
                                 <span class="font-weight-bold d-block"
                                     >COTIZACIÓN</span
                                 >
@@ -46,7 +46,7 @@
                             </address>
                         </div>
 
-                        <div class="row pr-2 mt-3 col-sm-5">
+                        <div class="row pe-2 mt-3 col-sm-5">
                             <div class="col-lg-6">
                                 <div
                                     class="form-group"
@@ -515,35 +515,35 @@
                                                     </th>
                                                     <th
                                                         width="8%"
-                                                        class="text-right font-weight-bold"
+                                                        class="text-end font-weight-bold"
                                                         style="min-width: 70px !important"
                                                     >
                                                         Cantidad
                                                     </th>
                                                     <th
                                                         width="14%"
-                                                        class="text-right font-weight-bold"
+                                                        class="text-end font-weight-bold"
                                                         style="min-width: 115px !important"
                                                     >
                                                         Valor Unitario
                                                     </th>
                                                     <th
                                                         width="14%"
-                                                        class="text-right font-weight-bold"
+                                                        class="text-end font-weight-bold"
                                                         style="min-width: 115px !important"
                                                     >
                                                         Precio Unitario
                                                     </th>
                                                     <th
                                                         width="14%"
-                                                        class="text-right font-weight-bold"
+                                                        class="text-end font-weight-bold"
                                                         style="min-width: 115px !important"
                                                     >
                                                         Subtotal
                                                     </th>
                                                     <th
                                                         width="14%"
-                                                        class="text-right font-weight-bold"
+                                                        class="text-end font-weight-bold"
                                                         style="min-width: 115px !important"
                                                     >
                                                         Total
@@ -659,7 +659,7 @@
                                                         }}
                                                     </td>
 
-                                                    <td class="text-right">
+                                                    <td class="text-end">
                                                         <div
                                                             @keydown.enter="
                                                                 handleEnterKey(
@@ -695,7 +695,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="text-right">
+                                                    <td class="text-end">
                                                         <div
                                                             @keydown.enter="
                                                                 handleEnterKey(
@@ -742,7 +742,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="text-right">
+                                                    <td class="text-end">
                                                         <div
                                                             @keydown.enter="
                                                                 handleEnterKey(
@@ -789,7 +789,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="text-right">
+                                                    <td class="text-end">
                                                         <div
                                                             @keydown.enter="
                                                                 handleEnterKey(
@@ -835,7 +835,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="text-right">
+                                                    <td class="text-end">
                                                         <div
                                                             @keydown.enter="
                                                                 handleEnterKey(
@@ -1200,7 +1200,7 @@
                                             >
                                             <el-checkbox
                                                 v-model="is_amount"
-                                                class="ml-1 mr-1"
+                                                class="ms-1 me-1"
                                                 @change="changeTypeDiscount"
                                             ></el-checkbox>
                                             :
@@ -1219,53 +1219,53 @@
                                     </div>
                                 </span>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_exportation > 0"
                                 >
                                     OP.EXPORTACIÓN: {{ currency_type.symbol }}
                                     {{ form.total_exportation }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_free > 0"
                                 >
                                     OP.GRATUITAS: {{ currency_type.symbol }}
                                     {{ form.total_free }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_unaffected > 0"
                                 >
                                     OP.INAFECTAS: {{ currency_type.symbol }}
                                     {{ form.total_unaffected }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_exonerated > 0"
                                 >
                                     OP.EXONERADAS: {{ currency_type.symbol }}
                                     {{ form.total_exonerated }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_taxed > 0"
                                 >
                                     OP.GRAVADA: {{ currency_type.symbol }}
                                     {{ form.total_taxed }}
                                 </p>
-                                <p class="text-right" v-if="form.total_igv > 0">
+                                <p class="text-end" v-if="form.total_igv > 0">
                                     IGV: {{ currency_type.symbol }}
                                     {{ form.total_igv }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_discount > 0"
                                 >
                                     DESCUENTOS TOTALES:
                                     {{ currency_type.symbol }}
                                     {{ form.total_discount }}
                                 </p>
-                                <h3 class="text-right" v-if="form.total > 0">
+                                <h3 class="text-end" v-if="form.total > 0">
                                     <b>TOTAL A PAGAR: </b
                                     >{{ currency_type.symbol }} {{ form.total }}
                                 </h3>
@@ -1338,7 +1338,7 @@
                                         >
                                             <td>
                                                 <div
-                                                    class="form-group mb-2 mr-2"
+                                                    class="form-group mb-2 me-2"
                                                 >
                                                     <el-select
                                                         v-model="
@@ -1359,7 +1359,7 @@
                                             </td>
                                             <td>
                                                 <div
-                                                    class="form-group mb-2 mr-2"
+                                                    class="form-group mb-2 me-2"
                                                 >
                                                     <el-select
                                                         v-model="
@@ -1380,7 +1380,7 @@
                                             </td>
                                             <td>
                                                 <div
-                                                    class="form-group mb-2 mr-2"
+                                                    class="form-group mb-2 me-2"
                                                 >
                                                     <el-input
                                                         v-model="row.reference"
@@ -1389,7 +1389,7 @@
                                             </td>
                                             <td>
                                                 <div
-                                                    class="form-group mb-2 mr-2"
+                                                    class="form-group mb-2 me-2"
                                                 >
                                                     <el-input
                                                         v-model="row.payment"
@@ -1423,7 +1423,7 @@
                                     class="col-md-6 payments-div"
                                                             >
                                                                 <table
-                                                                    class="text-left table"
+                                                                    class="text-start table"
                                                                     width="100%"
                                                                 >
                                                                     <thead>
@@ -1436,13 +1436,13 @@
                                                                                 pago
                                                                             </th>
                                                                             <th
-                                                                                class="text-left"
+                                                                                class="text-start"
                                                                                 style="width: 100px"
                                                                             >
                                                                                 Fecha
                                                                             </th>
                                                                             <th
-                                                                                class="text-left"
+                                                                                class="text-start"
                                                                                 style="width: 100px"
                                                                             >
                                                                                 Monto

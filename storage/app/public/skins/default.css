@@ -1809,6 +1809,19 @@ section.auth__form-right .auth__form .auth__social a{
 .control-label-modifier{
     padding-right: 14px;
 }
+.welcome-component {
+    margin-right: -25px;
+    margin-left: -25px
+}
+.actions-card .card-body{
+    background-color: transparent !important;
+    border: none !important;
+}
+.actions-cards-row .col a{
+    color: var(--dark-color) !important;
+    box-shadow: none !important;
+    border-color: var(--accent-color) !important;
+}
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
 }
@@ -2284,10 +2297,7 @@ html.dark section.card-dashboard .card-body-down table tr.td-total td{
     border-bottom-right-radius: 12px !important;
     border-bottom-left-radius: 12px !important;
 }
-html.dark section.card-dashboard .card-body-border-radius{
-    border-bottom-right-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-}
+
 html.dark .card-body .border-bottom{
     border-bottom:1px solid var(--borders-dark) !important;
 }
@@ -3284,5 +3294,22 @@ html.dark .img-thumbnail, html.dark .thumbnail{
 }
 html.dark .form-group .overlay{
     background-color: color-mix(in hsl, var(--contents-dark) 70%, #ffffff00);
+}
+html.dark .actions-card .card-header{
+    border: none !important;
+}
+html.dark .actions-cards-container .border-top{
+    border: none !important;
+}
+html.dark .actions-cards-row .col a{
+    background-color: var(--contents-dark) !important;
+    border-color: var(--contents-dark) !important;
+    color: var(--light-color) !important;
+}
+html.dark .actions-card .card-body{
+    background-color: transparent !important;
+}
+html.dark .bg-transparent{
+    background-color: transparent !important;
 }
 /* end */

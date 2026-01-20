@@ -2331,6 +2331,103 @@ html.sidebar-light:not(.dark) .style-switcher:before{
     border: none !important;
     padding: 5px !important;
 }
+.welcome-component{
+    margin-bottom: 7px;
+}
+.welcome-component .welcome-card-body .row{
+    display: flex;
+    flex-direction: column;
+}
+.welcome-component .welcome-card-body .row .welcome-card,
+.welcome-component .welcome-card-body .row .actions-cards-container{
+    width: 100% !important;
+}
+.welcome-component .welcome-card-body .welcome-card .row{
+    margin: 0 !important;
+}
+div.welcome-card .welcome-title,
+div.welcome-card .welcome-subtitle{
+    text-align: left !important;
+}
+.actions-cards-row{
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    gap: 10px;
+    margin: 0 !important;
+}
+.actions-cards-row .col{
+    max-width: none !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+.actions-cards-row .col a{
+    background-color: #ffffff !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--black-highlight) !important;
+    border-radius: 10px !important;
+    height: auto !important;
+    padding: 15px !important;
+    color: var(--black-dark) !important;
+}
+.contain-quick-actions{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.contain-quick-actions div{
+    margin: 0 !important;
+}
+.contain-quick-actions .svg-actions{
+    width: auto;
+    height: auto;
+    padding: 5px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 50%;
+}
+.bg-danger .contain-quick-actions .svg-actions{
+    border-color: var(--danger);
+    color: var(--danger);
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff);
+}
+.bg-danger .contain-quick-actions svg{
+    color: var(--danger);
+}
+.bg-warning .contain-quick-actions .svg-actions{
+    border-color: var(--warning);
+    color: var(--warning);
+    background-color: color-mix(in srgb, var(--warning) 10%, #ffffff);
+}
+.bg-warning .contain-quick-actions svg{
+    color: var(--warning);
+}
+.bg-primary .contain-quick-actions .svg-actions{
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 10%, #ffffff);
+}
+.bg-primary .contain-quick-actions svg{
+    color: var(--primary);
+}
+.bg-success .contain-quick-actions .svg-actions{
+    border-color: var(--success);
+    color: var(--success);
+    background-color: color-mix(in srgb, var(--success) 10%, #ffffff);
+}
+.bg-success .contain-quick-actions svg{
+    color: var(--success);
+}
+.actions-card{
+    background-color: transparent;
+    box-shadow: none !important;
+}
+.actions-card .card-header{
+    padding: 10px 18px 0 18px !important;
+}
+.actions-card .card-body{
+    padding: 5px 0 5px 0 !important;
+}
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {
@@ -3070,4 +3167,16 @@ html.dark .sidebar-margin-selector .sidebar-example div{
 }
 html.dark .sidebar-example.sidebar-example-selected > div {
     border-color: var(--black-highlight);
+}
+html.dark .actions-card .card-header{
+    border: none !important;
+    color: var(--black-light);
+}
+html.dark .actions-cards-container .border-top{
+    border: none !important;
+}
+html.dark .actions-cards-row .col a{
+    background-color: var(--black-bg-dark) !important;
+    border-color: var(--black-border-dark) !important;
+    color: var(--black-light) !important;
 }

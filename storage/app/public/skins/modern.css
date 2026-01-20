@@ -755,6 +755,30 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left, html.fixed.sidebar-white:not(
     border: none !important;
     padding: 5px !important;
 }
+.welcome-component {
+    margin-right: -10px;
+    margin-left: -10px;
+    margin-bottom: 10px;
+}
+.actions-card .card-body{
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 10px;
+}
+.actions-cards-row .col a{
+    color: #66789c !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+}
+.actions-cards-container .border-top,
+.actions-card .card-header{
+    border: none !important;
+    color: #333;
+}
+.welcome-component .welcome-card-body .welcome-card .row{
+    padding: 0 10px 0 10px;
+}
 /* theme dark */
 html.dark .el-dialog,
 html.dark .support-sidebar {
@@ -847,6 +871,24 @@ html.dark .table-responsive.payment .el-input__inner {
 }
 ul.nav-main li.nav-active:not(.nav-parent) > a.dashboard-link {
     color: #fff !important;
+}
+html.dark .actions-card .card-header{
+    border: none !important;
+    color: #fff;
+}
+html.dark .actions-cards-container .border-top{
+    border: none !important;
+}
+html.dark .actions-cards-row .col a{
+    background-color: #283046 !important;
+    border-color: #E0E6F7 !important;
+    color: #fff !important;
+}
+html.dark .actions-card .card-body{
+    background-color: transparent !important;
+}
+html.dark .bg-transparent{
+    background-color: transparent !important;
 }
 @media only screen and (max-width: 991px){
     .d-lg-block{

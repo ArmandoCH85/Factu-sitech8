@@ -43,8 +43,8 @@ class TransferCollection extends ResourceCollection
                 'id' => $row->id,
                 'description' => $row->description,
                 'quantity' => round($row->quantity, 1),
-                'warehouse' => $row->warehouse->description,
-                'warehouse_destination' => $row->warehouse_destination->description,
+                'warehouse' => optional($row->warehouse)->description,
+                'warehouse_destination' => optional($row->warehouse_destination)->description,
                 'created_at' => $row->created_at->format('d-m-Y h:iA'),
                 'inventory' => $row->inventory->transform(function ($o) use ($row, $transfers) {
                     return [

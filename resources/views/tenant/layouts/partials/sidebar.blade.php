@@ -491,11 +491,11 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                                         <a class="nav-link" href="{{route('inventory.index')}}">Movimientos</a>
                                                     </li>
                                                 @endif
-                                                @if(in_array('inventory_transfers', $vc_module_levels))
+                                                {{-- @if(in_array('inventory_transfers', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'transfers') ? 'nav-active' : '' }}">
                                                         <a class="nav-link" href="{{route('transfers.index')}}">Traslados</a>
                                                     </li>
-                                                @endif
+                                                @endif --}}
                                                 @if(in_array('inventory_devolutions', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'devolutions') ? 'nav-active' : '' }}">
                                                         <a class="nav-link" href="{{route('devolutions.index')}}">Devolucion a proveedor</a>

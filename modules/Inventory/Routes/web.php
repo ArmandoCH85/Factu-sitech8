@@ -297,7 +297,9 @@ if ($hostname) {
                 Route::get('items/{warehouse_id}', 'TransferController@items');
                 Route::post('search-items', 'TransferController@searchItems');
 
+                Route::post('import', 'TransferController@import');
                 Route::get('/download/pdf/{inventoryTransfer}', 'TransferController@getPdf');
+                Route::get('/download/import', 'TransferController@excelImport');
                 // Route::get('info/{inventoryTransfer}', 'TransferController@getInventoryTransferData');
 
             });

@@ -55,12 +55,14 @@ class InventoryTransfer extends ModelTenant
         'description',
         'warehouse_id',
         'warehouse_destination_id',
+        'transfer_collect_id',
         'quantity',
         'filename'
     ];
     protected $casts = [
         'warehouse_id' => 'int',
         'warehouse_destination_id' => 'int',
+        'transfer_collect_id' => 'int',
         'user_id' => 'int',
         'quantity' => 'float'
     ];
@@ -90,6 +92,10 @@ class InventoryTransfer extends ModelTenant
         return $this->hasMany(Inventory::class, 'inventories_transfer_id');
     }
 
+    public function collect_transfer()
+    {
+        return $this->hasMany(InventoryTransfer::class, 'transfer_collect_id');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -128,6 +134,31 @@ class InventoryTransfer extends ModelTenant
         return $this->hasMany(InventoryTransferItem::class);
     }
 
+    public function getPdfDataMassive()
+    {
+        return [
+            'serie' => $this->series,
+            'user' => $this->user,
+            'number' => $this->number,
+            'document_type' => "NOTA DE TRASLADO",
+            'motivo' => $this->description,
+            'created_at' => $this->created_at,
+            'quantity' => $this->quantity,
+            'warehouse_from' => $this->warehouse,
+            'items' => $this->collect_transfer->transform(function($transfer) {
+                $item = $transfer->inventories->first()->item;
+                $inventory = $transfer->inventories->first();
+                return [
+                    'origin' => $transfer->warehouse->description,
+                    'destination' => $transfer->warehouse_destination->description,
+                    'description' => $item->description,
+                    'quantity' => $inventory->quantity,
+                    'unit_type_text' => $item->unit_type->description,
+                    'internal_id' => $item->internal_id,
+                ];
+            }),
+        ];
+    }
 
     public function getPdfData()
     {

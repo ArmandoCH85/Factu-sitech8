@@ -1235,7 +1235,7 @@
                                     class="row mt-1 mb-2"
                                     v-if="form.total > 0"
                                 >
-                                    <div class="col-lg-10 float-end">
+                                    <div class="col-8 col-md-10 float-end">
                                         <label
                                             class="float-end control-label"
                                         >
@@ -1263,7 +1263,7 @@
                                         </label>
                                     </div>
 
-                                    <div class="col-lg-2 text-end">
+                                    <div class="col-4 col-md-2 text-end">
                                         <el-input-number
                                             v-model="total_global_discount"
                                             :min="0"
@@ -1324,12 +1324,12 @@
                                 </p>
 
                                 <div class="row mt-1" v-if="form.total > 0">
-                                    <div class="col-lg-10 float-end mt-1">
+                                    <div class="col-8 col-md-10 float-end mt-1">
                                         <label class="float-end control-label"
                                             >OTROS CARGOS:
                                         </label>
                                     </div>
-                                    <div class="col-lg-2 float-end">
+                                    <div class="col-4 col-md-2 float-end">
                                         <div class="form-group">
                                             <table>
                                                 <tr>

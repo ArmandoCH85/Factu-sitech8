@@ -503,22 +503,22 @@
                                     <thead>
                                         <template v-if="config.enabled_price_items_dispatch">
                                             <tr>
-                                                <th>#</th>
+                                                <th style="min-width: 70px;">#</th>
                                                 <th class="font-weight-bold">Unidad</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th class="font-weight-bold" style="min-width: 200px;">Descripción</th>
                                                 <th class="text-end font-weight-bold">Cantidad</th>
                                                 <th class="text-end font-weight-bold">Precio</th>
-                                                <th class="text-end font-weight-bold">Total</th>
+                                                <th class="text-end font-weight-bold" style="min-width: 100px;">Total</th>
                                                 <th></th>
                                             </tr>
                                         </template>
                                         <template v-else>
                                             <tr>
-                                                <th>#</th>
+                                                <th style="min-width: 70px;">#</th>
                                                 <th class="font-weight-bold">Unidad</th>
-                                                <th class="font-weight-bold">Descripción</th>
-                                                <th class="text-end font-weight-bold">Cantidad</th>
-                                                <th></th>
+                                                <th class="font-weight-bold" style="min-width: 200px;">Descripción</th>
+                                                <th class="text-end font-weight-bold" style="min-width: 100px;">Cantidad</th>
+                                                <th style="min-width: 100px;"></th>
                                             </tr>
                                         </template>
                                     </thead>
@@ -798,7 +798,10 @@
                             </div>
                         </div>
                         <div class="col-lg-12"></div>
-                        <div class="form-actions d-flex justify-content-between mt-4">
+                        <div class="form-actions mt-4 footer-card-default gap-2
+                               d-flex flex-column flex-md-row
+                               justify-content-center justify-content-md-between
+                               align-items-stretch align-items-md-center">
                             <el-button class="second-buton btn btn-default second-buton-default" @click.prevent="close()">Cancelar</el-button>
                             <el-button class="btn btn-primary btn-submit-default" v-if="(form.items.length > 0)" :loading="loading_submit" native-type="submit"
                                 type="primary">Generar

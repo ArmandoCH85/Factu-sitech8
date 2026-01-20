@@ -15,13 +15,13 @@
             <div class="invoice p-0">
                 <header class="clearfix clearfix-default p-2">
                     <div class="d-flex head-notes">
-                        <div class="col-sm-2 text-center mt-3 mb-0">
+                        <div class="col-sm-2 text-center mt-3 mb-0 is-hidden-mobile">
                             <logo 
                                 url="/"
                                 :path_logo="getCurrentLogo"
                             ></logo>
                         </div>
-                        <div class="text-left mt-3 mb-0">
+                        <div class="text-left mt-3 mb-0 is-hidden-mobile">
                             <address class="ib me-2">
                                 <span class="font-weight-bold d-block"
                                     >PEDIDO</span
@@ -945,7 +945,10 @@
                     </div>
 
                     <div
-                        class="form-actions footer-card-default mt-4 px-4 py-3"
+                        class="form-actions mt-4 footer-card-default gap-2
+                               d-flex flex-column flex-md-row
+                               justify-content-center justify-content-md-between
+                               align-items-stretch align-items-md-center px-4 py-3"
                     >
                         <el-button
                             class="second-buton btn btn-default second-buton-default"

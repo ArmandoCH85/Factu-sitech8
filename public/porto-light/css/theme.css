@@ -21949,6 +21949,14 @@ div.welcome-card .welcome-subtitle{
         right: 0;
     }
 }
+@media (max-width: 766px) {
+    .el-dialog{
+        width: 95% !important;
+    }
+    kbd{
+        display: none !important;
+    }
+}
 @media (min-width: 716px) {
     .card-columns {
     column-count: 2;

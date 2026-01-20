@@ -1809,9 +1809,11 @@ section.auth__form-right .auth__form .auth__social a{
 .control-label-modifier{
     padding-right: 14px;
 }
-.welcome-component {
-    margin-right: -25px;
-    margin-left: -25px
+@media only screen and (min-width: 767px){
+    .welcome-component {
+        margin-right: -25px;
+        margin-left: -25px;
+    }
 }
 .actions-card .card-body{
     background-color: transparent !important;

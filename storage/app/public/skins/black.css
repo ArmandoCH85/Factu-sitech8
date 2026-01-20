@@ -3141,7 +3141,7 @@ html.dark .text-danger.option-delete:hover {
         border-radius: 0px;
     }
     html.dark .nav-main-mobile li a,
-    html.dark .border.rounded-circle.text-center, .navigation-options {
+    html.dark .border.rounded-circle.text-center, html.dark .navigation-options {
         color: var(--black-light) !important;
     }
 }

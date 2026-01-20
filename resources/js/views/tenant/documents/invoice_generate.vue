@@ -2763,7 +2763,7 @@
                         </div>
                         <!-- @todo: Mejorar evitando duplicar codigo -->
                         <!-- Mostrar en cel -->
-                        <div class="row d-md-none">
+                        <div class="d-none">
                             <div class="col-12 text-center">
                                 <button
                                     class="btn waves-effect waves-light btn-primary btn-sm"
@@ -3589,35 +3589,37 @@
                     <!-- @todo: Mejorar evitando duplicar codigo -->
                     <!-- Mostrar en cel -->
                     <div class="card-footer d-md-none">
-                        <div class="col-12 row text-center">
-                            <div class="col-4 text-center px-1">
+                        <div class="row g-2 text-center px-3 pb-3">
+                            <!-- Vista previa -->
+                            <div class="col-6">
                                 <button
-                                    class="btn btn-success form-control"
-                                    v-if="
-                                        form.items.length > 0 && this.dateValid
-                                    "
+                                    class="btn btn-success w-100"
+                                    v-if="form.items.length > 0 && dateValid"
                                     @click.prevent="openDialogPreview()"
                                 >
-                                    Vista Previa
+                                    Vista previa
                                 </button>
                             </div>
-                            <div class="col-4 text-center">
+                        
+                            <!-- Cancelar -->
+                            <div class="col-6">
                                 <button
-                                    class="btn btn-default form-control"
+                                    class="btn btn-outline-secondary w-100"
                                     @click.prevent="close()"
                                 >
                                     Cancelar
                                 </button>
                             </div>
-                            <div class="col-4 text-center">
+                        
+                            <!-- Enviar -->
+                            <div class="col-12">
                                 <el-button
-                                    v-if="
-                                        form.items.length > 0 && this.dateValid
-                                    "
+                                    v-if="form.items.length > 0 && dateValid"
                                     :loading="loading_submit"
-                                    class="submit btn btn-primary form-control"
+                                    class="btn btn-primary w-100"
                                     native-type="submit"
-                                    >{{ btnText }}
+                                >
+                                    {{ btnText }}
                                 </el-button>
                             </div>
                         </div>

@@ -699,13 +699,27 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-actions text-end mt-4 footer-card-default">
-                        <el-button class="second-buton btn btn-default second-buton-default" @click.prevent="close()">Cancelar</el-button>
-                        <el-button v-if="form.items !== undefined && form.items.length > 0 && !hide_button"
-                                   :loading="loading_submit"
-                                   native-type="submit"
-                                   class="btn btn-primary btn-submit-default"
-                                   type="primary">Generar
+                    <div
+                        class="form-actions mt-4 footer-card-default gap-2
+                               d-flex flex-column flex-md-row
+                               justify-content-center justify-content-md-between
+                               align-items-stretch align-items-md-center"
+                    >
+                        <el-button
+                            class="btn btn-default second-buton-default"
+                            @click.prevent="close()"
+                        >
+                            Cancelar
+                        </el-button>
+                    
+                        <el-button
+                            v-if="form.items && form.items.length > 0 && !hide_button"
+                            :loading="loading_submit"
+                            native-type="submit"
+                            class="btn btn-primary btn-submit-default"
+                            type="primary"
+                        >
+                            Generar
                         </el-button>
                     </div>
                 </form>

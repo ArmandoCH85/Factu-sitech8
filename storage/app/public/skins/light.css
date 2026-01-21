@@ -856,6 +856,7 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
     color: var(--dark-color) !important;
     box-shadow: none !important;
     border-color: transparent !important;
+    border-radius: 12px !important;
 }
 .actions-cards-container .border-top,
 .actions-card .card-header{

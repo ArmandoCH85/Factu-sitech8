@@ -196,7 +196,7 @@
                         </th>
                         <th class="text-end">Acciones</th>
                     </tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{'anulate_color': row.state_type_id === '11'}">
                         <!-- <td>{{ index }}</td> -->
                         <td
                             class="text-end"

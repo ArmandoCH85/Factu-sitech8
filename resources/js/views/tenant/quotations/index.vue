@@ -436,7 +436,7 @@
                                       Duplicar
                                     </el-dropdown-item>
 
-                                    <el-dropdown-item divided />
+                                    <el-dropdown-item v-if="row.documents.length == 0 && row.state_type_id != '11'" divided />
 
                                     <el-dropdown-item
                                       v-if="row.documents.length == 0 && row.state_type_id != '11'"

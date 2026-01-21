@@ -1085,8 +1085,28 @@ html.sidebar-light:not(.dark) .style-switcher h5.title-visual{
 }
 span.badge.bg-secondary.text-white.bg-success,
 span.badge.text-white.bg-success {
-    background: rgb(35 218 149 / 20%) !important;
-    color: #23da95 !important;
+    background: color-mix(in srgb, var(--success) 20%, #ffffff00) !important;
+    color: var(--success) !important;
+}
+span.badge.bg-secondary.text-white.bg-danger,
+span.badge.text-white.bg-danger {
+    background: color-mix(in srgb, var(--danger) 20%, #ffffff00) !important;
+    color: var(--danger) !important;
+}
+span.badge.bg-secondary.text-white.bg-warning,
+span.badge.text-white.bg-warning {
+    background: color-mix(in srgb, var(--warning) 20%, #ffffff00) !important;
+    color: var(--warning) !important;
+}
+span.badge.bg-secondary.text-white.bg-info,
+span.badge.text-white.bg-info {
+    background: color-mix(in srgb, var(--info) 20%, #ffffff00) !important;
+    color: var(--info) !important;
+}
+span.badge.bg-secondary.text-white.bg-primary,
+span.badge.text-white.bg-primary {
+    background: color-mix(in srgb, var(--primary) 20%, #ffffff00) !important;
+    color: var(--primary) !important;
 }
 /* .btn-warning:hover, .btn-warning.hover {
     background-color: #ffa71f;
@@ -1370,6 +1390,7 @@ a.ws-flotante {
 .table>:not(caption)>*>*{
     border: none !important;
     background-color: transparent;
+    color: var(--dark-color);
 }
 .img-scroll::-webkit-scrollbar-track {
     background: #f0f9ff !important;
@@ -1823,6 +1844,7 @@ section.auth__form-right .auth__form .auth__social a{
     color: var(--dark-color) !important;
     box-shadow: none !important;
     border-color: var(--accent-color) !important;
+    border-radius: 12px !important;
 }
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
@@ -3091,7 +3113,8 @@ html.dark .el-input-number__increase, html.dark .el-input-number__decrease {
 html.dark .input-custom .el-input-number__increase {
     top: 1px;
 }
-html.dark .el-pagination .btn-prev, html.dark .el-pagination .btn-next {
+html.dark .el-pagination .btn-prev, html.dark .el-pagination .btn-next,
+html.dark .btn-add-new {
     background: var(--button-second);
     border: 1px solid var(--borders-dark);
     color: var(--accent-color);

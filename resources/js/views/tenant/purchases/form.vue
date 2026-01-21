@@ -492,7 +492,7 @@
                             </div>
                         </div>
                         <div v-if="form.items !== undefined && form.items.length > 0"
-                             class="row">
+                             class="row mt-3">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -577,8 +577,8 @@
 
                                 <div class="row mt-1 mb-2"  v-if="form.total > 0">
 
-                                    <div class="col-lg-10 float-right">
-                                        <label class="float-right control-label">
+                                    <div class="col-lg-10 float-end">
+                                        <label class="float-end control-label">
 
                                             <el-tooltip class="item"
                                                 :content="global_discount_type.description"
@@ -593,7 +593,7 @@
                                         </label>
                                     </div>
 
-                                    <div class="col-lg-2 float-right">
+                                    <div class="col-lg-2 float-end">
                                         <el-input-number v-model="total_global_discount"
                                                             :min="0"
                                                             class="input-custom"
@@ -637,10 +637,10 @@
                                 <template v-if="is_perception_agent">
                                     <hr>
                                     <div class="row mt-1">
-                                        <div class="col-lg-10 float-right">
-                                            <label class="float-right control-label">NÚMERO PERCEPCIÓN: </label>
+                                        <div class="col-lg-10 float-end">
+                                            <label class="float-end control-label">NÚMERO PERCEPCIÓN: </label>
                                         </div>
-                                        <div class="col-lg-2 float-right">
+                                        <div class="col-lg-2 float-end">
                                             <div :class="{'has-danger': errors.perception_number}"
                                                  class="form-group">
                                                 <el-input v-model="form.perception_number"></el-input>
@@ -653,10 +653,10 @@
                                     </div>
 
                                     <div class="row mt-1">
-                                        <div class="col-lg-10 float-right">
-                                            <label class="float-right control-label">FEC EMISIÓN PERCEPCIÓN: </label>
+                                        <div class="col-lg-10 float-end">
+                                            <label class="float-end control-label">FEC EMISIÓN PERCEPCIÓN: </label>
                                         </div>
-                                        <div class="col-lg-2 float-right">
+                                        <div class="col-lg-2 float-end">
                                             <div :class="{'has-danger': errors.perception_date}"
                                                  class="form-group">
                                                 <el-date-picker v-model="form.perception_date"
@@ -672,10 +672,10 @@
                                     </div>
 
                                     <div class="row mt-1">
-                                        <div class="col-lg-10 float-right">
-                                            <label class="float-right control-label">IMPORTE PERCEPCIÓN: </label>
+                                        <div class="col-lg-10 float-end">
+                                            <label class="float-end control-label">IMPORTE PERCEPCIÓN: </label>
                                         </div>
-                                        <div class="col-lg-2 float-right">
+                                        <div class="col-lg-2 float-end">
                                             <div :class="{'has-danger': errors.total_perception}"
                                                  class="form-group">
                                                 <el-input v-model="form.total_perception"

@@ -21939,6 +21939,14 @@ div.welcome-card .welcome-subtitle{
 .actions-card .card-body{
     padding: 5px 0 5px 0 !important;
 }
+.anulate_color,
+.anulate_color td,
+.text-danger td {
+    color: var(--danger) !important;
+}
+.text-warning td{
+    color: var(--warning) !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

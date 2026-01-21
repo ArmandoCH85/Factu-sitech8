@@ -1,6 +1,6 @@
 <template>
     <div class="documents">
-        <div class="page-header pr-0">
+        <div class="page-header pe-0">
             <h2>
                 <a href="/documents">
                     <svg
@@ -157,7 +157,7 @@
                     <tr slot="heading">
                         <!-- <th>#</th> -->
                         <th v-if="columns.soap_type.visible">SOAP</th>
-                        <th class="text-left" style="min-width: 95px;">
+                        <th class="text-start" style="min-width: 95px;">
                             Emisión
                         </th>
                         <th
@@ -185,7 +185,7 @@
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.exchange_rate_sale.visible"
                         >
                             T.C.
@@ -196,7 +196,7 @@
                         >
                             Moneda
                         </th>
-                        <th class="text-right" v-if="columns.guides.visible">
+                        <th class="text-end" v-if="columns.guides.visible">
                             Guia
                         </th>
 
@@ -208,41 +208,41 @@
                         </th>
 
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_exportation.visible"
                         >
                             T.Exportación
                         </th>
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_free.visible"
                         >
                             T.Gratuita
                         </th>
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_unaffected.visible"
                         >
                             T.Inafecta
                         </th>
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_exonerated.visible"
                         >
                             T.Exonerado
                         </th>
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_charge.visible"
                         >
                             {{ columns.total_charge.title }}
                         </th>
-                        <th class="text-right">T.Gravado</th>
-                        <th class="text-right">T.Igv</th>
-                        <th class="text-right" v-if="columns.total.visible">
+                        <th class="text-end">T.Gravado</th>
+                        <th class="text-end">T.Igv</th>
+                        <th class="text-end" v-if="columns.total.visible">
                             Total
                         </th>
-                        <th class="text-right" v-if="columns.balance.visible">
+                        <th class="text-end" v-if="columns.balance.visible">
                             Saldo
                         </th>
                         <th
@@ -254,14 +254,14 @@
                         </th>
                         <th class="text-center"></th>
                         <th
-                            class="text-right"
+                            class="text-end"
                             v-if="typeUser != 'integrator'"
                         ></th>
                     </tr>
                     <tr
                         slot-scope="{ index, row }"
                         :class="{
-                            'text-danger': row.state_type_id === '11',
+                            'anulate_color': row.state_type_id === '11',
                             'text-warning': row.state_type_id === '13',
                             'border-light': row.state_type_id === '01',
                             'border-left border-info':
@@ -282,7 +282,7 @@
                         <td v-if="columns.soap_type.visible">
                             {{ row.soap_type_description }}
                         </td>
-                        <td class="text-left">{{ row.date_of_issue }}</td>
+                        <td class="text-start">{{ row.date_of_issue }}</td>
                         <td
                             class="text-center"
                             v-if="columns.date_payment.visible"
@@ -486,7 +486,7 @@
                         </td>
 
                         <td
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
@@ -494,7 +494,7 @@
                         </td>
 
                         <td
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_free.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
@@ -502,39 +502,39 @@
                         </td>
 
                         <td
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ row.total_unaffected }}
                         </td>
                         <td
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ row.total_exonerated }}
                         </td>
                         <td
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.total_charge.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ row.total_charge }}
                         </td>
-                        <td class="text-right">
+                        <td class="text-end">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ row.total_taxed }}</td>
-                        <td class="text-right">
+                        <td class="text-end">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ row.total_igv }}</td>
-                        <td class="text-right" v-if="columns.total.visible">
+                        <td class="text-end" v-if="columns.total.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ row.total }}
                         </td>
 
                         <td
-                            class="text-right"
+                            class="text-end"
                             v-if="columns.balance.visible"
                             :class="{
                                 'text-warning': row.balance > 0,
@@ -577,7 +577,7 @@
                             </button>
                         </td>
 
-                        <td class="text-right" v-if="typeUser != 'integrator'">
+                        <td class="text-end" v-if="typeUser != 'integrator'">
                             <el-dropdown trigger="click" size="small">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>

@@ -618,7 +618,7 @@
             :currency_types="currency_types"
             :showDialog.sync="showDialogNewPerson"
             type="customers"
-            :input_person="customerSearchTerm"
+            :input_person="personFormInput"
         ></person-form>
     </el-dialog>
 </template>
@@ -635,7 +635,25 @@ import {
 export default {
     props: ["showDialog", "recordId", "configuration"],
     computed: {
-        ...mapState(["exchange_rate", "config", "currency_types"])
+        ...mapState(["exchange_rate", "config", "currency_types"]),
+        personFormInput() {
+            const term = (this.customerSearchTerm || '').trim()
+
+            if (!term) return ''
+
+            if (/^\d+$/.test(term)) {
+                let identity_document_type_id = null
+                if (term.length === 8) identity_document_type_id = '1'
+                if (term.length === 11) identity_document_type_id = '6'
+
+                return {
+                    number: term,
+                    ...(identity_document_type_id ? { identity_document_type_id } : {})
+                }
+            }
+
+            return term
+        },
     },
     mixins: [functions, exchangeRate],
     components: { PersonForm },

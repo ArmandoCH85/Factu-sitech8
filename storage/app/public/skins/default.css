@@ -1681,6 +1681,9 @@ body .v-modal {
     right: 6px;
     height: calc(100% - 51px);
 }
+.btn-add-new-p-quotation{
+    height: calc(100% - 2px);
+}
 .btn-add-new:hover{
     color: var(--dark-color);
 }

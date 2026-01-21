@@ -353,7 +353,7 @@
 
         <person-form :showDialog.sync="showDialogNewPerson"
                      type="suppliers"
-                     :input_person="supplierSearchTerm"
+                     :input_person="personFormInput"
                      :external="true"></person-form>
 
         <purchase-options :showDialog.sync="showDialogOptions"
@@ -416,7 +416,25 @@ export default {
                 return `/storage/uploads/logos/${this.company.logo}`;
             }
             return '';
-        }
+        },
+        personFormInput() {
+            const term = (this.supplierSearchTerm || '').trim()
+
+            if (!term) return ''
+
+            if (/^\d+$/.test(term)) {
+                let identity_document_type_id = null
+                if (term.length === 8) identity_document_type_id = '1'
+                if (term.length === 11) identity_document_type_id = '6'
+
+                return {
+                    number: term,
+                    ...(identity_document_type_id ? { identity_document_type_id } : {})
+                }
+            }
+
+            return term
+        },
     },
     mixins: [functions, exchangeRate],
     data() {

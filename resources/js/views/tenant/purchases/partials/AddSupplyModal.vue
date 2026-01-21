@@ -129,7 +129,7 @@
             </div>
 
             <div class="form-actions text-end mt-3">
-                <el-button @click="close">Cancelar</el-button>
+                <el-button class="me-2" @click="close">Cancelar</el-button>
                 <el-button
                     type="primary"
                     native-type="submit"

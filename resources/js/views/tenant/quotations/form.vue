@@ -1580,7 +1580,7 @@
             :showDialog.sync="showDialogNewPerson"
             type="customers"
             :external="true"
-            :input_person="customerSearchTerm"
+            :input_person="personFormInput"
             :document_type_id="form.document_type_id"
         ></person-form>
 
@@ -1846,6 +1846,24 @@ export default {
                 return `/storage/uploads/logos/${this.company.logo}`;
             }
             return '';
+        },
+        personFormInput() {
+            const term = (this.customerSearchTerm || '').trim()
+
+            if (!term) return ''
+
+            if (/^\d+$/.test(term)) {
+                let identity_document_type_id = null
+                if (term.length === 8) identity_document_type_id = '1'
+                if (term.length === 11) identity_document_type_id = '6'
+
+                return {
+                    number: term,
+                    ...(identity_document_type_id ? { identity_document_type_id } : {})
+                }
+            }
+
+            return term
         },
         ...mapState(["config"]),
         canAddDescriptionToDocumentItem() {

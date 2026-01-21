@@ -741,7 +741,7 @@
             />
 
             <person-form :external="true"
-                         :input_person="supplierSearchTerm"
+                         :input_person="personFormInput"
                          :showDialog.sync="showDialogNewPerson"
                          type="suppliers"></person-form>
 
@@ -787,6 +787,24 @@ export default {
             'establishment',
             'hasGlobalIgv',
         ]),
+        personFormInput() {
+            const term = (this.supplierSearchTerm || '').trim()
+
+            if (!term) return ''
+
+            if (/^\d+$/.test(term)) {
+                let identity_document_type_id = null
+                if (term.length === 8) identity_document_type_id = '1'
+                if (term.length === 11) identity_document_type_id = '6'
+
+                return {
+                    number: term,
+                    ...(identity_document_type_id ? { identity_document_type_id } : {})
+                }
+            }
+
+            return term
+        },
         creditPaymentMethod: function () {
             return _.filter(this.payment_method_types, {'is_credit': true})
         },

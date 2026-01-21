@@ -731,12 +731,6 @@
     border-radius: 8px;
     padding-right: 100px;
 }
-.btn-sunat-reniec{
-    position: absolute;
-    top: 3px;
-    right: 20px;
-    height: 48px;
-}
 .url-text-ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -748,6 +742,14 @@
     padding-left: 0;
     padding-right: 5px;
     margin-top: 4px;
+}
+</style>
+<style scoped>
+.btn-sunat-reniec{
+    position: absolute;
+    top: 3px;
+    right: 20px;
+    height: 48px;
 }
 </style>
 <script>

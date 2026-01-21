@@ -3661,7 +3661,7 @@
         <person-form
             :document_type_id="form.document_type_id"
             :external="true"
-            :input_person="customerSearchTerm"
+            :input_person="personFormInput"
             :showDialog.sync="showDialogNewPerson"
             type="customers"
         ></person-form>
@@ -4205,7 +4205,25 @@ export default {
                 return this.sellers.filter(seller => !seller.name.includes('(SUSPENDIDO)'));
             }
             return this.sellers;
-        }
+        },
+        personFormInput() {
+            const term = (this.customerSearchTerm || '').trim()
+
+            if (!term) return ''
+
+            if (/^\d+$/.test(term)) {
+                let identity_document_type_id = null
+                if (term.length === 8) identity_document_type_id = '1'
+                if (term.length === 11) identity_document_type_id = '6'
+
+                return {
+                    number: term,
+                    ...(identity_document_type_id ? { identity_document_type_id } : {})
+                }
+            }
+
+            return term
+        },
     },
     async created() {
         this.selected_option_price = this.price_options[0].id;

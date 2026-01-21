@@ -811,7 +811,7 @@
                 </form>
             </div>
 
-            <person-form :external="true" :showDialog.sync="showDialogNewPerson" :input_person="customerSearchTerm"
+            <person-form :external="true" :showDialog.sync="showDialogNewPerson" :input_person="personFormInput"
                 :is_dispatch="true" type="customers"></person-form>
 
             <driver-form :showDialog.sync="showDialogDriverForm" @success="successDriver"></driver-form>
@@ -944,7 +944,25 @@ export default {
                 return true;
             }
             return false;
-        }
+        },
+        personFormInput() {
+            const term = (this.customerSearchTerm || '').trim()
+
+            if (!term) return ''
+
+            if (/^\d+$/.test(term)) {
+                let identity_document_type_id = null
+                if (term.length === 8) identity_document_type_id = '1'
+                if (term.length === 11) identity_document_type_id = '6'
+
+                return {
+                    number: term,
+                    ...(identity_document_type_id ? { identity_document_type_id } : {})
+                }
+            }
+
+            return term
+        },
     },
     data() {
         return {

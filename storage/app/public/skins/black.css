@@ -1,19 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
 
 :root{
-    --primary-color: #0f172b;
-    --black-primary: #0f172b;
-    --black-dark: #020618;
-    --black-light: #f8fafc;
-    --black-accent: #90a1b9;
-    --black-highlight: #f2f5f7; 
+    /* Color base */
+    --base-l: 0.178;
+    --base-c: 0.0749;
+    --base-h: 347.57;
 
-    /* modo dark */
-    --black-bg-dark: #020617;
-    --black-content-dark: #1d293d;
-    --black-input-dark: #0c1023;
-    --black-border-dark: #1a2230;
-    --black-button-second: #0c1023;
+    /* Claros */
+    --primary-color: var(--black-primary);
+    --black-primary: oklch(var(--base-l) var(--base-c) var(--base-h));
+    --black-dark: oklch(calc(var(--base-l) - 0.0786) calc(var(--base-c) + 0.0008) calc(var(--base-h) - 1.23));
+    --black-accent: oklch(calc(var(--base-l) + 0.4954) calc(var(--base-c) - 0.0015) calc(var(--base-h) - 9.37 ));
+    --black-highlight: oklch(calc(var(--base-l) + 0.76) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
+    --black-light: oklch(calc(var(--base-l) + 0.7758) calc(var(--base-c) - 0.0383) calc(var(--base-h) - 18.5));
+
+    /* Oscuros */
+    --black-bg-dark: oklch(calc(var(--base-l) - 0.0796) calc(var(--base-c) - 0.0011) calc(var(--base-h) - 1.66));
+    --black-input-dark: oklch(calc(var(--base-l) - 0.0279) calc(var(--base-c) - 0.0022) calc(var(--base-h) + 6.53));
+    --black-content-dark: oklch(calc(var(--base-l) + 0.0715) calc(var(--base-c) - 0.0009) calc(var(--base-h) - 6.03));
+    --black-border-dark: oklch(calc(var(--base-l) + 0.0426) calc(var(--base-c) - 0.0126) calc(var(--base-h) - 4.97));
+    --black-button-second: oklch(calc(var(--base-l) - 0.0279) calc(var(--base-c) - 0.0022) calc(var(--base-h) + 6.53));
 
     --black-font-family: 'Figtree', sans-serif;
 

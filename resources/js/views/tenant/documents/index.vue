@@ -625,26 +625,26 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check-circle me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 12l2 2l4 -4" /><circle cx="12" cy="12" r="9" /></svg>
                                     Cambiar a estado registrado
                                   </el-dropdown-item>
-                              
+
                                   <el-dropdown-item
-                                    v-if="
-                                      row.btn_change_to_registered_status ||
-                                      row.btn_recreate_document ||
-                                      (row.btn_resend && !isClient) ||
-                                      (
-                                        configuration.permission_to_edit_cpe &&
-                                        row.state_type_id === '01' &&
-                                        userPermissionEditCpe &&
-                                        row.is_editable
-                                      ) ||
-                                      (
-                                        row.state_type_id === '01' &&
-                                        userId == row.user_id &&
-                                        row.is_editable
-                                      )
-                                    "
-                                    divided
-                                  />
+                                      divided
+                                      v-if="
+                                          row.btn_change_to_registered_status ||
+                                          row.btn_recreate_document ||
+                                          (row.btn_resend && !isClient) ||
+                                          (
+                                              configuration.permission_to_edit_cpe &&
+                                              row.state_type_id === '01' &&
+                                              userPermissionEditCpe &&
+                                              row.is_editable
+                                          ) ||
+                                          (
+                                              row.state_type_id === '01' &&
+                                              userId == row.user_id &&
+                                              row.is_editable
+                                          )
+                                      "
+                                  ></el-dropdown-item>
                     
                                   <el-dropdown-item v-if="row.btn_note">
                                     <a :href="`/${resource}/note/${row.id}`" style="text-decoration: none; color: inherit;">
@@ -696,7 +696,12 @@
                                     Consultar Servidor
                                   </el-dropdown-item>
                               
-                                  <el-dropdown-item divided />
+                                  <el-dropdown-item 
+                                    divided
+                                    v-if="row.btn_note || row.btn_guide || row.btn_constancy_detraction ||
+                                     (isClient && !row.send_server) ||
+                                      (isClient && row.send_server && (row.state_type_id === '01' || row.state_type_id === '03'))"
+                                  />
                               
                                   <el-dropdown-item
                                     @click.native="clickPayment(row.id)"

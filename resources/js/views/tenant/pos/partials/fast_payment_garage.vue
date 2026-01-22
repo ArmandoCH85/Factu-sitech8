@@ -1259,7 +1259,7 @@ export default {
 
                         // this.form_payment.sale_note_id = response.data.data.id;
                         this.form_cash_document.sale_note_id = response.data.data.id;
-
+                        this.documentNewId = response.data.data.id;
                     } else {
                         this.documentNewId = response.data.data.id;
                         

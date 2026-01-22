@@ -1641,6 +1641,20 @@ a.ws-flotante {
 .sidebar-margin-selector div svg{
     fill: var(--black-accent);
 }
+.sidebar-margin-selector div.svg-dark{
+    background-color: var(--black-primary);
+}
+.sidebar-margin-selector div.svg-dark svg{
+    stroke: var(--black-light);
+    fill: var(--black-light);
+    width: calc(100% + 1.5px) !important;
+}
+.sidebar-margin-selector .sidebar-example-selected div.svg-dark svg{
+    width: 100% !important;
+}
+.sidebar-margin-selector div.svg-dark svg path{
+    opacity: 1;
+}
 .sidebar-example.sidebar-example-selected > div {
     box-shadow: 0 0 0 3px var(--highlight-color);
     border-color: var(--black-primary);
@@ -1658,6 +1672,9 @@ a.ws-flotante {
 }
 .sidebar-margin-selector-container{
     display: block !important;
+}
+.sidebar-compact-selector-container{
+    display: none;
 }
 /* sidebar dark styles */
 html.fixed.sidebarMode-dark:not(.dark) .sidebar-left,
@@ -3185,4 +3202,7 @@ html.dark .actions-cards-row .col a{
     background-color: var(--black-bg-dark) !important;
     border-color: var(--black-border-dark) !important;
     color: var(--black-light) !important;
+}
+html.dark .sidebar-theme-selector-container{
+    display: none !important;
 }

@@ -2,9 +2,9 @@
 
 :root{
     /* Color base */
-    --base-l: 0.178;
-    --base-c: 0.0749;
-    --base-h: 347.57;
+    --base-l: 0.2084;
+    --base-c: 0.0417;
+    --base-h: 266.36;
 
     /* Claros */
     --primary-color: var(--black-primary);

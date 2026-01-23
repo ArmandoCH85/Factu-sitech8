@@ -3,8 +3,9 @@
 @section('content')
 @php
 $a = $vc_modules;
+$show_welcome_panel = data_get($configuration, 'visual.show_welcome_panel', true);
 @endphp
-    <div class="card welcome-component" style="display: none;">
+    <div class="card welcome-component" style="display: {{ $show_welcome_panel ? 'block' : 'none' }};">
         <div class="welcome-card-body">
             <div class="row">
                 <div class="col-md-3 welcome-card">
@@ -219,7 +220,7 @@ $a = $vc_modules;
                     @endif
 
                     @if(in_array('accounting', $vc_modules) || in_array('reports', $vc_modules))
-                    <div class="card shadow-sm border-top my-2 actions-card">
+                    <div class="card shadow-sm border-top my-2 actions-card last-actions-card">
                         <div class="card-header py-1 font-weight-bold">
                             Reportes
                         </div>

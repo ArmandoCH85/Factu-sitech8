@@ -42,8 +42,10 @@ import './tenant-components'
 import { applyThemeAndShowContent, setupHeaderDomEvents, setupEcommerceAuthHandlers, updateTenantPageTitle } from './tenant/dom-fixes';
 
 // Inicializar lógica DOM migrada
-if (window && window.vc_visual && window.vc_visual.sidebar_theme) {
-    applyThemeAndShowContent(window.vc_visual.sidebar_theme);
+if (window && window.vc_visual) {
+    applyThemeAndShowContent(window.vc_visual.sidebar_theme, window.vc_visual.black_theme);
+} else {
+    applyThemeAndShowContent();
 }
 setupHeaderDomEvents();
 setupEcommerceAuthHandlers();

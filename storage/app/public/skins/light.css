@@ -845,7 +845,10 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 .welcome-component {
     margin-right: -18px;
     margin-left: -18px;
-    margin-bottom: 20px;
+}
+.welcome-component,
+.last-actions-card{
+    margin-bottom: 0 !important;
 }
 .actions-card .card-body{
     background-color: transparent !important;

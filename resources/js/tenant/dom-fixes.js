@@ -2,40 +2,134 @@
 // Archivo: resources/js/tenant/dom-fixes.js
 
 // 1. Script de tema visual (de app.blade.php)
-export function applyThemeAndShowContent(savedTheme) {
+export function applyThemeAndShowContent(savedTheme, savedBlackTheme) {
     const timeoutDuration = 3000;
     const showContent = () => {
         document.body.classList.add('visible');
     };
+
     const timeout = setTimeout(() => {
         console.warn('Timeout: Mostrando contenido sin aplicar el tema.');
         showContent();
     }, timeoutDuration);
-    if (savedTheme) {
-        fetch('/json/themes/themes.json')
-            .then(response => response.json())
-            .then(themes => {
-                if (themes[savedTheme]) {
-                    const styleElement = document.createElement('style');
-                    let cssVariables = '';
-                    Object.keys(themes[savedTheme]).forEach(variable => {
-                        cssVariables += `${variable}: ${themes[savedTheme][variable]};\n`;
-                    });
-                    styleElement.innerHTML = `:root { ${cssVariables} }`;
-                    document.head.appendChild(styleElement);
-                }
-            })
-            .catch(error => {
-                console.error('Error loading themes:', error);
-            })
-            .finally(() => {
-                clearTimeout(timeout);
-                showContent();
+
+    const applyCachedTheme = (themeName, cachePrefix, styleId) => {
+        if (!themeName) {
+            return false;
+        }
+        const cached = localStorage.getItem(`${cachePrefix}${themeName}`);
+        if (!cached) {
+            return false;
+        }
+        try {
+            const colors = JSON.parse(cached);
+            if (!colors || typeof colors !== 'object') {
+                return false;
+            }
+            let styleElement = document.getElementById(styleId);
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                styleElement.id = styleId;
+                document.head.appendChild(styleElement);
+            }
+            let cssVariables = '';
+            Object.keys(colors).forEach(variable => {
+                cssVariables += `${variable}: ${colors[variable]};\n`;
             });
-    } else {
+            styleElement.innerHTML = `:root { ${cssVariables} }`;
+            return true;
+        } catch (error) {
+            console.error('Error applying cached theme:', error);
+            return false;
+        }
+    };
+
+    const themeToApply = savedTheme || localStorage.getItem('current_theme');
+    const blackThemeToApply = savedBlackTheme || localStorage.getItem('black_theme');
+
+    const cachedApplied =
+        applyCachedTheme(themeToApply, 'theme_colors_', 'theme-styles') ||
+        applyCachedTheme(blackThemeToApply, 'black_theme_colors_', 'black-theme-styles');
+
+    if (cachedApplied) {
         clearTimeout(timeout);
         showContent();
     }
+
+    const pendingRequests = [];
+
+    if (themeToApply) {
+        pendingRequests.push(
+            fetch('/json/themes/themes.json')
+                .then(response => response.json())
+                .then(themes => {
+                    if (themes[themeToApply]) {
+                        const colors = themes[themeToApply];
+                        let styleElement = document.getElementById('theme-styles');
+                        if (!styleElement) {
+                            styleElement = document.createElement('style');
+                            styleElement.id = 'theme-styles';
+                            document.head.appendChild(styleElement);
+                        }
+                        let cssVariables = '';
+                        Object.keys(colors).forEach(variable => {
+                            cssVariables += `${variable}: ${colors[variable]};\n`;
+                        });
+                        styleElement.innerHTML = `:root { ${cssVariables} }`;
+                        localStorage.setItem('current_theme', themeToApply);
+                        localStorage.setItem(
+                            `theme_colors_${themeToApply}`,
+                            JSON.stringify(colors)
+                        );
+                    }
+                })
+        );
+    }
+
+    if (blackThemeToApply) {
+        pendingRequests.push(
+            fetch('/json/themes/black-themes.json')
+                .then(response => response.json())
+                .then(themes => {
+                    if (themes[blackThemeToApply]) {
+                        const colors = themes[blackThemeToApply];
+                        let styleElement = document.getElementById('black-theme-styles');
+                        if (!styleElement) {
+                            styleElement = document.createElement('style');
+                            styleElement.id = 'black-theme-styles';
+                            document.head.appendChild(styleElement);
+                        }
+                        let cssVariables = '';
+                        Object.keys(colors).forEach(variable => {
+                            cssVariables += `${variable}: ${colors[variable]};\n`;
+                        });
+                        styleElement.innerHTML = `:root { ${cssVariables} }`;
+                        localStorage.setItem('black_theme', blackThemeToApply);
+                        localStorage.setItem(
+                            `black_theme_colors_${blackThemeToApply}`,
+                            JSON.stringify(colors)
+                        );
+                    }
+                })
+        );
+    }
+
+    if (pendingRequests.length === 0) {
+        clearTimeout(timeout);
+        showContent();
+        return;
+    }
+
+    Promise.all(pendingRequests)
+        .catch(error => {
+            console.error('Error loading themes:', error);
+        })
+        .finally(() => {
+            if (!cachedApplied) {
+                clearTimeout(timeout);
+                showContent();
+            }
+        });
 }
 
 // 2. Scripts de header (de header.blade.php)

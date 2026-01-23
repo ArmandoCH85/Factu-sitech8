@@ -489,6 +489,7 @@ class ConfigurationController extends Controller
             'header'   => 'light',
             'sidebars' => 'light',
             'sidebar_margin' => true,
+            'show_welcome_panel' => true,
         ];
         $configuration = Configuration::first();
         $configuration->visual = $defaults;
@@ -509,6 +510,13 @@ class ConfigurationController extends Controller
             ? (bool)$currentVisual->sidebar_margin
             : true;
 
+        $currentShowWelcome = true;
+        if (is_object($currentVisual) && property_exists($currentVisual, 'show_welcome_panel')) {
+            $currentShowWelcome = (bool)$currentVisual->show_welcome_panel;
+        } elseif (is_array($currentVisual) && array_key_exists('show_welcome_panel', $currentVisual)) {
+            $currentShowWelcome = (bool)$currentVisual['show_welcome_panel'];
+        }
+
         $sidebarMargin = $currentSidebarMargin;
         if ($request->has('sidebar_margin')) {
             $parsed = filter_var($request->sidebar_margin, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -521,7 +529,11 @@ class ConfigurationController extends Controller
             'sidebars' => $request->sidebars,
             'navbar' => $request->navbar,
             'sidebar_theme' => $request->sidebar_theme,
+            'black_theme' => $request->black_theme,
             'sidebar_margin' => $sidebarMargin,
+            'show_welcome_panel' => $request->has('show_welcome_panel')
+                ? (filter_var($request->show_welcome_panel, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $currentShowWelcome)
+                : $currentShowWelcome,
         ];
         $configuration->visual = $visuals;
         if ($request->has('sidebar_mode')) {

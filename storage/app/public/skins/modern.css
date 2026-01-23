@@ -758,7 +758,10 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left, html.fixed.sidebar-white:not(
 .welcome-component {
     margin-right: -10px;
     margin-left: -10px;
-    margin-bottom: 10px;
+}
+.welcome-component,
+.last-actions-card{
+    margin-bottom: 0 !important;
 }
 .actions-card .card-body{
     background-color: transparent !important;

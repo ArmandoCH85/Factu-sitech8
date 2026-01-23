@@ -1839,6 +1839,10 @@ section.auth__form-right .auth__form .auth__social a{
         margin-left: -25px;
     }
 }
+.welcome-component,
+.last-actions-card{
+    margin-bottom: 0 !important;
+}
 .actions-card .card-body{
     background-color: transparent !important;
     border: none !important;

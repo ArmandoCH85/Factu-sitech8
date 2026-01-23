@@ -21843,7 +21843,7 @@ div.sub-title.text-muted {
     max-height: 91px;
 }
 .welcome-component{
-    margin-bottom: 7px;
+    margin-bottom: 0px !important;
 }
 .welcome-component .welcome-card-body .row{
     display: flex;

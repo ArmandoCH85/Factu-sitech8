@@ -104,6 +104,32 @@
                     </div>
                 </div>
 
+                <div class="mt-3 theme-color-selector d-none theme-color-selector-black">
+                    <h5>Selecciona un color de tema:</h5>
+                    <div class="color-selector">
+                        <button
+                            type="button"
+                            class="btn-theme-white"
+                            :class="{ 'black-theme-selected': visuals.black_theme === 'default' }"
+                            @click="onChangeBlackTheme('default')"
+                            style="background-color: oklch(0.34 0.08 259.24);"
+                        ></button>
+                        <button
+                            type="button"
+                            class="btn-theme-white"
+                            :class="{ 'black-theme-selected': visuals.black_theme === 'greenvoid' }"
+                            @click="onChangeBlackTheme('greenvoid')"
+                            style="background-color: oklch(0.4 0.08 148.33);"
+                        ></button>
+                        <button
+                            type="button"
+                            :class="{ 'black-theme-selected': visuals.black_theme === 'purplevoid' }"
+                            @click="onChangeBlackTheme('purplevoid')"
+                            style="background-color: oklch(0.34 0.09 319.44);"
+                        ></button>
+                    </div>
+                </div>
+
                 <div class="pt-3 sidebar-compact-selector-container">
                     <h5>Menú lateral contraído</h5>
                     <div :class="{ 'has-danger': errors.compact_sidebar }">
@@ -337,7 +363,8 @@ export default {
     data() {
         return {
             themes: {},
-            showWelcome: localStorage.getItem("show_welcome_panel") === "true",
+            blackThemes: {},
+            showWelcome: false,
             loading_submit: false,
             resource: "configurations",
             errors: {},
@@ -351,6 +378,7 @@ export default {
     },
     async created() {
         await this.loadThemes();
+        await this.loadBlackThemes();
         await this.initForm();
         await this.getRecords();
     },
@@ -375,8 +403,17 @@ export default {
                 console.error("Error loading themes:", error);
             }
         },
+        async loadBlackThemes() {
+            try {
+                const response = await fetch("/json/themes/black-themes.json");
+                this.blackThemes = await response.json();
+            } catch (error) {
+                console.error("Error loading black themes:", error);
+            }
+        },
         updateConfig() {
-            localStorage.setItem("show_welcome_panel", this.showWelcome);
+            this.$set(this.visuals, 'show_welcome_panel', this.showWelcome);
+            this.submit();
             this.toggleWelcomeComponent();
         },
         toggleWelcomeComponent() {
@@ -423,11 +460,43 @@ export default {
             cssString += "}";
 
             styleTag.innerHTML = cssString;
+            localStorage.setItem('current_theme', theme);
+            localStorage.setItem(`theme_colors_${theme}`, JSON.stringify(colors));
+        },
+        applyBlackTheme(theme) {
+            const colors = this.blackThemes[theme];
+            if (!colors) {
+                console.error(`Black theme "${theme}" not found.`);
+                return;
+            }
+
+            let styleTag = document.getElementById("black-theme-styles");
+            if (!styleTag) {
+                styleTag = document.createElement("style");
+                styleTag.id = "black-theme-styles";
+                document.head.appendChild(styleTag);
+            }
+
+            let cssString = ":root {";
+            Object.keys(colors).forEach(variable => {
+                cssString += `${variable}: ${colors[variable]}; `;
+            });
+
+            cssString += "}";
+
+            styleTag.innerHTML = cssString;
+            localStorage.setItem('black_theme', theme);
+            localStorage.setItem(`black_theme_colors_${theme}`, JSON.stringify(colors));
         },
         onChangeTheme(theme) {
             this.visuals.sidebar_theme = theme;
             this.submit();
             this.applyTheme(theme);
+        },
+        onChangeBlackTheme(theme) {
+            this.$set(this.visuals, 'black_theme', theme);
+            this.submit();
+            this.applyBlackTheme(theme);
         },
         onChangeBgSidebar(theme) {
             this.visuals.sidebar_theme = theme;
@@ -461,7 +530,8 @@ export default {
                     sidebars: this.visuals.sidebars,
                     navbar: this.visuals.navbar,
                     sidebar_theme: this.visuals.sidebar_theme,
-                    sidebar_mode: this.form.sidebar_mode
+                    sidebar_mode: this.form.sidebar_mode,
+                    black_theme: this.visuals.black_theme
                 })
                 .then(response => {
                     if (response.data.success) {
@@ -510,8 +580,23 @@ export default {
                         this.fileName = this.form.default_image;
                     }
 
+                    if (!this.visuals.black_theme) {
+                        this.$set(this.visuals, 'black_theme', 'default');
+                    }
+
+                    if (typeof this.visuals.show_welcome_panel === 'undefined') {
+                        this.$set(this.visuals, 'show_welcome_panel', true);
+                    }
+
+                    this.showWelcome = !!this.visuals.show_welcome_panel;
+                    this.toggleWelcomeComponent();
+
                     if (this.visual.sidebar_theme) {
                         this.applyTheme(this.visual.sidebar_theme);
+                    }
+
+                    if (this.visuals.black_theme) {
+                        this.applyBlackTheme(this.visuals.black_theme);
                     }
 
                     const storedLayoutMode = localStorage.getItem(
@@ -617,17 +702,7 @@ export default {
             }
         }
     },
-    mounted() {
-        this.$nextTick(() => {
-            try {
-                // debug
-                // console.log('[visual] mounted: nextTick ejecutado');
-                this.toggleWelcomeComponent();
-            } catch (e) {
-                console.warn('[visual] mounted error:', e);
-            }
-        });
-    }
+    mounted() {}
 };
 </script>
 <style lang="scss">
@@ -686,7 +761,8 @@ export default {
 .color-selector button.theme-selected {
    box-shadow: 0 0 0 4px var(--highlight-color);
 }
-.sidebar-example.sidebar-example-selected > div::after {
+.sidebar-example.sidebar-example-selected > div::after,
+.black-theme-selected::after {
     background-image: url("data:image/svg+xml;utf8,\
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>\
         <polyline points='20 6 9 17 4 12' />\
@@ -696,7 +772,8 @@ export default {
     background-position: center;
     background-size: 12px;
 }
-html.dark .sidebar-example.sidebar-example-selected > div::after {
+html.dark .sidebar-example.sidebar-example-selected > div::after,
+html.dark .black-theme-selected::after {
     background-image: url("data:image/svg+xml;utf8,\
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>\
         <polyline points='20 6 9 17 4 12' />\

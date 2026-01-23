@@ -70,32 +70,46 @@ class PrintOrderController extends Controller
         set_time_limit(0);
 
         $token = $request->query('token');
-        $includeFailed = $request->query('include_failed', false);
         $user = User::where('api_token', $token)->first();
 
         if (!$user) {
-            return response()->stream(function () {
-                echo "data: " . json_encode(['error' => 'Token inválido']) . "\n\n";
-                flush();
-            }, 200, [
-                'Content-Type' => 'text/event-stream',
-                'Cache-Control' => 'no-cache',
-                'Connection' => 'keep-alive',
-                'X-Accel-Buffering' => 'no',
-            ]);
+            abort(401, 'Token inválido');
         }
 
+        $config = RestaurantConfiguration::first();
+        if (!$config || !$config->enabled_server_print) {
+            abort(403, 'Impresión por servidor deshabilitada');
+        }
+
+        $includeFailed = $request->query('include_failed', false);
+
         return response()->stream(function () use ($includeFailed) {
+            echo "data: " . json_encode(['init' => true, 'message' => 'Stream iniciado']) . "\n\n";
+            flush();
+
+            while (ob_get_level() > 0) {
+                ob_end_flush();
+            }
+
+            // retry SSE
+            echo "retry: 5000\n\n";
+
+            // evento init
+            echo "event: init\n";
+            echo "data: " . json_encode([
+                'init' => true,
+                'message' => 'Stream iniciado'
+            ]) . "\n\n";
+            flush();
+
+            // dar tiempo al cliente
+            usleep(300000);
+
             while (true) {
-                while (ob_get_level() > 0) {
-                    ob_end_flush();
-                }
                 // Consultar órdenes pendientes (status = 0) y fallidas (status = 2) si corresponde
-                if ($includeFailed) {
-                    $orders = PrintOrder::whereIn('status', [0, 2])->get();
-                } else {
-                    $orders = PrintOrder::where('status', 0)->get();
-                }
+                $orders = $includeFailed
+                    ? PrintOrder::whereIn('status', [0, 2])->get()
+                    : PrintOrder::where('status', 0)->get();
 
                 foreach ($orders as $order) {
                     // Marcar como procesando (1) solo si estaba pendiente

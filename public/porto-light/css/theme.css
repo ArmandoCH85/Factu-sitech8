@@ -21947,6 +21947,12 @@ div.welcome-card .welcome-subtitle{
 .text-warning td{
     color: var(--warning) !important;
 }
+.sidebar-margin-selector{
+    display: none;
+}
+.visual-bg-container{
+    border-radius: 10px;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

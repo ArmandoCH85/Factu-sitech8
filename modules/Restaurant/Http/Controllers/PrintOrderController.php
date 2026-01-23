@@ -43,6 +43,24 @@ class PrintOrderController extends Controller
     /**
      * Emitir órdenes de impresión pendientes (status = false) vía SSE.
      *
+     * IMPORTANTE: Para el correcto funcionamiento de SSE detrás de Nginx,
+     * es necesario modificar la configuración del archivo default.conf y reiniciar el proxy y el contenedor nginx.
+     *
+     * Configuración requerida:
+     *
+     * server {
+     *     ...
+     *     fastcgi_buffering off;
+     *     proxy_buffering off;
+     *     gzip off;
+     *     ...
+     *     location ~ \.php$ {
+     *         ...
+     *         fastcgi_read_timeout 3600;
+     *         fastcgi_send_timeout 3600;
+     *     }
+     * }
+     *
      * @return \Illuminate\Http\Response
      */
     public function streamPendingOrders(Request $request)

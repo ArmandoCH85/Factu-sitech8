@@ -61,7 +61,18 @@ if ($hostname) {
                 });
             });
 
+            // Print Orders
+            Route::prefix('print-orders')->group(function() {
+                // Registrar nueva orden de impresión
+                Route::post('/', 'PrintOrderController@store');
+                // Actualizar orden de impresión
+                Route::put('{id}', 'PrintOrderController@update');
+            });
         });
+
+
+        // SSE para órdenes de impresión pendientes
+        Route::get('print-orders/stream', 'PrintOrderController@streamPendingOrders');
 
     });
 }

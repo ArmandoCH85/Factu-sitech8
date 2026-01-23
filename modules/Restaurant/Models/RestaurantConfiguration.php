@@ -33,6 +33,8 @@ class RestaurantConfiguration extends ModelTenant
         'enabled_pos_waiter',
         'enabled_close_table',
         'enabled_close_table_mozo',
+        'enabled_server_print',
+        'replace_template_mozo',
     ];
 
     public $timestamps = false;
@@ -70,6 +72,8 @@ class RestaurantConfiguration extends ModelTenant
             'enabled_pos_waiter' => (bool)$this->enabled_pos_waiter,
             'enabled_close_table' => (bool)$this->enabled_close_table,
             'enabled_close_table_mozo' => (bool)$this->enabled_close_table_mozo,
+            'enabled_server_print' => (bool)$this->enabled_server_print,
+            'replace_template_mozo' => (bool)$this->replace_template_mozo,
             'restaurant_tip_factor' => $restaurant_tip_factor,
             'is_restaurant_active' => $is_restaurant_active,
             'show_item_description_pack' => (bool)$configurations_global->show_item_description_pack,

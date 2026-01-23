@@ -383,6 +383,21 @@
                               v-text="errors.enabled_printsend_command[0]"></small>
                     </div>
                   </div>
+                  <div class="col-md-4">
+                    <label class="control-label">
+                      Habilitar servicio central de impresión
+                    </label>
+                    <div :class="{'has-danger': errors.enabled_server_print}"
+                          class="form-group">
+                      <el-switch v-model="form.enabled_server_print"
+                                  active-text="Si"
+                                  inactive-text="No"
+                                  @change="submit"></el-switch>
+                      <small v-if="errors.enabled_server_print"
+                              class="form-control-feedback"
+                              v-text="errors.enabled_server_print[0]"></small>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="col-md-12">
@@ -457,6 +472,29 @@
                       <small v-if="errors.enabled_close_table"
                               class="form-control-feedback"
                               v-text="errors.enabled_close_table[0]"></small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="row mt-3">
+                  <div class="col-md-12">
+                    <h5><b>Otros permisos generales:</b></h5>
+                    <span></span>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="control-label">
+                      Imprimir el comprobante del facturador en lugar de la plantilla de mozo
+                    </label>
+                    <div :class="{'has-danger': errors.replace_template_mozo}"
+                          class="form-group">
+                      <el-switch v-model="form.replace_template_mozo"
+                                  active-text="Si"
+                                  inactive-text="No"
+                                  @change="submit"></el-switch>
+                      <small v-if="errors.replace_template_mozo"
+                              class="form-control-feedback"
+                              v-text="errors.replace_template_mozo[0]"></small>
                     </div>
                   </div>
                 </div>

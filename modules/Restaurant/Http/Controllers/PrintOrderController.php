@@ -1,0 +1,102 @@
+<?php
+
+namespace Modules\Restaurant\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use Modules\Restaurant\Models\PrintOrder;
+use Modules\Restaurant\Models\RestaurantConfiguration;
+use App\Models\Tenant\User;
+
+class PrintOrderController extends Controller
+{
+    /**
+     * Registrar una nueva orden de impresión.
+     */
+    public function store(Request $request)
+    {
+        // Validación básica
+        $data = $request->validate([
+            'name_printer' => 'required|string|max:255',
+            'pdf_b64' => 'nullable|string',
+        ]);
+        $data['status'] = false;
+        $order = PrintOrder::create($data);
+        return response()->json($order, 201);
+    }
+
+    /**
+     * Actualizar una orden de impresión existente.
+     */
+    public function update(Request $request, $id)
+    {
+        $order = PrintOrder::findOrFail($id);
+        $data = $request->validate([
+            'status' => 'required|boolean',
+            'pdf_b64' => 'nullable|string',
+        ]);
+        $order->update($data);
+        return response()->json($order);
+    }
+
+    /**
+     * Emitir órdenes de impresión pendientes (status = false) vía SSE.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function streamPendingOrders(Request $request)
+    {
+        ini_set('output_buffering', 'off');
+        ini_set('zlib.output_compression', false);
+        set_time_limit(0);
+
+        $token = $request->query('token');
+        $includeFailed = $request->query('include_failed', false);
+        $user = User::where('api_token', $token)->first();
+
+        if (!$user) {
+            return response()->stream(function () {
+                echo "data: " . json_encode(['error' => 'Token inválido']) . "\n\n";
+                flush();
+            }, 200, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'Connection' => 'keep-alive',
+                'X-Accel-Buffering' => 'no',
+            ]);
+        }
+
+        return response()->stream(function () use ($includeFailed) {
+            while (true) {
+                while (ob_get_level() > 0) {
+                    ob_end_flush();
+                }
+                // Consultar órdenes pendientes (status = 0) y fallidas (status = 2) si corresponde
+                if ($includeFailed) {
+                    $orders = PrintOrder::whereIn('status', [0, 2])->get();
+                } else {
+                    $orders = PrintOrder::where('status', 0)->get();
+                }
+
+                foreach ($orders as $order) {
+                    // Marcar como procesando (1) solo si estaba pendiente
+                    if ($order->status === 0) {
+                        $order->status = 1;
+                        $order->save();
+                    }
+                    // Enviar el registro por SSE
+                    echo "data: " . json_encode($order->toArray()) . "\n\n";
+                    flush();
+                }
+
+                sleep(2);
+            }
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+            'X-Accel-Buffering' => 'no',
+        ]);
+    }
+}

@@ -33,7 +33,7 @@ class PrintOrderController extends Controller
     {
         $order = PrintOrder::findOrFail($id);
         $data = $request->validate([
-            'status' => 'required|boolean',
+            'status' => 'required|integer|in:0,1,2,3',
             'pdf_b64' => 'nullable|string',
         ]);
         $order->update($data);

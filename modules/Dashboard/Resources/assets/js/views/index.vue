@@ -38,7 +38,7 @@
             </div>
         </header>
 
-        <hr>
+        <hr v-if="showWelcomePanel">
 
         <div class="card mb-0 row-new bg-transparent dashboard-cards mt-0">            
             <div class="row" v-show="showFilters">
@@ -137,7 +137,7 @@
                 <div class="col-xl-12">
                     <div class="row">
                     <template v-if="configuration.dashboard_sales">
-                        <div class="col-xl-3">
+                        <div class="col-12 col-sm-6 col-xl-3">
                             <section class="card card-dashboard">
                                 <div class="card-body" v-if="loaders.sale_note">
                                     <template >
@@ -181,7 +181,7 @@
                             </section>
                         </div>
 
-                        <div class="col-xl-3" v-if="soapCompany != '03'">
+                        <div class="col-12 col-sm-6 col-xl-3" v-if="soapCompany != '03'">
                             <section class="card card-dashboard">
                                 <div class="card-body" v-if="loaders.document">
                                     <template >
@@ -272,7 +272,7 @@
                         </div>
                     </template>
                     <template v-if="configuration.dashboard_general">
-                        <div class="col-xl-3 col-md-3">
+                        <div class="col-12 col-sm-6 col-xl-3">
                             <section class="card card-dashboard">
                                 <div class="card-body" v-if="loaders.balance">
                                     <template>
@@ -342,7 +342,7 @@
                             </section>
                         </div>
 
-                        <div class="col-xl-3 col-md-3">
+                        <div class="col-12 col-sm-6 col-xl-3">
                             <section class="card card-dashboard">
                                 <div class="card-body" v-if="loaders.utility">
                                     <template>
@@ -603,6 +603,7 @@ export default {
   components: { DashboardStock, LoaderGraph, RowTop, DashboardInventory },
   data() {
     return {
+            showWelcomePanel: true,
       showFilters: false,
       loading_search: false,
       records_base: [],
@@ -658,6 +659,7 @@ export default {
       items: [],
       company: {},
       loaders: {},
+            welcomeObserver: null,
     };
   },
   async created() {
@@ -676,6 +678,15 @@ export default {
     await this.loadAll();
     await this.filterItems();
   },
+    mounted() {
+        this.initWelcomeVisibility();
+    },
+    beforeDestroy() {
+        if (this.welcomeObserver) {
+            this.welcomeObserver.disconnect();
+            this.welcomeObserver = null;
+        }
+    },
 
   computed: {
     filterLabel() {
@@ -729,6 +740,32 @@ export default {
     ...mapActions([
             'loadConfiguration',
         ]),
+        initWelcomeVisibility() {
+            this.showWelcomePanel = this.isWelcomeVisible();
+
+            const welcomeElement = document.querySelector('.welcome-component');
+            if (!welcomeElement || typeof MutationObserver === 'undefined') {
+                return;
+            }
+
+            this.welcomeObserver = new MutationObserver(() => {
+                this.showWelcomePanel = this.isWelcomeVisible();
+            });
+
+            this.welcomeObserver.observe(welcomeElement, {
+                attributes: true,
+                attributeFilter: ['style', 'class'],
+            });
+        },
+        isWelcomeVisible() {
+            const welcomeElement = document.querySelector('.welcome-component');
+            if (!welcomeElement) {
+                return this.configuration?.visual?.show_welcome_panel !== false;
+            }
+
+            const style = window.getComputedStyle(welcomeElement);
+            return style.display !== 'none' && style.visibility !== 'hidden';
+        },
     toggleFilters() {
       this.showFilters = !this.showFilters;
     },

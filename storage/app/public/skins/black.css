@@ -1677,53 +1677,55 @@ a.ws-flotante {
     right: -10px;   
 }
 /* sidebar dark styles */
-html.fixed.sidebarMode-dark:not(.dark) .sidebar-left,
-html.fixed.sidebarMode-dark:not(.dark) .sidebar-header, 
-html.fixed.sidebarMode-dark:not(.dark) .sidebar-left .nano {
-    background-color: var(--black-bg-dark) !important;
-    border-color: var(--black-border-dark) !important;
-}
-html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a,
-html.fixed.sidebarMode-dark:not(.dark) .sidebar-left a{
-    color: var(--black-light) !important;
-}
-html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a{
-    background: var(--black-content-dark) !important;
-}
-html.sidebarMode-dark ul.nav-main>li a:hover{
-    background: var(--black-content-dark) !important;
-}
-html.sidebarMode-dark ul.nav-main li.nav-parent>a:after{
-    color: var(--black-light) !important;
-}
-html.sidebarMode-dark .sidebar-toggle-container .sidebar-toggle{
-    border-color: var(--black-border-dark) !important;
-    background-color: var(--black-bg-dark) !important;
-    color: var(--black-light) !important;
-}
-html.sidebarMode-dark .sidebar-toggle-container .sidebar-toggle:hover{
-    background-color: var(--black-input-dark) !important;
-}
-html.sidebarMode-dark .sidebar-left ul.nav-children li:after{
-    background-color: var(--black-border-dark) !important;
-}
-html.sidebarMode-dark .list-config{
-    background-color: var(--black-input-dark);
-    border-color: var(--black-border-dark) !important;
-}
-html.sidebarMode-dark ul.nav.list-config li:hover{
-    background-color: var(--black-content-dark) !important;
-}
-html.sidebarMode-dark .nav-item-with-action .btn-primary{
-    background: #ffffff !important;
-    border: 1px solid #ffffff !important;
-    color: var(--black-dark) !important;
-}
-html.sidebarMode-dark .logo-light {
-    display: var(--show-light-logo, none);
-}
-html.sidebarMode-dark .logo-dark {
-    display: var(--show-dark-logo, block);
+@media only screen and (min-width: 768px) {
+    html.fixed.sidebarMode-dark:not(.dark) .sidebar-left,
+    html.fixed.sidebarMode-dark:not(.dark) .sidebar-header, 
+    html.fixed.sidebarMode-dark:not(.dark) .sidebar-left .nano {
+        background-color: var(--black-bg-dark) !important;
+        border-color: var(--black-border-dark) !important;
+    }
+    html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a,
+    html.fixed.sidebarMode-dark:not(.dark) .sidebar-left a{
+        color: var(--black-light) !important;
+    }
+    html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a{
+        background: var(--black-content-dark) !important;
+    }
+    html.sidebarMode-dark ul.nav-main>li a:hover{
+        background: var(--black-content-dark) !important;
+    }
+    html.sidebarMode-dark ul.nav-main li.nav-parent>a:after{
+        color: var(--black-light) !important;
+    }
+    html.sidebarMode-dark .sidebar-toggle-container .sidebar-toggle{
+        border-color: var(--black-border-dark) !important;
+        background-color: var(--black-bg-dark) !important;
+        color: var(--black-light) !important;
+    }
+    html.sidebarMode-dark .sidebar-toggle-container .sidebar-toggle:hover{
+        background-color: var(--black-input-dark) !important;
+    }
+    html.sidebarMode-dark .sidebar-left ul.nav-children li:after{
+        background-color: var(--black-border-dark) !important;
+    }
+    html.sidebarMode-dark .list-config{
+        background-color: var(--black-input-dark);
+        border-color: var(--black-border-dark) !important;
+    }
+    html.sidebarMode-dark ul.nav.list-config li:hover{
+        background-color: var(--black-content-dark) !important;
+    }
+    html.sidebarMode-dark .nav-item-with-action .btn-primary{
+        background: #ffffff !important;
+        border: 1px solid #ffffff !important;
+        color: var(--black-dark) !important;
+    }
+    html.sidebarMode-dark .logo-light {
+        display: var(--show-light-logo, none);
+    }
+    html.sidebarMode-dark .logo-dark {
+        display: var(--show-dark-logo, block);
+    }
 }
 /* end */
 
@@ -1905,15 +1907,15 @@ html.fixed .sidebar-left a svg {
     0 1px 2px -1px rgba(0, 0, 0, 0.1) !important; 
 }
 /* **************** sidebar fixed styles ******************* */
-html.sidebar-left-fixed .sidebar-left{
-    margin: 0px !important;
-    border-radius: 0px !important;
-    border-style: solid;
-    border-width: 0 1px 0 0;
-    border-color: oklch(calc(var(--base-l) + 0.69) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
-    box-shadow: none !important;
-}
 @media only screen and (min-width: 768px) {
+    html.sidebar-left-fixed .sidebar-left{
+        margin: 0px !important;
+        border-radius: 0px !important;
+        border-style: solid;
+        border-width: 0 1px 0 0;
+        border-color: oklch(calc(var(--base-l) + 0.69) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
+        box-shadow: none !important;
+    }
     html.sidebar-left-fixed section.content-body {
         margin-left: 255px;
     }
@@ -3156,7 +3158,7 @@ html.dark .text-danger.option-delete:hover {
     html.dark li.btn-primary a svg.icon-tabler-logout{
         stroke: var(--black-dark);
     }
-    html.sidebar-light:not(.dark) .page-header{
+    .page-header{
         margin: 0 -15px 20px !important;
     }
     html.dark .sidebar-left,

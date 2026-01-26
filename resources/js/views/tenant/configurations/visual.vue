@@ -133,7 +133,7 @@
                     </div>
                 </div>
 
-                <div v-if="!isBlackSkinSelected" class="pt-3 sidebar-compact-selector-container">
+                <div v-if="!isBlackSkinSelected" class="pt-3 sidebar-compact-selector-container d-none d-md-block">
                     <h5>Menú lateral contraído</h5>
                     <div :class="{ 'has-danger': errors.compact_sidebar }">
                         <el-switch
@@ -152,7 +152,7 @@
                     </div>
                 </div>
 
-                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container">
+                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container d-none d-md-block">
                     <h5>Estilo de Sidebar</h5>
                     <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
                         <div
@@ -182,7 +182,7 @@
                     </div>
                 </div>
 
-                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container sidebar-theme-selector-container">
+                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container sidebar-theme-selector-container d-none d-md-block">
                     <h5>Tema del Sidebar</h5>
                     <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
                         <div
@@ -212,7 +212,7 @@
                     </div>
                 </div>
 
-                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container">
+                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container d-none d-md-block">
                     <h5>Sidebar</h5>
                     <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
                         <div

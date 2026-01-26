@@ -645,10 +645,12 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left a{
 .btn-massive-actions span button:hover{
     color: #ffffff !important;
 } 
-.row-new{
-    margin-right: -18px;
-    margin-left: -18px;
-    margin-top: -18px;
+@media only screen and (min-width: 768px) {
+    .row-new{
+        margin-right: -18px;
+        margin-left: -18px;
+        margin-top: -18px;
+    }
 }
 .btn-sun-ren-container div div.el-input-group div.el-input-group__append button.btn-sunat-reniec {
     top: 10px;

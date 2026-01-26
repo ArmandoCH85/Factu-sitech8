@@ -4269,9 +4269,7 @@ window.theme.fn = {
         updatingNanoScroll  = false;
 
     // mobile devices with fixed has a lot of issues when focus inputs and others...
-    if ( typeof $.browser !== 'undefined' && $.browser.mobile && $html.hasClass('fixed') ) {
-        $html.removeClass( 'fixed' ).addClass( 'scroll' );
-    }
+    // FIXED MUST ALWAYS REMAIN: do not remove it on mobile.
 
     var Skeleton = {
 

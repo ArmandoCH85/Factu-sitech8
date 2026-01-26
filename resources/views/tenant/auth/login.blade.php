@@ -6,11 +6,23 @@
     <article class="auth__form">
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <div class="d-flex justify-content-center">
-                <div class="row form-logo-container">
-                    @include('tenant.auth.partials.form_logo')
-                </div>
-            </div>
+            @if ($useLoginGlobal)
+                @if (($login->logo ?? false) && $login->show_logo_in_form)
+                    <div class="d-flex justify-content-center">
+                        <div class="row form-logo-container">
+                            @include('tenant.auth.partials.form_logo')
+                        </div>
+                    </div>
+                @endif
+            @else
+                @if ($login->show_logo_in_form && ($company->logo ?? false))
+                    <div class="d-flex justify-content-center">
+                        <div class="row form-logo-container">
+                            @include('tenant.auth.partials.form_logo')
+                        </div>
+                    </div>
+                @endif
+            @endif            
             <div class="text-center title-login-container">
                 <h1 class="auth__title"><span class="text-xs">Bienvenido a</span><br><b>{{ $company->trade_name }}</b></h1>
                 <p class="auth__subtitle">Ingresa a tu cuenta</p>

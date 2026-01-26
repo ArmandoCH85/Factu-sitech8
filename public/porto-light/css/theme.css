@@ -564,7 +564,7 @@ html.dark .header .logo-container .topbar-links {
     }
 
     .content-body {
-        padding: 0 15px 15px;
+        padding: 65px 10px 0 10px !important;
     }
 
     .page-header {
@@ -658,6 +658,9 @@ html.dark .header .logo-container .topbar-links {
     /* Layout Mobile - Sidebar Left Collapsed & Sidebar Right Opened */
     html.sidebar-left-collapsed.sidebar-right-opened .sidebar-left {
         margin-left: -300px;
+    }
+    .page-header .right-wrapper.pull-right .btn{
+        margin: 4px !important;
     }
 }
 /* iOS10 Content Width Fix */
@@ -2604,9 +2607,9 @@ html.no-overflowscrolling.custom-scroll .nano > .nano-content {
     }
 
     /* Safari fix */
-    html.safari.no-mobile-device.no-overflowscrolling .nano {
+    /* html.safari.no-mobile-device.no-overflowscrolling .nano {
         position: absolute !important;
-    }
+    } */
 }
 /* Page Header */
 .page-header {

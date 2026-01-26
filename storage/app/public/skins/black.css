@@ -54,9 +54,6 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left .nano {
 .theme-color-selector{
     display: none;
 }
-.theme-color-selector-black{
-    display: block !important;
-}
 .theme-color-selector-black .color-selector button{
     width: 100% !important;
     border: 1px solid transparent;
@@ -1679,12 +1676,6 @@ a.ws-flotante {
     top: -10px;
     right: -10px;   
 }
-.sidebar-margin-selector-container{
-    display: block !important;
-}
-.sidebar-compact-selector-container{
-    display: none;
-}
 /* sidebar dark styles */
 html.fixed.sidebarMode-dark:not(.dark) .sidebar-left,
 html.fixed.sidebarMode-dark:not(.dark) .sidebar-header, 
@@ -1901,7 +1892,7 @@ html.fixed .sidebar-left a svg {
     height: 20px;
 }
 .sidebar-left{
-    border: 1px solid var(--black-highlight);
+    border: 1px solid oklch(calc(var(--base-l) + 0.69) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
     border-radius: 12px !important;
     margin: 8px;
     width: 255px;
@@ -1919,7 +1910,7 @@ html.sidebar-left-fixed .sidebar-left{
     border-radius: 0px !important;
     border-style: solid;
     border-width: 0 1px 0 0;
-    border-color: var(--black-highlight);
+    border-color: oklch(calc(var(--base-l) + 0.69) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
     box-shadow: none !important;
 }
 @media only screen and (min-width: 768px) {

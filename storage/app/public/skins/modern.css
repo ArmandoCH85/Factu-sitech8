@@ -783,6 +783,10 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left, html.fixed.sidebar-white:not(
 .welcome-component .welcome-card-body .welcome-card .row{
     padding: 0 10px 0 10px;
 }
+.theme-color-selector-black, .sidebar-margin-selector-container,
+.sidebar-theme-selector-container{
+    display: none;
+}
 /* theme dark */
 html.dark .el-dialog,
 html.dark .support-sidebar {

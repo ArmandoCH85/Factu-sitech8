@@ -21953,6 +21953,30 @@ div.welcome-card .welcome-subtitle{
 .visual-bg-container{
     border-radius: 10px;
 }
+.el-message--success {
+    background-color: color-mix(in srgb, var(--success) 70%, #ffffff);
+    border-color: var(--success);
+}
+.el-message--success .el-message__content,
+.el-message .el-icon-success{
+    color: #fff !important;
+}
+.el-message--error {
+    background-color: color-mix(in srgb, var(--danger) 70%, #ffffff);
+    border-color: var(--danger);
+}
+.el-message--error .el-message__content,
+.el-message .el-icon-error{
+    color: #fff !important;
+}
+.el-message--warning {
+    background-color: color-mix(in srgb, var(--warning) 70%, #ffffff);
+    border-color: var(--warning);
+}
+.el-message--warning .el-message__content,
+.el-message .el-icon-warning{
+    color: #fff !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

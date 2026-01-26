@@ -1853,6 +1853,10 @@ section.auth__form-right .auth__form .auth__social a{
     border-color: var(--accent-color) !important;
     border-radius: 12px !important;
 }
+.theme-color-selector-black, .sidebar-margin-selector-container,
+.sidebar-theme-selector-container{
+    display: none;
+}
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
 }
@@ -2939,9 +2943,6 @@ html.sidebar-dark:not(.sidebar-light) .btn-custom:hover {
 }
 html.dark .invoice table.table > tbody tr > td {
     border-color: var(--borders-dark);
-}
-html.dark .el-message--error .el-message__content {
-    color: #F56 !important;
 }
 html.dark .el-dropdown-menu__item {
     color: var(--accent-color);

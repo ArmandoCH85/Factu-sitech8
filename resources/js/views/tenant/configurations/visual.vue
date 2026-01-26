@@ -104,7 +104,10 @@
                     </div>
                 </div>
 
-                <div class="mt-3 theme-color-selector d-none theme-color-selector-black">
+                <div
+                    v-if="isBlackSkinSelected"
+                    class="mt-3 theme-color-selector-black"
+                >
                     <h5>Selecciona un color de tema:</h5>
                     <div class="color-selector">
                         <button
@@ -130,7 +133,7 @@
                     </div>
                 </div>
 
-                <div class="pt-3 sidebar-compact-selector-container">
+                <div v-if="!isBlackSkinSelected" class="pt-3 sidebar-compact-selector-container">
                     <h5>Menú lateral contraído</h5>
                     <div :class="{ 'has-danger': errors.compact_sidebar }">
                         <el-switch
@@ -149,7 +152,7 @@
                     </div>
                 </div>
 
-                <div class="pt-3 d-none sidebar-margin-selector-container">
+                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container">
                     <h5>Estilo de Sidebar</h5>
                     <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
                         <div
@@ -179,7 +182,7 @@
                     </div>
                 </div>
 
-                <div class="pt-3 d-none sidebar-margin-selector-container sidebar-theme-selector-container">
+                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container sidebar-theme-selector-container">
                     <h5>Tema del Sidebar</h5>
                     <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
                         <div
@@ -209,7 +212,7 @@
                     </div>
                 </div>
 
-                <div class="pt-3 d-none sidebar-margin-selector-container">
+                <div v-if="isBlackSkinSelected" class="pt-3 sidebar-margin-selector-container">
                     <h5>Sidebar</h5>
                     <div class="d-flex justify-content-between gap-3 sidebar-margin-selector">
                         <div
@@ -381,6 +384,23 @@ export default {
         await this.loadBlackThemes();
         await this.initForm();
         await this.getRecords();
+    },
+    computed: {
+        isBlackSkinSelected() {
+            const skinId = this.form && this.form.skin_id;
+            const skins = Array.isArray(this.skins) ? this.skins : [];
+            const selected = skins.find(skin => String(skin.id) === String(skinId));
+
+            if (!selected) {
+                return false;
+            }
+
+            const name = (selected.name || selected.slug || selected.code || "")
+                .toString()
+                .toLowerCase();
+
+            return name.includes("black");
+        }
     },
     methods: {
         successUploadDefaultImage(response, file) {

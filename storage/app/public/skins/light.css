@@ -1160,6 +1160,10 @@ html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:ho
 .style-switcher-open.close-config{
     color: var(--light-color);
 }
+.theme-color-selector-black, .sidebar-margin-selector-container,
+.sidebar-theme-selector-container{
+    display: none;
+}
 /* modo oscuro */
 html.dark .table-responsive.payment {
     border: 1px solid var(--inputs-dark);

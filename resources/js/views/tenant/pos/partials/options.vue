@@ -266,7 +266,7 @@ import Keypress from "vue-keypress";
 import SaleNoteGenerate from "@views/sale_notes/partials/option_documents.vue";
 
 export default {
-    props: ["showDialog", "recordId", "statusDocument", "resource", "fromPos"],
+    props: ["showDialog", "recordId", "statusDocument", "resource", "fromPos", "isPrint"],
     components: {
         Keypress,
         SaleNoteGenerate,
@@ -425,6 +425,12 @@ export default {
                 .then(response => {
                     this.form = response.data.data;
                     this.titleDialog = "Comprobante: " + this.form.number;
+
+                    // Si el componente recibió la señal de imprimir automáticamente,
+                    // intentar imprimir el PDF asociado (print_ticket)
+                    this.$nextTick(() => {
+                        this.autoPrint();
+                    });
                 });
 
             this.$http.get(`/pos/status_configuration`).then(response => {
@@ -489,6 +495,67 @@ export default {
                     this.config !== null && this.config.show_ticket_50
                         ? "third"
                         : "quarter";
+            }
+        }
+        ,
+        async autoPrint() {
+            if (!this.isPrint) return;
+            if (!this.form || !this.form.print_ticket) return;
+
+            try {
+                await this.printPdfFromUrl(this.form.print_ticket);
+            } catch (e) {
+                console.error('options autoPrint error', e);
+            }
+        },
+
+        async printPdfFromUrl(url) {
+            if (!url) return;
+
+            try {
+                // Obtener el PDF como arrayBuffer
+                const res = await fetch(url, { credentials: 'include' });
+                if (!res.ok) {
+                    console.error('Error fetching PDF for print:', res.statusText);
+                    return;
+                }
+                const arrayBuffer = await res.arrayBuffer();
+                const bytes = new Uint8Array(arrayBuffer);
+
+                // Convertir a base64 en trozos para evitar límites de pila
+                let binary = '';
+                const chunkSize = 0x8000;
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    const chunk = bytes.subarray(i, i + chunkSize);
+                    binary += String.fromCharCode.apply(null, chunk);
+                }
+                const base64Data = btoa(binary);
+
+                // Asegurar conexión con QZ Tray
+                if (!window.qz || !window.qz.websocket) {
+                    console.error('QZ Tray no está disponible en el contexto global');
+                    return;
+                }
+
+                if (!window.qz.websocket.isActive()) {
+                    try {
+                        await window.qz.websocket.connect();
+                    } catch (err) {
+                        console.error('No se pudo conectar a QZ Tray:', err);
+                        return;
+                    }
+                }
+
+                // Obtener configuración (getUpdatedConfig está definido en public/js/function-qztray.js)
+                const cfg = (typeof window.getUpdatedConfig === 'function') ? window.getUpdatedConfig() : window.qz.configs.create(null);
+
+                // Imprimir PDF en base64 usando QZ Tray
+                await window.qz.print(cfg, [
+                    { type: 'pdf', format: 'base64', data: base64Data }
+                ]);
+
+            } catch (err) {
+                console.error('printPdfFromUrl error', err);
             }
         }
         // clickConsultCdr(document_id) {

@@ -75,7 +75,7 @@
             <div class="col-md-3 text-end pe-0">
                 <div class="d-flex">
                     <div v-if="!configuration.enable_list_product" class="col-6" style="padding-top: 2.5px;">
-                        <el-select                            
+                        <el-select
                             v-model="selected_option_price"
                             @change="ChangeSelectedPrice"
                             filterable
@@ -675,7 +675,7 @@
                                         </p>
                                         <small>{{ item.unit_type_id }}</small
                                         ><br />
-                                        <small                                            
+                                        <small
                                             v-html="nameSets(item.item_id)"
                                         ></small>
                                     </td>
@@ -1252,14 +1252,14 @@ export default {
         this.selected_option_price = this.price_options[0];
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration2);
-        
+
         // Actualizar price_options con los labels personalizados
         if (this.config) {
             this.price_options[1].description = this.config.price1_label || 'Precio 1';
             this.price_options[2].description = this.config.price2_label || 'Precio 2';
             this.price_options[3].description = this.config.price3_label || 'Precio 3';
         }
-        
+
         await this.initForm();
         await this.getTables();
         await this.getPercentageIgv();
@@ -1869,7 +1869,7 @@ export default {
             let existError = this.form.items.some(item => {
                 if (Number(item.quantity) == 0) {
                     errorZeroQuantity = true
-                    return true; 
+                    return true;
                 }
                 if (unit_type_notAllowed.includes(item.unit_type_id) && !Number.isInteger(Number(item.quantity))) {
                     errorFloatQuantity =  true
@@ -1885,8 +1885,8 @@ export default {
                 if (errorFloatQuantity) {
                     this.$message.error('El producto con ese tipo de unidad no permite cantidad en decimales');
                 }
-                
-                return 
+
+                return
             }
 
             if (flag > 0)
@@ -2528,13 +2528,13 @@ export default {
                     .then(response => {
                         // console.log("buah");
                         if (response.data.items.length > 0) {
-                            
+
                             let presentation = response.data.items[0].unit_type.length > 0 ? true: false
-                        
+
                             if (presentation && this.barcode_stop_presentation) {
                                 this.items = response.data.items;
                                 this.loading = false;
-                                return    
+                                return
                             }
 
                             this.items = response.data.items;
@@ -2543,7 +2543,7 @@ export default {
                             if (this.items.length == 0) {
                                 this.filterItems();
                             }
-                            
+
                         } else {
                             this.$message.error('No se encontro el codigo de barra');
                             this.cleanInput();

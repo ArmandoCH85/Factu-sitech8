@@ -246,7 +246,7 @@
                                         <el-input ref="enter_amount"
                                                   v-model="enter_amount"
                                                   @input="enterAmount()"
-                                                  @keyup.enter.native="keyupEnterAmount()">                                            
+                                                  @keyup.enter.native="keyupEnterAmount()">
                                         </el-input>
 
                                     </div>
@@ -262,7 +262,7 @@
                                                    class="control-label font-weight-semibold m-0 text-center m-b-0"
                                                    @change="changeEnabledDiscount"></el-switch>
                                     </h2>
-                                    <div v-if="enabled_discount">                                        
+                                    <div v-if="enabled_discount">
                                         <div class="form-group amount-container">
                                             <label class="control-label text-start w-100 d-flex align-items-center gap-1">
                                                 <span class="text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -453,7 +453,7 @@
                                             </el-input>
                                         </div>
                                     </div>
-                                </div>-->                        
+                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -465,8 +465,8 @@
                                 <div class="col-md-12 col-lg-12 mb-1" v-if="configuration.enabled_sales_agents">
                                     <search-agent @changeAgent="changeAgent"></search-agent>
                                 </div>
-                            
-                                <div 
+
+                                <div
                                     :class="{
                                         'col-md-8 col-lg-8': businessTurns.active,
                                         'col-md-12 col-lg-12': !businessTurns.active
@@ -477,14 +477,14 @@
                                         <el-input v-model="form.reference_data" type="textarea"></el-input>
                                     </div>
                                 </div>
-                            
+
                                 <div class="col-md-4 col-lg-4" v-if="businessTurns.active">
                                     <div class="form-group">
                                         <label class="control-label">N° Placa</label>
                                         <el-input v-model="form.plate_number" type="text"></el-input>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -497,6 +497,7 @@
             :showDialog.sync="showDialogOptions"
             :statusDocument="statusDocument"
             :fromPos="true"
+            :isPrint="isPrint"
         ></options-form>
 
         <multiple-payment-form
@@ -702,7 +703,7 @@ export default {
                 this.form.document_type_id = this.default_document_type;
                 this.filterSeries()
                 let alt = _.find(this.all_series, { id: this.default_series_type });
-                
+
                 if (this.default_series_type !== null && alt !== undefined) {
                     this.form.series_id = this.default_series_type;
                 }
@@ -844,7 +845,7 @@ export default {
 
             // let percentage_igv = 18
             // let amount = parseFloat(this.discount_amount)
-            
+
             let input_global_discount = parseFloat(this.discount_amount);
             if(this.is_discount_amount) {
                 if ( (this.configuration.global_discount_type_id === "02") && this.configuration.exact_discount) {
@@ -861,8 +862,8 @@ export default {
             if (input_global_discount > 0 && !discount)
             {
                 const percentage_igv = this.percentageIgv * 100
-                let base = (this.isGlobalDiscountBase && ctx.total_taxed) 
-                    ? parseFloat(ctx.total_taxed) 
+                let base = (this.isGlobalDiscountBase && ctx.total_taxed)
+                    ? parseFloat(ctx.total_taxed)
                     : parseFloat(ctx.total || this.form.total)
                 let amount = 0
                 let factor = 0
@@ -878,7 +879,7 @@ export default {
                     amount = factor * base
                 }
 
-                
+
                 // descuentos que afectan la bi
                 if(this.isGlobalDiscountBase)
                 {
@@ -905,16 +906,16 @@ export default {
                     // this.form.total_discount = _.round(amount, 2)
                     this.form.total = _.round(this.form.total - amount, 2)
                 }
-                
+
                 this.form.total_discount = _.round(amount, 2)
                 this.setGlobalDiscount(factor, _.round(amount,2), _.round(base,2))
-                let discount_inner = this.is_discount_amount ? this.discount_amount :  (total * this.discount_amount / 100) 
+                let discount_inner = this.is_discount_amount ? this.discount_amount :  (total * this.discount_amount / 100)
                 this.enter_amount = _.round(total - discount_inner,2)
 
             } else {
-                
+
                 //Se restablece el valor
-                this.enter_amount = total  
+                this.enter_amount = total
                 this.deleteDiscountGlobal()
             }
 
@@ -1020,8 +1021,8 @@ export default {
                  total_base_isc,
                  total_isc,
                  total_taxes
-            } 
-            
+            }
+
 
             // isc
             this.form.total_base_isc = _.round(total_base_isc, 2)
@@ -1440,10 +1441,10 @@ export default {
 
                     } else {
                         if (this.configuration.send_auto && this.form.document_type_id === '01') {
-                            response_sent = await this.sendDocument(response.data.data.id); 
+                            response_sent = await this.sendDocument(response.data.data.id);
                             this.statusDocument = response_sent.data.response
                         } else if (this.configuration.ticket_single_shipment && this.form.document_type_id === '03') {
-                            response_sent = await this.sendDocument(response.data.data.id); 
+                            response_sent = await this.sendDocument(response.data.data.id);
                             this.statusDocument = response_sent.data.response
                         }
                         // this.form_payment.document_id = response.data.data.id;
@@ -1454,7 +1455,7 @@ export default {
 
                     this.documentNewId = response.data.data.id;
                     // this.showDialogOptions = true;
-                    
+
                     this.showOptionsDialog(response_sent)
 
                     // this.savePaymentMethod();
@@ -1462,16 +1463,17 @@ export default {
 
                     // this.initFormPayment() ;
                     this.cleanLocalStoragePayment()
-                    if(this.isPrint){
-                        this.gethtml();
-                    }
+                    // if(this.isPrint){
+                    //     this.gethtml();
+                    // migrado a options
+                    // }
                     this.$eventHub.$emit('saleSuccess');
                 } else {
                     this.$message.error(response.data.message);
                 }
             }).catch(error => {
                 console.log(error);
-                
+
                 if (error.response.status === 422) {
                     this.errors = error.response.data;
                 } else {
@@ -1517,7 +1519,7 @@ export default {
         {
             return this.$http
                 .get(`/documents/send/${id}`)
-            
+
         },
         gethtml(){
             this.form.datahtml="";

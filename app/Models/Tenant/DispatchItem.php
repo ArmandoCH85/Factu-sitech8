@@ -35,6 +35,9 @@ class DispatchItem extends ModelTenant
         'additional_data'
     ];
 
+    protected $casts = [
+        'quantity' => 'integer',
+    ];
     public function getAdditionalDataAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);

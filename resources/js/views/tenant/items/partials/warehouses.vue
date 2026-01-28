@@ -79,7 +79,7 @@
 
 <script>
 export default {
-    props: ["showDialog", "warehouses", "item_unit_types"],
+    props: ["showDialog", "warehouses", "item_unit_types", 'config'],
     data() {
         return {
             showImportDialog: false,

@@ -598,6 +598,7 @@
             ></items-export-extra>
             <warehouses-detail
                 :item_unit_types="item_unit_types"
+                :config="config"
                 :showDialog.sync="showWarehousesDetail"
                 :warehouses="warehousesDetail"
             >
@@ -767,6 +768,7 @@ export default {
         this.loadColumnVisibility();
         this.$store.commit("setConfiguration", this.configuration);
         this.loadConfiguration();
+        console.log(this.config);
 
         if (this.config.is_pharmacy !== true) {
             delete this.columns.sanitary;

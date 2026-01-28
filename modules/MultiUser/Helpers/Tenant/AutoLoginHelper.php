@@ -14,7 +14,7 @@ class AutoLoginHelper
 {
     
     private const CACHE_KEY = 'auto_login';
-    private const CACHE_TIME = 1;
+    private const CACHE_TIME = 10;
 
     
     /**

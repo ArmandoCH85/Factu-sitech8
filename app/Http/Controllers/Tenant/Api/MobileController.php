@@ -205,6 +205,12 @@ class MobileController extends Controller
                             'stock' => $row->getWarehouseCurrentStock($warehouse),
                             // 'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
                             'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
+                            'warehouses' => collect($row->warehouses)->transform(function ($row) {
+                                return [
+                                    'warehouse_description' => $row->warehouse->description,
+                                    'stock' => $row->stock,
+                                ];
+                            }),
                         ];
                     });
 

@@ -2678,6 +2678,7 @@ class Item extends ModelTenant
             'system_isc_type_id' => $this->system_isc_type_id,
             'percentage_isc' => $this->percentage_isc,
 
+
             'warehouses' => $this->getApiDataWarehouses(),
             'item_unit_types' => $this->getApiDataItemUnitTypes(),
         ];
@@ -2916,6 +2917,12 @@ class Item extends ModelTenant
             'brand_id' => $this->brand_id,
             'category_id' => $this->category_id,
             'is_set' => $this->is_set,
+            'warehouses' => collect($this->warehouses)->transform(function ($row) {
+                return [
+                    'warehouse_description' => $row->warehouse->description,
+                    'stock' => $row->stock,
+                ];
+            }),
         ];
     }
 

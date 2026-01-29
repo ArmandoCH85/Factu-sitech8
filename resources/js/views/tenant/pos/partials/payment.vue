@@ -1506,6 +1506,11 @@ export default {
                         this.$message.success(`Comprobante registrado: ${response_data.data.number_full}`)
                     }
                 }
+                console.log(this.isPrint);
+
+                if (this.isPrint) {
+                    this.gethtml();
+                }
 
                 this.clickCancel()
             }

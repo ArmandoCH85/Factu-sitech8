@@ -7,7 +7,7 @@
         </a>
       </h2>
       <ol class="breadcrumbs">
-        <li class="active"><span>REGISTRO DE HABITACIONES</span></li>
+        <li class="active"><span>Registro de habitaciones</span></li>
       </ol>
       <div class="right-wrapper pull-right">
         <div class="btn-group flex-wrap">
@@ -177,7 +177,7 @@
                 </td>
                 <td class="text-end">
                   <el-button
-                    class="btn btn-sm btn-success me-1"
+                    class="btn btn-sm btn-info me-1"
                     @click="onEdit(item)"
                     :disabled="loading"
                   >

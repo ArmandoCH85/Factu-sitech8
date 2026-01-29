@@ -6,7 +6,7 @@
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
         </div>
-        <div class="card tab-content-default row-new mb-0">
+        <div class="card tab-content-default row-new mb-0 mx-0 bg-transparent">
             <!-- <div class="card-header bg-info">
                 <h3 class="my-0"> {{ title }}</h3>
             </div> -->
@@ -24,39 +24,10 @@
                             </el-checkbox>
                        </template>
                     </div>
-                    <div v-show="form.is_pharmacy" class="col-md-12 mt-4">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4 class="border-bottom mb-0">Datos de farmacia</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div :class="{'has-danger': errors.cod_digemid}"
-                                     class="form-group">
-                                    <label class="control-label">Código de observación DIGEMID</label>
-                                    <el-input v-model="form.cod_digemid" 
-                                              placeholder="Ingrese el código DIGEMID de la empresa"></el-input>
-                                    <small v-if="errors.cod_digemid"
-                                           class="form-control-feedback d-block"
-                                           v-text="errors.cod_digemid[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                                <div class="form-group mb-0">
-                                    <el-button type="primary" 
-                                               @click="saveCompanyData" 
-                                               :loading="loading_submit">
-                                        Guardar
-                                    </el-button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         <template v-if="showConfigFilling">
-            <TapConfiguration />
+            <TapConfiguration class="mt-2" :records="records" />
         </template>
  
         </div>
@@ -78,7 +49,6 @@
                 errors: {},
                 form: {
                     is_pharmacy: false,
-                    cod_digemid: null,
                 }
             }
         },
@@ -91,7 +61,7 @@
             },
             showConfigFilling()
             {
-                return this.records.find(record => record.id === 4).active; 
+                return this.records.find(record => record.id === 4).active || this.records.find(record => record.id === 5).active;
             }
         },
         async created() {
@@ -99,14 +69,12 @@
             this.title = 'Giros de negocio'
             this.initForm()
             await this.getRecords()
-            await this.getCompanyData()
         },
         methods: {
             initForm() {
                 this.errors = {}
                 this.form = {
                     is_pharmacy: false,
-                    cod_digemid: null,
                 }
             },
             submit(id) {
@@ -141,69 +109,6 @@
                             this.form.is_pharmacy = pharmacyRecord.active
                         }
                     }) 
-            },
-            async getCompanyData() {
-                try {
-                    const response = await this.$http.get('/companies/record')
-                    if (response.data && response.data.data) {
-                        this.form.cod_digemid = response.data.data.cod_digemid || null
-                    }
-                } catch (error) {
-                    console.error('Error al cargar datos de empresa:', error)
-                }
-            },
-            async saveCompanyData() {
-                this.loading_submit = true
-                
-                try {
-                    // Obtener el ID de la empresa actual
-                    const companyResponse = await this.$http.get('/companies/record')
-                    if (!companyResponse.data || !companyResponse.data.data) {
-                        this.$message.error('No se pudo obtener la información de la empresa')
-                        return
-                    }
-                    
-                    const companyData = companyResponse.data.data
-                    
-                    // Actualizar solo el código DIGEMID
-                    const response = await this.$http.post('/companies', {
-                        id: companyData.id,
-                        cod_digemid: this.form.cod_digemid,
-                        // Enviar los demás campos requeridos
-                        number: companyData.number,
-                        name: companyData.name,
-                        trade_name: companyData.trade_name,
-                        soap_type_id: companyData.soap_type_id,
-                        soap_send_id: companyData.soap_send_id,
-                        soap_username: companyData.soap_username,
-                        soap_password: companyData.soap_password,
-                        certificate: companyData.certificate,
-                        identity_document_type_id: companyData.identity_document_type_id,
-                        country_id: companyData.country_id,
-                        department_id: companyData.department_id,
-                        province_id: companyData.province_id,
-                        district_id: companyData.district_id,
-                        address: companyData.address,
-                        email: companyData.email,
-                        telephone: companyData.telephone,
-                    })
-                    
-                    if (response.data.success) {
-                        this.$message.success('Código DIGEMID actualizado correctamente')
-                        this.errors = {}
-                    } else {
-                        this.$message.error(response.data.message || 'Error al guardar')
-                    }
-                } catch (error) {
-                    if (error.response && error.response.status === 422) {
-                        this.errors = error.response.data.errors
-                    } else {
-                        this.$message.error('Error al guardar los datos')
-                        console.error(error)
-                    }
-                } finally {
-                    this.loading_submit = false
-                }
             }
         }
     }

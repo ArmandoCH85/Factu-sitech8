@@ -22,7 +22,7 @@
                             </el-input> -->
 
                             <!-- apiperu -->
-                            <x-input-service v-model="form.number"
+                            <x-input-service class="btn-sunat-reniec-container" v-model="form.number"
                                              :identity_document_type_id="form.identity_document_type_id"
                                              @search="searchNumber"></x-input-service>
                         </div>
@@ -743,9 +743,7 @@
     padding-right: 5px;
     margin-top: 4px;
 }
-</style>
-<style scoped>
-.btn-sunat-reniec{
+.btn-sunat-reniec-container .btn-sunat-reniec{
     position: absolute;
     top: 3px;
     right: 20px;

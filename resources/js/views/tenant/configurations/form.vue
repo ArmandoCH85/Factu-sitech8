@@ -735,8 +735,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-2"></div>
-
                             <!-- <div class="col-md-4" v-if="typeUser != 'integrator'"> <br>
                                 <label class="control-label">Cantidad de columnas en productos</label>
                                 <div class="form-group" :class="{'has-danger': errors.amount_plastic_bag_taxes}">
@@ -1309,7 +1307,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6 mt-4">
-                                <div class="form-group">
+                                <div class="form-group flex-column">
                                     <label class="control-label">Imágen para encabezado - pdf
                                         <el-tooltip class="item"
                                             content="Disponible para facturas y boletas en formato a4, usando la plantilla header_image_full_width"

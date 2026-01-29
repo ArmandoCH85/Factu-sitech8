@@ -66,12 +66,12 @@
                             >
                                 <i class="fas fa-plus fa-wf"></i>
                             </a>
-                            <a
+                            <!-- <a
                                 class="btn btn-sm btn-default w-100 d-flex align-items-center justify-content-center"
                                 @click="clickDeleteCustomer"
                             >
                                 <i class="fas fa-trash fa-wf"></i>
-                            </a>                        
+                            </a>                         -->
                         </div>
                     </div>
                 </div>

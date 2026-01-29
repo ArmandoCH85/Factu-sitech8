@@ -72,8 +72,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 text-end pe-0">
-                <div class="d-flex">
+            <div class="col-md-3 pe-0">
+                <div class="d-flex justify-content-center">
                     <div v-if="!configuration.enable_list_product" class="col-6" style="padding-top: 2.5px;">
                         <el-select
                             v-model="selected_option_price"
@@ -182,7 +182,7 @@
             :class="{'margin-top-switch-active': search_item_by_barcode}"
             v-loading="loading"
         >
-            <div class="col-lg-8 col-md-6 px-4 hyo">
+            <div class="col-lg-8 col-md-6 px-4 hyo pt-2">
                 <template v-if="!search_item_by_barcode">
                     <el-input
                         v-show="

@@ -518,6 +518,13 @@ a, a:hover, a:focus {
     color: var(--primary-color);
     cursor: default;
 }
+.el-tabs--border-card{
+    border-radius: 12px !important;
+}
+.el-tabs__header, .el-tabs__nav-wrap {
+    border-top-right-radius: 12px;
+    border-top-left-radius: 12px;
+}
 .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
     color: var(--primary-color);
 }

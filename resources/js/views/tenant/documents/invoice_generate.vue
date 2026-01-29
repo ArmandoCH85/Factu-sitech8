@@ -7,7 +7,7 @@
             :multiple-keys="multiple"
             @success="checkKeyWithAlt"
         />
-        <div class="tab-content tab-content-light row-new" v-if="loading_form">
+        <div class="tab-content tab-content-light row-new tab-content-default" v-if="loading_form">
             <div class="invoice p-0">
                 <form
                 autocomplete="off"

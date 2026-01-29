@@ -10,7 +10,7 @@
                 <li class="active"><span>CHECK-IN (Asignar habitación)</span></li>
             </ol>
         </div>
-        <div class="card mb-0 tab-content tab-content-default row-new">
+        <div class="card mb-0 tab-content-default row-new">
             <div class="card-body invoice p-3">
                 <template v-if="canMakePayment">
                     <div class="card">

@@ -7,7 +7,7 @@
                 </a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>VISTA GENERAL RECEPCIÓN</span></li>
+                <li class="active"><span>Vista general recepción</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap dropdown">
@@ -79,28 +79,33 @@
                         >
                         </el-input>
                     </div>
-                    <!-- botones de status -->
-                    <div class="col-md-5 col-sm-12 pb-2 text-end">
-                        <el-button-group
+                    <!-- filtro de status -->
+                    <div class="col-md-3 col-sm-12 pb-2 text-end ms-auto">
+                        <el-select
+                            v-model="hotel_status_room"
+                            :disabled="loading"
+                            clearable
+                            placeholder="Estado"
+                            style="width: 100%;"
+                            @change="onFilterByStatus"
                         >
-                            <el-button
+                            <el-option
+                                label="Todos"
+                                value=""
+                            />
+                            <el-option
                                 v-for="st in roomStatus"
                                 :key="st"
-                                :class="onGetColorStatus(st)"
-                                :disabled="loading"
-                                class="btn btn-sm"
-                                size="mini"
-                                @click="onFilterByStatus(st)"
-                            >{{ st }}
-                            </el-button
-                            >
-                        </el-button-group>
+                                :label="st"
+                                :value="st"
+                            />
+                        </el-select>
                     </div>
                 </div>
-                <div class="card-columns">
+                <div class="room-container mt-3">
                     <div v-for="ro in items"
                          :key="ro.id"
-                         class="card hotel-rooms">
+                         class="card hotel-rooms m-0">
                         <el-card
                             :class="onGetColorStatus(ro.status)"
                             shadow="never"
@@ -219,7 +224,13 @@
         </reception-export>
     </div>
 </template>
-
+<style>
+.room-container {
+    display: grid !important;
+    gap: 1.5rem !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
+}
+</style>
 <script>
 import ExtendTimeRoom from './partials/ExtendTimeRoom.vue';
 import ModalRoomRates from "./RoomRates.vue";
@@ -262,6 +273,7 @@ export default {
         return {
             hotel_floor_id: "",
             hotel_name_room: null,
+            hotel_status_room: null,
             loading: false,
             items: [],
             room: null,
@@ -353,27 +365,8 @@ export default {
                 })
         },
         onFilterByStatus(status = "") {
-            // Si se presiona dos veces la misma opcion, se cancelaria
-            if(this.hotel_status_room == status){
-                this.hotel_status_room = null
-            }else {
-                this.hotel_status_room = status
-            }
-            this.searchRooms()
-            return null;
-            this.loading = true;
-            const params = {
-                status,
-                hotel_floor_id: this.hotel_floor_id,
-            };
-            this.$http
-                .get("/hotels/reception", {params})
-                .then((response) => {
-                    this.items = response.data.rooms;
-                })
-                .finally(() => {
-                    this.loading = false;
-                });
+            this.hotel_status_room = status === "" ? null : status;
+            this.searchRooms();
         },
         onGetColorStatus(status) {
             if (status === "DISPONIBLE") {

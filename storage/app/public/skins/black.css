@@ -891,6 +891,11 @@ form.style-switcher-wrap h3 {
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
 }
+.el-tabs--border-card>.el-tabs__header {
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    margin: 4px;
+}
 .el-dialog__headerbtn:focus .el-dialog__close,
 .el-dialog__headerbtn:hover .el-dialog__close {
     color: var(--black-dark);
@@ -1586,7 +1591,7 @@ a.ws-flotante {
 .el-tabs--card>.el-tabs__header .el-tabs__nav{
     background: var(--black-highlight);
     border-radius: 10px !important;
-    padding: 3px;
+    padding: 3px 3px 3px 4px;
     border: none;
 }
 .el-tabs__item.is-active h3,

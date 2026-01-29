@@ -20,7 +20,7 @@ if ($hostname)
         });
 
 
-        Route::middleware(['tenant.auto.login', 'auth', 'locked.tenant'])->group(function () {
+        Route::middleware(['tenant.auto.login'])->group(function () {
             Route::get('auto-login/{fqdn}', 'Tenant\AutoLoginController@autoLogin');
         });
 

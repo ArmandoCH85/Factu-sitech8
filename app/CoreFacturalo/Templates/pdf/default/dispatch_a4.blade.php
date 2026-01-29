@@ -478,7 +478,7 @@ foreach($document->items as $row) {
 
 <table class="full-width border-box mt-10 mb-10">
     <thead class="">
-    @if($configuration["enabled_price_items_dispatch"])
+    @if( isset($configuration) && $configuration["enabled_price_items_dispatch"])
     <tr>
         <th class="border-top-bottom text-center" width="8%">Item</th>
         <th class="border-top-bottom text-center" width="8%">Código</th>
@@ -517,7 +517,7 @@ foreach($document->items as $row) {
     </thead>
     <tbody>
     @foreach($document->items as $row)
-        @if($configuration["enabled_price_items_dispatch"])
+        @if(isset($configuration) && $configuration["enabled_price_items_dispatch"])
             <tr>
             <td class="text-center">{{ $loop->iteration }}</td>
             <td class="text-center">{{ $row->item->internal_id }}</td>

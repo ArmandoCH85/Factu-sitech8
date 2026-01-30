@@ -169,6 +169,7 @@
             'total_igv_free',
             'additional_data',
             'subtotal',
+            'custom_fields_data'
 
         ];
 
@@ -198,6 +199,7 @@
             'total_taxes' => 'float',
             'total_value' => 'float',
             'total' => 'float',
+            'custom_fields_data' => 'array',
         ];
 
         public function getEstablishmentAttribute($value)

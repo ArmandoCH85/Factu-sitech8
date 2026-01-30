@@ -472,6 +472,11 @@
                                 </p>
                             </div>
                             <!-- sistema por puntos -->
+                            <custom-fields-renderer
+                                ref="customFieldsRenderer"
+                                document-type="documents"
+                                :form-data.sync="form.custom_fields_data">
+                            </custom-fields-renderer>
                         </div>
                     </div>
                     <template v-if="configuration.enable_consigned">
@@ -3600,7 +3605,7 @@
                                     Vista previa
                                 </button>
                             </div>
-                        
+
                             <!-- Cancelar -->
                             <div class="col-6">
                                 <button
@@ -3610,7 +3615,7 @@
                                     Cancelar
                                 </button>
                             </div>
-                        
+
                             <!-- Enviar -->
                             <div class="col-12">
                                 <el-button
@@ -3940,6 +3945,7 @@ import PackItemDescription from "@components/items/PackItemDescription.vue";
 // import ItemDetailForm from '@views/items/form.vue'
 import DocumentFormPreview from "./partials/preview.vue";
 import ConsignedForm from './partials/consigned.vue';
+import CustomFieldsRenderer from '@viewsModuleCustomField/custom_fields/custom_field_renderer.vue'
 
 export default {
     props: [
@@ -3969,7 +3975,8 @@ export default {
         // ItemDetailForm,
         PackItemDescription,
         DocumentFormPreview,
-        ConsignedForm
+        ConsignedForm,
+        CustomFieldsRenderer,
     },
     mixins: [
         functions,
@@ -4229,14 +4236,14 @@ export default {
         this.selected_option_price = this.price_options[0].id;
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
-        
+
         // Actualizar price_options con los labels personalizados
         if (this.config) {
             this.price_options[1].description = this.config.price1_label || 'Precio 1';
             this.price_options[2].description = this.config.price2_label || 'Precio 2';
             this.price_options[3].description = this.config.price3_label || 'Precio 3';
         }
-        
+
         await this.initForm();
         await this.$http.get(`/${this.resource}/tables`).then(response => {
 
@@ -4302,7 +4309,7 @@ export default {
             this.verifySelectedSeller();
         });
         console.log(this.config.ticket_single_shipment);
-        
+
         await this.getPercentageIgv();
         this.loading_form = true;
         this.$eventHub.$on("reloadDataPersons", customer_id => {
@@ -4617,6 +4624,7 @@ export default {
                 consigned_address_id: null,
                 consigned_address: null,
                 consigned_ubigeo: null,
+                custom_fields_data: {},
             };
 
             this.form_cash_document = {
@@ -6784,7 +6792,7 @@ export default {
                     factor = _.round(input_global_discount / 100, 5);
                     amount = factor * base;
                 }
-                
+
                 // descuentos que afectan la bi
                 if (this.isGlobalDiscountBase) {
 
@@ -6793,7 +6801,7 @@ export default {
                     let total_taxes =
                         total_igv + ctx.total_isc + ctx.total_plastic_bag_taxes;
                     let total_out = _.round(
-                        ctx.total_exonerated + ctx.total_unaffected + ctx.total_exportation + ctx.total_free, 
+                        ctx.total_exonerated + ctx.total_unaffected + ctx.total_exportation + ctx.total_free,
                         2
                     );
                     let total = total_taxed + total_out + total_taxes;
@@ -6904,6 +6912,16 @@ export default {
                     return false;
                 }
             });
+
+            // Validar campos personalizados requeridos
+            if (this.$refs.customFieldsRenderer) {
+                const customFieldsValidation = this.$refs.customFieldsRenderer.validateRequiredFields()
+                if (!customFieldsValidation.valid) {
+                    this.$message.error('Campos personalizados incompletos: ' + customFieldsValidation.errors.join(', '))
+                    return false
+                }
+            }
+
             if(this.form.operation_type_id === '0101' && this.form.is_itinerant) {
                 if (this.form.guides.length == 0 ) {
                     this.errors = { is_itinerant : ['Debe tener una guia vinculada al documento']}
@@ -6999,9 +7017,9 @@ export default {
                         this.documentNewId = response.data.data.id;
 
                         if(this.config.send_auto && this.form.document_type_id === '01') {
-                            response_sent = await this.sendDocument(this.documentNewId); 
+                            response_sent = await this.sendDocument(this.documentNewId);
                         } else if (this.config.ticket_single_shipment && this.form.document_type_id === '03') {
-                            response_sent = await this.sendDocument(this.documentNewId); 
+                            response_sent = await this.sendDocument(this.documentNewId);
                         }
 
                         this.$eventHub.$emit("reloadDataItems", null);

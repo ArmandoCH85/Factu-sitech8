@@ -45,9 +45,9 @@ class DocumentInput
         }
 
         $establishment = EstablishmentInput::set($inputs['establishment_id']);
-        $customer = PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id'] : null, 
+        $customer = PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id'] : null,
             $validate_itinerant ? $inputs['itinerant']['address'] : null);
-        
+
 
         if (in_array($document_type_id, ['01', '03'])) {
             $array_partial = self::invoice($inputs);
@@ -176,6 +176,7 @@ class DocumentInput
             'consigned_id' => Functions::valueKeyInArray($inputs, 'consigned_id'),
             'consigned_address' => Functions::valueKeyInArray($inputs, 'consigned_address'),
             'consigned_ubigeo' => Functions::valueKeyInArray($inputs, 'consigned_ubigeo'),
+            'custom_fields_data' => Functions::valueKeyInArray($inputs, 'custom_fields_data'),
         ];
     }
 

@@ -70,7 +70,7 @@
                 <h5 class="text-center">NOTA DE VENTA</h5>
                 <h3 class="text-center">{{ $tittle }}</h3>
             </td>
-        @endif        
+        @endif
     </tr>
 </table>
 <table class="full-width mt-5">
@@ -253,14 +253,14 @@ foreach ($document->items as $row) {
         <th class="border-top-bottom text-center py-2" width="8%">COD.</th>
         <th class="border-top-bottom text-center py-2" width="7%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>        
-        @if($show_series_column) <th class="border-top-bottom text-center py-2 px-1"> SERIE </th> @endif   
+        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
+        @if($show_series_column) <th class="border-top-bottom text-center py-2 px-1"> SERIE </th> @endif
         @if($showModelColumn)
             <th class="border-top-bottom text-left py-2 px-1">MODELO</th>
         @endif
         @if($showBrandColumn)
             <th class="border-top-bottom text-center py-2 px-1">MARCA</th>
-        @endif    
+        @endif
         @php
             $showLoteColumn = false;
 
@@ -272,7 +272,7 @@ foreach ($document->items as $row) {
             }
         @endphp
         @if($showLoteColumn) <th class="border-top-bottom text-center py-2 px-1">
-             LOTE 
+             LOTE
         </th> @endif
         @if($showLoteColumn) <th class="border-top-bottom text-center py-2" width="9%"> F. VENC. </th> @endif
         <th class="border-top-bottom text-right py-2 col-total">P.UNIT</th>
@@ -381,7 +381,7 @@ foreach ($document->items as $row) {
                             ? ltrim($date_due, '/')
                             : ($row->relation_item->date_of_due ? $row->relation_item->date_of_due->format('Y-m-d') : '');
                     @endphp
-            
+
                     {{ $cleanedDate }}
                 </td>
             @endif
@@ -541,6 +541,30 @@ foreach ($document->items as $row) {
         </tr>
     </table>
     @endif
+    @if ($document->custom_fields_data && count((array)$document->custom_fields_data) > 0)
+    <br>
+    <table class="full-width">
+        @foreach ($document->custom_fields_data as $field_slug => $field_value)
+            <tr>
+                <td>
+                    @php
+                        $custom_field = \Modules\CustomField\Models\CustomField::where('slug', $field_slug)->first();
+                        $field_name = ($custom_field) ? $custom_field->name : str_replace('_', ' ', ucfirst($field_slug));
+                    @endphp
+                    {{ $field_name }}
+                </td>
+                <td width="8px">:</td>
+                <td>
+                    @if (is_array($field_value))
+                        {{ implode(', ', $field_value) }}
+                    @else
+                        {{ $field_value }}
+                    @endif
+                </td>
+            </tr>
+        @endforeach
+    </table>
+@endif
 
 {{-- @if($document->payment_method_type_id && $payments->count() == 0)
     <table class="full-width">

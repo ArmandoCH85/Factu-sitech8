@@ -59,7 +59,7 @@
                 <h3 class="text-center">{{ $document_number }}</h3>
             </td>
         @endif
-        
+
     </tr>
 </table>
 @if($document->transfer_reason_type_id === '04')
@@ -301,6 +301,29 @@
     </tr>
     </tbody>
 </table>
+@if ($document->custom_fields_data && is_array($document->custom_fields_data) && count($document->custom_fields_data) > 0)
+<table class="full-width border-box mt-10 mb-10">
+    {{-- <tr>
+        <td class="text-bold border-bottom font-bold">CAMPOS PERSONALIZADOS</td>
+    </tr> --}}
+    @foreach($document->custom_fields_data as $field_slug => $field_value)
+        @php
+            $custom_field = \Modules\CustomField\Models\CustomField::where('slug', $field_slug)->first();
+            $field_name = $custom_field ? $custom_field->name : $field_slug;
+        @endphp
+        <tr>
+            <td>
+                <strong>{{ $field_name }}:</strong>
+                @if (is_array($field_value))
+                    {{ implode(', ', $field_value) }}
+                @else
+                    {{ $field_value }}
+                @endif
+            </td>
+        </tr>
+    @endforeach
+</table>
+@endif
 <table class="full-width border-box mt-10 mb-10">
     <thead>
     <tr>
@@ -594,7 +617,7 @@ foreach($document->items as $row) {
                             ? ltrim($date_due, '/')
                             : ($row->relation_item->date_of_due ? $row->relation_item->date_of_due->format('Y-m-d') : '');
                     @endphp
-            
+
                     {{ $cleanedDate }}
                 </td>
             @endif
@@ -609,7 +632,7 @@ foreach($document->items as $row) {
             <td class="text-center">{{ number_format($row->item->unit_price, 2) }}</td>
             <td class="text-right">{{ number_format($row->item->total, 2) }}</td>
         </tr>
-        @else 
+        @else
             <tr>
             <td class="text-center">{{ $loop->iteration }}</td>
             <td class="text-center">{{ $row->item->internal_id }}</td>

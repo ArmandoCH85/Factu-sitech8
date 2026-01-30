@@ -17,7 +17,7 @@
                     <div class="d-flex head-notes">
                         <div class="d-flex is-hidden-mobile">
                             <div class="text-center mt-3 mb-0">
-                                <logo 
+                                <logo
                                     url="/"
                                     :path_logo="getCurrentLogo"
                                 ></logo>
@@ -157,11 +157,11 @@
                                             <p v-if="loading_search" class="el-select-dropdown__empty">
                                                 Cargando...
                                             </p>
-                                        
+
                                             <p v-else class="el-select-dropdown__empty">
                                                 No se encontraron resultados
                                             </p>
-                                        
+
                                             <div
                                                 v-if="!loading_search"
                                                 class="el-select-dropdown__item new-option"
@@ -469,6 +469,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <custom-fields-renderer
+                                ref="customFieldsRenderer"
+                                document-type="sale_notes"
+                                :form-data.sync="form.custom_fields_data">
+                            </custom-fields-renderer>
                             <!-- fin de informacion adicional -->
                         </div>
                     <div v-if="consigneds.length" class="card-body border-top">
@@ -482,7 +487,7 @@
                                 href="#"
                                 @click.prevent="showDialogConsignedForm = true">[+ Nuevo]</a>
                                 </label>
-                                <el-select class="w-100" 
+                                <el-select class="w-100"
                                         v-model="form.consigned_id"
                                         @change="getConsignedAddresses"
                                         filterable
@@ -2152,6 +2157,7 @@ header .head-notes > div {
 import SaleNotesFormItem from "./partials/item.vue";
 import PersonForm from "../persons/form.vue";
 import SaleNotesOptions from "./partials/options.vue";
+import CustomFieldsRenderer from '@viewsModuleCustomField/custom_fields/custom_field_renderer.vue';
 import {
     functions,
     exchangeRate,
@@ -2176,6 +2182,7 @@ export default {
         SaleNotesFormItem,
         PersonForm,
         SaleNotesOptions,
+        CustomFieldsRenderer,
         Logo,
         Keypress,
         ItemSearchQuickSale,
@@ -2186,7 +2193,7 @@ export default {
     computed: {
         getCurrentLogo() {
             const isDarkMode = document.documentElement.classList.contains('dark');
-        
+
             if (isDarkMode && this.company.logo_dark) {
                 return `/storage/uploads/logos/${this.company.logo_dark}`;
             }
@@ -2340,7 +2347,7 @@ export default {
                     id: "price3",
                     description: "Precio 3"
                 }
-            ], 
+            ],
             recordDiscountsGlobal: null,
             customer_expired_days: 0,
             customer_has_expired: false,
@@ -2360,14 +2367,14 @@ export default {
         this.selected_option_price = this.price_options[0].id;
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
-        
+
         // Actualizar price_options con los labels personalizados
         if (this.config) {
             this.price_options[1].description = this.config.price1_label || 'Precio 1';
             this.price_options[2].description = this.config.price2_label || 'Precio 2';
             this.price_options[3].description = this.config.price3_label || 'Precio 3';
         }
-        
+
         await this.initForm();
         await this.$http.get(`/${this.resource}/tables`).then(response => {
             this.currency_types = response.data.currency_types;
@@ -2779,7 +2786,7 @@ export default {
             this.calculatePayments();
         },
         clickAddFee() {
-            
+
             this.form.due_date = moment().format("YYYY-MM-DD");
             this.form.fee.push({
                 id: null,
@@ -2914,6 +2921,7 @@ export default {
                 consigned_address_id: null,
                 consigned_address: null,
                 consigned_ubigeo: null,
+                custom_fields_data: {}
             };
 
             this.total_discount_no_base = 0;
@@ -3005,14 +3013,14 @@ export default {
                 );
             });
             this.form.items = items;
-            
+
             /*
             if (this.form.currency_type_id === 'PEN') {
                 this.total_global_discount = _.round(this.total_global_discount * this.form.exchange_rate_sale, 2)
             } else {
                 this.total_global_discount = _.round(this.total_global_discount / this.form.exchange_rate_sale, 2)
             }*/
-            
+
             this.calculateTotal();
         },
         calculateTotal() {
@@ -3345,6 +3353,14 @@ export default {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }
 
+            if (this.$refs.customFieldsRenderer) {
+                const validation = this.$refs.customFieldsRenderer.validateRequiredFields()
+                if (!validation.valid) {
+                    this.$message.error('Campos personalizados incompletos: ' + validation.errors.join(', '))
+                    return false
+                }
+            }
+
             let validate = await this.validate_payments();
             if (
                 validate.acum_total > parseFloat(this.form.total) ||
@@ -3381,7 +3397,7 @@ export default {
             // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === "03")
                 this.form.payment_condition_id = "02";
-                
+
             if (!this.enabled_payments) {
                 this.form.payments = [];
             }
@@ -3540,7 +3556,7 @@ export default {
                 number: null,
                 identity_document_type_id: null
             };
-        }, 
+        },
         async checkCustomerExpiredDebt() {
             this.customer_expired_days = 0;
             this.customer_has_expired = false;

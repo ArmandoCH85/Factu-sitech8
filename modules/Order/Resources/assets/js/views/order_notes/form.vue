@@ -16,7 +16,7 @@
                 <header class="clearfix clearfix-default p-2">
                     <div class="d-flex head-notes">
                         <div class="col-sm-2 text-center mt-3 mb-0 is-hidden-mobile">
-                            <logo 
+                            <logo
                                 url="/"
                                 :path_logo="getCurrentLogo"
                             ></logo>
@@ -177,11 +177,11 @@
                                             <p v-if="loading_search" class="el-select-dropdown__empty">
                                                 Cargando...
                                             </p>
-                                        
+
                                             <p v-else class="el-select-dropdown__empty">
                                                 No se encontraron resultados
                                             </p>
-                                        
+
                                             <div
                                                 v-if="!loading_search"
                                                 class="el-select-dropdown__item new-option"
@@ -509,6 +509,11 @@
                                 </div>
                             </div>
                             <!-- Fin informacion adicional -->
+                            <custom-fields-renderer
+                                ref="customFieldsRenderer"
+                                document-type="order_notes"
+                                :form-data.sync="form.custom_fields_data">
+                            </custom-fields-renderer>
                             <div class="row mt-3">
                                 <div class="col-md-12">
                                     <div class="table-responsive">
@@ -1102,6 +1107,7 @@
 import OrderNoteFormItem from "./partials/item.vue";
 import PersonForm from "@views/persons/form.vue";
 import OrderNoteOptions from "./partials/options.vue";
+import CustomFieldsRenderer from '@viewsModuleCustomField/custom_fields/custom_field_renderer.vue';
 import { functions, exchangeRate } from "@mixins/functions";
 import { calculateRowItem, showNamePdfOfDescription } from "@helpers/functions";
 import Logo from "@views/companies/logo.vue";
@@ -1114,6 +1120,7 @@ export default {
         OrderNoteFormItem,
         PersonForm,
         OrderNoteOptions,
+        CustomFieldsRenderer,
         Logo,
         SelectLotsGroup
     },
@@ -1435,7 +1442,8 @@ export default {
                     format_pdf: "a4"
                 },
                 additional_data: [],
-                prepayments: []
+                prepayments: [],
+                custom_fields_data: {}
             };
 
             this.is_generate_from_quotation = false;
@@ -1652,6 +1660,14 @@ export default {
                     return this.$message.error(validate_items.message);
             }
 
+            if (this.$refs.customFieldsRenderer) {
+                const validation = this.$refs.customFieldsRenderer.validateRequiredFields()
+                if (!validation.valid) {
+                    this.$message.error('Campos personalizados incompletos: ' + validation.errors.join(', '))
+                    return false
+                }
+            }
+
             this.loading_submit = true;
 
             // await this.changePaymentMethodType(false)
@@ -1744,7 +1760,7 @@ export default {
         },
         getCurrentLogo() {
             const isDarkMode = document.documentElement.classList.contains('dark');
-        
+
             if (isDarkMode && this.company.logo_dark) {
                 return `/storage/uploads/logos/${this.company.logo_dark}`;
             }

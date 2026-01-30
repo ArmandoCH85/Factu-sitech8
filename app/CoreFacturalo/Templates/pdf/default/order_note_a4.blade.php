@@ -185,6 +185,27 @@
     @endif
 </table>
 
+@if ($document->custom_fields_data && is_array($document->custom_fields_data) && count($document->custom_fields_data) > 0)
+<table class="">
+    @foreach($document->custom_fields_data as $field_slug => $field_value)
+        @php
+            $custom_field = \Modules\CustomField\Models\CustomField::where('slug', $field_slug)->first();
+            $field_name = $custom_field ? $custom_field->name : $field_slug;
+        @endphp
+        <tr>
+            <td width="100px">{{ $field_name }}:</td>
+            <td width="">
+                @if (is_array($field_value))
+                    {{ implode(', ', $field_value) }}:
+                @else
+                    {{ $field_value }}
+                @endif
+            </td>
+        </tr>
+    @endforeach
+</table>
+@endif
+
 @if ($document->guides)
 <br/>
 {{--<strong>Guías:</strong>--}}
@@ -234,21 +255,21 @@ foreach ($document->items as $row) {
                     break;
                 }
             }
-        
+
             foreach ($document->items as $row) {
                 if ($row->getSaleLotGroupCodeDescription()) {
                     $showLoteColumn = true;
                     break;
                 }
             }
-        @endphp        
-        @if($showSerieColumn) <th class="border-top-bottom text-left py-2 px-1"> SERIE </th> @endif  
+        @endphp
+        @if($showSerieColumn) <th class="border-top-bottom text-left py-2 px-1"> SERIE </th> @endif
         @if($showModelColumn)
             <th class="border-top-bottom text-left py-2 px-1">MODELO</th>
         @endif
         @if($showBrandColumn)
             <th class="border-top-bottom text-center py-2 px-1">MARCA</th>
-        @endif    
+        @endif
         @if($showLoteColumn) <th class="border-top-bottom text-center py-2 px-1"> LOTE </th> @endif
         @if($showLoteColumn) <th class="border-top-bottom text-center py-2 px-1"> F. VENC. </th> @endif
         <th class="border-top-bottom text-right py-2 px-1 col-total">P.UNIT</th>
@@ -289,7 +310,7 @@ foreach ($document->items as $row) {
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
-            </td>       
+            </td>
             @if($showSerieColumn)
             <td class="text-left align-top">
                 @isset($row->item->lots)

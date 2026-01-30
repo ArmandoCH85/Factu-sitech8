@@ -76,11 +76,11 @@
                                                 <p v-if="loading_search" class="el-select-dropdown__empty">
                                                     Cargando...
                                                 </p>
-                                            
+
                                                 <p v-else class="el-select-dropdown__empty">
                                                     No se encontraron resultados
                                                 </p>
-                                            
+
                                                 <div
                                                     v-if="!loading_search"
                                                     class="el-select-dropdown__item new-option"
@@ -197,7 +197,7 @@
                             <div class="col-lg-6">
                                 <div :class="{ 'has-danger': errors.observations }" class="form-group">
                                     <label class="control-label">Observaciones</label>
-                                    <el-input 
+                                    <el-input
                                         v-model="form.observations"
                                         autosize
                                         show-word-limit
@@ -207,6 +207,11 @@
                                         v-text="errors.observations[0]"></small>
                                 </div>
                             </div>
+                            <custom-fields-renderer
+                                ref="customFieldsRenderer"
+                                document-type="dispatches"
+                                :form-data.sync="form.custom_fields_data">
+                            </custom-fields-renderer>
                             <div class="col-lg-2" v-if="!order_form">
                                 <div :class="{ 'has-danger': errors.order_form_external }" class="form-group">
                                     <label class="control-label">Orden de pedido
@@ -286,7 +291,7 @@
                                                 <a href="#" @click.prevent="showDialogBuyerForm = true">[+ Agregar comprador]</a>
                                             </label>
                                             <el-select v-model="form.buyer_id" :loading="loading_search"
-                                                popper-class="el-select-customers" remote 
+                                                popper-class="el-select-customers" remote
                                                 >
                                                 <el-option v-for="option in buyers" :key="option.id" :label="option.name"
                                                     :value="option.id"></el-option>
@@ -528,7 +533,7 @@
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ row.unit_type_id }}</td>
                                                 <td v-html="setDescriptionOfItem(row)"></td>
-                                                <td class="text-end">{{ getFormatQuantity(row.quantity) }} 
+                                                <td class="text-end">{{ getFormatQuantity(row.quantity) }}
                                                     <a v-if="row.IdLoteSelected!=''" class="text-center font-weight-bold text-info"
                                                         href="#" @click.prevent="listLotGroupSelected(row.IdLoteSelected)">
                                                         [Lotes]
@@ -884,6 +889,7 @@ import TransportForm from './transports/form.vue';
 import OriginAddressForm from './OriginAddress/Form.vue';
 import DeliveryAddressForm from './partials/DispatchAddressForm.vue';
 import DialogReferenceDocument from './Carrier/partials/DialogReferenceDocument.vue'
+import CustomFieldsRenderer from '@viewsModuleCustomField/custom_fields/custom_field_renderer.vue';
 
 import DispatchFinish from './partials/finish.vue'
 import { mapActions, mapState } from "vuex/dist/vuex.mjs";
@@ -916,6 +922,7 @@ export default {
         SelectLotsForm,
         ListLotsGroup,
         DialogReferenceDocument,
+        CustomFieldsRenderer,
         BuyerComp
     },
     mixins: [setDefaultSeriesByMultipleDocumentTypes],
@@ -1130,7 +1137,7 @@ export default {
             name: this.company.name,
             number: this.company.number,
             identity_document_type_id: this.company.identity_document_type_id
-        } 
+        }
 
     },
     methods: {
@@ -1205,6 +1212,7 @@ export default {
                 has_transport_driver_01: false,
                 is_transport_m1l: false,
                 license_plate_m1l:null,
+                custom_fields_data: {}
             }
         },
         setDescriptionOfItem(item) {
@@ -1678,6 +1686,13 @@ export default {
             if (this.config.affect_all_documents) {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }
+            if (this.$refs.customFieldsRenderer) {
+                const validation = this.$refs.customFieldsRenderer.validateRequiredFields()
+                if (!validation.valid) {
+                    this.$message.error('Campos personalizados incompletos: ' + validation.errors.join(', '))
+                    return false
+                }
+            }
             if (this.form.transport_mode_type_id === '02') {
                 this.form.dispatcher_id = null;
                 this.form.dispatcher = null;
@@ -1686,10 +1701,10 @@ export default {
                 }
                 if (this.selectedTransports.length > 0) {
                     this.form.transport_id = _.head(this.selectedTransports).id;
-                    
+
                 }
 
-                
+
                 if (!this.form.is_transport_m1l) {
                     if (!this.form.driver_id) {
                         return this.$message.error('El conductor es requerido')
@@ -1962,7 +1977,7 @@ export default {
             this.$http.get(`/dispatch_persons/buyers`)
                 .then(response => {
                     console.log(response.data);
-                    
+
                     this.buyers = response.data;
                 });
         },

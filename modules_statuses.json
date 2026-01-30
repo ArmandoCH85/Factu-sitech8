@@ -37,5 +37,6 @@
     "Suscription": true,
     "Template": true,
     "WhatsAppApi": true,
-    "FullSuscription": true
+    "FullSuscription": true,
+    "CustomField": true
 }

@@ -373,9 +373,10 @@ import TenantReportSaleByBrand from '../../modules/Report/Resources/assets/js/vi
 import TenatnEditorTag from '../../modules/Item/Resources/assets/js/views/editor-tag/index.vue'
 import EmptyState from './components/EmptyState.vue'
 import TenantItemAffectations from './views/tenant/item_affectations/index.vue';
+import TenantcustomFieldsIndex from '@viewsModuleCustomField/custom_fields/index.vue';
 
 //componente agregado para issue #93 añadir icono cuando no hay datos
-Vue.component('empty-state', EmptyState);   
+Vue.component('empty-state', EmptyState);
 // Sire
 Vue.component('tenant-sire-index', TenantSireIndex);
 
@@ -413,6 +414,7 @@ Vue.component('tenant-configurations-ticket-pdf', TenantConfigurationsTicketPdf)
 Vue.component('tenant-configurations-sale-notes', TenantConfigurationsSaleNotes)
 Vue.component('tenant-configurations-pdf-guide', TenantConfigurationsPdfGuide)
 Vue.component('tenant-configurations-preprinted-pdf', TenantConfigurationsPreprintedPdf)
+Vue.component('tenant-configurations-custom-fields', TenantcustomFieldsIndex)
 Vue.component('tenant-dialog-header-menu', TenantDialogHeaderMenu)
 
 Vue.component('tenant-bank_accounts-index', TenantBankAccountsIndex)

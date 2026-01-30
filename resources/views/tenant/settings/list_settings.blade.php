@@ -73,7 +73,7 @@
                     <li>
                         <a href="{{route('tenant_ecommerce_configuration')}}">Tienda Virtual/Restaurante</a>
                     </li>
-                    
+
                 </ul>
             </div>
         </div>
@@ -157,43 +157,49 @@
             <div class="card-body">
                 <h6 class="card-title">Avanzado</h6>
                 <ul class="card-report-links">
-                            @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
-                    <li>
-                        <a href="{{route('tenant.tasks.index')}}">Tareas programadas</a>
-                    </li>
+                    @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
+                        <li>
+                            <a href="{{route('tenant.tasks.index')}}">Tareas programadas</a>
+                        </li>
                     @endif
                     @if($vc_company->soap_type_id != '03')
-                    {{-- <li>
-                        <a href="{{route('tenant.offline_configurations.index')}}">Modo offline</a>
-                    </li> --}}
-                    <li>
-                        <a href="{{route('tenant.series_configurations.index')}}">Numeración de facturación</a>
-                    </li>
+                        {{-- <li>
+                            <a href="{{route('tenant.offline_configurations.index')}}">Modo offline</a>
+                        </li> --}}
+                        <li>
+                            <a href="{{route('tenant.series_configurations.index')}}">Numeración de facturación</a>
+                        </li>
                     @endif
                     <li>
                         <a href="{{route('tenant.company_accounts.create')}}">Avanzado - Contable</a>
                     </li>
-                            @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
-                    <li>
-                        <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
-                    </li>
+                    @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
+                        <li>
+                            <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
+                        </li>
                     @endif
-                            @if($user->type === 'admin')
-                            <li>
-                                <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
-                            </li>
-                        @endif
-                                @if($configuration->isMiTiendaPe()== true)
-                                    <li>
-                                        <a href="{{route('tenant.mi_tienda_pe.configuration.index')}}">
-                                            MiTienda.PE
-                                        </a>
-                                    </li>
-                                @endif
+                     @if($user->type === 'admin')
+                        <li>
+                            <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
+                        </li>
+                    @endif
+                    @if($configuration->isMiTiendaPe()== true)
+                        <li>
+                            <a href="{{route('tenant.mi_tienda_pe.configuration.index')}}">
+                                MiTienda.PE
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{route('tenant.item-editor-tag.index')}}">Editor de etiqueta
                                         <sup
                                         style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{route('tenant.custom-fields.index')}}">
+                            Campos personalizados
+                            <sup style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
                         </a>
                     </li>
                 </ul>

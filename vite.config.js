@@ -59,6 +59,7 @@ export default defineConfig({
       '@viewsModuleMultiUser': path.resolve(__dirname, 'modules/MultiUser/Resources/assets/js/views'),
       '@viewsModuleQrChatBuho': path.resolve(__dirname, 'modules/QrChatBuho/Resources/assets/js/views'),
       '@viewsModuleQrApi' : path.resolve(__dirname, 'modules/QrApi/Resources/assets/js/views'),
+      '@viewsModuleCustomField' : path.resolve(__dirname, 'modules/CustomField/Resources/assets/js'),
       'vue': path.resolve(__dirname, 'node_modules/vue/dist/vue.esm.js'),
     },
   },

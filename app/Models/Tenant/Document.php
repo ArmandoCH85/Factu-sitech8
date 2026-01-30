@@ -276,6 +276,7 @@ class Document extends ModelTenant
         'consigned_id',
         'consigned_address',
         'consigned_ubigeo',
+        'custom_fields_data',
     ];
 
     protected $casts = [
@@ -290,6 +291,7 @@ class Document extends ModelTenant
         'point_system' => 'bool',
         'force_send_by_summary' => 'bool',
         'dispatch_ticket_pdf' => 'bool',
+        'custom_fields_data' => 'array',
     ];
 
     public static function boot()

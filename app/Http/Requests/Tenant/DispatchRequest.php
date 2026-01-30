@@ -20,8 +20,7 @@ class DispatchRequest extends FormRequest
     {
         //$id = $this->input('id');
         $condition_driver_id = $this->is_transport_m1l ? 'nullable' :
-                'required_if:transport_mode_type_id, "02"'
-         ; 
+                'required_if:transport_mode_type_id, "02"';
 
         return [
             'unit_type_id' => [

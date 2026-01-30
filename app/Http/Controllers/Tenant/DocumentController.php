@@ -748,7 +748,7 @@ class DocumentController extends Controller
             $this->aplicarItineranciaSiCorresponde($data);
             self::setChildrenToData($data);
             $fact = DB::connection('tenant')->transaction(function () use ($data) {
-                $facturalo = new Facturalo();                
+                $facturalo = new Facturalo();
                 $facturalo->save($data);
                 $facturalo->createXmlUnsigned();
                 $service_pse_xml = $facturalo->servicePseSendXml();
@@ -1646,7 +1646,7 @@ class DocumentController extends Controller
         }
     }
 
-    public function preview(DocumentRequest $request) 
+    public function preview(DocumentRequest $request)
     {
         $validate = $this->validateDocument($request);
         if (!$validate['success']) return $validate;
@@ -1665,7 +1665,7 @@ class DocumentController extends Controller
             }
         }
         $facturalo->setActions(array_key_exists('actions', $inputs) ? $inputs['actions'] : []);
-        
+
         $document = new Document($inputs);
 
         $facturalo->setPaymentsPreview($document, $inputs['payments']);
@@ -1685,7 +1685,7 @@ class DocumentController extends Controller
             $transport = new \Modules\BusinessTurn\Models\DocumentTransport($inputs['transport']);
             $document->transport = $transport;
         }
-        
+
         $invoice = new \App\Models\Tenant\Invoice($inputs['invoice']);
         $document->invoice = $invoice;
 

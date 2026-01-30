@@ -8,9 +8,9 @@
             :title="titleDialog"
             width="50%"
             @open="create"
-        >   
-            <div class="row"> 
- 
+        >
+            <div class="row">
+
                 <div class="col-lg-4">
                     <div :class="{'has-danger': errors.series_id}" class="form-group">
                         <label class="control-label">Serie</label>
@@ -29,7 +29,7 @@
                         ></small>
                     </div>
                 </div>
- 
+
                 <div class="col-md-12" v-if="document.items">
                     <div style="margin:3px" class="table-responsive">
                         <h5 class="separator-title">
@@ -50,7 +50,7 @@
                                     <td class="text-center">{{row.item.description}}</td>
                                     <td class="text-center">{{row.quantity}}</td>
                                     <td class="series-table-actions text-right">
-                                        
+
                                         <template v-if="row.item.lots_enabled">
                                             <button class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="openDialogLotsGroup(index, row)">
                                                 <i class="el-icon-check"></i> Lotes
@@ -68,7 +68,7 @@
                         </table>
                     </div>
                 </div>
-  
+
             </div>
 
             <span slot="footer" class="dialog-footer">
@@ -78,7 +78,7 @@
                     class="submit"
                     type="primary"
                     @click="submit"
-                    >Generar</el-button> 
+                    >Generar</el-button>
             </span>
         </el-dialog>
 
@@ -89,7 +89,7 @@
             :showDialog.sync="showDialogSelectLots"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
-         
+
         <lots-group
             :lots_group="lots_group"
             :quantity="lots_group_quantity"
@@ -100,7 +100,7 @@
     </div>
 </template>
 
-<script> 
+<script>
 
 import SelectLotsForm from '../../documents/partials/lots.vue'
 import LotsGroup from '../../sale_notes/partials/lots_group.vue'
@@ -139,7 +139,7 @@ export default {
     async created() {
         await this.initDocument()
     },
-    methods: {   
+    methods: {
         addRowLotGroup(lots_selecteds){
             // console.log(lots_selecteds)
             this.document.items[this.current_index_item].IdLoteSelected = lots_selecteds
@@ -195,7 +195,7 @@ export default {
             }
 
 
-        }, 
+        },
         resetDocument() {
             this.initDocument()
         },
@@ -251,8 +251,8 @@ export default {
 
             // let record = this.dataSaleNote
             this.document = data_transform
-            
-        }, 
+
+        },
         async create() {
             await this.getTransformDataForOrder()
             await this.getTables()
@@ -261,12 +261,12 @@ export default {
 
             await this.$http
                 .get(`/${this.resource}/option/tables`)
-                .then((response) => { 
+                .then((response) => {
                     this.all_series = response.data.series
                     this.filterSeries()
                 })
 
-        }, 
+        },
         filterSeries() {
             this.document.series_id = null
             this.series = _.filter(this.all_series, {document_type_id: this.document.document_type_id})
@@ -281,7 +281,7 @@ export default {
         clickClose() {
             this.$emit("update:showDialog", false)
             this.resetDocument()
-        },  
+        },
         async validateQuantitySeriesLots() {
 
             let error = 0
@@ -301,15 +301,15 @@ export default {
 
             })
 
-            if(error > 0) 
+            if(error > 0)
             {
                 return {
                     success: false,
                     message: 'Las cantidades y series seleccionadas deben ser iguales.',
                 }
             }
-                
-            if(error_lots_group > 0) 
+
+            if(error_lots_group > 0)
             {
                 return {
                     success: false,

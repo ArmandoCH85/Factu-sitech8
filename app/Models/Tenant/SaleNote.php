@@ -235,6 +235,7 @@
             'consigned_id',
             'consigned_address',
             'consigned_ubigeo',
+            'custom_fields_data',
         ];
 
         protected $casts = [
@@ -281,6 +282,7 @@
             'point_system' => 'bool',
             'created_from_pos' => 'bool',
             'dispatch_ticket_pdf' => 'bool',
+            'custom_fields_data' => 'array',
 
         ];
 
@@ -803,7 +805,7 @@
 
             /*
             $status_dispatch=$this->dispatch_sale;
-            
+
             if (count($status_dispatch)>0) {
                 //dd($status_dispatch[0]->status);
                 foreach ($status_dispatch as $value) {
@@ -819,7 +821,7 @@
                 $status_dispatch='PENDIENTE';
             }
             */
-            
+
             $date_pay=$this->payments()->select('date_of_payment')->get();
 
             $date_of_pay='';
@@ -923,9 +925,9 @@
             ];
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener estado de la entrega
          *
          * @return string
@@ -942,7 +944,7 @@
             return $this->getDescriptionStatusDispatch($status);
         }
 
-        
+
         /**
          * getDescriptionStatusDispatch
          *
@@ -960,9 +962,9 @@
             return $data[$status] ?? null;
         }
 
-        
+
         /**
-         * 
+         *
          * Mostrar productos en reporte
          *
          * @return array
@@ -977,8 +979,8 @@
                 ];
             });
         }
-        
-        
+
+
         /**
          *
          * @param  SaleNoteItem $row
@@ -988,10 +990,10 @@
         {
             $internal_id = $row->item->internal_id ?? false;
 
-            return ($internal_id ? $internal_id.' - ' : '').$row->item->description; 
+            return ($internal_id ? $internal_id.' - ' : '').$row->item->description;
         }
 
-                
+
         /**
          *
          * @param  string $format
@@ -1001,7 +1003,7 @@
         {
             return url("sale-notes/print/{$this->external_id}/{$format}");
         }
-        
+
 
         /**
          * @return Collection
@@ -1738,7 +1740,7 @@
             return $calculate_quantity_points;
         }
 
-        
+
         /**
          *
          * Filtrar por moneda nacional
@@ -1751,7 +1753,7 @@
             return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
         }
 
-        
+
         /**
          *
          * Filtrar registro para envio de mensajes por whatsapp
@@ -1771,9 +1773,9 @@
                         ]);
         }
 
-        
+
         /**
-         * 
+         *
          * Placa para reporte de ventas
          *
          * @return string
@@ -1783,9 +1785,9 @@
             return $this->license_plate;
         }
 
-        
+
         /**
-         * 
+         *
          * Tipo de transaccion para caja
          *
          * @return string
@@ -1797,7 +1799,7 @@
 
 
         /**
-         * 
+         *
          * Tipo de documento para caja
          *
          * @return string
@@ -1807,9 +1809,9 @@
             return $this->getTable();
         }
 
-        
+
         /**
-         * 
+         *
          * Datos para resumen diario de operaciones
          *
          * @return array
@@ -1834,8 +1836,8 @@
         {
             return $this->payments()->filterCashPaymentWithoutDestination()->sum('payment');
         }
-        
-            
+
+
         /**
          *
          * Obtener total de pagos en transferencia
@@ -1849,7 +1851,7 @@
 
 
         /**
-         * 
+         *
          * Validar si tiene estado permitido para calculos/etc
          *
          * @return bool
@@ -1859,7 +1861,7 @@
             return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
         }
 
-        
+
         /**
          *
          * @return bool

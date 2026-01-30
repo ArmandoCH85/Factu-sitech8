@@ -5,7 +5,7 @@ $establishment = $document->establishment;
 $customer = $document->customer;
 $invoice = $document->invoice;
 $document_base = ($document->note) ? $document->note : null;
-$itinerant = $document->itinerant;  
+$itinerant = $document->itinerant;
 // dd($itinerant->description);
 
 //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
@@ -57,7 +57,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
         </tr>
     </table>
     @endif
-    @if($document->state_type->id == '11') 
+    @if($document->state_type->id == '11')
     <div class="company_logo_box" style="position: absolute; text-align: center; top:30%;">
         <img
             src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}"
@@ -213,7 +213,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
             if (!empty($customer->address)) {
                 $addressParts[] = $customer->address;
             }
-        
+
             if ($customer->district_id !== '-') {
                 $ubigeo = \App\Models\Tenant\Catalogs\District::find($customer->district_id);
             }
@@ -235,7 +235,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
             } else {
                 $addressParts[] = isset($ubigeo) ? $ubigeo->province->department->description : '';
             }
-        
+
             $fullAddress = implode(', ', $addressParts);
         @endphp
 
@@ -251,7 +251,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 @endif
             </td>
         </tr>
-            
+
         @else
         <tr>
             <td class="align-top">DIRECCIÓN</td>
@@ -296,7 +296,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 ->where('address', $document->consigned_address)
                 ->where('consigned_id', $document->consigned_id)
                 ->first();
-                
+
             if($district){
                 $department = $district->province->department;
                 $province = $district->province;
@@ -755,7 +755,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     *** Pago Anticipado ***
                     @endif
                 </td>
-                
+
                 @empty($showSerieColumn) @else
                 <td class="text-left align-top">
                     @isset($row->item->lots)
@@ -800,7 +800,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                                 ? ltrim($date_due, '/')
                                 : ($row->relation_item->date_of_due ? $row->relation_item->date_of_due->format('Y-m-d') : '');
                         @endphp
-                
+
                         {{ $cleanedDate }}
                     </td>
                 @endif
@@ -1059,6 +1059,31 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 </p>
                 @endforeach
                 @endif
+                @endif
+
+                @if ($document->custom_fields_data && count((array)$document->custom_fields_data) > 0)
+                    <br>
+                    <table class="full-width">
+                        @foreach ($document->custom_fields_data as $field_slug => $field_value)
+                            <tr>
+                                <td>
+                                    @php
+                                        $custom_field = \Modules\CustomField\Models\CustomField::where('slug', $field_slug)->first();
+                                        $field_name = ($custom_field) ? $custom_field->name : str_replace('_', ' ', ucfirst($field_slug));
+                                    @endphp
+                                    {{ $field_name }}
+                                </td>
+                                <td width="8px">:</td>
+                                <td>
+                                    @if (is_array($field_value))
+                                        {{ implode(', ', $field_value) }}
+                                    @else
+                                        {{ $field_value }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </table>
                 @endif
             </td>
             <td width="35%" class="text-right">

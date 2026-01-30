@@ -339,4 +339,14 @@ use Illuminate\Support\Str;
         {
             return in_array($document['transfer_reason_type_id'], ['02', '07', '13']);
         }
+
+        public static function sameAsSender($document)
+        {
+            return in_array($document['transfer_reason_type_id'], ['02', '07', '04']);
+        }
+
+        public static function sellerSupplierPresence($document)
+        {
+            return in_array($document['transfer_reason_type_id'], ['02', '07']);
+        }
     }

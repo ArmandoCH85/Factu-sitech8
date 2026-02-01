@@ -140,7 +140,7 @@
             $search_item_by_barcode_presentation = $request->has('search_item_by_barcode_presentation') && (bool)$request->search_item_by_barcode_presentation;
 
             // $item = Item:: whereIsActive();
-            $item = Item::query();
+            $item = Item::query()->with('item_unit_types.prices');
             $ItemToSearchBySeries = Item:: whereIsActive();
 
             if ($service == false) {

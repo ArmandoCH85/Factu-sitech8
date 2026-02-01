@@ -142,11 +142,11 @@
                                                 <p v-if="loading_search" class="el-select-dropdown__empty">
                                                     Cargando...
                                                 </p>
-                                            
+
                                                 <p v-else class="el-select-dropdown__empty">
                                                     No se encontraron resultados
                                                 </p>
-                                            
+
                                                 <div
                                                     v-if="!loading_search"
                                                     class="el-select-dropdown__item new-option"
@@ -349,10 +349,10 @@
                                             )
                                         "
                                         @input="calculateQuantity"
-                                    >                                        
+                                    >
                                     </el-input>
                                 </template>
-                            </div>                                
+                            </div>
                             </template>
                             <template v-else>
                                 <el-input
@@ -547,15 +547,7 @@
                                                 Descripción
                                             </th>
                                             <th class="text-center">Factor</th>
-                                            <th class="text-center">
-                                                {{ config.price1_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                {{ config.price2_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                {{ config.price3_label }}
-                                            </th>
+                                            <th class="text-center">Precios</th>
                                             <!-- <th class="text-center">Precio Default</th>
                                         <th></th> -->
                                         </tr>
@@ -581,41 +573,22 @@
                                             >
                                                 {{ row.quantity_unit }}
                                             </td>
-                                            <td>
-                                                <el-button
-                                                    class="btn-block"
-                                                    @click.prevent="
-                                                        selectedPrice(
-                                                            row,
-                                                            row.price1
-                                                        )
-                                                    "
-                                                    >{{ row.price1 }}</el-button
-                                                >
-                                            </td>
-                                            <td>
-                                                <el-button
-                                                    class="btn-block"
-                                                    @click.prevent="
-                                                        selectedPrice(
-                                                            row,
-                                                            row.price2
-                                                        )
-                                                    "
-                                                    >{{ row.price2 }}</el-button
-                                                >
-                                            </td>
-                                            <td>
-                                                <el-button
-                                                    class="btn-block"
-                                                    @click.prevent="
-                                                        selectedPrice(
-                                                            row,
-                                                            row.price3
-                                                        )
-                                                    "
-                                                    >{{ row.price3 }}</el-button
-                                                >
+                                            <td class="text-center align-middle">
+                                                <div v-if="row.prices && row.prices.length" class="d-flex justify-content-center flex-wrap">
+                                                    <el-button
+                                                        v-for="p in row.prices"
+                                                        v-show="p.is_active"
+                                                        :key="p.id"
+                                                        size="small"
+                                                        class="me-1 mb-1"
+                                                        @click.prevent="selectedPrice(row, p.price)"
+                                                    >{{ p.label }} - {{ p.price }}</el-button>
+                                                </div>
+                                                <div v-else class="d-flex justify-content-center flex-wrap">
+                                                    <el-button class="btn-block me-1 mb-1" @click.prevent="selectedPrice(row, row.price1)">{{ row.price1 }}</el-button>
+                                                    <el-button class="btn-block me-1 mb-1" @click.prevent="selectedPrice(row, row.price2)">{{ row.price2 }}</el-button>
+                                                    <el-button class="btn-block me-1 mb-1" @click.prevent="selectedPrice(row, row.price3)">{{ row.price3 }}</el-button>
+                                                </div>
                                             </td>
                                             <!-- <td class="text-center">Precio {{ row.price_default }}</td>
                                         <td class="series-table-actions text-right">
@@ -1126,7 +1099,7 @@ export default {
             } else {
                 this.showDiscounts = false;
             }
-        }        
+        }
     },
     mounted() {
         this.getTables();
@@ -1587,7 +1560,7 @@ export default {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
-            
+
             // const inputEl = this.$refs.inputQuantity.$el.querySelector('input');
             // console.log('Input interno:', inputEl);
             this.extra_temp = undefined;
@@ -1701,7 +1674,7 @@ export default {
         calculateQuantityTotal(event) {
             let value = parseFloat(event.target.value)
             if (!isNaN(value)) {
-               this.form.quantity = value 
+               this.form.quantity = value
                this.calculateTotal()
             }
         },

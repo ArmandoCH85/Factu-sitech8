@@ -632,7 +632,7 @@ class SaleNoteController extends Controller
                 $isUpdate = false;
             }
             $data = $this->mergeData($inputs, $isUpdate);
-            
+
             $this->sale_note =  SaleNote::query()->updateOrCreate(['id' => $inputs['id']], $data);
 
             $this->deleteAllPayments($this->sale_note->payments);

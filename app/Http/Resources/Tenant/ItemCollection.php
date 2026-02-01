@@ -86,16 +86,26 @@ class ItemCollection extends ResourceCollection
                 'tags' => $row->tags,
                 'tags_id' => $row->tags->pluck('tag_id'),
                 'item_unit_types' => collect($row->item_unit_types)->transform(function($row) use($configuration){
+                    // Eager load de la relación prices
+                    $row->load('prices');
+
                     return [
                         'id' => $row->id,
                         'description' => "{$row->description}",
                         'item_id' => $row->item_id,
                         'unit_type_id' => $row->unit_type_id,
                         'quantity_unit' => number_format($row->quantity_unit, $configuration->decimal_quantity, ".",""),
-                        'price1' => number_format($row->price1, $configuration->decimal_quantity, ".",""),
-                        'price2' => number_format($row->price2, $configuration->decimal_quantity, ".",""),
-                        'price3' => number_format($row->price3, $configuration->decimal_quantity, ".",""),
                         'price_default' => $row->price_default,
+                        'barcode' => $row->barcode ?? '',
+                        'prices' => $row->prices->map(function($price) use ($configuration) {
+                            return [
+                                'id' => $price->id,
+                                'position' => $price->position,
+                                'label' => $price->label,
+                                'price' => number_format($price->price, $configuration->decimal_quantity, ".",""),
+                                'is_active' => $price->is_active,
+                            ];
+                        })->toArray(),
                     ];
                 }),
 

@@ -70,10 +70,53 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Modules\Item\Http\Controllers\EditorTagController;
 use Modules\Item\Models\TagTemplate;
+use App\Models\Tenant\ItemUnitTypePrice;
 
 class ItemController extends Controller
 {
     use OfflineTrait;
+
+    /**
+     * Sincroniza los precios dinámicos de un ItemUnitType
+     *
+     * @param int $itemUnitTypeId
+     * @param array $prices
+     * @return void
+     */
+    protected function syncItemUnitTypePrices($itemUnitTypeId, array $prices)
+    {
+        // Obtener IDs de precios existentes del request
+        $priceIds = collect($prices)
+            ->filter(function($price) {
+                return isset($price['id']) && $price['id'] > 0;
+            })
+            ->pluck('id')
+            ->toArray();
+
+        // Eliminar precios que ya no están en el request
+        ItemUnitTypePrice::where('item_unit_type_id', $itemUnitTypeId)
+            ->when(count($priceIds) > 0, function($query) use ($priceIds) {
+                $query->whereNotIn('id', $priceIds);
+            })
+            ->delete();
+
+        // Crear o actualizar precios
+        foreach ($prices as $priceData) {
+            $priceId = $priceData['id'] ?? null;
+
+            $price = ItemUnitTypePrice::firstOrNew(
+                ['id' => $priceId],
+                ['item_unit_type_id' => $itemUnitTypeId]
+            );
+
+            $price->item_unit_type_id = $itemUnitTypeId;
+            $price->position = $priceData['position'];
+            $price->label = $priceData['label'];
+            $price->price = $priceData['price'];
+            $price->is_active = $priceData['is_active'] ?? true;
+            $price->save();
+        }
+    }
 
     public function index()
     {
@@ -249,7 +292,7 @@ class ItemController extends Controller
             $records = Item::whereWarehouse()->whereNotIsSet();
         }
         else
-        {   
+        {
             if($isRestaurant === "true")
             {
                 $records = Item::whereTypeUser();
@@ -432,21 +475,31 @@ class ItemController extends Controller
             $item_unit_type->description = $value['description'];
             $item_unit_type->unit_type_id = $value['unit_type_id'];
             $item_unit_type->quantity_unit = $value['quantity_unit'];
-            $item_unit_type->price1 = $value['price1'];
-            $item_unit_type->price2 = $value['price2'];
-            $item_unit_type->price3 = $value['price3'];
             $item_unit_type->price_default = $value['price_default'];
+
+            // Mantener compatibilidad con campos legacy (deprecados)
+            if (isset($value['price1'])) {
+                $item_unit_type->price1 = $value['price1'];
+                $item_unit_type->price2 = $value['price2'];
+                $item_unit_type->price3 = $value['price3'];
+            }
+
             $item_unit_type->save();
 
+            // Sincronizar precios dinámicos
+            if (isset($value['prices']) && is_array($value['prices'])) {
+                $this->syncItemUnitTypePrices($item_unit_type->id, $value['prices']);
+            }
+
             // migracion desarrollo sin terminar #1401
-            if(!$value['barcode']) {
-                $item_unit_type->barcode = $item_unit_type->id.$item_unit_type->unit_type_id.$item_unit_type->quantity_unit;
-                $item_unit_type->save();
-            }
-            else {
+            $barcodeProvided = array_key_exists('barcode', $value) && $value['barcode'] !== null && trim((string)$value['barcode']) !== '';
+
+            if (!$barcodeProvided) {
+                $item_unit_type->barcode = $item_unit_type->id . $item_unit_type->unit_type_id . $item_unit_type->quantity_unit;
+            } else {
                 $item_unit_type->barcode = $value['barcode'];
-                $item_unit_type->save();
             }
+            $item_unit_type->save();
         }
         if (isset($request->supplies)) {
             foreach($request->supplies as $value){

@@ -112,7 +112,33 @@
                 'purchase_has_igv' => (bool)$this->purchase_has_igv,
                 'has_perception' => (bool)$this->has_perception,
                 'percentage_perception' => $this->percentage_perception,
-                'item_unit_types' => $this->item_unit_types,
+                'item_unit_types' => $this->item_unit_types->transform(function ($row) {
+                    // Eager load prices y formatear
+                    $row->load('prices');
+                    $prices = $row->prices->map(function ($price) {
+                        return [
+                            'id' => $price->id,
+                            'position' => $price->position,
+                            'label' => $price->label,
+                            'price' => number_format($price->price, 2, '.', ''),
+                            'is_active' => (bool)$price->is_active,
+                        ];
+                    })->toArray();
+
+                    return [
+                        'id' => $row->id,
+                        'description' => $row->description,
+                        'unit_type_id' => $row->unit_type_id,
+                        'quantity_unit' => $row->quantity_unit,
+                        'price1' => $row->price1,
+                        'price2' => $row->price2,
+                        'price3' => $row->price3,
+                        'price_default' => $row->price_default,
+                        'item_id' => $row->item_id,
+                        'prices' => $prices,
+                        'showPrices' => false, // Inicializar para el toggle
+                    ];
+                }),
                 'image' => $this->image,
                 'account_id' => $this->account_id,
                 'category_id' => $this->category_id,

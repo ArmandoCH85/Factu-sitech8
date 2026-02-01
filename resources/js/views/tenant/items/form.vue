@@ -623,7 +623,7 @@
                                 <table class="table table-sm mb-0">
                                     <thead class="bg-light">
                                     <tr>
-                                        <th class="text-center d-none">Código de barra</th>
+                                        <th style="width: 50px;"></th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-center">Descripción</th>
                                         <th class="text-center">
@@ -635,113 +635,56 @@
                                                 <i class="fa fa-info-circle"></i>
                                             </el-tooltip>
                                         </th>
-                                        <th class="text-center">{{ config.price1_label }}</th>
-                                        <th class="text-center">{{ config.price2_label }}</th>
-                                        <th class="text-center">{{ config.price3_label }}</th>
-                                        <th class="text-center d-none">P. Defecto</th>
                                         <th v-if="config.enable_list_product"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in form.item_unit_types"
-                                        :key="index">
-                                        <template v-if="row.id">
-                                            <td class="text-center d-none"> {{row.barcode}} </td>
-                                            <td class="text-center">{{ row.unit_type_id }}</td>
-                                            <td class="text-center">{{ row.description }}</td>
-                                            <td class="text-center">{{ row.quantity_unit }}</td>
-                                            <td class="text-center">
-                                                <el-input v-model="row.price1"></el-input>
-                                            </td>
-                                            <td class="text-center">
-                                                <el-input v-model="row.price2"></el-input>
-                                            </td>
-                                            <td class="text-center">
-                                                <el-input v-model="row.price3"></el-input>
-                                            </td>
-                                            <td class="text-center d-none">Precio {{ row.price_default }}</td>
-                                            <td class="series-table-actions text-end" v-if="config.enable_list_product">
-                                                <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                        <template v-for="(row, index) in form.item_unit_types">
+                                            <tr :key="'unit-' + index">
+                                                <td class="text-center align-middle">
+                                                    <button
                                                         type="button"
-                                                        @click.prevent="clickDelete(row.id)">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
+                                                        class="btn btn-sm btn-link p-0"
+                                                        @click.prevent="togglePrices(index)"
+                                                    >
+                                                        <i
+                                                            :class="(row.showPrices === true) ? 'fa fa-chevron-down' : 'fa fa-chevron-right'"
+                                                        ></i>
+                                                    </button>
+                                                </td>
+                                                <td class="text-center align-middle">{{ row.unit_type_id || row.description }}</td>
+                                                <td class="text-center align-middle">{{ row.description }}</td>
+                                                <td class="text-center align-middle">{{ row.quantity_unit }}</td>
+                                                <td class="series-table-actions text-end" v-if="config.enable_list_product">
+                                                    <button v-if="row.id" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            type="button"
+                                                            @click.prevent="clickDelete(row.id)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                    <button v-else class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            type="button"
+                                                            @click.prevent="clickCancel(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr
+                                                v-show="row.showPrices === true"
+                                                :key="'prices-' + index"
+                                                class="prices-row"
+                                            >
+                                                <td :colspan="config.enable_list_product ? 5 : 4" class="p-3 bg-light">
+                                                    <ItemPricesTable
+                                                        v-model="row.prices"
+                                                        :price-labels="{
+                                                            price1_label: config.price1_label,
+                                                            price2_label: config.price2_label,
+                                                            price3_label: config.price3_label
+                                                        }"
+                                                    />
+                                                </td>
+                                            </tr>
                                         </template>
-                                        <template v-else>
-                                            <td class="text-center d-none">
-                                                <el-input v-model="row.barcode"></el-input>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <el-select v-model="row.unit_type_id"
-                                                               :disabled="!config.enable_list_product"
-                                                               dusk="item_unit_type.unit_type_id">
-                                                        <el-option v-for="option in unit_types"
-                                                                   :key="option.id"
-                                                                   :label="option.description"
-                                                                   :value="option.id"></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <el-input v-model="row.description"
-                                                              :disabled="!config.enable_list_product"></el-input>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <el-input v-model="row.quantity_unit"
-                                                              :disabled="!config.enable_list_product"></el-input>
-                                                    <!-- <small class="form-control-feedback" v-if="errors.quantity_unit" v-text="errors.quantity_unit[0]"></small> -->
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <el-input v-model="row.price1"></el-input>
-                                                    <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <el-input v-model="row.price2"></el-input>
-                                                    <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <el-input v-model="row.price3"></el-input>
-                                                    <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
-                                                </div>
-                                            </td>
-                                            <td class="d-none">
-                                                <div>
-                                                    <el-select v-model="row.price_default">
-                                                        <el-option :key="1"
-                                                                   :value="1"
-                                                                   :label="config.price1_label"></el-option>
-                                                        <el-option :key="2"
-                                                                   :value="2"
-                                                                   :label="config.price2_label"></el-option>
-                                                        <el-option :key="3"
-                                                                   :value="3"
-                                                                   :label="config.price3_label"></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td class="series-table-actions text-end" v-if="config.enable_list_product">
-                                                <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
-                                                    <i class="fa fa-check"></i>
-                                                </button> -->
-                                                <button class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        type="button"
-                                                        @click.prevent="clickCancel(index)">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </template>
-                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -819,11 +762,11 @@
                                                 <p v-else-if="categorySearchQuery" class="el-select-dropdown__empty">
                                                     No se encontraron resultados
                                                 </p>
-                                            
+
                                                 <p v-else class="el-select-dropdown__empty">
                                                     No hay categorías. <br> Escriba el nombre y presione Enter para crear
                                                 </p>
-                                            
+
                                                 <div
                                                     v-if="!loading_search && categorySearchQuery"
                                                     class="el-select-dropdown__item new-option"
@@ -876,15 +819,15 @@
                                                 <p v-if="loading_search" class="el-select-dropdown__empty">
                                                     Cargando...
                                                 </p>
-                                            
+
                                                 <p v-else-if="brandSearchQuery" class="el-select-dropdown__empty">
                                                     No se encontraron resultados
                                                 </p>
-                                                
+
                                                 <p v-else class="el-select-dropdown__empty">
                                                     No hay marcas. <br> Escriba el nombre y presione Enter para crear
                                                 </p>
-                                            
+
                                                 <div
                                                     v-if="!loading_search && brandSearchQuery"
                                                     class="el-select-dropdown__item new-option"
@@ -1259,6 +1202,7 @@ import LotsForm from './partials/lots.vue'
 import ExtraInfo from './partials/extra_info.vue'
 import {mapActions, mapState} from "vuex";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../helpers/modal_item";
+import ItemPricesTable from "@components/items/partials/ItemPricesTable.vue";
 
 
 export default {
@@ -1273,7 +1217,8 @@ export default {
     ],
     components: {
         LotsForm,
-        ExtraInfo
+        ExtraInfo,
+        ItemPricesTable
     },
     computed: {
         forOnlyShowAllDetails()
@@ -1471,7 +1416,7 @@ export default {
             if (!this.config.enable_list_product && this.form.item_unit_types.length > 0) {
                 const selectedUnit = this.unit_types.find(u => u.id === newValue);
                 const unitDescription = selectedUnit ? selectedUnit.description : '';
-                
+
                 this.form.item_unit_types.forEach(item => {
                     if (!item.id) {
                         item.unit_type_id = newValue;
@@ -1488,6 +1433,17 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        /**
+         * Toggle para mostrar/ocultar precios de una presentación
+         */
+        togglePrices(index) {
+            const currentValue = this.form.item_unit_types[index].showPrices || false;
+            this.$set(
+                this.form.item_unit_types[index],
+                'showPrices',
+                !currentValue
+            );
+        },
         setDefaultConfiguration() {
             this.form.sale_affectation_igv_type_id = (this.config) ? this.config.affectation_igv_type_id : '10'
 
@@ -1593,14 +1549,14 @@ export default {
             let unitTypeId = 'NIU';
             let description = null;
             let quantityUnit = 0;
-            
+
             if (!this.config.enable_list_product) {
                 unitTypeId = this.form.unit_type_id;
                 const selectedUnit = this.unit_types.find(u => u.id === unitTypeId);
                 description = selectedUnit ? selectedUnit.description : null;
                 quantityUnit = 1;
             }
-            
+
             this.form.item_unit_types.push({
                 id: null,
                 description: description,
@@ -1610,7 +1566,9 @@ export default {
                 price2: 0,
                 price3: 0,
                 price_default: 2,
-                barcode: null
+                barcode: null,
+                showPrices: false,
+                prices: []
             })
         },
         clickCancel(index) {
@@ -1696,7 +1654,7 @@ export default {
             }
         },
         changeAffectationIgvType() {
-            
+
             let affectation_igv_type_exonerated = [20, 21, 30, 31, 32, 33, 34, 35, 36, 37]
             let is_exonerated = affectation_igv_type_exonerated.includes((parseInt(this.form.sale_affectation_igv_type_id)));
 
@@ -1754,40 +1712,12 @@ this.activeName =  'first'
 
             this.setDialogTitle()
 
-            if (this.recordId) {
-                await this.$http.get(`/${this.resource}/record/${this.recordId}`)
-                    .then(response => {
-                        this.form = response.data.data
-                        this.has_percentage_perception = (this.form.percentage_perception) ? true : false
-                        this.changeAffectationIgvType()
-                        this.changePurchaseAffectationIgvType()
-                        // let warehousePrices = response.data.data.warehouse_prices;
-                        // console.error(warehousePrices);
-                        // if (warehousePrices.length > 0) {
-                        //     this.warehouses = this.warehouses.map(w => {
-                        //         let price = warehousePrices.find(wp => wp.warehouse_id === w.id);
-                        //         if (price) {
-                        //             var priceToJson = {...price};
-                        //             w.price = priceToJson.price;
-                        //         }
-                        //         return w;
-                        //     });
-                        // } else {
-                        //     this.warehouses = this.warehouses.map(w => {
-                        //         delete w.price;
-                        //         return w;
-                        //     });
-                        // }
-                    })
-
-            }
-
             this.setDataToItemWarehousePrices()
 
             if (this.warehouses.length === 0) {
                 await this.reloadTables();
             }
-    
+
             this.setDialogTitle();
 
             if (this.recordId) {
@@ -1795,11 +1725,12 @@ this.activeName =  'first'
                     .then(response => {
                         this.form = response.data.data;
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false;
+
                         this.changeAffectationIgvType();
                         this.changePurchaseAffectationIgvType();
                     });
             } else {
-                
+
                 this.loadCurrentEstablishment();
                 if (this.external && this.input_item && typeof this.input_item === 'string') {
                     this.form.description = this.input_item;
@@ -1807,7 +1738,7 @@ this.activeName =  'first'
             }
 
          this.setDataToItemWarehousePrices();
-         // Función para recargar validaciones para afectaciones que han sido establecidos por defecto en configuración 
+         // Función para recargar validaciones para afectaciones que han sido establecidos por defecto en configuración
          this.changeAffectationIgvType();
 
         },
@@ -1996,7 +1927,7 @@ this.activeName =  'first'
         },
         filterCategories(query) {
             this.categorySearchQuery = query
-            
+
             if (query) {
                 this.filteredCategories = this.categories.filter(category => {
                     return category.name.toLowerCase().includes(query.toLowerCase())
@@ -2016,24 +1947,24 @@ this.activeName =  'first'
         },
         createCategoryFromSearch() {
             const categoryName = this.categorySearchQuery
-            
+
             if (!categoryName || categoryName.trim() === '') {
                 return
             }
 
             this.form_category.name = categoryName
-            
+
             this.$http.post(`/categories`, this.form_category)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.categories.push(response.data.data)
                         this.filteredCategories = this.categories
-                        
+
                         this.$nextTick(() => {
                             this.form.category_id = response.data.data.id
                         })
-                        
+
                         this.form_category.name = null
                         this.categorySearchQuery = ''
                     } else {
@@ -2067,7 +1998,7 @@ this.activeName =  'first'
         },
         filterBrands(query) {
             this.brandSearchQuery = query
-            
+
             if (query) {
                 this.filteredBrands = this.brands.filter(brand => {
                     return brand.name.toLowerCase().includes(query.toLowerCase())
@@ -2087,24 +2018,24 @@ this.activeName =  'first'
         },
         createBrandFromSearch() {
             const brandName = this.brandSearchQuery
-            
+
             if (!brandName || brandName.trim() === '') {
                 return
             }
 
             this.form_brand.name = brandName
-            
+
             this.$http.post(`/brands`, this.form_brand)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.brands.push(response.data.data)
                         this.filteredBrands = this.brands
-                        
+
                         this.$nextTick(() => {
                             this.form.brand_id = response.data.data.id
                         })
-                        
+
                         this.form_brand.name = null
                         this.brandSearchQuery = ''
                     } else {
@@ -2208,15 +2139,15 @@ this.activeName =  'first'
                 .then(response => {
                     if (response.data.success) {
                         const establishment = response.data.establishment;
-                        
+
                         if (establishment && this.warehouses.length > 0) {
-                            const relatedWarehouse = this.warehouses.find(w => 
+                            const relatedWarehouse = this.warehouses.find(w =>
                                 w.description.includes(establishment.description));
-                    
+
                             if (relatedWarehouse) {
                                 this.form.warehouse_id = relatedWarehouse.id;
                             } else {
-                                
+
                                 this.form.warehouse_id = this.warehouses[0].id;
                             }
                         }
@@ -2229,3 +2160,14 @@ this.activeName =  'first'
     }
 }
 </script>
+
+<style scoped>
+/* Estilos para tabla de precios expandible */
+.prices-row td {
+    border-top: none !important;
+}
+
+.prices-row .bg-light {
+    background-color: #f8f9fa !important;
+}
+</style>

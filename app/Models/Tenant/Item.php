@@ -745,7 +745,7 @@ class Item extends ModelTenant
             'individual_item_id'   // La llave del producto individual
         )->withPivot('quantity');  // También trae la cantidad
     }
-        
+
     /**
      * Calcula el stock disponible del set en base a los items que lo componen
      * Retorna la cantidad máxima de sets que se pueden preparar con el stock actual de items
@@ -1177,23 +1177,7 @@ class Item extends ModelTenant
             'CatItemStatus' => $ItemStatus,
             'CatItemSize' => $ItemSize,
             'CatItemUnitBusiness' => $ItemUnitBusiness,
-            'item_unit_types'                  => $this->item_unit_types->transform(function ($item_unit_types) {
-                if(is_array($item_unit_types)){
-                    return $item_unit_types;
-                }
-                return [
-                    'id'            => $item_unit_types->id,
-                    'description'   => "{$item_unit_types->description}",
-                    'item_id'       => $item_unit_types->item_id,
-                    'unit_type_id'  => $item_unit_types->unit_type_id,
-                    'quantity_unit' => $item_unit_types->quantity_unit,
-                    'price1'        => $item_unit_types->price1,
-                    'price2'        => $item_unit_types->price2,
-                    'price3'        => $item_unit_types->price3,
-                    'price_default' => $item_unit_types->price_default,
-                    'barcode' => $item_unit_types->barcode,
-                ];
-            }),
+            'item_unit_types' => $this->getItemUnitTypesWithPrices(),
             'warehouses' => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
                 return [
                     'warehouse_description' => $warehouses->warehouse->description,
@@ -1285,6 +1269,68 @@ class Item extends ModelTenant
      */
     public static function AffectationIgvTypesExoneratedUnaffected(){
         return ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37'];
+    }
+
+    /**
+     * Obtener item_unit_types con prices dinámicos
+     * Maneja tanto arrays (ya transformados) como relaciones Eloquent
+     *
+     * @return array|\Illuminate\Support\Collection
+     */
+    protected function getItemUnitTypesWithPrices()
+    {
+        // Si ya es un array plano, retornar tal cual
+        if (is_array($this->item_unit_types)) {
+            return $this->item_unit_types;
+        }
+
+        // Si es una Collection, verificar si los elementos son arrays o modelos Eloquent
+        if ($this->item_unit_types instanceof \Illuminate\Database\Eloquent\Collection) {
+            $firstItem = $this->item_unit_types->first();
+
+            // Si el primer elemento es un array, significa que ya fue transformado por getCollectionData()
+            if ($firstItem && is_array($firstItem)) {
+                return $this->item_unit_types;
+            }
+
+            // Si el primer elemento es un modelo Eloquent, cargar prices y transformar
+            if ($firstItem && is_object($firstItem)) {
+                // Cargar relación prices solo si aún no está cargada
+                if (!$firstItem->relationLoaded('prices')) {
+                    $this->loadMissing('item_unit_types.prices');
+                }
+
+                return $this->item_unit_types->map(function ($row) {
+                    // Obtener prices de la relación
+                    $prices = $row->prices->map(function ($price) {
+                        return [
+                            'id' => $price->id,
+                            'position' => (int) $price->position,
+                            'label' => $price->label,
+                            'price' => $price->price,
+                            'is_active' => (bool) $price->is_active,
+                        ];
+                    })->values()->toArray();
+
+                    return [
+                        'id' => $row->id,
+                        'description' => $row->description,
+                        'item_id' => $row->item_id,
+                        'unit_type_id' => $row->unit_type_id,
+                        'quantity_unit' => $row->quantity_unit,
+                        'price1' => $row->price1,
+                        'price2' => $row->price2,
+                        'price3' => $row->price3,
+                        'price_default' => $row->price_default,
+                        'barcode' => $row->barcode,
+                        'prices' => $prices,
+                    ];
+                })->values();
+            }
+        }
+
+        // Fallback: retornar tal cual
+        return $this->item_unit_types;
     }
 
     /**

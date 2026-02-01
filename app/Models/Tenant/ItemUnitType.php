@@ -12,6 +12,7 @@ use App\Models\Tenant\Catalogs\UnitType;
  *
  * @property-read \App\Models\Tenant\Item $item
  * @property-read UnitType $unit_type
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\ItemUnitTypePrice[] $prices
  * @method static \Illuminate\Database\Eloquent\Builder|ItemUnitType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ItemUnitType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ItemUnitType query()
@@ -51,6 +52,16 @@ class ItemUnitType extends ModelTenant
         return $this->belongsTo(Item::class);
     }
 
+    /**
+     * Relación con precios dinámicos
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function prices()
+    {
+        return $this->hasMany(ItemUnitTypePrice::class, 'item_unit_type_id')->orderBy('position');
+    }
+
 
     /**
      * Retorna un standar de nomenclatura para el modelo
@@ -67,21 +78,17 @@ class ItemUnitType extends ModelTenant
             'item_id'       => $this->item_id,
             'unit_type_id'  => $this->unit_type_id,
             'quantity_unit' => number_format($this->quantity_unit, $decimal_units, '.', ''),
-            'price1'        => number_format($this->price1, $decimal_units, '.', ''),
-            'price1_name'   => $this->price1_name,
-            'price2'        => number_format($this->price2, $decimal_units, '.', ''),
-            'price2_name'   => $this->price2_name,
-            'price3'        => number_format($this->price3, $decimal_units, '.', ''),
-            'price3_name'   => $this->price3_name,
             'price_default' => $this->price_default,
             'barcode'       => $this->barcode,
-            /*
-            'price1' => $row->price1,
-            'price2' => $row->price2,
-            'price3' => $row->price3,
-            */
-
-
+            'prices'        => $this->prices->map(function($price) use ($decimal_units) {
+                return [
+                    'id'        => $price->id,
+                    'position'  => $price->position,
+                    'label'     => $price->label,
+                    'price'     => number_format($price->price, $decimal_units, '.', ''),
+                    'is_active' => $price->is_active,
+                ];
+            })->toArray(),
         ];
     }
 

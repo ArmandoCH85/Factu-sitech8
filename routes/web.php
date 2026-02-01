@@ -506,7 +506,7 @@ if ($hostname) {
             Route::post('transfer-reason-types', 'Tenant\TransferReasonTypeController@store');
             Route::delete('transfer-reason-types/{code}', 'Tenant\TransferReasonTypeController@destroy');
 
-            // Affectation IGV types 
+            // Affectation IGV types
             Route::get('item-affectations-igv/records', 'Tenant\ItemAffectationsIgvController@records');
             Route::get('item-affectations-igv/active/{id}/{active}', 'Tenant\ItemAffectationsIgvController@changeActive');
 
@@ -826,10 +826,10 @@ if ($hostname) {
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
         Route::get('phone', 'System\UserController@getPhone');
-        
+
         //guest-Register
-        Route::prefix('guest-register')->group(function () {     
-             
+        Route::prefix('guest-register')->group(function () {
+
             Route::get('/disabled', 'System\GuestRegisterController@disabled')->name('guest.register.disabled');
 
             Route::middleware('enable.guest.register')->group(function () {
@@ -841,9 +841,9 @@ if ($hostname) {
             });
         });
         //guest-Register
-        // Route::prefix('guest-register')->group(function () {       
+        // Route::prefix('guest-register')->group(function () {
         //     $config = Configuration::first();
-        //     if ($config && $config->enable_guest_register) {     
+        //     if ($config && $config->enable_guest_register) {
         //         Route::get('/', 'System\GuestRegisterController@index')->name('guest.register.index');
         //         Route::post('register', 'System\GuestRegisterController@register');
         //         Route::post('resend-email', 'System\GuestRegisterController@resendEmail');
@@ -970,11 +970,11 @@ if ($hostname) {
 
             Route::post('configurations', 'System\ConfigurationController@store');
             Route::get('configurations/record', 'System\ConfigurationController@record');
-            
+
             // Visual theme configuration routes
             Route::post('configurations/visual-theme', 'System\ConfigurationController@storeVisualTheme');
             Route::get('configurations/visual-theme', 'System\ConfigurationController@getVisualTheme');
-            
+
             Route::get('information', 'System\ConfigurationController@InfoIndex')->name('system.information');
             Route::get('status/history', 'System\StatusController@history')->name('system.status');
             Route::get('status/memory', 'System\StatusController@memory')->name('system.status.memory');

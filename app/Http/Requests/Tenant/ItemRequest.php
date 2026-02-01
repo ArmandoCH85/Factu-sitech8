@@ -93,6 +93,31 @@ class ItemRequest extends FormRequest
                 'required_if:purchase_has_isc, 1',
                 'numeric',
             ],
+            
+            // Validación para precios dinámicos en item_unit_types
+            'item_unit_types.*.prices' => [
+                'nullable',
+                'array',
+            ],
+            'item_unit_types.*.prices.*.label' => [
+                'required_with:item_unit_types.*.prices',
+                'string',
+                'max:50',
+            ],
+            'item_unit_types.*.prices.*.price' => [
+                'required_with:item_unit_types.*.prices',
+                'numeric',
+                'min:0',
+            ],
+            'item_unit_types.*.prices.*.position' => [
+                'required_with:item_unit_types.*.prices',
+                'integer',
+                'min:1',
+            ],
+            'item_unit_types.*.prices.*.is_active' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 

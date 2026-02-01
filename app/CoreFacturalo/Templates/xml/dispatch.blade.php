@@ -7,6 +7,8 @@
     }
 
     $sellerPresence = \App\CoreFacturalo\Helpers\Template\TemplateHelper::sellerPresence($document);
+    $sameAsSender = \App\CoreFacturalo\Helpers\Template\TemplateHelper::sameAsSender($document);
+    $sellerSupplierPresence = \App\CoreFacturalo\Helpers\Template\TemplateHelper::sellerSupplierPresence($document);
 @endphp
 
 {!!  '<'.'?xml version="1.0" encoding="utf-8" standalone="no"?'.'>'  !!}
@@ -90,17 +92,21 @@
     <cac:DeliveryCustomerParty>
         <cac:Party>
             <cac:PartyIdentification>
+                @php
+                    $schemeIdDeliveryCustomer = $sameAsSender ? '6' : $document['customer_identity_document_type_id'];
+                    $valueDeliveryCustomer = $sameAsSender ? $document['company_number'] : $document['customer_number'];
+                @endphp
                 <cbc:ID schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"
                         schemeAgencyName="PE:SUNAT"
                         schemeName="Documento de Identidad"
-                        schemeID="{{ $document['customer_identity_document_type_id'] }}">{{!$sellerPresence ?$document['customer_number']:$document['company_number']}}</cbc:ID> 
+                        schemeID="{{ $schemeIdDeliveryCustomer }}">{{ $valueDeliveryCustomer }}</cbc:ID> 
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{{ $sellerPresence ? $document['company_name'] : $document['customer_name'] }}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{ $sameAsSender ? $document['company_name'] : $document['customer_name'] }}]]></cbc:RegistrationName>
             </cac:PartyLegalEntity>
         </cac:Party>
     </cac:DeliveryCustomerParty>
-    @if ($sellerPresence)
+    @if ($sellerSupplierPresence)
     <!--  DATOS DEL PROVEEDOR  -->
         <cac:SellerSupplierParty>
             <cac:Party>

@@ -218,6 +218,10 @@
             <tr>
                 <td>{{ $row['document_type']['description'] }}: {{ $row['number'] }}</td>
             </tr>
+            <tr>
+                <td>RAZON SOCIAL: {{ $row['name'] }}</td>
+                <td>RUC: {{ $row['customer'] }}</td>
+            </tr>
         @endforeach
         </tbody>
     </table>

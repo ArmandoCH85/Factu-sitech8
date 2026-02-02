@@ -16,6 +16,9 @@
         $logo = "{$establishment->logo}";
     }
 
+    $logo_path = public_path($logo);
+    $has_logo = !empty($logo) && is_file($logo_path);
+
     $configurationInPdf= App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationInPdf();
     
         $totalProductos = count($document->items);
@@ -63,7 +66,7 @@
     <div class="company_logo_box" style="position: absolute; text-align: center; top:30%;">
         <img src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
     </div>
-@else
+@elseif($has_logo)
     <div class="item_watermark" style="
         position: absolute;
         top: 25%;
@@ -73,7 +76,7 @@
         text-align: center;
     ">
         <img 
-            src="data:{{ mime_content_type(public_path("{$logo}")) }};base64,{{ base64_encode(file_get_contents(public_path("{$logo}"))) }}" 
+            src="data:{{ mime_content_type($logo_path) }};base64,{{ base64_encode(file_get_contents($logo_path)) }}" 
             alt="{{ $company->name }}" 
             style="width: 100%; height: auto; object-fit: contain; opacity: 0.1;"
         >
@@ -88,10 +91,10 @@
 @endif
 <table class="full-width">
     <tr>
-        @if($company->logo)
+        @if($has_logo)
             <td width="20%">
                 <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+                    <img src="data:{{mime_content_type($logo_path)}};base64, {{base64_encode(file_get_contents($logo_path))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
                 </div>
             </td>
             <td width="50%" class="text-center">

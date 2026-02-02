@@ -694,22 +694,40 @@ export default {
         submit() {
             this.loading_submit = true
             let plan = _.find(this.plans, {'id': this.form.suscription_plan_id});
+            // Preparar datos para enviar
+            const parentCustomerData = this.parent_customer ? JSON.parse(JSON.stringify(this.parent_customer)) : null
+            
+            const dataToSend = {
+                ...this.form,
+                parent_customer: parentCustomerData,
+                customer: parentCustomerData,
+                suscription_suscription_plan_id: plan.id,
+                cat_period_id: plan.cat_period_id,
+                quantity_period: plan.quantity_period,
+            }
 
 
-            let form = this.form;
-            form.customer = this.customer;
-            form.parent_customer = this.parent_customer;
+            // let form = this.form;
+            // form.customer = this.customer;
+            // form.parent_customer = this.parent_customer;
 
 
-            form.suscription_suscription_plan_id = plan.id
-            form.cat_period_id = plan.cat_period_id
-            form.quantity_period = plan.quantity_period
-            form.customer_id = this.customer.id
+            // form.suscription_suscription_plan_id = plan.id
+            // form.cat_period_id = plan.cat_period_id
+            // form.quantity_period = plan.quantity_period
+            // form.customer_id = this.customer.id
 
-            this.$http.post(`/full_suscription/${this.resource}`, this.form)
+            this.$http.post(`/full_suscription/${this.resource}`, dataToSend)
                 .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message || 'Suscripción guardada exitosamente')
+                    }
                     this.$eventHub.$emit('reloadData')
                     this.close()
+                    // Dar tiempo para que la tabla recargue los datos antes de cerrar
+                    setTimeout(() => {
+                        window.location.href = '/full_suscription/payment_receipt'
+                    }, 500)
                 })
                 .catch(error => {
                     if (error.response.status === 422) {

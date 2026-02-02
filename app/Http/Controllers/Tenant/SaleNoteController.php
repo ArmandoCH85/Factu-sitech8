@@ -720,6 +720,9 @@ class SaleNoteController extends Controller
                     'id' => $this->sale_note->id,
                     'number_full' => $this->sale_note->number_full,
                 ],
+                'links' => [
+                    'print_ticket' => url('')."/sale-notes/print/{$this->sale_note->external_id}/ticket",
+                ]
             ];
 
         }

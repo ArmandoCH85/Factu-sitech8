@@ -616,6 +616,7 @@ export default {
             button_payment: false,
             input_item: '',
             form_payment: {},
+            responseForm: {},
             series: [],
             all_series: [],
             cards_brand: [],
@@ -1433,7 +1434,8 @@ export default {
 
             await this.$http.post(`/${this.resource_documents}`, this.form).then(async (response) => {
                 if (response.data.success) {
-                    let response_sent = response
+                    let response_sent = null 
+                    this.responseForm = response.data
 
                     if (this.form.document_type_id === "80") {
                         // this.form_payment.sale_note_id = response.data.data.id;
@@ -1489,36 +1491,101 @@ export default {
 
             if(this.hidePdfViewDocuments)
             {
-                const response_data = response.data
 
                 if(this.form.document_type_id === '80')
                 {
-                    this.$message.success(`Nota de venta registrada: ${response_data.number_full}`)
+                    this.$message.success(`Nota de venta registrada: ${this.responseForm.data.number_full}`)
                 }
                 else
                 {
-                    if(this.configuration.send_auto)
-                    {
+                    if (response) {
+                        const response_data = response.data
                         this.$message.success(response_data.message)
                     }
                     else
                     {
-                        this.$message.success(`Comprobante registrado: ${response_data.data.number_full}`)
+                        this.$message.success(`Comprobante registrado: ${this.responseForm.data.number_full}`)
                     }
                 }
-                console.log(this.isPrint);
+
+
+
 
                 if (this.isPrint) {
-                    this.gethtml();
+                    this.clickCancel()
+                    this.autoPrint();
+                } else {
+                    this.clickCancel()
                 }
 
-                this.clickCancel()
             }
             else
             {
                 this.showDialogOptions = true
             }
 
+        },
+        async autoPrint() {
+            if (!this.isPrint) return;
+            if (!this.responseForm || !this.responseForm.links ) return;
+
+            try {
+                console.log(this.responseForm);
+                
+                await this.printPdfFromUrl(this.responseForm.links.print_ticket);
+            } catch (e) {
+                console.error('options autoPrint error', e);
+            }
+        },
+
+        async printPdfFromUrl(url) {
+            if (!url) return;
+
+            try {
+                // Obtener el PDF como arrayBuffer
+                const res = await fetch(url, { credentials: 'include' });
+                if (!res.ok) {
+                    console.error('Error fetching PDF for print:', res.statusText);
+                    return;
+                }
+                const arrayBuffer = await res.arrayBuffer();
+                const bytes = new Uint8Array(arrayBuffer);
+
+                // Convertir a base64 en trozos para evitar límites de pila
+                let binary = '';
+                const chunkSize = 0x8000;
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    const chunk = bytes.subarray(i, i + chunkSize);
+                    binary += String.fromCharCode.apply(null, chunk);
+                }
+                const base64Data = btoa(binary);
+
+                // Asegurar conexión con QZ Tray
+                if (!window.qz || !window.qz.websocket) {
+                    console.error('QZ Tray no está disponible en el contexto global');
+                    return;
+                }
+
+                if (!window.qz.websocket.isActive()) {
+                    try {
+                        await window.qz.websocket.connect();
+                    } catch (err) {
+                        console.error('No se pudo conectar a QZ Tray:', err);
+                        return;
+                    }
+                }
+
+                // Obtener configuración (getUpdatedConfig está definido en public/js/function-qztray.js)
+                const cfg = (typeof window.getUpdatedConfig === 'function') ? window.getUpdatedConfig() : window.qz.configs.create(null);
+
+                // Imprimir PDF en base64 usando QZ Tray
+                await window.qz.print(cfg, [
+                    { type: 'pdf', format: 'base64', data: base64Data }
+                ]);
+
+            } catch (err) {
+                console.error('printPdfFromUrl error', err);
+            }
         },
         sendDocument(id)
         {

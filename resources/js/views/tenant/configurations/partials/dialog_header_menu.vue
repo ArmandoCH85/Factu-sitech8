@@ -161,7 +161,7 @@
                             :value="option.id"
                         ></el-option>
                     </el-select>
-                    <el-button v-if="form.menu_a" type="danger" class="ms-2" @click="clearMenu('menu_a')">
+                    <el-button v-if="form.menu_a" type="danger" class="btn btn-sm ms-2" @click="clearMenu('menu_a')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </el-button>
                 </el-form-item>
@@ -181,7 +181,7 @@
                             :value="option.id"
                         ></el-option>
                     </el-select>
-                    <el-button v-if="form.menu_b" type="danger" class="ms-2" @click="clearMenu('menu_b')">
+                    <el-button v-if="form.menu_b" type="danger" class="btn btn-sm ms-2" @click="clearMenu('menu_b')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </el-button>
                 </el-form-item>
@@ -201,7 +201,7 @@
                             :value="option.id"
                         ></el-option>
                     </el-select>
-                    <el-button v-if="form.menu_c" type="danger" class="ms-2" @click="clearMenu('menu_c')">
+                    <el-button v-if="form.menu_c" type="danger" class="btn btn-sm ms-2" @click="clearMenu('menu_c')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </el-button>
                 </el-form-item>
@@ -221,7 +221,7 @@
                             :value="option.id"
                         ></el-option>
                     </el-select>
-                    <el-button v-if="form.menu_d" type="danger" class="ms-2" @click="clearMenu('menu_d')">
+                    <el-button v-if="form.menu_d" type="danger" class="btn btn-sm ms-2" @click="clearMenu('menu_d')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </el-button>
                 </el-form-item>
@@ -240,7 +240,7 @@
                         maxlength="3"
                         @input="form.menu_extra_1.initials = form.menu_extra_1.initials.toUpperCase()"
                     ></el-input>
-                    <el-button v-if="form.menu_extra_1.link" type="danger" class="ms-2" @click="clearMenu('menu_extra_1')">
+                    <el-button v-if="form.menu_extra_1.link" type="danger" class="btn btn-sm ms-2" @click="clearMenu('menu_extra_1')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </el-button>
                 </el-form-item><el-form-item class="d-flex" :label-width="formLabelWidth" label="Menu 2">                    
@@ -253,7 +253,7 @@
                         maxlength="3"
                         @input="form.menu_extra_2.initials = form.menu_extra_2.initials.toUpperCase()"
                     ></el-input>
-                    <el-button v-if="form.menu_extra_2.link" type="danger" class="ms-2" @click="clearMenu('menu_extra_2')">
+                    <el-button v-if="form.menu_extra_2.link" type="danger" class="btn btn-sm ms-2" @click="clearMenu('menu_extra_2')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                     </el-button>
                 </el-form-item>

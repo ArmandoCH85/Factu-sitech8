@@ -274,7 +274,7 @@
                                     </p>
                                 </div>
                                 <div
-                                    class="card-footer card-footer-fast-payment pointer text-center mb-1"
+                                    class="card-footer card-footer-fast-payment pointer text-center mb-1 position-relative"
                                     style="border-radius: 0px;"
                                 >
                                     <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
@@ -306,31 +306,32 @@
                                         <el-input
                                             min="0"
                                             v-model="item.edit_sale_unit_price"
-                                            class="mt-3 mb-3"
+                                            class="mt-1 mb-2"
                                             size="mini"
                                         >
-                                            <el-button
-                                                slot="append"
-                                                icon="el-icon-check"
-                                                type="primary"
+                                        </el-input>
+                                        <div class="btn-edit-price-container d-flex">
+                                            <button
+                                            class="btn btn-primary d-flex justify-content-center align-items-center p-0"
                                                 @click="
                                                     clickEditUnitPriceItem(
                                                         index
                                                     )
                                                 "
-                                            ></el-button>
-                                            <el-button
-                                                slot="append"
-                                                icon="el-icon-close"
-                                                type="secondary"
-                                                class="second-buton btn-close-pos"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                            </button>
+                                            <button
+                                                class="btn second-buton btn-close-pos d-flex justify-content-center align-items-center p-0"
                                                 @click="
                                                     clickCancelUnitPriceItem(
                                                         index
                                                     )
                                                 "
-                                            ></el-button>
-                                        </el-input>
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                            </button>
+                                        </div>
                                     </template>
                                 </div>
                                 <div

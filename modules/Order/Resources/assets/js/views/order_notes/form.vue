@@ -21,7 +21,7 @@
                                 :path_logo="getCurrentLogo"
                             ></logo>
                         </div>
-                        <div class="text-left mt-3 mb-0 is-hidden-mobile">
+                        <div class="text-start mt-3 mb-0 is-hidden-mobile">
                             <address class="ib me-2">
                                 <span class="font-weight-bold d-block"
                                     >PEDIDO</span
@@ -722,7 +722,7 @@
 
                                 <div class="col-md-4">
                                     <p
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total_exportation > 0"
                                     >
                                         OP.EXPORTACIÓN:
@@ -730,7 +730,7 @@
                                         {{ form.total_exportation }}
                                     </p>
                                     <p
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total_free > 0"
                                     >
                                         OP.GRATUITAS:
@@ -738,7 +738,7 @@
                                         {{ form.total_free }}
                                     </p>
                                     <p
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total_unaffected > 0"
                                     >
                                         OP.INAFECTAS:
@@ -746,7 +746,7 @@
                                         {{ form.total_unaffected }}
                                     </p>
                                     <p
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total_exonerated > 0"
                                     >
                                         OP.EXONERADAS:
@@ -754,21 +754,21 @@
                                         {{ form.total_exonerated }}
                                     </p>
                                     <p
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total_taxed > 0"
                                     >
                                         OP.GRAVADA: {{ currency_type.symbol }}
                                         {{ form.total_taxed }}
                                     </p>
                                     <p
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total_igv > 0"
                                     >
                                         IGV: {{ currency_type.symbol }}
                                         {{ form.total_igv }}
                                     </p>
                                     <h3
-                                        class="text-right"
+                                        class="text-end"
                                         v-if="form.total > 0"
                                     >
                                         <b>TOTAL A PAGAR: </b

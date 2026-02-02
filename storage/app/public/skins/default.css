@@ -1241,11 +1241,6 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left, html.fixed.sidebar-white:not(
     background-color: var(--light-color);
     margin-left: 20px;
 }
-.card-footer.pointer .el-input--mini input{
-    width: 65%;
-    margin-top: 6px;
-    height: 30px;
-}
 html.sidebar-blue:not(.dark) .style-switcher,
 html.sidebar-blue:not(.dark) .style-switcher .style-switcher-open {
     background-color: #f6f6f6;
@@ -1863,6 +1858,22 @@ section.auth__form-right .auth__form .auth__social a{
 .theme-color-selector-black, .sidebar-margin-selector-container,
 .sidebar-theme-selector-container{
     display: none;
+}
+.btn-edit-price-container{
+    position: absolute;
+    top: 5px;
+    right: 0.79rem;
+}
+.btn-edit-price-container button{
+    height: 26px;
+    width: 26px;
+    padding: 0px !important;
+}
+.btn-edit-price-container :first-child{
+    border-radius: 0px !important;
+}
+.btn-edit-price-container :last-child{
+    border-radius: 0 8px 8px 0 !important;
 }
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);

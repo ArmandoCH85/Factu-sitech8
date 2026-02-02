@@ -101,7 +101,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body no-gutters border-0">
+                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none">
                         <div class="row inputs-container">
                             <div class="col-lg-4 align-self-end invoice-type">
                                 <div
@@ -293,7 +293,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body no-gutters border-0">
+                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none">
                         <div class="row inputs-container">
                             <div
                                 :class="{ 'has-danger': errors.customer_id }"
@@ -520,7 +520,7 @@
                             </div>
                         </div>
                     </template>
-                    <div class="card-body no-gutters border-0">
+                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none">
                         <template v-if="showSearchItemsMainForm">
                             <div class="row">
                                 <div

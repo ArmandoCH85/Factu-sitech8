@@ -233,12 +233,6 @@ html.dark button.btn-primary-pos {
     border-color: #314267;
 }
 
-html.dark .card-body,
-html.dark .card-footer {
-    background: #283046;
-    border-color: #16223a !important;
-}
-
 html.dark .bg-white,
 html.dark .bg-light {
     background: #283046;

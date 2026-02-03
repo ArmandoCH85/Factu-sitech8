@@ -402,35 +402,7 @@ color: #808697;
 .sidebar-left-collapsed ul.nav-main li.nav-description {
 margin-left: -25px;
 }
-html.fixed.sidebar-white .sidebar-left, 
-html.fixed.sidebar-white .sidebar-header, 
-html.fixed.sidebar-white .sidebar-left .nano{
-  background-color: #283046 !important;
-}
-html.dark ul.nav-main li.nav-expanded > a, html.dark ul.nav-main li.nav-parent > ul.nav-children {
-  background-color: #161d31 !important;
-}
-html.dark .dropdown-menu-desktop{
-  background-color: #283046;
-  color: #f5f5f5;
-}
-html.dark li.multi-user-content {
-    border-color: #13192a;
-}
-html.dark .dropdown-menu-desktop ul li a{
-  color: #f2f2f2;
-}
-html.dark .dropdown-menu-desktop {
-  & .divider {
-      background-color: #13192a;
-  }
-}
-html.dark .list-config {
-  background-color: #283046;
-  & li:hover{
-    background-color: #333c55 !important;
-  }
-}
+
 /* Rediseño sidebar */
 ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
 background: none;
@@ -863,17 +835,6 @@ border: transparent !important;
 /* -------------------------- botones -------------------------- */
 /* -------------------------- white -------------------------- */
 /* botones */
-html.sidebar-white .el-button--primary {
-color: #FFFFFF;
-background-color: #08c;
-border-color: #08c;
-}
-html.sidebar-white .el-button--primary:hover {
-background-color: #0A7CB5;
-border-color: #0477B0 #0477B0 #CCC;
-color: #FFF;
-transition: none;
-}
 /* -------------------------- morado -------------------------- */
 html.sidebar-blue .el-button--primary,
 html.sidebar-blue .btn-custom {

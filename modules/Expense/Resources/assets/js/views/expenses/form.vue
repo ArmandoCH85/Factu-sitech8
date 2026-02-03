@@ -12,7 +12,6 @@
             <!-- <div class="card-header bg-info">
                 <h3 class="my-0">Nuevo Gasto</h3>
             </div> -->
-            <div class="tab-content tab-content-default card-body">
             <div class="invoice p-3">
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body">
@@ -202,8 +201,7 @@
                         <el-button type="primary" native-type="submit" class="btn btn-primary btn-submit-default" :loading="loading_submit" v-if="form.items.length > 0">{{ (id) ? 'Actualizar':'Generar'}}</el-button>
                     </div>
                 </form>
-            </div>
-            </div>            
+            </div>           
     
             <expense-form-item :showDialog.sync="showDialogAddItem"
                                :currency-type="currency_type"

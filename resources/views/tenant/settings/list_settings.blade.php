@@ -196,12 +196,14 @@
                                         style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{route('tenant.custom-fields.index')}}">
-                            Campos personalizados
-                            <sup style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
-                        </a>
-                    </li>
+                    @if (Route::has('tenant.custom-fields.index'))
+                        <li>
+                            <a href="{{route('tenant.custom-fields.index')}}">
+                                Campos personalizados
+                                <sup style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>

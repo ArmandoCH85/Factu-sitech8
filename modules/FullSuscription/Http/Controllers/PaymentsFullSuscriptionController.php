@@ -169,7 +169,11 @@
                 $plan->sale_notes = implode(',', $salesNotes);
                 $plan->push();
             }
-            return new UserRelSuscriptionPlansResource($plan);
+            return [
+                'success' => true,
+                'message' => $id ? 'Suscripción actualizada con éxito' : 'Suscripción registrada con éxito',
+                'data' => new UserRelSuscriptionPlansResource($plan)
+            ];
 
         }
 

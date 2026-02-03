@@ -5,8 +5,8 @@
 
     namespace Modules\FullSuscription\Models\Tenant;
 
-
-    use App\Http\Controllers\Tenant\SaleNoteController;
+use App\Http\Controllers\Tenant\CashController;
+use App\Http\Controllers\Tenant\SaleNoteController;
     use App\Http\Requests\Tenant\SaleNoteRequest;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\Establishment;
@@ -16,6 +16,7 @@
     use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\Series;
     use App\Models\Tenant\User;
+    use Illuminate\Http\Request;
     use Auth;
     use Carbon\Carbon;
     use Eloquent;
@@ -125,7 +126,11 @@
             'total_base_other_taxes' => 'float',
             'total_other_taxes' => 'float',
             'total_taxes' => 'float',
-            'total_value' => 'float'
+            'total_value' => 'float',
+            'customer' => 'json',
+            'parent_customer' => 'json',
+            'children_customer' => 'json',
+            'items' => 'json'
         ];
         protected $fillable = [
             'user_id',
@@ -202,7 +207,8 @@
             $notas = $plan->sale_notes;
             $typerPeriod = $plan->getCatPeriod();
             $parent = $plan->parent_customer;
-            $customer = $parent;
+            // $customer = $parent;
+            $customer = is_array($parent) ? $parent : (is_object($parent) ? json_decode(json_encode($parent), true) : $parent);
 
             Carbon::setLocale('es');
             Carbon::setLocale('Spanish_Peru');
@@ -267,25 +273,25 @@
                     'time_of_issue' => $time_of_issue,
 
 
-                    "total_prepayment" => $plan->total_prepayment,
-                    "total_charge" => $plan->total_charge,
-                    "total_discount" => $plan->total_discount,
-                    "total_free" => $plan->total_free,
-                    "total_exportation" => $plan->total_exportation,
-                    "total_taxed" => $plan->total_taxed,
-                    "total_unaffected" => $plan->total_unaffected,
-                    "total_exonerated" => $plan->total_exonerated,
+                    "total_prepayment" => $plan->total_prepayment ?? 0,
+                    "total_charge" => $plan->total_charge ?? 0,
+                    "total_discount" => $plan->total_discount ?? 0,
+                    "total_free" => $plan->total_free ?? 0,
+                    "total_exportation" => $plan->total_exportation ?? 0,
+                    "total_taxed" => $plan->total_taxed ?? 0,
+                    "total_unaffected" => $plan->total_unaffected ?? 0,
+                    "total_exonerated" => $plan->total_exonerated ?? 0,
 
 
-                    "total_igv" => $plan->total_igv,
-                    "total_base_isc" => $plan->total_base_isc,
-                    "total_isc" => $plan->total_isc,
-                    "total_base_other_taxes" => $plan->total_base_other_taxes,
-                    "total_other_taxes" => $plan->total_other_taxes,
-                    "total_taxes" => $plan->total_taxes,
-                    "total_value" => $plan->total_value,
-                    "subtotal" => $plan->total,
-                    "total" => $plan->total,
+                    "total_igv" => $plan->total_igv ?? 0,
+                    "total_base_isc" => $plan->total_base_isc ?? 0,
+                    "total_isc" => $plan->total_isc ?? 0,
+                    "total_base_other_taxes" => $plan->total_base_other_taxes ?? 0,
+                    "total_other_taxes" => $plan->total_other_taxes ?? 0,
+                    "total_taxes" => $plan->total_taxes ?? 0,
+                    "total_value" => $plan->total_value ?? 0,
+                    "subtotal" => $plan->total ?? 0,
+                    "total" => $plan->total ?? 0, 
                     "operation_type_id" => null,
 
 
@@ -305,12 +311,21 @@
                 $saleNoteController = new SaleNoteController();
                 $saleNoteSaved = $saleNoteController->store($request);
                 if (isset($saleNoteSaved['data']) && isset($saleNoteSaved['data']['id'])) {
-                    $ids[] = (int)$saleNoteSaved['data']['id'];
+                    $id = (int)$saleNoteSaved['data']['id'];
+                    $ids[] = $id;
                     $updateCustomerSaleNote = SaleNote::find((int)$saleNoteSaved['data']['id']);
                     // $updateCustomerSaleNote->customer = $parent;
                     $currentCustomer = $updateCustomerSaleNote->customer;
                     $updateCustomerSaleNote->customer = $currentCustomer;
                     $updateCustomerSaleNote->push();
+
+                    $requestDocument = new Request;
+                    $requestDocument->merge([
+                        'sale_note_id' => $id,
+                    ]);
+
+                    (new CashController)->cash_document($requestDocument);
+
                 }
 
                 /* return [

@@ -2466,6 +2466,22 @@ div.welcome-card .welcome-subtitle{
 .actions-card .card-body{
     padding: 5px 0 5px 0 !important;
 }
+.btn-edit-price-container{
+    position: absolute;
+    top: 5px;
+    right: 0.79rem;
+}
+.btn-edit-price-container button{
+    height: 27px;
+    width: 27px;
+    padding: 0px !important;
+}
+.btn-edit-price-container :first-child{
+    border-radius: 0px !important;
+}
+.btn-edit-price-container :last-child{
+    border-radius: 0 8px 8px 0 !important;
+}
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {

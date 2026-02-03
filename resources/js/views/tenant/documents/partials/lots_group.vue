@@ -14,7 +14,7 @@
                 <div class="col-md-6" style="word-break: break-word;">
                     <span>Si al seleccionar lotes la cantidad es mayor, el último lote quedara con la diferencia. </span>
                 </div>
-                <div class="col-md-6 text-right">
+                <div class="col-md-6 text-end">
                     <h5>Cant. Pedida: {{ quantity }}</h5>
                     <h5 v-bind:class="{ 'text-danger': (toAttend < 0) }">Por Atender: {{ toAttend }}</h5>
                 </div>
@@ -82,8 +82,8 @@
             </div>
         </div>
 
-        <div class="form-actions text-right pt-2">
-            <el-button @click.prevent="close()">Cerrar</el-button>
+        <div class="form-actions text-end pt-2">
+            <el-button class="me-2" @click.prevent="close()">Cerrar</el-button>
             <el-button type="primary" @click="submit">Guardar</el-button>
         </div>
     </el-dialog>

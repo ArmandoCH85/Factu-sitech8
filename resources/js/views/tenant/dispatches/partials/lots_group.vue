@@ -75,8 +75,8 @@
             </div>
         </div>
 
-        <div class="form-actions text-right pt-2">
-            <el-button @click.prevent="close()">Cerrar</el-button>
+        <div class="form-actions text-end pt-2">
+            <el-button class="me-2" @click.prevent="close()">Cerrar</el-button>
             <el-button type="primary" @click="submit">Guardar</el-button>
         </div>
     </el-dialog>

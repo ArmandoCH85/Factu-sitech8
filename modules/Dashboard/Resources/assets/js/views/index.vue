@@ -134,7 +134,7 @@
             <RowTop :company="company" :utilities="utilities"></RowTop>
 
             <div class="row">
-                <div class="col-xl-12">
+                <div class="col-xl-12 card-dashboard-section">
                     <div class="row">
                     <template v-if="configuration.dashboard_sales">
                         <div class="col-12 col-sm-6 col-xl-3">

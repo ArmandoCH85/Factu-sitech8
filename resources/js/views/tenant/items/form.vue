@@ -379,24 +379,24 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12 mt-2">
                             <div class="table-responsive table-border-none">
                                 <table class="table table-sm mb-0 table-borderless">
                                     <thead>
                                     <tr>
-                                        <th width="25%">
+                                        <th width="25%" class="bg-transparent border-0">
                                             <el-checkbox v-model="form.has_perception"
                                                          @change="changeHasPerception">Incluye percepción
                                             </el-checkbox>
                                         </th>
-                                        <th width="25%">
+                                        <th width="25%" class="bg-transparent border-0">
                                             <div v-show="form.unit_type_id !='ZZ'">
                                                 <el-checkbox v-model="form.lots_enabled"
                                                              @change="changeLotsEnabled">¿Maneja lotes?
                                                 </el-checkbox>
                                             </div>
                                         </th>
-                                        <th width="25%">
+                                        <th width="25%" class="bg-transparent border-0">
                                             <div v-show="form.unit_type_id !='ZZ'">
                                                 <el-checkbox v-model="form.series_enabled"
                                                              @change="changeLotsEnabled">¿Maneja series?

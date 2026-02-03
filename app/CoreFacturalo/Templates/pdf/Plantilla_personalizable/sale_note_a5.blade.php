@@ -234,7 +234,7 @@ foreach ($document->items as $row) {
             $showLoteColumn = false;
 
             foreach ($document->items as $row) {
-                if ($row->item->lots) {
+                if (isset($row->item->lots) && $row->item->lots) {
                     $showSerieColumn = true;
                     break;
                 }
@@ -267,7 +267,7 @@ foreach ($document->items as $row) {
             if($showColumns['cantidad']) $colspan_total++;
             if($showColumns['unidad']) $colspan_total++;
             if($showColumns['descripcion']) $colspan_total++;
-            if($showColumns['serie'] && $show_series_column) $colspan_total++;
+            if($showColumns['serie'] && $showSerieColumn) $colspan_total++;
             if($showColumns['modelo'] && $showModelColumn) $colspan_total++;
             if($showColumns['marca'] && $showBrandColumn) $colspan_total++;
             if($showColumns['lote'] && $showLoteColumn) $colspan_total++;

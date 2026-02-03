@@ -1,8 +1,8 @@
 <template>
     <div v-loading="loading">
-        <div class="row ">
+        <div class="row">
 
-            <div class="col-md-12 col-lg-12 col-xl-12 filter-container">
+            <div class="col-md-12 col-lg-12 col-xl-12 filter-container mb-2">
                 <div class="btn-filter-content">
                     <el-button
                         type="secondary"

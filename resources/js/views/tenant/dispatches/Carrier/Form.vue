@@ -163,7 +163,7 @@
                                     Documento relacionado
                                 </button>
                             </div>
-                            <div class="col-12" v-if="form.reference_documents.length > 0">
+                            <div class="col-12 mt-2" v-if="form.reference_documents.length > 0">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -538,8 +538,7 @@
                                                                 effect="dark"
                                                                 placement="bottom">
                                                                 <el-button
-                                                                    class="btn-search-default btn-search-default-carrier btn-search-border w-100 h-100"
-                                                                    style="margin-top: -25px; position: absolute;"
+                                                                    class="btn-search-default-carrier btn-search-border w-100 h-100"                                                                    
                                                                     @click.prevent="clickWarehouseDetail()">
                                                                     <i class="fa fa-search"></i>
                                                                 </el-button>

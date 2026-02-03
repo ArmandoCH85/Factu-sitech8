@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" v-if="form.items.length > 0">
+                        <div class="row mt-3" v-if="form.items.length > 0">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">

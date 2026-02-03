@@ -248,7 +248,7 @@
                                     Documento relacionado
                                 </button>
                             </div>
-                            <div class="col-12" v-if="form.reference_documents.length > 0">
+                            <div class="col-12 mt-2" v-if="form.reference_documents.length > 0">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>

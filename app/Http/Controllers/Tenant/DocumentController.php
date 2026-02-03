@@ -767,7 +767,9 @@ class DocumentController extends Controller
                     'id' => $document->id,
                     'number_full' => $document->number_full,
                     'response' => $response,
-                    'is_itinerant' => $document->is_itinerant,
+                ],
+                'links' => [
+                    'print_ticket' => url('')."/print/document/{$document->external_id}/ticket"
                 ]
             ];
         }

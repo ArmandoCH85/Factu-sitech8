@@ -892,18 +892,3 @@ export default {
 };
 </script>
 
-<style>
-/* Estilos para el dropdown de Element UI en la tabla */
-.el-dropdown-selfdefine {
-    border: none;
-    padding: 0.375rem 0.75rem;
-    background-color: #f8f9fa;
-    color: #6c757d;
-}
-
-.el-dropdown-selfdefine:hover,
-.el-dropdown-selfdefine:focus {
-    background-color: #e9ecef;
-    color: #495057;
-}
-</style>

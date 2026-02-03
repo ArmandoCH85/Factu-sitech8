@@ -111,7 +111,7 @@
             <div class="card-body">
                 <el-dropdown v-if="hasSelectedItems" class="btn-massive-actions">
                     <el-button aria-expanded="false"
-                        class="btn btn-custom btn-sm dropdown-toggle"
+                        class="btn dropdown-toggle"
                         data-bs-toggle="dropdown"
                         type="button">
                         Acciones masivas
@@ -131,22 +131,10 @@
                 <data-table :resource="resource" ref="datatable">
                     <tr slot="heading">
                         <th>
-                            <el-dropdown>
-                                <el-button class="btn-default">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                    <i class="fas fa-ellipsis-h" style="display: none;"></i>
-                                </el-button>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item
-                                        @click.native="onChecktAll"
-                                        >Seleccionar todo</el-dropdown-item
-                                    >
-                                    <el-dropdown-item
-                                        @click.native="onUnCheckAll"
-                                        >Deseleccionar todo</el-dropdown-item
-                                    >
-                                </el-dropdown-menu>
-                            </el-dropdown>
+                            <el-checkbox
+                                :value="allSelected"
+                                @change="toggleSelectAll"
+                            ></el-checkbox>
                         </th>
                         <th>Producto</th>
                         <th>Almacén</th>
@@ -306,6 +294,7 @@ export default {
         return {
             showHideModalMoveGlobal: false,
             selectedItems: [],
+            totalRecords: 0,
             title: null,
             showDialog: false,
             showDialogMove: false,
@@ -351,6 +340,7 @@ export default {
         async onChangeSelectedStatus(row) {
             this.$forceUpdate();
             this.selectedItems = this.$refs.datatable.records.filter(item => item.selected);
+            this.syncRecordCount();
         },
         onChecktAll() {
             this.$refs.datatable.records = this.$refs.datatable.records.map(r => {
@@ -358,6 +348,7 @@ export default {
                 return r;
             });
             this.selectedItems = this.$refs.datatable.records.filter(r => r.selected);
+            this.syncRecordCount();
         },
         onUnCheckAll() {
             this.$refs.datatable.records = this.$refs.datatable.records.map(r => {
@@ -365,6 +356,17 @@ export default {
                 return r;
             });
             this.selectedItems = [];
+            this.syncRecordCount();
+        },
+        toggleSelectAll(checked) {
+            if (checked) {
+                this.onChecktAll();
+                return;
+            }
+            this.onUnCheckAll();
+        },
+        syncRecordCount() {
+            this.totalRecords = this.$refs.datatable?.records?.length || 0;
         },
         clickMove(recordId) {
             this.recordId = recordId;
@@ -411,6 +413,9 @@ export default {
     computed: {
         hasSelectedItems() {
             return this.selectedItems.length > 0;
+        },
+        allSelected() {
+            return this.totalRecords > 0 && this.selectedItems.length === this.totalRecords;
         }
     }
 };

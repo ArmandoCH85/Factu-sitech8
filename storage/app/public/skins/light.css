@@ -894,6 +894,25 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 .table>:not(caption)>*>*{
     background-color: transparent;
 }
+.payment-container{
+    border-radius: 8px;
+}
+.btn-edit-price-container{
+    position: absolute;
+    top: 5px;
+    right: 0.75rem;
+}
+.btn-edit-price-container button{
+    height: 27px;
+    width: 27px;
+    padding: 0px !important;
+}
+.btn-edit-price-container :first-child{
+    border-radius: 0px !important;
+}
+.btn-edit-price-container :last-child{
+    border-radius: 0 4px 4px 0 !important;
+}
 /************************************ tema verde ************************************/
 /* header */
 html.sidebar-green .userbox.show .dropdown-menu a:hover {

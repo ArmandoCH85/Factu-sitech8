@@ -385,29 +385,30 @@
                                             v-model="item.edit_sale_unit_price"
                                             class="mt-1 mb-2"
                                             size="mini"
-                                        >
-                                            <el-button
-                                                slot="append"
-                                                icon="el-icon-check"
-                                                type="primary"
+                                        >                                            
+                                        </el-input>
+                                        <div class="btn-edit-price-container d-flex">
+                                            <button
+                                            class="btn btn-primary d-flex justify-content-center align-items-center p-0"
                                                 @click="
                                                     clickEditUnitPriceItem(
                                                         index
                                                     )
                                                 "
-                                            ></el-button>
-                                            <el-button
-                                                slot="append"
-                                                icon="el-icon-close"
-                                                type=""
-                                                class="second-buton btn-close-pos"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                            </button>
+                                            <button
+                                                class="btn second-buton btn-close-pos d-flex justify-content-center align-items-center p-0"
                                                 @click="
                                                     clickCancelUnitPriceItem(
                                                         index
                                                     )
                                                 "
-                                            ></el-button>
-                                        </el-input>
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                                            </button>
+                                        </div>
                                     </template>
                                 </div>
                                 <div
@@ -732,7 +733,7 @@
                                         style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top"
                                     >
                                         <a
-                                            class="btn btn-sm btn-default text-danger"
+                                            class="btn btn-sm btn-default text-danger btn-trash-product-pos"
                                             @click="clickDeleteItem(item)"
                                         >
                                             <i class="fas fa-trash"></i>
@@ -745,7 +746,7 @@
                 </div>
                 <div class="h-40 bg-light border-top-dashed" style="overflow-y: auto">
                     <div class="row py-3 border-bottom m-0 p-0">
-                        <div class="col-9">
+                        <div class="col-10">
                             <el-select
                                 ref="select_person"
                                 v-model="form.customer_id"
@@ -765,19 +766,13 @@
                                 ></el-option>
                             </el-select>
                         </div>
-                        <div class="col-3" style="height: 42px;">
-                            <div class="btn-group d-flex h-100" role="group">
+                        <div class="col-2">
+                            <div class="btn-group h-100 w-100" role="group">
                                 <a
-                                    class="btn btn-sm btn-default w-100 d-flex align-items-center justify-content-center"
+                                    class="btn btn-sm btn-default d-flex align-items-center justify-content-center w-100"
                                     @click.prevent="showDialogNewPerson = true"
                                 >
                                     <i class="fas fa-plus"></i>
-                                </a>
-                                <a
-                                    class="btn btn-sm btn-default w-100 d-flex align-items-center justify-content-center"
-                                    @click="clickDeleteCustomer"
-                                >
-                                    <i class="fas fa-trash"></i>
                                 </a>
                             </div>
                         </div>
@@ -884,7 +879,7 @@
             </div> -->
                     </div>
 
-                    <div class="row m-2 ">
+                    <div class="m-2 ">
                         <div
                             class="btn py-3 col-12"
                             @click="clickPayment"

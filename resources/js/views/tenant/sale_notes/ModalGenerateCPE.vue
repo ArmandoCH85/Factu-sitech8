@@ -268,7 +268,7 @@ export default {
           this.form.selecteds.push(d.id);
         }
       });
-      this.sum_total+=total;
+      this.sum_total+=Number(parseFloat(total).toFixed(2));
     },
     onFindNotes() {
       this.form.selecteds = [];

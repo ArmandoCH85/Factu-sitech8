@@ -5,8 +5,8 @@
 
     namespace Modules\FullSuscription\Models\Tenant;
 
-
-    use App\Http\Controllers\Tenant\SaleNoteController;
+use App\Http\Controllers\Tenant\CashController;
+use App\Http\Controllers\Tenant\SaleNoteController;
     use App\Http\Requests\Tenant\SaleNoteRequest;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\Establishment;
@@ -16,6 +16,7 @@
     use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\Series;
     use App\Models\Tenant\User;
+    use Illuminate\Http\Request;
     use Auth;
     use Carbon\Carbon;
     use Eloquent;
@@ -310,12 +311,21 @@
                 $saleNoteController = new SaleNoteController();
                 $saleNoteSaved = $saleNoteController->store($request);
                 if (isset($saleNoteSaved['data']) && isset($saleNoteSaved['data']['id'])) {
-                    $ids[] = (int)$saleNoteSaved['data']['id'];
+                    $id = (int)$saleNoteSaved['data']['id'];
+                    $ids[] = $id;
                     $updateCustomerSaleNote = SaleNote::find((int)$saleNoteSaved['data']['id']);
                     // $updateCustomerSaleNote->customer = $parent;
                     $currentCustomer = $updateCustomerSaleNote->customer;
                     $updateCustomerSaleNote->customer = $currentCustomer;
                     $updateCustomerSaleNote->push();
+
+                    $requestDocument = new Request;
+                    $requestDocument->merge([
+                        'sale_note_id' => $id,
+                    ]);
+
+                    (new CashController)->cash_document($requestDocument);
+
                 }
 
                 /* return [

@@ -100,10 +100,11 @@ class ItemCollection extends ResourceCollection
                         'prices' => $row->prices->map(function($price) use ($configuration) {
                             return [
                                 'id' => $price->id,
-                                'position' => $price->position,
-                                'label' => $price->label,
+                                'price_label_id' => $price->price_label_id,
+                                'position' => $price->priceLabel ? $price->priceLabel->position : null,
+                                'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
                                 'price' => number_format($price->price, $configuration->decimal_quantity, ".",""),
-                                'is_active' => $price->is_active,
+                                'is_active' => (bool) $price->is_active,
                             ];
                         })->toArray(),
                     ];

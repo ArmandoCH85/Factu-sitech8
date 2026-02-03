@@ -1295,9 +1295,9 @@ class Item extends ModelTenant
 
             // Si el primer elemento es un modelo Eloquent, cargar prices y transformar
             if ($firstItem && is_object($firstItem)) {
-                // Cargar relación prices solo si aún no está cargada
+                // Cargar relación prices con priceLabel solo si aún no está cargada
                 if (!$firstItem->relationLoaded('prices')) {
-                    $this->loadMissing('item_unit_types.prices');
+                    $this->loadMissing('item_unit_types.prices.priceLabel');
                 }
 
                 return $this->item_unit_types->map(function ($row) {
@@ -1305,8 +1305,8 @@ class Item extends ModelTenant
                     $prices = $row->prices->map(function ($price) {
                         return [
                             'id' => $price->id,
-                            'position' => (int) $price->position,
-                            'label' => $price->label,
+                            'position' => $price->priceLabel ? (int) $price->priceLabel->position : 1,
+                            'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
                             'price' => $price->price,
                             'is_active' => (bool) $price->is_active,
                         ];

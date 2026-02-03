@@ -143,6 +143,14 @@ if ($hostname) {
             Route::post('configurations/pdf-footer-images', 'Tenant\ConfigurationController@pdfFooterImages');
             Route::get('configurations/get-pdf-footer-images', 'Tenant\ConfigurationController@getPdfFooterImages');
 
+            //Price Labels
+            Route::get('price-labels', 'Tenant\PriceLabelController@index');
+            Route::get('price-labels/active', 'Tenant\PriceLabelController@active');
+            Route::post('price-labels', 'Tenant\PriceLabelController@store');
+            Route::put('price-labels/{id}', 'Tenant\PriceLabelController@update');
+            Route::delete('price-labels/{id}', 'Tenant\PriceLabelController@destroy');
+            Route::post('price-labels/update-order', 'Tenant\PriceLabelController@updateOrder');
+
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
             Route::post('certificates/uploads', 'Tenant\CertificateController@uploadFile');

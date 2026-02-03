@@ -53,7 +53,7 @@
             <el-checkbox v-model="searchOnEnter" @change="changeSearchOnEnter" >Buscar solo al presionar Enter</el-checkbox>
             <el-checkbox ref="searchItemCheckbox" v-model="search_item_by_barcode" @change="focusInputSearch(); saveSearchByBarcodeSetting()">Buscar por código de barras</el-checkbox>
         </div>
-        
+
 
         <warehouses-stock
             :showDialog.sync="showDialogStock"
@@ -180,6 +180,29 @@
             changeItem()
             {
                 const item = { ..._.find(this.items, { id : this.item_id}) }
+
+                // Asignar el precio correcto según el selectedOptionPrice antes de emitir
+                if(item && !this.configuration.enable_list_product && this.selectedOptionPrice !== 1) {
+                    if(item.item_unit_types && item.item_unit_types.length > 0) {
+                        let first_list = item.item_unit_types[0];
+
+                        // Extraer price_label_id del selectedOptionPrice
+                        let priceLabelId = null;
+                        if(typeof this.selectedOptionPrice === 'string' && this.selectedOptionPrice.startsWith('price_label_')) {
+                            priceLabelId = parseInt(this.selectedOptionPrice.replace('price_label_', ''));
+                        }
+
+                        // Buscar y asignar el precio correspondiente usando 'id'
+                        if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
+                            const priceObj = first_list.prices.find(p => p.id === priceLabelId);
+                            if(priceObj && priceObj.price > 0) {
+                                item.sale_unit_price = parseFloat(priceObj.price);
+                            }
+                            // Si no se encuentra o es 0, mantener el sale_unit_price original
+                        }
+                    }
+                }
+
                 this.$emit('changeItem', item)
                 if(this.search_item_by_barcode){
                     this.items= [];
@@ -305,17 +328,32 @@
                 if(!this.configuration.enable_list_product && this.selectedOptionPrice !== 1) {
                     if(row.item_unit_types.length) {
                         let first_list = row.item_unit_types[0];
-                        let priceSelected = first_list[this.selectedOptionPrice];
-                        return row.unit_price_value = priceSelected;
+
+                        // Extraer price_label_id del selectedOptionPrice (formato: "price_label_2")
+                        let priceLabelId = null;
+                        if(typeof this.selectedOptionPrice === 'string' && this.selectedOptionPrice.startsWith('price_label_')) {
+                            priceLabelId = parseInt(this.selectedOptionPrice.replace('price_label_', ''));
+                        }
+
+                        // Buscar el precio correspondiente en el array prices usando 'id'
+                        if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
+                            const priceObj = first_list.prices.find(p => p.id === priceLabelId);
+                            if(priceObj) {
+                                return row.unit_price_value = parseFloat(priceObj.price).toFixed(2);
+                            }
+                        }
+
+                        // Fallback: usar unit_price_value por defecto
+                        return row.unit_price_value = parseFloat(row.sale_unit_price).toFixed(2);
                     } else {
-                        return row.unit_price_value = "0";
+                        return row.unit_price_value = parseFloat(row.sale_unit_price).toFixed(2);
                     }
                 }
                 return  parseFloat(row.sale_unit_price).toFixed(2);
             },
             changeInputEnter() {
                 let value = this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].value
-                this.inputEnter = value 
+                this.inputEnter = value
             }
         }
     }

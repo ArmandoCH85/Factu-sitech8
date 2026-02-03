@@ -53,13 +53,16 @@ class ItemUnitType extends ModelTenant
     }
 
     /**
-     * Relación con precios dinámicos
+     * Relación con precios dinámicos (ordenados por position del priceLabel)
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function prices()
     {
-        return $this->hasMany(ItemUnitTypePrice::class, 'item_unit_type_id')->orderBy('position');
+        return $this->hasMany(ItemUnitTypePrice::class, 'item_unit_type_id')
+            ->join('price_labels', 'item_unit_type_prices.price_label_id', '=', 'price_labels.id')
+            ->orderBy('price_labels.position')
+            ->select('item_unit_type_prices.*');
     }
 
 
@@ -82,11 +85,12 @@ class ItemUnitType extends ModelTenant
             'barcode'       => $this->barcode,
             'prices'        => $this->prices->map(function($price) use ($decimal_units) {
                 return [
-                    'id'        => $price->id,
-                    'position'  => $price->position,
-                    'label'     => $price->label,
-                    'price'     => number_format($price->price, $decimal_units, '.', ''),
-                    'is_active' => $price->is_active,
+                    'id'             => $price->id,
+                    'price_label_id' => $price->price_label_id,
+                    'position'       => $price->priceLabel ? $price->priceLabel->position : null,
+                    'label'          => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
+                    'price'          => number_format($price->price, $decimal_units, '.', ''),
+                    'is_active'      => (bool) $price->is_active,
                 ];
             })->toArray(),
         ];

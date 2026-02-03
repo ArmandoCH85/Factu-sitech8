@@ -529,6 +529,7 @@
                                         configuration.show_all_item_details
                                     "
                                     :selectedOptionPrice="selected_option_price"
+                                    :configuration="configuration"
                                     ref="item_search_quick_sale"
                                 ></item-search-quick-sale>
                             </div>
@@ -2334,18 +2335,6 @@ export default {
                 {
                     id: 1,
                     description: "Precio principal"
-                },
-                {
-                    id: "price1",
-                    description: "Precio 1"
-                },
-                {
-                    id: "price2",
-                    description: "Precio 2"
-                },
-                {
-                    id: "price3",
-                    description: "Precio 3"
                 }
             ],
             recordDiscountsGlobal: null,
@@ -2368,12 +2357,8 @@ export default {
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
 
-        // Actualizar price_options con los labels personalizados
-        if (this.config) {
-            this.price_options[1].description = this.config.price1_label || 'Precio 1';
-            this.price_options[2].description = this.config.price2_label || 'Precio 2';
-            this.price_options[3].description = this.config.price3_label || 'Precio 3';
-        }
+        // Cargar price_options desde la API de price labels activos
+        await this.loadPriceOptions();
 
         await this.initForm();
         await this.$http.get(`/${this.resource}/tables`).then(response => {
@@ -2430,6 +2415,33 @@ export default {
         this.changeCurrencyType();
     },
     methods: {
+        /**
+         * Carga las opciones de precio desde la API de price labels
+         */
+        async loadPriceOptions() {
+            try {
+                const response = await this.$http.get('/price-labels/active');
+                const labels = response.data.data || [];
+
+                // Inicializar la primera opción usando configuración price1_label
+                const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
+                this.price_options = [
+                    { id: 1, description: mainLabel }
+                ];
+
+                // Agregar labels activos después de la opción principal
+                labels.forEach(label => {
+                    this.price_options.push({
+                        id: `price_label_${label.id}`,
+                        description: label.label,
+                        price_label_id: label.id
+                    });
+                });
+            } catch (error) {
+                console.error('Error al cargar price labels:', error);
+            }
+        },
+
         changePaymentCondition() {
             this.form.fee = [];
             this.form.payments = [];

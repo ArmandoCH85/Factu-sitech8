@@ -144,7 +144,7 @@
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Editar precio para todos los vendedores
-                                    
+
                                     <el-tooltip class="item"
                                         content="Para habilitarlo solo a algunos usuarios, desactiva esta opción y configúralo en Usuarios."
                                         effect="dark" placement="top-start">
@@ -246,8 +246,8 @@
                                     <small v-if="errors.show_extra_info_to_item" class="form-control-feedback"
                                         v-text="errors.show_extra_info_to_item[0]"></small>
                                 </div>
-                            </div>                            
-                            
+                            </div>
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">
                                     Mostrar totales en el listado de CPE
@@ -331,8 +331,8 @@
                                 <div :class="{'has-danger': errors.show_items_only_user_stablishment}"
                                         class="form-group">
                                     <el-switch v-model="form.show_items_only_user_stablishment"
-                                               
-                                                
+
+
                                                        @change="submit"></el-switch>
                                     <small v-if="errors.show_items_only_user_stablishment"
                                             class="form-control-feedback"
@@ -502,7 +502,7 @@
                                     <small v-if="errors.show_load_voucher" class="form-control-feedback"
                                         v-text="errors.show_load_voucher[0]"></small>
                                 </div>
-                            </div>                            
+                            </div>
 
                             <div class="col-md-6 mt-4">
 
@@ -671,35 +671,17 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-tag me-1" style="margin-top: -3px"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3z" /></svg>
                                     Etiquetas de precios personalizadas
                                 </h4>
-                                <p class="text-muted small mb-1">Personaliza los nombres que se mostrarán para cada nivel de precio en todo el sistema</p>
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="control-label">Nombre para Precio 1</label>
-                                    <el-input v-model="form.price1_label" placeholder="Ej: Precio Minorista" maxlength="15" show-word-limit @change="submit"></el-input>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="control-label">Nombre para Precio 2</label>
-                                    <el-input v-model="form.price2_label" placeholder="Ej: Precio Mayorista" maxlength="15" show-word-limit @change="submit"></el-input>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="control-label">Nombre para Precio 3</label>
-                                    <el-input v-model="form.price3_label" placeholder="Ej: Precio Especial" maxlength="15" show-word-limit @change="submit"></el-input>
-                                </div>
+                                <p class="text-muted small mb-2">Personaliza los nombres que se mostrarán para cada nivel de precio en todo el sistema</p>
+                                <el-button type="primary" size="small" icon="el-icon-setting" @click="showDialogPriceLabels = true">
+                                    Gestionar Etiquetas de Precios
+                                </el-button>
                             </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
                         <span slot="label">Contable</span>
                         <div class="row switch-configuration-container">
-                            <div 
+                            <div
                             class="col-md-6 mt-3"
                             v-if="config.is_restaurant_active"
                             >
@@ -723,7 +705,7 @@
                                     <small v-if="errors.restaurant_tip_factor" class="form-control-feedback"
                                         v-text="errors.restaurant_tip_factor[0]"></small>
                                 </div>
-                            </div>                            
+                            </div>
                             <div v-if="typeUser != 'integrator'" class="col-md-6 mt-3">
                                 <label class="control-label">Impuesto bolsa plástica</label>
                                 <div :class="{ 'has-danger': errors.amount_plastic_bag_taxes }" class="form-group">
@@ -765,7 +747,7 @@
                                         placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
-                                </label>                                
+                                </label>
                                 <div :class="{ 'has-danger': errors.include_igv }" class="form-group">
                                     <el-switch v-model="form.include_igv"
                                         @change="submit"></el-switch>
@@ -901,7 +883,7 @@
                                     </el-select>
                                     <small v-if="errors.global_discount_type_id" class="form-control-feedback"
                                         v-text="errors.global_discount_type_id[0]"></small>
-                                        
+
                                         <div class="col-md-12 mt-2">
                                             <div :class="{ 'has-danger': errors.exact_discoutn }"
                                             class="form-group" v-if="validateDiscountAffectBase">
@@ -1083,14 +1065,14 @@
 
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Habilitar venta con detracción para montos inferiores a 700</label>
-                                <div :class="{ 'has-danger': errors.available_detraction_for_amount_minor}" 
+                                <div :class="{ 'has-danger': errors.available_detraction_for_amount_minor}"
                                         class="form-group">
-                                    <el-switch v-model="form.available_detraction_for_amount_minor" 
-                                            
-                                             
+                                    <el-switch v-model="form.available_detraction_for_amount_minor"
+
+
                                                    @change="submit"></el-switch>
-                                    <small v-if="errors.available_detraction_for_amount_minor" 
-                                            class="form-control-feedback" 
+                                    <small v-if="errors.available_detraction_for_amount_minor"
+                                            class="form-control-feedback"
                                             v-text="errors.available_detraction_for_amount_minor[0]"></small>
                                 </div>
                             </div>
@@ -2338,6 +2320,12 @@
                     :showDialog.sync="showDialogAllowanceCharge"></allowance-charge>
 
                 <pdf-footer-images :showDialog.sync="showDialogPdfFooterImages"></pdf-footer-images>
+
+                <price-labels-manager
+                    :showDialog.sync="showDialogPriceLabels"
+                    :configuration="form"
+                    @labels-updated="loadConfiguration">
+                </price-labels-manager>
             </form>
         </template>
     </div>
@@ -2361,6 +2349,7 @@ import { mapActions, mapState } from "vuex";
 import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
 import PdfFooterImages from './partials/pdf_footer_images.vue'
 import SessionLifetime from '@viewsModuleLevelAccess/configurations/SessionLifetime.vue';
+import PriceLabelsManager from './partials/price_labels_manager.vue';
 
 
 export default {
@@ -2375,7 +2364,8 @@ export default {
         ReportConfigurationsIndex,
         PdfFooterImages,
         SessionLifetime,
-        LegendFooterSale
+        LegendFooterSale,
+        PriceLabelsManager
     },
     computed: {
         ...mapState([
@@ -2393,6 +2383,7 @@ export default {
             showDialogLegendFooterSales: false,
             showDialogPdfFooterImages: false,
             showDialogAllowanceCharge: false,
+            showDialogPriceLabels: false,
             loading_submit: false,
             resource: 'configurations',
             errors: {},

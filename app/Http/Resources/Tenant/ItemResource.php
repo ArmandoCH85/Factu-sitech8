@@ -113,13 +113,14 @@
                 'has_perception' => (bool)$this->has_perception,
                 'percentage_perception' => $this->percentage_perception,
                 'item_unit_types' => $this->item_unit_types->transform(function ($row) {
-                    // Eager load prices y formatear
-                    $row->load('prices');
+                    // Eager load prices con priceLabel y formatear
+                    $row->load('prices.priceLabel');
                     $prices = $row->prices->map(function ($price) {
                         return [
                             'id' => $price->id,
-                            'position' => $price->position,
-                            'label' => $price->label,
+                            'price_label_id' => $price->price_label_id,
+                            'position' => $price->priceLabel ? $price->priceLabel->position : null,
+                            'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
                             'price' => number_format($price->price, 2, '.', ''),
                             'is_active' => (bool)$price->is_active,
                         ];

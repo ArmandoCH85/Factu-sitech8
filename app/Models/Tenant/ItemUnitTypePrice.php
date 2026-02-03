@@ -23,14 +23,12 @@ class ItemUnitTypePrice extends ModelTenant
 
     protected $fillable = [
         'item_unit_type_id',
-        'position',
+        'price_label_id',
         'price',
-        'label',
         'is_active',
     ];
 
     protected $casts = [
-        'position' => 'integer',
         'price' => 'float',
         'is_active' => 'boolean',
     ];
@@ -43,5 +41,15 @@ class ItemUnitTypePrice extends ModelTenant
     public function itemUnitType()
     {
         return $this->belongsTo(ItemUnitType::class, 'item_unit_type_id');
+    }
+
+    /**
+     * Relación con PriceLabel
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function priceLabel()
+    {
+        return $this->belongsTo(PriceLabel::class, 'price_label_id');
     }
 }

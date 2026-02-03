@@ -574,20 +574,17 @@
                                                 {{ row.quantity_unit }}
                                             </td>
                                             <td class="text-center align-middle">
-                                                <div v-if="row.prices && row.prices.length" class="d-flex justify-content-center flex-wrap">
+                                                <div v-if="row.prices && row.prices.length" class="d-flex justify-content-center flex-wrap gap-1">
                                                     <el-button
                                                         v-for="p in row.prices"
                                                         v-show="p.is_active"
                                                         :key="p.id"
                                                         size="small"
-                                                        class="me-1 mb-1"
                                                         @click.prevent="selectedPrice(row, p.price)"
                                                     >{{ p.label }} - {{ p.price }}</el-button>
                                                 </div>
-                                                <div v-else class="d-flex justify-content-center flex-wrap">
-                                                    <el-button class="btn-block me-1 mb-1" @click.prevent="selectedPrice(row, row.price1)">{{ row.price1 }}</el-button>
-                                                    <el-button class="btn-block me-1 mb-1" @click.prevent="selectedPrice(row, row.price2)">{{ row.price2 }}</el-button>
-                                                    <el-button class="btn-block me-1 mb-1" @click.prevent="selectedPrice(row, row.price3)">{{ row.price3 }}</el-button>
+                                                <div v-else class="text-muted">
+                                                    <small>Sin precios configurados</small>
                                                 </div>
                                             </td>
                                             <!-- <td class="text-center">Precio {{ row.price_default }}</td>
@@ -1798,15 +1795,36 @@ export default {
             this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
+
+            // Aplicar precio según la opción seleccionada
             if (
                 !this.configuration.enable_list_product &&
                 this.selectedOptionPrice !== 1
             ) {
                 if (this.form.item_unit_types.length) {
                     let first_list = this.form.item_unit_types[0];
-                    let priceSelected = first_list[this.selectedOptionPrice];
-                    // row.sale_unit_price = priceSelected;
-                    this.form.unit_price_value = priceSelected;
+
+                    console.log('selectedOptionPrice:', this.selectedOptionPrice);
+                    console.log('first_list.prices:', first_list.prices);
+
+                    // Extraer price_label_id del selectedOptionPrice
+                    let price_label_id = null;
+                    if (typeof this.selectedOptionPrice === 'string' && this.selectedOptionPrice.startsWith('price_label_')) {
+                        price_label_id = parseInt(this.selectedOptionPrice.replace('price_label_', ''));
+                    }
+
+                    console.log('price_label_id extraído:', price_label_id);
+
+                    // Buscar el precio en el array prices por id
+                    if (price_label_id && first_list.prices && Array.isArray(first_list.prices)) {
+                        const foundPrice = first_list.prices.find(p => p.id === price_label_id);
+                        console.log('Precio encontrado:', foundPrice);
+
+                        if (foundPrice && foundPrice.price) {
+                            this.form.unit_price_value = foundPrice.price;
+                            console.log('Precio asignado:', this.form.unit_price_value);
+                        }
+                    }
                 }
             }
 

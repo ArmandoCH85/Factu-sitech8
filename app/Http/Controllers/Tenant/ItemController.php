@@ -110,8 +110,7 @@ class ItemController extends Controller
             );
 
             $price->item_unit_type_id = $itemUnitTypeId;
-            $price->position = $priceData['position'];
-            $price->label = $priceData['label'];
+            $price->price_label_id = $priceData['price_label_id'];
             $price->price = $priceData['price'];
             $price->is_active = $priceData['is_active'] ?? true;
             $price->save();

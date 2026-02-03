@@ -4082,26 +4082,9 @@ export default {
             retention_query_data: null,
             // itemDetailId: null,
             // showDialogItemDetail: false,
-            selected_option_price: null,
             showDialogConsignedForm: false,
-            price_options: [
-                {
-                    id: 1,
-                    description: "Precio principal"
-                },
-                {
-                    id: "price1",
-                    description: "Precio 1"
-                },
-                {
-                    id: "price2",
-                    description: "Precio 2"
-                },
-                {
-                    id: "price3",
-                    description: "Precio 3"
-                }
-            ],
+            price_options: [],
+            selected_option_price: null,
             showDialogPreview: false,
             value_taxed_without_rounded: 0,
             total_without_rounded: 0,
@@ -4233,16 +4216,11 @@ export default {
         },
     },
     async created() {
-        this.selected_option_price = this.price_options[0].id;
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
 
-        // Actualizar price_options con los labels personalizados
-        if (this.config) {
-            this.price_options[1].description = this.config.price1_label || 'Precio 1';
-            this.price_options[2].description = this.config.price2_label || 'Precio 2';
-            this.price_options[3].description = this.config.price3_label || 'Precio 3';
-        }
+        // Cargar price_options desde la API de price labels activos
+        await this.loadPriceOptions();
 
         await this.initForm();
         await this.$http.get(`/${this.resource}/tables`).then(response => {
@@ -4552,6 +4530,49 @@ export default {
             this.cleanFileListUploadVoucher(index);
         },
         ...mapActions(["loadConfiguration"]),
+        /**
+         * Cargar opciones de precio desde la API de price_labels activos
+         */
+        async loadPriceOptions() {
+            try {
+                const response = await this.$http.get('/price-labels/active');
+                const labels = response.data.data || [];
+
+                const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
+                this.price_options = [
+                    {
+                        id: 1,
+                        description: mainLabel,
+                        price_label_id: null
+                    }
+                ];
+
+                // Agregar las etiquetas de precio desde la API
+                labels.forEach(label => {
+                    this.price_options.push({
+                        id: `price_label_${label.id}`,
+                        description: label.label,
+                        price_label_id: label.id
+                    });
+                });
+
+                // Seleccionar la primera opción por defecto
+                if (this.price_options.length > 0) {
+                    this.selected_option_price = this.price_options[0].id;
+                }
+            } catch (error) {
+                console.error('Error al cargar price_options:', error);
+                // Fallback a precio principal si falla la carga
+                this.price_options = [
+                    {
+                        id: 1,
+                        description: "Precio principal",
+                        price_label_id: null
+                    }
+                ];
+                this.selected_option_price = 1;
+            }
+        },
         initForm() {
             this.errors = {};
             this.form = {

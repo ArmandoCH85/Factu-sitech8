@@ -118,11 +118,11 @@
                                                 <p v-if="loading_search" class="el-select-dropdown__empty">
                                                     Cargando...
                                                 </p>
-                                            
+
                                                 <p v-else class="el-select-dropdown__empty">
                                                     No se encontraron resultados
                                                 </p>
-                                            
+
                                                 <div
                                                     v-if="!loading_search"
                                                     class="el-select-dropdown__item new-option"
@@ -179,11 +179,11 @@
                                             <p v-if="loading_search" class="el-select-dropdown__empty">
                                                 Cargando...
                                             </p>
-                                        
+
                                             <p v-else class="el-select-dropdown__empty">
                                                 No se encontraron resultados
                                             </p>
-                                        
+
                                             <div
                                                 v-if="!loading_search"
                                                 class="el-select-dropdown__item new-option"
@@ -442,7 +442,7 @@
                             v-if="form.item_unit_types.length > 0"
                             class="col-md-12"
                         >
-                            <div class="table-responsive" style="margin:3px">
+                            <div style="margin:3px">
                                 <h5 class="separator-title">
                                     Lista de Precios
                                     <el-tooltip
@@ -454,77 +454,28 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </h5>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">Unidad</th>
-                                            <th class="text-center">
-                                                Descripción
-                                            </th>
-                                            <th class="text-center">Factor</th>
-                                            <th class="text-center">
-                                                {{ config.price1_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                {{ config.price2_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                {{ config.price3_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                Precio Default
-                                            </th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            v-for="(row,
-                                            index) in form.item_unit_types"
-                                            :key="index"
-                                        >
-                                            <td class="text-center">
-                                                {{ row.unit_type_id }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ row.description }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ row.quantity_unit }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ row.price1 }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ row.price2 }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ row.price3 }}
-                                            </td>
-                                            <td class="text-center">
-                                                Precio {{ row.price_default }}
-                                            </td>
-                                            <td
-                                                class="series-table-actions text-end"
+                                <template v-for="(row, index) in form.item_unit_types" >
+                                    <div class="mb-3" :key="index">
+                                        <div class="mb-2">
+                                            <strong>{{ row.description }}</strong>
+                                            <span class="text-muted ms-2">({{ row.unit_type_id }} - Factor: {{ row.quantity_unit }})</span>
+                                        </div>
+                                        <div v-if="row.prices && row.prices.length" class="d-flex justify-content-start flex-wrap gap-1">
+                                            <el-button
+                                                v-for="p in row.prices"
+                                                v-show="p.is_active"
+                                                :key="p.id"
+                                                size="small"
+                                                @click.prevent="selectedPrice(row, p.price)"
                                             >
-                                                <button
-                                                    :class="
-                                                        getSelectedClass(row)
-                                                    "
-                                                    class="btn waves-effect waves-light btn-xs"
-                                                    type="button"
-                                                    @click.prevent="
-                                                        selectedPrice(row)
-                                                    "
-                                                >
-                                                    <i
-                                                        class="el-icon-check"
-                                                    ></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                {{ p.label }} - {{ p.price }}
+                                            </el-button>
+                                        </div>
+                                        <div v-else class="text-muted">
+                                            <small>Sin precios configurados</small>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
 
@@ -1577,10 +1528,22 @@ export default {
             ) {
                 if (this.form.item_unit_types.length) {
                     let first_list = this.form.item_unit_types[0];
-                    let priceSelected = first_list[this.selectedOptionPrice];
-                    this.form.unit_price_value = priceSelected;
+
+                    // Extraer price_label_id del selectedOptionPrice
+                    let priceLabelId = null;
+                    if(typeof this.selectedOptionPrice === 'string' && this.selectedOptionPrice.startsWith('price_label_')) {
+                        priceLabelId = parseInt(this.selectedOptionPrice.replace('price_label_', ''));
+                    }
+
+                    // Buscar el precio correspondiente en el array prices
+                    if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
+                        const priceObj = first_list.prices.find(p => p.price_label_id === priceLabelId);
+                        if(priceObj && priceObj.price > 0) {
+                            this.form.unit_price_value = parseFloat(priceObj.price);
+                        }
+                    }
                 } else {
-                    this.form.unit_price_value = "0";
+                    this.form.unit_price_value = this.form.item.sale_unit_price;
                 }
             }
             this.lots = this.form.item.lots;

@@ -239,8 +239,8 @@ class CashController extends Controller
                         $sale_note->currency_type_id,
                         $sale_note->exchange_rate_sale
                     );
-                    $cash_income += $total;
-                    $final_balance += $total;
+                    // $cash_income += $total;
+                    // $final_balance += $total;
                     if (count($sale_note->payments) > 0) {
                         $pays = $sale_note->payments->filter(function ($payment) use ($cash_id) {
                             return $payment->cashDocumentPayments->contains('cash_id', $cash_id);
@@ -279,6 +279,8 @@ class CashController extends Controller
                         $query->where('cash_id', $cash_id);
                     })
                     ->sum('payment');
+                $cash_income += $totalPayments;
+                $final_balance += $totalPayments;
 
                 $temp = [
                     'type_transaction'          => 'Venta',
@@ -327,8 +329,8 @@ class CashController extends Controller
                             $document->exchange_rate_sale
                         );
                         $usado .= '<br>Tomado para income<br>';
-                        $cash_income += $total;
-                        $final_balance += $total;
+                        // $cash_income += $total;
+                        // $final_balance += $total;
                         if (count($pays) > 0) {
                             $usado .= '<br>Se usan los pagos<br>';
                             foreach ($methods_payment as $record) {
@@ -409,6 +411,8 @@ class CashController extends Controller
                         $query->where('cash_id', $cash_id);
                     })
                     ->sum('payment');
+                $cash_income += $totalPayments;
+                $final_balance += $totalPayments;
 
                 $temp = [
                     'type_transaction'          => 'Venta',

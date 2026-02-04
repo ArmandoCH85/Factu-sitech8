@@ -194,7 +194,7 @@
 
                         // Buscar y asignar el precio correspondiente usando 'id'
                         if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
-                            const priceObj = first_list.prices.find(p => p.id === priceLabelId);
+                            const priceObj = first_list.prices.find(p => p.price_label_id === priceLabelId);
                             if(priceObj && priceObj.price > 0) {
                                 item.sale_unit_price = parseFloat(priceObj.price);
                             }

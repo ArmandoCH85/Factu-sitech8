@@ -981,6 +981,7 @@
             :configuration="config"
             :percentage-igv="percentage_igv"
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
+            :customer-id="form.customer_id"
             @add="addRow"
         ></order-note-form-item>
 

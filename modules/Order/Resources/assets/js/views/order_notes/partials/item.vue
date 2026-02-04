@@ -15,20 +15,42 @@
             <div class="form-body">
                 <div class="row">
                     <div
-                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-search-model"
+                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-model position-relative"
                     >
-                        <el-tooltip
-                            slot="append"
-                            :disabled="recordItem != null"
-                            class="item"
-                            content="Ver Stock del Producto"
-                            effect="dark"
-                            placement="bottom"
-                        >
-                            <el-button @click.prevent="clickWarehouseDetail()">
-                                <i class="fa fa-search"></i>
-                            </el-button>
-                        </el-tooltip>
+                        <div class="tooltips-container" style="top: 46px;" v-show="hasSelectedItem">
+                            <el-tooltip
+                                slot="append"
+                                :disabled="isUpdateItem"
+                                class="item"
+                                content="Ver Stock del Producto"
+                                effect="dark"
+                                placement="bottom"
+                            >
+                                <el-button
+                                    :disabled="isUpdateItem"
+                                    class="d-flex align-items-center"
+                                    @click.prevent="clickWarehouseDetail()"
+                                >
+                                    <i class="fa fa-search"></i>
+                                </el-button>
+                            </el-tooltip>
+                            <el-tooltip
+                                slot="append"
+                                :disabled="isUpdateItem || !hasSelectedItem"
+                                class="item"
+                                content="Historial de ventas"
+                                effect="dark"
+                                placement="bottom"
+                            >
+                                <el-button
+                                    :disabled="isUpdateItem || !hasSelectedItem"
+                                    class="d-flex align-items-center"
+                                    @click.prevent="clickHistorySales()"
+                                >
+                                    <i class="fa fa-list"></i>
+                                </el-button>
+                            </el-tooltip>
+                        </div>
                         <div
                             id="custom-select"
                             :class="{ 'has-danger': errors.item_id }"
@@ -53,7 +75,7 @@
                                         ref="selectSearchNormal"
                                         slot="prepend"
                                         v-model="form.item_id"
-                                        :disabled="recordItem != null"
+                                        :disabled="isUpdateItem"
                                         :loading="loading_search"
                                         :remote-method="searchRemoteItems"
                                         filterable
@@ -402,7 +424,7 @@
                         <div class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item
-                                    :disabled="recordItem != null"
+                                    :disabled="isUpdateItem"
                                     name="1"
                                     title="+ Agregar Descuentos/Cargos/Atributos especiales"
                                 >
@@ -681,10 +703,18 @@
         ></item-form>
 
         <warehouses-detail
+            :isUpdateWarehouseId="isUpdateWarehouseId"
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail"
         >
         </warehouses-detail>
+
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="customerId"
+            :type="true"
+        ></history-sales-form>
 
         <select-lots-form
             :lots="lots"
@@ -727,6 +757,7 @@ import {
     ItemSlotTooltip
 } from "@helpers/modal_item";
 import { checkPermissionEditPrices } from "@mixins/check-permission-edit-prices";
+import HistorySalesForm from "../../../../../../../Pos/Resources/assets/js/views/history/sales.vue";
 
 export default {
     props: [
@@ -737,13 +768,15 @@ export default {
         "typeUser",
         "configuration",
         "percentageIgv",
-        "permissionEditItemPrices"
+        "permissionEditItemPrices",
+        "customerId"
     ],
     components: {
         ItemForm,
         WarehousesDetail,
         LotsGroup,
         SelectLotsForm,
+        HistorySalesForm,
         "vue-ckeditor": VueCkeditor.component
     },
     mixins: [checkPermissionEditPrices],
@@ -788,7 +821,9 @@ export default {
             },
             loading_dialog: false,
             readonly_total: 0,
-            itemSearchTerm: ''
+            itemSearchTerm: '',
+            showDialogHistorySales: false,
+            history_item_id: null
         };
     },
     watch: {
@@ -866,6 +901,12 @@ export default {
                 return this.config.allow_edit_unit_price_to_seller;
             }
             return false;
+        },
+        isUpdateItem() {
+            return !_.isEmpty(this.recordItem);
+        },
+        hasSelectedItem() {
+            return this.form.item_id && !_.isEmpty(this.form.item);
         }
     },
     methods: {
@@ -1520,6 +1561,20 @@ export default {
         },
         openNewItemDialog() {
             this.showDialogNewItem = true;
+        },
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error("Seleccione un item");
+            }
+
+            const item = _.find(this.items, { id: this.form.item_id });
+
+            if (!item) {
+                return this.$message.error("Producto no encontrado");
+            }
+
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
         },
     }
 };

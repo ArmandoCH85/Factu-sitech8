@@ -21,7 +21,7 @@
                         </el-checkbox>
                     </div>
                     <div
-                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-search-model"
+                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-model position-relative"
                     >
                         <template v-if="various_item">
                             <div class="form-group">
@@ -37,21 +37,40 @@
                             </div>
                         </template>
                         <template v-else>
-                            <el-tooltip
-                                slot="append"
-                                :disabled="isUpdateItem"
-                                class="item"
-                                content="Ver Stock del Producto"
-                                effect="dark"
-                                placement="bottom"
-                            >
-                                <el-button
+                            <div class="tooltips-container" style="top: 46px;" v-show="hasSelectedItem">
+                                <el-tooltip
+                                    slot="append"
                                     :disabled="isUpdateItem"
-                                    @click.prevent="clickWarehouseDetail()"
+                                    class="item"
+                                    content="Ver Stock del Producto"
+                                    effect="dark"
+                                    placement="bottom"
                                 >
-                                    <i class="fa fa-search"></i>
-                                </el-button>
-                            </el-tooltip>
+                                    <el-button
+                                        :disabled="isUpdateItem"
+                                        @click.prevent="clickWarehouseDetail()"
+                                        class="d-flex align-items-center"
+                                    >
+                                        <i class="fa fa-search"></i>
+                                    </el-button>
+                                </el-tooltip>
+                                <el-tooltip
+                                    slot="append"
+                                    :disabled="isUpdateItem"
+                                    class="item"
+                                    content="Historial de ventas"
+                                    effect="dark"
+                                    placement="bottom"
+                                >
+                                <el-button
+                                        :disabled="isUpdateItem"
+                                        @click.prevent="clickHistorySales()"
+                                        class="d-flex align-items-center"
+                                    >
+                                        <i class="fa fa-list"></i>
+                                    </el-button>
+                                </el-tooltip>
+                            </div>
                             <div
                                 id="custom-select"
                                 :class="{ 'has-danger': errors.item_id }"
@@ -784,6 +803,13 @@
         >
         </lots-group>
 
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="customerId"
+            :type="true"
+        ></history-sales-form>
+
         <select-lots-form
             :saleNoteItemId="form.sale_note_item_id"
             :itemId="form.item_id"
@@ -819,6 +845,7 @@ import {
 } from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
 import { checkPermissionEditPrices } from "@mixins/check-permission-edit-prices";
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 
 export default {
     props: [
@@ -836,7 +863,8 @@ export default {
         "currencyTypes",
         "showOptionChangeCurrency",
         "permissionEditItemPrices",
-        "selectedOptionPrice"
+        "selectedOptionPrice",
+        "customerId"
     ],
     components: {
         ItemForm,
@@ -844,6 +872,7 @@ export default {
         LotsGroup,
         Keypress,
         SelectLotsForm,
+        HistorySalesForm,
         "vue-ckeditor": VueCkeditor.component
     },
     mixins: [checkPermissionEditPrices],
@@ -892,8 +921,11 @@ export default {
             old_selected_lots_group: [],
             various_item: false,
             various_item_barcode: "VARIOUS_ITEM",
-            itemSearchTerm: ''
+            itemSearchTerm: '',
+            showDialogHistorySales: false,
+            history_item_id: null
             //item_unit_type: {}
+
         };
     },
     watch: {
@@ -991,6 +1023,9 @@ export default {
                 return this.configuration.add_description_to_document_item;
 
             return false;
+        },
+        hasSelectedItem() {
+            return this.form.item_id && !_.isEmpty(this.form.item);
         }
     },
     methods: {
@@ -1932,6 +1967,20 @@ export default {
         },
         openNewItemDialog() {
             this.showDialogNewItem = true;
+        },
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error("Seleccione un item");
+            }
+
+            const item = _.find(this.items, { id: this.form.item_id });
+
+            if (!item) {
+                return this.$message.error("Producto no encontrado");
+            }
+
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
         },
     }
 };

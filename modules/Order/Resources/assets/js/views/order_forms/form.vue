@@ -282,7 +282,7 @@
     
             <dispatcher-form :showDialog.sync="showDialogNewDispatcher" :external="true"></dispatcher-form>
     
-            <items :recordItem.sync="recordItem" :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
+            <items :recordItem.sync="recordItem" :dialogVisible.sync="showDialogAddItems" @addItem="addItem" :customer-id="form.customer_id"></items>
     
     
             <order-form-options :showDialog.sync="showDialogOptions"

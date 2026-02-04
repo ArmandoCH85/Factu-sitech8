@@ -1244,16 +1244,9 @@ export default {
         };
     },
     async created() {
-        this.selected_option_price = this.price_options[0];
+        await this.loadPriceOptions();
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration2);
-
-        // Actualizar price_options con los labels personalizados
-        if (this.config) {
-            this.price_options[1].description = this.config.price1_label || 'Precio 1';
-            this.price_options[2].description = this.config.price2_label || 'Precio 2';
-            this.price_options[3].description = this.config.price3_label || 'Precio 3';
-        }
 
         await this.initForm();
         await this.getTables();
@@ -1350,6 +1343,49 @@ export default {
     },
     methods: {
         ...mapActions(["loadConfiguration"]),
+        /**
+         * Cargar opciones de precio desde la API de price_labels activos
+         */
+        async loadPriceOptions() {
+            try {
+                const response = await this.$http.get('/price-labels/active');
+                const labels = response.data.data || [];
+
+                const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
+                this.price_options = [
+                    {
+                        id: 1,
+                        description: mainLabel,
+                        price_label_id: null
+                    }
+                ];
+
+                // Agregar las etiquetas de precio desde la API
+                labels.forEach(label => {
+                    this.price_options.push({
+                        id: `price_label_${label.id}`,
+                        description: label.label,
+                        price_label_id: label.id
+                    });
+                });
+
+                // Seleccionar la primera opción por defecto
+                if (this.price_options.length > 0) {
+                    this.selected_option_price = this.price_options[0].id;
+                }
+            } catch (error) {
+                console.error('Error al cargar price_options:', error);
+                // Fallback a precio principal si falla la carga
+                this.price_options = [
+                    {
+                        id: 1,
+                        description: "Precio principal",
+                        price_label_id: null
+                    }
+                ];
+                this.selected_option_price = 1;
+            }
+        },
         enabledSearchItemByBarcode() {
             if (this.configuration.search_item_by_barcode) {
                 this.search_item_by_barcode = true;
@@ -2701,17 +2737,37 @@ export default {
         },
         ChangeSelectedPrice() {
             // recorrer items
+            console.log("recorrer items");
+            
             this.items.forEach(row => {
-                if (row.unit_type.length) {
-                    let first_list = row.unit_type[0];
-                    let priceSelected = first_list[this.selected_option_price];
-                    row.sale_unit_price = priceSelected;
-                } else {
-                    row.sale_unit_price = 0;
-                }
-                if (this.selected_option_price == 1) {
-                    row.sale_unit_price = row.aux_sale_unit_price;
-                }
+                    if(row.item_unit_types && row.item_unit_types.length > 0) {
+                        let first_list = row.item_unit_types[0];
+
+                        // Extraer price_label_id del selectedOptionPrice
+                        let priceLabelId = null;
+                        if(typeof this.selected_option_price === 'string' && this.selected_option_price.startsWith('price_label_')) {
+                            priceLabelId = parseInt(this.selected_option_price.replace('price_label_', ''));
+                        }
+
+                        console.log({
+                            priceLabelId: priceLabelId,
+                            selected_option_price: this.selected_option_price,
+                            first_list: first_list,
+                        });
+                        
+                        // Buscar y asignar el precio correspondiente usando 'id'
+                        if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
+                            console.log(first_list.prices);
+                            
+                            const priceObj = first_list.prices.find(p => p.price_label_id == priceLabelId);
+                            
+                            if(priceObj && Number(priceObj.price) > 0) {
+                                row.sale_unit_price = parseFloat(priceObj.price);
+                            }
+                            // Si no se encuentra o es 0, mantener el sale_unit_price original
+                        }
+                    }
+                
             });
         }
     }

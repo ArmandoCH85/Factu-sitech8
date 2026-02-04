@@ -15,12 +15,12 @@
                         <el-checkbox
                             v-model="various_item"
                             @change="setVariousItem"
-                            :disabled="recordItem != null"
+                            :disabled="isUpdateItem"
                             >Producto manual
                         </el-checkbox>
                     </div>
                     <div
-                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-search-model"
+                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-model position-relative"
                     >
                         <template v-if="various_item">
                             <div class="form-group">
@@ -36,22 +36,40 @@
                             </div>
                         </template>
                         <template v-else>
-                            <el-tooltip
-                                slot="append"
-                                :disabled="recordItem != null"
-                                class="item"
-                                content="Ver Stock del Producto"
-                                effect="dark"
-                                placement="bottom"
-                            >
-                                <el-button
-                                    :disabled="isEditItemNote"
-                                    class="btn-search-default btn-search-quotation"
-                                    @click.prevent="clickWarehouseDetail()"
+                            <div class="tooltips-container" style="top: 46px;" v-show="hasSelectedItem">
+                                <el-tooltip
+                                    slot="append"
+                                    :disabled="isEditItemNote || isUpdateItem"
+                                    class="item"
+                                    content="Ver Stock del Producto"
+                                    effect="dark"
+                                    placement="bottom"
                                 >
-                                    <i class="fa fa-search"></i>
-                                </el-button>
-                            </el-tooltip>
+                                <el-button
+                                        :disabled="isEditItemNote || isUpdateItem"
+                                        class="btn-search-default btn-search-quotation d-flex align-items-center"
+                                        @click.prevent="clickWarehouseDetail()"
+                                    >
+                                        <i class="fa fa-search"></i>
+                                    </el-button>
+                                </el-tooltip>
+                                <el-tooltip
+                                    slot="append"
+                                    :disabled="isUpdateItem || !hasSelectedItem"
+                                    class="item"
+                                    content="Historial de ventas"
+                                    effect="dark"
+                                    placement="bottom"
+                                >
+                                    <el-button
+                                        :disabled="isUpdateItem || !hasSelectedItem"
+                                        class="btn-search-default btn-search-quotation d-flex align-items-center"
+                                        @click.prevent="clickHistorySales()"
+                                    >
+                                        <i class="fa fa-list"></i>
+                                    </el-button>
+                                </el-tooltip>
+                            </div>
                             <div
                                 id="custom-select"
                                 :class="{ 'has-danger': errors.item_id }"
@@ -80,7 +98,7 @@
                                             ref="selectSearchNormal"
                                             slot="prepend"
                                             v-model="form.item_id"
-                                            :disabled="recordItem != null"
+                                            :disabled="isUpdateItem"
                                             :loading="loading_search"
                                             :remote-method="searchRemoteItems"
                                             filterable
@@ -140,7 +158,7 @@
                                             ref="selectBarcode"
                                             slot="prepend"
                                             v-model="form.item_id"
-                                            :disabled="recordItem != null"
+                                            :disabled="isUpdateItem"
                                             :loading="loading_search"
                                             :remote-method="searchRemoteItems"
                                             filterable
@@ -159,19 +177,36 @@
                                         </el-select>
                                         <el-tooltip
                                             slot="append"
-                                            :disabled="recordItem != null"
                                             class="item"
+                                            :disabled="isEditItemNote || isUpdateItem"
                                             content="Ver Stock del Producto"
                                             effect="dark"
                                             placement="bottom"
                                         >
                                             <el-button
-                                                :disabled="isEditItemNote"
+                                                :disabled="isEditItemNote || isUpdateItem"
                                                 @click.prevent="
                                                     clickWarehouseDetail()
                                                 "
                                             >
                                                 <i class="fa fa-search"></i>
+                                            </el-button>
+                                        </el-tooltip>
+                                        <el-tooltip
+                                            slot="append"
+                                            :disabled="isUpdateItem || !hasSelectedItem"
+                                            class="item"
+                                            content="Historial de ventas"
+                                            effect="dark"
+                                            placement="bottom"
+                                        >
+                                            <el-button
+                                                :disabled="isUpdateItem || !hasSelectedItem"
+                                                @click.prevent="
+                                                    clickHistorySales()
+                                                "
+                                            >
+                                                <i class="fa fa-list"></i>
                                             </el-button>
                                         </el-tooltip>
                                     </el-input>
@@ -180,7 +215,7 @@
                                 <template v-if="!is_client">
                                     <el-checkbox
                                         v-model="search_item_by_barcode"
-                                        :disabled="recordItem != null"
+                                        :disabled="isUpdateItem"
                                         >Buscar por código de barras
                                     </el-checkbox>
                                     <br />
@@ -221,7 +256,7 @@
                             </el-select>
                             <el-checkbox
                                 v-model="change_affectation_igv_type_id"
-                                :disabled="recordItem != null"
+                                :disabled="isUpdateItem"
                             >
                                 Editar
                             </el-checkbox>
@@ -842,6 +877,21 @@
             :input_item="itemSearchTerm"
         ></item-form>
 
+
+        <warehouses-detail
+            :isUpdateWarehouseId="isUpdateWarehouseId"
+            :showDialog.sync="showWarehousesDetail"
+            :warehouses="warehousesDetail"
+        >
+        </warehouses-detail>
+
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="customerId"
+            :type="true"
+        ></history-sales-form>
+
         <lots-group
             :lotsGroup="form.lots_group"
             :quantity="form.quantity"
@@ -863,17 +913,7 @@
     margin-right: 5% !important;
     max-width: 80% !important;
 }
-.product-search-model .el-tooltip {
-    position: absolute;
-    right: 7px;
-    top: 46px;
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
-    z-index: 10;
-    height: 32px;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
+
 .more-width-input input.el-input__inner {
     margin-left: -1px !important;
 }
@@ -894,6 +934,7 @@ import {
     ItemSlotTooltip
 } from "../../../../helpers/modal_item";
 import { checkPermissionEditPrices } from "@mixins/check-permission-edit-prices";
+import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 
 export default {
     props: [
@@ -915,7 +956,8 @@ export default {
         itemForm,
         WarehousesDetail,
         "vue-ckeditor": VueCkeditor.component,
-        LotsGroup
+        LotsGroup,
+        HistorySalesForm
     },
     mixins: [checkPermissionEditPrices],
     data() {
@@ -966,7 +1008,9 @@ export default {
             itemLastPrice: null,
             various_item: false,
             various_item_barcode: "VARIOUS_ITEM",
-            itemSearchTerm: ''
+            itemSearchTerm: '',
+            showDialogHistorySales: false,
+            history_item_id: null
 
             //item_unit_type: {}
         };
@@ -1065,6 +1109,12 @@ export default {
                 return this.configuration.add_description_to_document_item;
 
             return false;
+        },
+        isUpdateItem() {
+            return !_.isEmpty(this.recordItem);
+        },
+        hasSelectedItem() {
+            return this.form.item_id && !_.isEmpty(this.form.item);
         }
     },
     methods: {
@@ -1884,6 +1934,20 @@ export default {
         },
         openNewItemDialog() {
             this.showDialogNewItem = true;
+        },
+        clickHistorySales() {
+            if (!this.form.item_id) {
+                return this.$message.error("Seleccione un item");
+            }
+
+            const item = _.find(this.items, { id: this.form.item_id });
+
+            if (!item) {
+                return this.$message.error("Producto no encontrado");
+            }
+
+            this.history_item_id = item.id;
+            this.showDialogHistorySales = true;
         },
     }
 };

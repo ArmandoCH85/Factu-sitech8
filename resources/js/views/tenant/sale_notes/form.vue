@@ -1996,6 +1996,7 @@
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
             ref="form_add_item"
             :selectedOptionPrice="selected_option_price"
+            :customer-id="form.customer_id"
             @add="addRow"
         ></sale-notes-form-item>
 

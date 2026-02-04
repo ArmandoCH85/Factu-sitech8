@@ -11,6 +11,55 @@
                         <el-select :disabled="recordItem != null" v-model="form.item" filterable>
                             <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                         </el-select>
+                        <div class="product-model position-relative">
+                            <div class="tooltips-container" style="top: 46px;" v-show="hasSelectedItem">
+                                <el-tooltip
+                                    slot="append"
+                                    :disabled="isUpdateItem"
+                                    class="item"
+                                    content="Ver Stock del Producto"
+                                    effect="dark"
+                                    placement="bottom"
+                                >
+                                    <el-button
+                                        :disabled="isUpdateItem"
+                                        class="d-flex align-items-center"
+                                        @click.prevent="clickWarehouseDetail"
+                                    >
+                                        <i class="fa fa-search"></i>
+                                    </el-button>
+                                </el-tooltip>
+                                <el-tooltip
+                                    slot="append"
+                                    :disabled="isUpdateItem || !hasSelectedItem"
+                                    class="item"
+                                    content="Historial de ventas"
+                                    effect="dark"
+                                    placement="bottom"
+                                >
+                                    <el-button
+                                        :disabled="isUpdateItem || !hasSelectedItem"
+                                        class="d-flex align-items-center"
+                                        @click.prevent="clickHistorySales"
+                                    >
+                                        <i class="fa fa-list"></i>
+                                    </el-button>
+                                </el-tooltip>
+                            </div>
+                            <el-select
+                                :disabled="isUpdateItem"
+                                v-model="form.item"
+                                class="w-100"
+                                filterable
+                            >
+                                <el-option
+                                    v-for="option in items"
+                                    :key="option.id"
+                                    :value="option.id"
+                                    :label="option.full_description"
+                                ></el-option>
+                            </el-select>
+                        </div>
                         <small class="form-control-feedback" v-if="errors.items" v-text="errors.items[0]"></small>
                     </div>
                 </div>
@@ -29,15 +78,28 @@
         </span>
 
         <item-form :showDialog.sync="showDialogNewItem" :external="true"></item-form>
+        <warehouses-detail
+            :showDialog.sync="showWarehousesDetail"
+            :warehouses="warehousesDetail"
+            :isUpdateWarehouseId="null"
+        ></warehouses-detail>
+        <history-sales-form
+            :showDialog.sync="showDialogHistorySales"
+            :item_id="history_item_id"
+            :customer_id="customerId"
+            :type="true"
+        ></history-sales-form>
     </el-dialog>
 </template>
 
 <script>
     import itemForm from '@views/items/form.vue';
+    import WarehousesDetail from '@views/documents/partials/select_warehouses.vue';
+    import HistorySalesForm from '../../../../../../Pos/Resources/assets/js/views/history/sales.vue';
 
     export default {
-        components: {itemForm},
-        props: ['dialogVisible', 'recordItem'],
+        components: {itemForm, WarehousesDetail , HistorySalesForm},
+        props: ['dialogVisible', 'recordItem', 'customerId'],
         data() {
             return {
                 titleDialog: 'Agregar Producto',
@@ -45,7 +107,23 @@
                 resource: 'order-forms',
                 errors: {},
                 items: [],
-                form: {}
+                form: {},
+                showWarehousesDetail: false,
+                warehousesDetail: [],
+                showDialogHistorySales: false,
+                history_item_id: null
+            }
+        },
+        computed: {
+            isUpdateItem() {
+                return !!this.recordItem;
+            },
+            selectedItem() {
+                if (!this.form || !this.form.item) return null;
+                return this.items.find(item => item.id === this.form.item) || null;
+            },
+            hasSelectedItem() {
+                return !!this.selectedItem;
             }
         },
         methods: {
@@ -65,6 +143,10 @@
 
             },
             close() {
+                this.showWarehousesDetail = false;
+                this.warehousesDetail = [];
+                this.showDialogHistorySales = false;
+                this.history_item_id = null;
                 this.$emit('update:dialogVisible', false);
             },
             clickAddItem() {
@@ -74,7 +156,7 @@
                 if(this.recordItem)
                 {
                     this.recordItem.quantity = this.form.quantity
-                    this.form = {}
+                    this.form = { quantity: 0, item: null }
                     this.$emit('update:dialogVisible', false);
 
                 }else{
@@ -85,7 +167,7 @@
                             quantity: this.form.quantity
                         });
 
-                        this.form = {quantity:0};
+                        this.form = { quantity: 0, item: null }
 
                         return;
                     }
@@ -96,7 +178,36 @@
                 }
 
 
+            },
+            clickWarehouseDetail() {
+                if (!this.hasSelectedItem) {
+                    return this.$message.error('Seleccione un item');
+                }
+
+                const item = this.selectedItem;
+
+                if (!item || !item.warehouses || item.warehouses.length === 0) {
+                    return this.$message.warning('El producto no tiene almacenes disponibles');
+                }
+
+                this.warehousesDetail = item.warehouses;
+                this.showWarehousesDetail = true;
+            },
+            clickHistorySales() {
+                if (!this.hasSelectedItem) {
+                    return this.$message.error('Seleccione un item');
+                }
+
+                const item = this.selectedItem;
+
+                if (!item) {
+                    return this.$message.error('Producto no encontrado');
+                }
+
+                this.history_item_id = item.id;
+                this.showDialogHistorySales = true;
             }
+            
         }
     }
 </script>

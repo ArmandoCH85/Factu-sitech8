@@ -75,6 +75,31 @@ class PosCollection extends ResourceCollection
                         $r->individual_item->description,
                     ];
                 }),
+                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) use($configuration){
+                    $row->load('prices');
+                    return [
+                        'id' => $row->id,
+                        'description' => "{$row->description}",
+                        'item_id' => $row->item_id,
+                        'unit_type_id' => $row->unit_type_id,
+                        'quantity_unit' => number_format($row->quantity_unit, $configuration->decimal_quantity, ".",""),
+                        'price_default' => $row->price_default,
+                        'barcode' => $row->barcode ?? '',
+                        'prices' => $row->prices->map(function($price) use ($configuration) {
+                            return [
+                                'id' => $price->id,
+                                'position' => $price->position,
+                                'label' => $price->label,
+                                'price_label_id' => $price->price_label_id,
+                                'position' => $price->priceLabel ? $price->priceLabel->position : null,
+                                'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
+                                'price' => number_format($price->price, $configuration->decimal_quantity, ".",""),
+                                'is_active' => $price->is_active,
+                                'is_active' => (bool) $price->is_active,
+                            ];
+                        })->toArray(),
+                    ];
+                }),
                 'unit_type' => $row->item_unit_types,
                 'category' => ($row->category) ? $row->category->name : null,
                 'brand' => ($row->brand) ? $row->brand->name : null,

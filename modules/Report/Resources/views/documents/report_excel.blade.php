@@ -766,7 +766,9 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                 $acum_series[]=[
                     'document_id'=>$document_types[$c],
                     'number' =>$serie_type->number,
-                    'total' => $acum_total,
+                    'total_pen' => $acum_total,
+                    'total_usd' => $acum_total_usd,
+                    'exchange_rate' => $value->exchange_rate_sale
                 ];
             @endphp     
                         @endif{{-- DOCUMENTOS SEGUN ID SERIE --}}
@@ -785,7 +787,8 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                     <tr>
                         <th>DOC</th>
                         <th class="">SERIE</th>
-                        <th>TOTAL</th>
+                        <th>TOTAL SOLES</th>
+                        <th>TOTAL DOLARES</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -799,17 +802,18 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                                 <tr>
                                     <td>{{$document['description']}}</td>
                                     <td>{{$serie['number']}}</td>
-                                    <td>{{$serie['total']}}</td>
+                                    <td>{{$serie['total_pen']}}</td>
+                                    <td>{{$serie['total_usd']}}</td>
                                 </tr>
                                 @php
-                                    $total_general=$total_general+$serie['total'];
+                                    $total_general=$total_general+$serie['total_pen'] + $serie['total_usd'] * $serie['exchange_rate'];
                                 @endphp
                             @endif
                         @endforeach
                     @endforeach
                     <tr >
                         <td colspan="2">TOTAL GENERAL</td>
-                        <td>{{$total_general}}</td>
+                        <td>{{number_format($total_general, 2)}}</td>
                     </tr>
                     
                 </tbody>

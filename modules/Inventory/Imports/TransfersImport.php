@@ -57,9 +57,9 @@ class TransfersImport implements ToCollection
         ]);
 
         foreach ($rows as $index => $row) {
-            $code_establishment = $row[0];
-            $code_establishment_destination = $row[1];
-            $internal_id = $row[2];
+            $code_establishment = $row[1];
+            $code_establishment_destination = $row[2];
+            $internal_id = $row[0];
             $quantiy = $row[3];
 
             $warehouse = Establishment::where('code', $code_establishment)->first();

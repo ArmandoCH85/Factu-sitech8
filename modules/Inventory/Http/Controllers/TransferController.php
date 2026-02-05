@@ -366,9 +366,9 @@ class TransferController extends Controller
             public function headings(): array
             {
                 return [
+                    'Código interno del producto',
                     'Origen' ,
                     'Destino',
-                    'Código interno del producto',
                     'Cantidad'
                 ];
             }

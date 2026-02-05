@@ -31,6 +31,20 @@
                 </li>
             </ol>
             <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
+                <el-dropdown v-if="hasTransferPermission" :hide-on-click="false" @command="handleRedirect">
+                    <el-button type="button"
+                        class="btn btn-success btn-sm  mt-2 me-2"
+                    >
+                        Traslados<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in routesTransfer " :command="column.route" :key="index">
+                            <span>
+                                {{ column.name }}
+                            </span>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
                 <button
                     type="button"
                     class="btn btn-success btn-sm  mt-2 me-2"
@@ -235,6 +249,11 @@
                 :showDialog.sync="showDialogStockReport"
             ></stock-report>
 
+            <inventories-transfer-massive
+                :showDialog.sync="showDialogTransferMassive"
+                :recordId="recordId"
+            ></inventories-transfer-massive>
+
             <import-special-attributes
                 :showDialog.sync="showDialogSpecialAttributes"
                 :special-attribute-type="special_attribute_type"
@@ -259,6 +278,7 @@
 import InventoriesForm from "./form.vue";
 import InventoriesFormOutput from "./form_output.vue";
 
+import InventoriesTransferMassive from './transfer-massive.vue'
 import InventoriesMove from "./move.vue";
 import InventoriesRemove from "./remove.vue";
 import DataTable from "@components/DataTable.vue";
@@ -275,13 +295,14 @@ import StockReport from "./reports/stock_report.vue";
 import ImportSpecialAttributes from "./partials/import_special_attributes.vue";
 
 export default {
-    props: ["type", "typeUser"],
+    props: ["type", "typeUser", 'hasTransferPermission'],
     components: {
         DataTable,
         InventoriesForm,
         InventoriesMove,
         InventoriesRemove,
         InventoriesFormOutput,
+        InventoriesTransferMassive,
         MoveGlobal,
         MovementReport,
         InventoriesStock,
@@ -309,13 +330,30 @@ export default {
             showImportDialog: false,
             showDialogStockReport: false,
             showDialogSpecialAttributes: false,
-            special_attribute_type: null
+            showDialogTransferMassive: false,
+            special_attribute_type: null,
+            routesTransfer : [
+                { name: 'Crear Traslado', route: '/transfers/create' },
+                { name: 'Listar traslados', route: '/transfers' },
+                { name: 'Traslados masivos', route:'transfer-massive'}
+            ]
         };
     },
     created() {
         this.title = "Inventario";
     },
     methods: {
+        handleRedirect(command) {
+
+            if (command === 'transfer-massive') {
+                this.showDialogTransferMassive = true;
+                return;
+            }
+
+            if (command) {
+                window.location.href = command;
+            }
+        },
         clickImportSpecialAttributes(type) {
             this.showDialogSpecialAttributes = true;
             this.special_attribute_type = type;

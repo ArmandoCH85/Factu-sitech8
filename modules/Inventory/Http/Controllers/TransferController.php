@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SearchItemController;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
@@ -24,7 +25,13 @@ use Modules\Inventory\Http\Requests\TransferRequest;
 
 use Modules\Item\Models\ItemLot;
 use Exception;
-
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Events\BeforeSheet;
+use Maatwebsite\Excel\Excel as MaatwebsiteExcel;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Inventory\Imports\TransfersImport;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class TransferController extends Controller
 {
@@ -60,9 +67,13 @@ class TransferController extends Controller
     public function records(Request $request)
     {
         if ($request->column) {
-            $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])->where('created_at', 'like', "%{$request->value}%")->latest();
+            $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])->where('created_at', 'like', "%{$request->value}%")
+            ->whereNull('transfer_collect_id')
+            ->latest();
         } else {
-            $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])->latest();
+            $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])
+            ->whereNull('transfer_collect_id')
+            ->latest();
 
         }
         //return json_encode( $records );
@@ -326,6 +337,56 @@ class TransferController extends Controller
     }
 
 
+    public function import(Request $request)
+    {
+
+        if ($request->hasFile('file')) {
+            $import = new TransfersImport;
+            $import->setDocumentTypeId('U4')
+                ->import($request->file('file'), null, MaatwebsiteExcel::XLSX)
+            ;
+            $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+        }
+
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+
+    }
+
+    public function excelImport()
+    {
+        return Excel::download(new class() implements WithHeadings, WithEvents {
+            public function headings(): array
+            {
+                return [
+                    'Código interno del producto',
+                    'Origen' ,
+                    'Destino',
+                    'Cantidad'
+                ];
+            }
+
+            public function registerEvents(): array
+            {
+                return [
+                    BeforeSheet::class => function (BeforeSheet $ev) {
+                        $sheet = $ev->sheet->getDelegate();
+                        $sheet->getStyle('A:C')
+                            ->getNumberFormat()
+                            ->setFormatCode(NumberFormat::FORMAT_TEXT);
+                    }
+                ];
+            }
+        }, 'transfer_import.xlsx');
+    }
+
     public function searchItems(Request $request)
     {
         $items = SearchItemController::getItemToTrasferWithSearch($request);
@@ -379,14 +440,20 @@ class TransferController extends Controller
      */
     public function getPdf(InventoryTransfer $inventoryTransfer): \Illuminate\Http\Response
     {
-        $data = $inventoryTransfer->getPdfData();
-        // dd($inventoryTransfer->getPdfData());
-        // return View('inventory::transfers.export.pdf', compact('data'));
-        $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
-        $pdf->setPaper('A4', 'portrait');
-        // $pdf->setPaper('A4', 'landscape');
-        $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
 
+        if ($inventoryTransfer->collect_transfer->count() > 0) {
+            $data = $inventoryTransfer->getPdfDataMassive();
+            $pdf = PDF::loadView('inventory::transfers.export.pdf_massive', compact('data'));
+            $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
+
+        } else {
+            $data = $inventoryTransfer->getPdfData();
+            $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
+            $pdf->setPaper('A4', 'portrait');
+            // $pdf->setPaper('A4', 'landscape');
+            $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');
+
+        }
         return $pdf->stream($filename . '.pdf');
 
     }

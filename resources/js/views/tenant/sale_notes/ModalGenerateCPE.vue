@@ -205,7 +205,7 @@ export default {
             });
 
             items.map((row) => {
-              if (row.item.lots.length > 0) {
+              if ( row.item.lots && row.item.lots.length > 0) {
                   row.item.lots.map((lot) => {
                       lots.push(lot);
                   });

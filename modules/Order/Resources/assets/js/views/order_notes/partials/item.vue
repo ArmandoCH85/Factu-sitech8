@@ -1134,7 +1134,45 @@ export default {
         // initializeFields() {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
-        create() {
+        async create() {
+            this.titleDialog = this.recordItem
+                ? " Editar Producto o Servicio"
+                : " Agregar Producto o Servicio";
+            this.titleAction = this.recordItem ? " Editar" : " Agregar";
+
+
+            if (this.recordItem) {
+                await this.reloadDataItems(this.recordItem.item_id);
+                this.form.item_id = this.recordItem.item_id;
+                await this.changeItem();
+
+
+                this.form.quantity = this.recordItem.quantity;
+                // El campo form.unit_price es el valor que ingresa el usuario (sin IGV)
+                // input_unit_price_value es el valor original ingresado
+                this.form.unit_price = this.recordItem.input_unit_price_value;
+                this.form.unit_price_value = this.recordItem.input_unit_price_value;
+                this.form.has_plastic_bag_taxes =
+                    this.recordItem.total_plastic_bag_taxes > 0 ? true : false;
+                this.form.warehouse_id = this.recordItem.warehouse_id;
+                if (this.recordItem.item && this.recordItem.item.name_product_pdf) {
+                    this.form.name_product_pdf = this.recordItem.item.name_product_pdf;
+                }
+
+
+                if (this.recordItem.item && this.recordItem.item.change_free_affectation_igv) {
+                    this.form.affectation_igv_type_id = "15";
+                    this.form.item.change_free_affectation_igv = true;
+                } else {
+                    if (this.recordItem.item && this.recordItem.item.original_affectation_igv_type_id) {
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id;
+                    }
+                }
+
+                this.calculateQuantity();
+                
+            }
+
             /* Migrado de resources/js/views/tenant/sale_notes/partials/item.vue*/
             /*
 

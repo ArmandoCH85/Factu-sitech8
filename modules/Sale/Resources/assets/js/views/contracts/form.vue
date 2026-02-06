@@ -515,6 +515,21 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <button
+                                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                                        type="button"
+                                                        @click="
+                                                            clickEditItem(
+                                                                row,
+                                                                index
+                                                            )
+                                                        "
+                                                    >
+                                                        <span
+                                                            style="font-size:10px;"
+                                                            >&#9998;</span
+                                                        >
+                                                    </button>
+                                                    <button
                                                         type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
                                                         @click.prevent="
@@ -541,9 +556,7 @@
                                     <button
                                         type="button"
                                         class="btn waves-effect waves-light btn-primary"
-                                        @click.prevent="
-                                            showDialogAddItem = true
-                                        "
+                                        @click.prevent="clickAddItem"
                                     >
                                         + Agregar Producto
                                     </button>
@@ -785,6 +798,7 @@
             :exchange-rate-sale="form.exchange_rate_sale"
             :percentage-igv="percentage_igv"
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
+            :recordItem="recordItem"
             @add="addRow"
         ></contract-form-item>
 
@@ -971,10 +985,12 @@ export default {
             showDialogAddItem: false,
             showDialogNewPerson: false,
             showDialogOptionsPdf: false,
+            recordItem: null,
             loading_submit: false,
             loading_form: false,
             errors: {},
             form: {},
+
             currency_types: [],
             discount_types: [],
             charges_types: [],
@@ -1278,9 +1294,23 @@ export default {
             this.customers = this.all_customers;
         },
         addRow(row) {
-            this.form.items.push(JSON.parse(JSON.stringify(row)));
+            if (this.recordItem) {
+                this.form.items[this.recordItem.aux_index] = row;
+                this.recordItem = null;
+            } else {
+                this.form.items.push(JSON.parse(JSON.stringify(row)));
+            }
 
             this.calculateTotal();
+        },
+        clickEditItem(row, index) {
+            row.aux_index = index;
+            this.recordItem = row;
+            this.showDialogAddItem = true;
+        },
+        clickAddItem() {
+            this.recordItem = null;
+            this.showDialogAddItem = true;
         },
         clickRemoveItem(index) {
             this.form.items.splice(index, 1);

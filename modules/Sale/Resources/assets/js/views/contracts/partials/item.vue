@@ -50,6 +50,7 @@
                                         @change="changeItem"
                                         filterable
                                         remote
+                                         :disabled="recordItem != null"
                                         :remote-method="searchRemoteItems"
                                         :loading="loading_search"
                                         placeholder="Buscar"
@@ -592,7 +593,7 @@
                     v-if="form.item_id"
                     native-type="submit"
                     type="primary"
-                    >Agregar
+                    >{{ titleAction }}
                 </el-button>
             </div>
         </form>
@@ -631,6 +632,7 @@ import { checkPermissionEditPrices } from "@mixins/check-permission-edit-prices"
 
 export default {
     props: [
+        "recordItem",
         "showDialog",
         "currencyTypeIdActive",
         "exchangeRateSale",
@@ -649,6 +651,7 @@ export default {
             loading_search: false,
             titleAction: "",
             is_client: false,
+            titleAction: " Agregar",
             titleDialog: "Agregar Producto o Servicio",
             resource: "contracts",
             showDialogNewItem: false,
@@ -1056,8 +1059,38 @@ export default {
 
             return this.errors;
         },
-        create() {
+        async create() {
             //     this.initializeFields()
+            this.titleDialog = this.recordItem
+                ? " Editar Producto o Servicio"
+                : " Agregar Producto o Servicio";
+            this.titleAction = this.recordItem ? " Editar" : " Agregar";
+
+            if (this.recordItem) {
+                await this.reloadDataItems(this.recordItem.item_id);
+                this.form.item_id = this.recordItem.item_id;
+                await this.changeItem();
+
+                this.form.quantity = this.recordItem.quantity;
+                // El campo form.unit_price es el valor que ingresa el usuario (sin IGV)
+                this.form.unit_price = this.recordItem.input_unit_price_value;
+                this.form.unit_price_value = this.recordItem.input_unit_price_value;
+                this.form.has_plastic_bag_taxes =
+                    this.recordItem.total_plastic_bag_taxes > 0 ? true : false;
+                this.form.warehouse_id = this.recordItem.warehouse_id;
+                if (this.recordItem.item.name_product_pdf) {
+                    this.form.name_product_pdf = this.recordItem.item.name_product_pdf;
+                }
+                if (this.recordItem.item.change_free_affectation_igv) {
+                    this.form.affectation_igv_type_id = "15";
+                    this.form.item.change_free_affectation_igv = true;
+                } else {
+                    if (this.recordItem.item.original_affectation_igv_type_id) {
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id;
+                    }
+                }
+                this.calculateQuantity();
+            }
         },
         reloadDataItems(item_id) {
             this.$http.get(`/${this.resource}/table/items`).then(response => {

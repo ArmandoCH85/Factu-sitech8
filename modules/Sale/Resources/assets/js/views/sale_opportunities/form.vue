@@ -188,6 +188,13 @@
                                             <!--<td class="text-end">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                             <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
                                             <td class="text-end">
+                                                <button
+                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                    type="button"
+                                                    @click="clickEditItem(row, index)"
+                                                >
+                                                    <span style="font-size:10px;">&#9998;</span>
+                                                </button>
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
                                                         @click.prevent="clickRemoveItem(index)">x
@@ -204,7 +211,7 @@
                             <div class="col-lg-12 col-md-6 d-flex flex-column align-items-start">
                                 <div class="pb-2">
                                     <button type="button" class="btn waves-effect waves-light btn-primary"
-                                            @click.prevent="showDialogAddItem = true">+ Agregar Producto
+                                            @click.prevent="clickAddItem">+ Agregar Producto
                                     </button>
                                 </div>
 
@@ -255,6 +262,7 @@
                                     :exchange-rate-sale="form.exchange_rate_sale"
                                     :percentage-igv="percentage_igv"
                                     :permissionEditItemPrices="authUser.permission_edit_item_prices"
+                                    :recordItem="recordItem"
                                     @add="addRow"></sale-opportunity-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -329,6 +337,7 @@ export default {
             showDialogAddItem: false,
             showDialogNewPerson: false,
             showDialogOptions: false,
+            recordItem: null,
             loading_submit: false,
             loading_form: false,
             errors: {},
@@ -504,9 +513,23 @@ export default {
             this.customers = this.all_customers
         },
         addRow(row) {
-            this.form.items.push(JSON.parse(JSON.stringify(row)));
+            if (this.recordItem) {
+                this.form.items[this.recordItem.aux_index] = row;
+                this.recordItem = null;
+            } else {
+                this.form.items.push(JSON.parse(JSON.stringify(row)));
+            }
 
             this.calculateTotal();
+        },
+        clickEditItem(row, index) {
+            row.aux_index = index;
+            this.recordItem = row;
+            this.showDialogAddItem = true;
+        },
+        clickAddItem() {
+            this.recordItem = null;
+            this.showDialogAddItem = true;
         },
         clickRemoveItem(index) {
             this.form.items.splice(index, 1)

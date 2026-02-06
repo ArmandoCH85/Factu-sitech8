@@ -88,7 +88,7 @@ class DocumentCollection extends ResourceCollection
 
             if ($row->affected_documents) {
                 $row->affected_documents->each(function ($note) use (&$btn_note, $row) {
-                    if ($row->state_type_id === '05' && $note->note_credit_type_id === '01') {
+                    if ($row->state_type_id === '05' && ($note->note_credit_type_id === '01' && $note->document->state_type_id === '05')) {
                         $btn_note = false;
                     }
                 });

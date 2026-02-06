@@ -25,7 +25,11 @@ class NoteController extends Controller
     public function hasDocuments($document_id)
     {
 
-        $record = Document::wherehas('affected_documents')->find($document_id);
+        $record = Document::wherehas('affected_documents', function ($q) {
+            $q->whereHas('document', function ($q) {
+                $q->where('state_type_id', '05');
+            });
+        })->find($document_id);
 
         if($record){
 

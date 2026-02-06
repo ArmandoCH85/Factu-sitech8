@@ -17,16 +17,20 @@
         <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
         <link rel="stylesheet" href="{{ asset('css/auth.css') }}" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.26.29/sweetalert2.min.css" />
-        <link href="{{ mix('css/app.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+        @if (file_exists(public_path('theme/custom_styles.css')))
+            <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
+        @endif
+        {{-- <link href="{{ mix('css/app.css') }}" id="app-style" rel="stylesheet" type="text/css" /> --}}
+        @vite(['resources/js/system.js'])
 
     </head>
     <body>
         <div class="app" id="main-wrapper">
             @yield('content')
         </div>
-
-        <script src="{{ mix('js/manifest.js') }}"></script>
+    <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
+        {{-- <script src="{{ mix('js/manifest.js') }}"></script>
         <script src="{{ mix('js/vendor.js') }}"></script>
-        <script src="{{ mix('js/app.js') }}"></script>
+        <script src="{{ mix('js/app.js') }}"></script> --}}
     </body>
 </html>

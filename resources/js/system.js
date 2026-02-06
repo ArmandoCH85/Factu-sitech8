@@ -44,6 +44,9 @@ import SystemConfigurationCronOrderPayments from './views/system/configuration/c
 import SystemPaymentsIndex from './views/system/payments/index.vue';
 
 import InputService from '../../modules/ApiPeruDev/Resources/assets/js/components/InputService.vue'// apiperu - porque cambiar el input si tiene el mismo contenido?
+import SystemGuestRegisterDisabled from  './views/system/guest-register/disabled.vue'
+import SystemGuestRegister from './views/system/guest-register/register.vue'
+import XImportServiceGuest from './../../modules/ApiPeruDev/Resources/assets/js/components/InputServiceGuest.vue'
 
 
 locale.use(lang)
@@ -104,6 +107,10 @@ Vue.component('x-input-service', InputService);
 //system payments
 Vue.component('system-payments-index', SystemPaymentsIndex);
 Vue.component('system-cron-order-configuration', SystemConfigurationCronOrderPayments);
+Vue.component('system-guest-register-register', SystemGuestRegister);
+Vue.component('system-guest-register-disabled', SystemGuestRegisterDisabled );
+Vue.component('x-input-service-guest', XImportServiceGuest);
+
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

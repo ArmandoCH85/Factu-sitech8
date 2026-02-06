@@ -105,10 +105,11 @@
                                         </div>
                                     </td>
                                     <td class="series-table-actions text-right">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
-                                            <i class="fa fa-check"></i>
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)" :disabled="row.loading">
+                                            <i v-if="!row.loading" class="fa fa-check"></i>
+                                            <i v-else class="fa fa-spinner fa-spin"></i>
                                         </button>
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" :disabled="row.loading" @click.prevent="clickCancel(index)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
@@ -280,6 +281,14 @@
                     this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
                     return;
                 }
+
+                 // Prevenir múltiples clics
+                 if(this.records[index].loading) {
+                    return;
+                }
+
+                this.records[index].loading = true;
+
                 let paid = false
                 if( parseFloat(this.records[index].payment) == parseFloat(this.document.total_difference))
                 {
@@ -318,6 +327,9 @@
                             console.log(error);
                             this.$message.error(error.response.data.message)
                         }
+                    })
+                    .finally(() => {
+                        this.records[index].loading = false;
                     })
             },
             // filterDocumentType(row){

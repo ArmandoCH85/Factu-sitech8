@@ -2889,6 +2889,7 @@ export default {
                 customer_id: null,
                 currency_type_id: this.config.currency_type_id,
                 purchase_order: null,
+                payment_condition_id: '01',
                 exchange_rate_sale: 0,
                 total_prepayment: 0,
                 total_charge: 0,

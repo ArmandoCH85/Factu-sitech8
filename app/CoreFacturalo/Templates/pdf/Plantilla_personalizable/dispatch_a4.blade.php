@@ -160,7 +160,7 @@
     </table>
 @endif
 
-@if ($document['transfer_reason_type_id'] == '03' || $document['transfer_reason_type_id'] == '13')
+@if ($document['transfer_reason_type_id'] == '03' )
     @php
         $buyer = $document->buyer;
         $identify_description = App\Models\Tenant\Catalogs\IdentityDocumentType::find($buyer->identity_document_type_id)->description;
@@ -217,6 +217,10 @@
         @foreach($document['reference_documents'] as $row)
             <tr>
                 <td>{{ $row['document_type']['description'] }}: {{ $row['number'] }}</td>
+            </tr>
+            <tr>
+                <td>PROOVEDOR {{ $row['name'] }}</td>
+                <td>RUC: {{ $row['customer'] }}</td>
             </tr>
         @endforeach
         </tbody>

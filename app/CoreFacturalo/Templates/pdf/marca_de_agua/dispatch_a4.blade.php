@@ -87,7 +87,6 @@
         @endif        
     </tr>
 </table>
-
 @if($document->transfer_reason_type_id === '04')
     <table class="full-width border-box mt-10 mb-10">
         <thead>
@@ -106,43 +105,50 @@
         </tbody>
     </table>
 @else
-<table class="full-width border-box mt-10 mb-10">
-    <thead>
+    <table class="full-width border-box mt-10 mb-10">
+        <thead>
         <tr>
             <th class="border-bottom text-left">{{ $document['transfer_reason_type_id'] != '02' ? 'DESTINATARIO' : 'PROVEEDOR' }}</th>
         </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Razón Social: {{ $customer->name }}</td>
-    </tr>
-    <tr>
-        <td>{{ $customer->identity_document_type->description }}: {{ $customer->number }}
-        </td>
-    </tr>
-    <tr>
-        @if($document->transfer_reason_type_id === '09')
-            <td>Dirección: {{ $customer->address }} - {{ $customer->country->description }}
-            </td>
-        @else
-            <td>Dirección: {{ $customer->address }}
-                {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-                {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-                {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
-            </td>
-        @endif
-    </tr>
-    @if ($customer->telephone)
+        </thead>
+        <tbody>
         <tr>
-            <td>Teléfono:{{ $customer->telephone }}</td>
+            <td>Razón Social: {{ $customer->name }}</td>
         </tr>
-    @endif
-    <tr>
-        <td>Vendedor: {{ $document->user->name }}</td>
-    </tr>
-    </tbody>
-</table>
+        <tr>
+            <td>{{ $customer->identity_document_type->description }}: {{ $customer->number }}
+            </td>
+        </tr>
+        <tr>
+            @php
+                $ubigeo = App\Models\Tenant\Catalogs\District::find($customer->district_id);
+            @endphp
+            @if($document->transfer_reason_type_id === '09')
+                <td>Dirección: {{ $customer->address }} - {{ $customer->country->description }}
+                </td>
+            @else
+                <td>Dirección: {{ $customer->address }}
+                    @if ($ubigeo)
+                        {{ ($customer->district_id !== '-')? ', '.$ubigeo->description : '' }}
+                        {{ ($customer->province_id !== '-')? ', '.$ubigeo->province->description : '' }}
+                        {{ ($customer->department_id !== '-')? '- '.$ubigeo->province->department->description : '' }}
+                    @endif
+                </td>
+            @endif
+        </tr>
+        @if ($customer->telephone)
+            <tr>
+                <td>Teléfono:{{ $customer->telephone }}</td>
+            </tr>
+        @endif
+        <tr>
+            <td>Vendedor: {{ $document->user->name }}</td>
+        </tr>
+        </tbody>
+    </table>
+
 @endif
+
 @if ($document['transfer_reason_type_id'] == '03')
     @php
         $buyer = $document->buyer;
@@ -170,6 +176,26 @@
 
     </table>
 
+@endif
+@if($document['reference_documents'])
+    <table class="full-width border-box mt-10 mb-10">
+        <thead>
+        <tr>
+            <th class="border-bottom text-left" colspan="2">DOCUMENTOS RELACIONADOS</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach($document['reference_documents'] as $row)
+            <tr>
+                <td>{{ $row['document_type']['description'] }}: {{ $row['number'] }}</td>
+            </tr>
+            <tr>
+                <td>PROOVEDOR {{ $row['name'] }}</td>
+                <td>RUC: {{ $row['customer'] }}</td>
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
 @endif
 <table class="full-width border-box mt-10 mb-10">
     <thead>

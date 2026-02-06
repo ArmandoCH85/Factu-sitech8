@@ -219,7 +219,7 @@ export default {
             this.onClose();
             window.location.href = "/documents/create";
           })
-          .catch((error) => this.axiosError(error))
+          .catch((error) => console.error(error))
           .finally(() => (this.loading = false));
 
         }else{

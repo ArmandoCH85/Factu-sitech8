@@ -9,7 +9,7 @@
                             type="number"
                             class="form-control form-control-sm"
                             v-model.number="price.price"
-                            step="0.01"
+                            step="1"
                             min="0"
                             @input="emitChanges"
                         />

@@ -652,9 +652,38 @@
                                                         ></i>
                                                     </button>
                                                 </td>
-                                                <td class="text-center align-middle">{{ row.unit_type_id || row.description }}</td>
-                                                <td class="text-center align-middle">{{ row.description }}</td>
-                                                <td class="text-center align-middle">{{ row.quantity_unit }}</td>
+                                                <td class="text-center align-middle">
+                                                    <template v-if="config.enable_list_product">
+                                                        <el-select v-model="row.unit_type_id">
+                                                            <el-option v-for="option in unit_types"
+                                                                :key="option.id"
+                                                                :label="option.description"
+                                                                :value="option.id"></el-option>
+                                                        </el-select>
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ row.unit_type_id || row.description }}
+                                                    </template>
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <template v-if="config.enable_list_product">
+                                                        <el-input v-model="row.description" type="text"></el-input>
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ row.description }}
+                                                    </template>
+                                                </td>
+                                                <td class="text-center align-middle">
+                                                    <template v-if="config.enable_list_product">
+                                                        <el-input v-model="row.quantity_unit"
+                                                            min="1"
+                                                            step="1"
+                                                            type="number"></el-input>
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ row.quantity_unit }}
+                                                    </template>
+                                                </td>
                                                 <td class="series-table-actions text-end" v-if="config.enable_list_product">
                                                     <button v-if="row.id" class="btn waves-effect waves-light btn-xs btn-danger"
                                                             type="button"

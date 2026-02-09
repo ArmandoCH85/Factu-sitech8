@@ -12,6 +12,8 @@
     use Illuminate\Database\Query\Builder;
     use Illuminate\Http\Request;
     use Illuminate\Support\Collection;
+    use Illuminate\Support\Facades\Cache;
+    use Illuminate\Support\Facades\Log;
     use Modules\Inventory\Traits\InventoryTrait;
 
     /**
@@ -515,31 +517,36 @@
          */
         public static function getItemsToDocuments(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItem($request, $id);
-            $items_services = self::getServiceItem($request, $id);
-            return self::TransformToModal($items_not_services->merge($items_services));
+            // Generar clave de caché basada en todos los parámetros del request
+            $cacheParams = [
+                'id' => $id,
+                'input' => $request ? $request->input('input') : null,
+                'input_item' => $request ? $request->input('input_item') : null,
+                'search_by_barcode' => $request ? $request->input('search_by_barcode') : null,
+                'search_item_by_barcode_presentation' => $request ? $request->input('search_item_by_barcode_presentation') : null,
+                'search_factory_code_items' => $request ? $request->input('search_factory_code_items') : null,
+                'items_id' => $request ? $request->input('items_id') : null,
+                'production' => $request ? $request->input('production') : null,
+            ];
 
+            $cacheKey = 'items_documents_' . md5(json_encode($cacheParams));
 
-            $establishment_id = auth()->user()->establishment_id;
-            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-            // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
-            $item_not_service = Item::with('warehousePrices')
-                ->whereIsActive()
-            ->orderBy('description');
-            $service_item = Item::with('warehousePrices')
-                ->where('items.unit_type_id', 'ZZ')
-                ->whereIsActive()
-                ->orderBy('description');
-            $item_not_service = $item_not_service
-                // Configurable en  env la variable NUMBER_ITEMS
-                ->take(\Config('extra.number_items_at_start'))
-                ->get();
-            $service_item = $service_item
-                // Configurable en  env la variable NUMBER_ITEMS
-                ->take(\Config('extra.number_items_at_start'))
-                //->take(10)
-                ->get();
-            return self::TransformToModal($item_not_service->merge($service_item));
+            // Usar método centralizado de caché (instanciar Controller temporalmente ya que este es método estático)
+            $controller = new Controller();
+            return $controller->cacheWithTagKey(
+                $cacheKey,
+                ['items_list'],
+                600, // 10 minutos
+                function () use ($request, $id) {
+                    $items_not_services = self::getNotServiceItem($request, $id);
+                    $items_services = self::getServiceItem($request, $id);
+                    return self::TransformToModal($items_not_services->merge($items_services));
+                },
+                [
+                    'section' => 'Items Documents',
+                    'cache_params' => $cacheParams,
+                ]
+            );
         }
 
         /**

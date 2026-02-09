@@ -23,12 +23,11 @@ class PersonInput
         $customer_address = null;
         if($address_id)
         {
-            $customer_address = PersonAddress::find($address_id);
+            $customer_address = PersonAddress::find($address_id) ?? null;
         } else if($itinerant) {
             $customer_address = ((object) $itinerant )?? null;
         }
 
-        // dd($customer_address);
         return [
             'identity_document_type_id' => $person->identity_document_type_id,
             'identity_document_type' => [
@@ -41,25 +40,25 @@ class PersonInput
             'country_id' => $person->country_id,
             'country' => [
                 'id' => ($customer_address) ? $customer_address->country_id : $person->country_id,
-                'description' => isset($itinerant) ? null : (($customer_address) ?  optional($customer_address->country)->description :  optional($person->country)->description),
+                'description' => ($itinerant) == true ?  optional($customer_address->country)->description :  optional($person->country)->description,
             ],
             'department_id' =>  ($customer_address) ? $customer_address->department_id : $person->department_id,
             'department' => [
                 'id' =>  ($customer_address) ? $customer_address->department_id : $person->department_id,  //$person->department_id,
-                'description' => isset($itinerant) ? null:(($customer_address) ?  optional($customer_address->department)->description :  optional($person->department)->description), // optional($person->department)->description,
+                'description' => ($itinerant) == true ? optional($customer_address->department)->description :  optional($person->department)->description, // optional($person->department)->description,
             ],
             'province_id' => ($customer_address) ? $customer_address->province_id : $person->province_id, //$person->province_id,
             'province' => [
                 'id' => ($customer_address) ? $customer_address->province_id : $person->province_id, //$person->province_id,
-                'description' => isset($itinerant) ? null :  (($customer_address) ?  optional($customer_address->province)->description :  optional($person->province)->description), //optional($person->province)->description,
+                'description' => ($itinerant) == true ?  optional($customer_address->province)->description :  optional($person->province)->description, //optional($person->province)->description,
             ],
             'district_id' =>  ($customer_address) ? $customer_address->district_id : $person->district_id, //$person->district_id,
             'district' => [
                 'id' => ($customer_address) ? $customer_address->district_id : $person->district_id, //$person->district_id,
-                'description' => isset($itinerant) ? null :(($customer_address) ?  optional($customer_address->district)->description :  optional($person->district)->description), //optional($person->district)->description,
+                'description' => ($itinerant) == true ?  optional($customer_address->district)->description :  optional($person->district)->description, //optional($person->district)->description,
             ],
             'address' =>  ($customer_address) ? $customer_address->address : $person->address,//$person->address,
-            'email' => isset($itinerant) ? null :  (($customer_address) ? $customer_address->email : $person->email),  //$person->email,
+            'email' => ($itinerant) == true ? $customer_address  : $person->email,  //$person->email,
             'telephone' => ($customer_address && $customer_address->telephone)? $customer_address->telephone : $person->telephone, //$person->telephone,
             'perception_agent' => $person->perception_agent,
             'address_id' => $address_id,

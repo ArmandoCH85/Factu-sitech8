@@ -102,20 +102,20 @@
     @php
         $addressParts = [];
 
-        if (!empty($customer->address)) {
-            $addressParts[] = $customer->address;
+        if (!empty($supplier->address)) {
+            $addressParts[] = $supplier->address;
         }
 
-        if (!empty($customer->district_id) && $customer->district_id !== '-' && isset($customer->district) && !empty($customer->district->description)) {
-            $addressParts[] = $customer->district->description;
+        if (!empty($supplier->district_id) && $supplier->district_id !== '-' && isset($supplier->district) && !empty($supplier->district->description)) {
+            $addressParts[] = $supplier->district->description;
         }
 
-        if (!empty($customer->province_id) && $customer->province_id !== '-' && isset($customer->province) && !empty($customer->province->description)) {
-            $addressParts[] = $customer->province->description;
+        if (!empty($supplier->province_id) && $supplier->province_id !== '-' && isset($supplier->province) && !empty($supplier->province->description)) {
+            $addressParts[] = $supplier->province->description;
         }
 
-        if (!empty($customer->department_id) && $customer->department_id !== '-' && isset($customer->department) && !empty($customer->department->description)) {
-            $addressParts[] = $customer->department->description;
+        if (!empty($supplier->department_id) && $supplier->department_id !== '-' && isset($supplier->department) && !empty($supplier->department->description)) {
+            $addressParts[] = $supplier->department->description;
         }
 
         $fullAddress = implode(', ', $addressParts);

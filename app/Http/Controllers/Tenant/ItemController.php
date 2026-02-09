@@ -395,7 +395,7 @@ class ItemController extends Controller
             'CatItemUnitBusiness',
             'CatItemStatus',
             'CatItemPackageMeasurement',
-            'CatItemPragKeyoductFamily',
+            'CatItemProductFamily',
             'CatItemUnitsPerPackage',
             'inventory_configuration'
         );

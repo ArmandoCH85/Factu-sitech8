@@ -619,7 +619,7 @@
                         <div v-if="form.item_unit_types.length > 0"
                              v-show="form.unit_type_id !='ZZ'"
                              class="col-md-12">
-                            <div class="table-responsive">
+                            <div class="table-responsive table-list-prices">
                                 <table class="table table-sm mb-0">
                                     <thead class="bg-light">
                                     <tr>
@@ -640,15 +640,16 @@
                                     </thead>
                                     <tbody>
                                         <template v-for="(row, index) in form.item_unit_types">
-                                            <tr :key="'unit-' + index">
+                                            <tr :key="'unit-' + index" :class="{'border-bottom-dashed': row.showPrices === true}">
                                                 <td class="text-center align-middle">
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm btn-link p-0"
+                                                        class="btn p-0 btn-dropdown-toggle btn-chevron"
+                                                        :class="{'rotated': row.showPrices === true}"
                                                         @click.prevent="togglePrices(index)"
                                                     >
                                                         <i
-                                                            :class="(row.showPrices === true) ? 'fa fa-chevron-down' : 'fa fa-chevron-right'"
+                                                            class="fa fa-chevron-right"
                                                         ></i>
                                                     </button>
                                                 </td>
@@ -685,24 +686,24 @@
                                                     </template>
                                                 </td>
                                                 <td class="series-table-actions text-end" v-if="config.enable_list_product">
-                                                    <button v-if="row.id" class="btn waves-effect waves-light btn-xs btn-danger"
+                                                    <button v-if="row.id" class="btn waves-effect waves-light btn-sm btn-danger m-0"
                                                             type="button"
                                                             @click.prevent="clickDelete(row.id)">
-                                                        <i class="fa fa-trash"></i>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                     </button>
-                                                    <button v-else class="btn waves-effect waves-light btn-xs btn-danger"
+                                                    <button v-else class="btn waves-effect waves-light btn-sm btn-danger m-0"
                                                             type="button"
                                                             @click.prevent="clickCancel(index)">
-                                                        <i class="fa fa-trash"></i>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                     </button>
                                                 </td>
                                             </tr>
                                             <tr
                                                 v-show="row.showPrices === true"
                                                 :key="'prices-' + index"
-                                                class="prices-row"
+                                                class="prices-row border-top-dashed"
                                             >
-                                                <td :colspan="config.enable_list_product ? 5 : 4" class="p-3 bg-light">
+                                                <td :colspan="config.enable_list_product ? 5 : 4" class="p-3">
                                                     <ItemPricesTable
                                                         v-model="row.prices"
                                                         :price-labels="{
@@ -718,12 +719,9 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="col" v-if="config.enable_list_product || !config.enable_list_product && form.item_unit_types.length < 1">
-                            <a class="control-label font-weight-bold text-info"
-                               href="#"
-                               @click="clickAddRow">
-                               [ + Agregar]
-                            </a>
+                        <div class="col add-row-table" v-if="config.enable_list_product || !config.enable_list_product && form.item_unit_types.length < 1" @click="clickAddRow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M9 12h6" /><path d="M12 9v6" /></svg> 
+                            Agregar lista de precios
                         </div>
                     </div>
                 </el-tab-pane>
@@ -2198,5 +2196,11 @@ this.activeName =  'first'
 
 .prices-row .bg-light {
     background-color: #f8f9fa !important;
+}
+.btn-chevron i{
+    transition: transform 0.3s ease;
+}
+.btn-chevron.rotated i{
+    transform: rotate(90deg);
 }
 </style>

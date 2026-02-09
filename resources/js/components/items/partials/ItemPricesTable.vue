@@ -1,25 +1,29 @@
 <template>
     <div class="item-prices-table my-0">
-        <div class="row">
-            <div v-for="(price, index) in localPrices" :key="index" class="col-md-4 mb-3">
-                <div class="border rounded p-3">
-                    <div class="form-group mb-0">
-                        <label class="control-label">{{ price.label }}</label>
-                        <input
-                            type="number"
-                            class="form-control form-control-sm"
-                            v-model.number="price.price"
-                            step="1"
-                            min="0"
-                            @input="emitChanges"
-                        />
-                    </div>
+        <div class="price-labels-container">
+            <div v-for="(price, index) in localPrices" :key="index" class="mb-3">
+                <div class="form-group">
+                    <label class="control-label">{{ price.label }}</label>
+                    <el-input
+                        class="mt-1"
+                        type="number"
+                        size="small"
+                        v-model.number="price.price"
+                        :min="0"
+                        @input="emitChanges"
+                    />
                 </div>
             </div>
         </div>
     </div>
 </template>
-
+<style>
+.price-labels-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 1rem;
+}
+</style>
 <script>
 export default {
     name: 'ItemPricesTable',

@@ -918,6 +918,50 @@ a, a:hover, a:focus{
 .btn-trash-product-pos{
     border: none !important;
 }
+.border-bottom-dashed{
+    border-color: #f1f3f4;
+    border-bottom-width: 1px;
+}
+.border-top-dashed{
+    border-color: #f1f3f4;
+    border-top-width: 2px;
+}
+.table-list-prices{
+    border: 1px solid #f1f3f4;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.table-list-prices tbody tr {
+    border-bottom: 2px solid #f1f3f4;
+}
+.table-list-prices .btn-dropdown-toggle {
+    height: 32px;
+    width: 32px;
+    padding: 0px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+    color: #60769a;
+}
+.table-list-prices .btn-dropdown-toggle:hover,
+.table-list-prices .btn-dropdown-toggle:focus,
+.table-list-prices .btn-dropdown-toggle:active{
+    background-color: #f1f3f4;
+}
+.add-row-table{
+    border-color: color-mix(in srgb, #f1f3f4 75%, #000000);
+    border-radius: 12px;
+    margin: 1rem .45rem;
+    color: color-mix(in srgb, #f1f3f4 75%, #000000);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.add-row-table:hover{
+    border-color: #2446e8;
+    background-color: color-mix(in srgb, #2446e8 10%, #ffffff00);
+    color: #2446e8;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);
@@ -1130,7 +1174,8 @@ html.dark .el-pagination .el-pager li, html.dark .el-pagination button:disabled 
     border: 1px solid var(--md-border-dark);
     color: #d1dbe6;
 }
-html.dark .el-dropdown-menu__item{
+html.dark .el-dropdown-menu__item,
+html.dark .separator-title{
     color: #d1dbe6;
 }
 html.dark .el-dropdown-menu__item:not(.is-disabled):hover, html.dark .el-dropdown-menu__item:focus {
@@ -1257,6 +1302,29 @@ html.dark .img-fluid-light {
 }
 html.dark .overlay{
     background-color: #000d58e8;
+}
+html.dark .add-row-table:hover{
+    border-color: #f1f3f4;
+    background-color: color-mix(in srgb, #f1f3f4 10%, #ffffff00);
+    color: #f1f3f4;
+}
+html.dark .border-bottom-dashed,
+html.dark .border-top-dashed,
+html.dark .table-list-prices,
+html.dark .table-list-prices tbody tr{
+    border-color: var(--md-border-dark);
+}
+html.dark .payment-container-pos {
+    border-top: 3px dashed var(--md-border-dark);
+}
+html.dark .table-list-prices .btn-dropdown-toggle,
+html.dark .btn.barcode {
+    color: #d1dbe6;
+}
+html.dark .table-list-prices .btn-dropdown-toggle:hover,
+html.dark .table-list-prices .btn-dropdown-toggle:focus,
+html.dark .table-list-prices .btn-dropdown-toggle:active {
+    background-color: var(--md-input-dark);
 }
 @media only screen and (max-width: 991px){
     .d-lg-block{

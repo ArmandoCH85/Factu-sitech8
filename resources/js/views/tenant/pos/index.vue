@@ -1351,7 +1351,7 @@ export default {
                 const response = await this.$http.get('/price-labels/active');
                 const labels = response.data.data || [];
 
-                const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
+                const mainLabel = (this.configuration && this.configuration.price1_label) ? this.configuration.price1_label : 'Precio principal';
                 this.price_options = [
                     {
                         id: 1,

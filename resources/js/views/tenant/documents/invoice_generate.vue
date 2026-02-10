@@ -4537,6 +4537,8 @@ export default {
                 const response = await this.$http.get('/price-labels/active');
                 const labels = response.data.data || [];
 
+                console.log(this.config);
+                
                 const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
                 this.price_options = [
                     {

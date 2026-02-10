@@ -4392,9 +4392,9 @@ export default {
         const clientfromDispatchesOrNotes = localStorage.getItem("client");
         if (clientfromDispatchesOrNotes) {
             const client = JSON.parse(clientfromDispatchesOrNotes);
-            if (client.identity_document_type_id == 1) {
+            if (client.identity_document_type_id == 1 || client.identity_document_type_id == 0) {
                 this.form.document_type_id = "03";
-            } else if (client.identity_document_type_id == 6) {
+            } else if (client.identity_document_type_id == 6 ) {
                 this.form.document_type_id = "01";
             }
             this.searchRemoteCustomers(client.number);

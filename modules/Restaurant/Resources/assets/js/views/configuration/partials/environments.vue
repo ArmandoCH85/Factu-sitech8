@@ -69,7 +69,7 @@
           <el-slider
             v-model="newEnvironment.tables_quantity"
             :step="1"
-            :min="5"
+            :min="2"
             :max="50"
             show-stops>
           </el-slider>

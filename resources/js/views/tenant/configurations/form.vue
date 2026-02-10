@@ -2471,7 +2471,7 @@ export default {
                 amount_plastic_bag_taxes: 0.1,
                 colums_grid_item: 4,
                 affectation_igv_type_id: '10',
-                global_discount_type_id: '03',
+                global_discount_type_id: '02',
                 terms_condition: null,
                 header_image: null,
                 legend_footer: false,

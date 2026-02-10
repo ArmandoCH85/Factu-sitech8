@@ -527,30 +527,68 @@
                             Estilos y temas</a>
                     </li>
 
-                    <li class="divider my-2"></li>
+                    @php
+                        // Verificar si hay múltiples usuarios
+                        $multiUserCount = 0;
+                        if(config('configuration.multi_user_enabled')) {
+                            try {
+                                $website = app(\Hyn\Tenancy\Environment::class)->tenant();
+                                $currentClient = \App\Models\System\Client::currentClientByWebsite($website)->first();
+                                if($currentClient && auth()->check()) {
+                                    $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $currentClient->id)
+                                        ->where('origin_user_id', auth()->user()->id)
+                                        ->count();
+                                    $multiUserCount = $multiUserCount + 1;
+                                }
+                            } catch (\Exception $e) {
+                                $multiUserCount = 0;
+                            }
+                        }
 
-                    <li class="multi-user-content px-4 pb-1">
-                        @if(config('configuration.multi_user_enabled'))
-                            <tenant-multi-users-change-client></tenant-multi-users-change-client>
-                        @endif
-                        {{-- <div id="reception-component-container" style="width: 100%;">
-                            <reception-component
-                                :user-type="'admin'"
-                                :establishment-id="{{ auth()->user()->establishment_id }}"
-                                :establishments="{{ isset($establishments) ? json_encode($establishments) : json_encode([]) }}"
-                            ></reception-component>
-                        </div> --}}
-                        @php
-                            $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
-                            $current =  auth()->user()->establishment_id;
-                        @endphp
-                        @if (auth()->user()->type == 'admin')
-                           <tenant-hotel-sucursale
-                            :establishments='@json($establishments)'
-                            :current_establishment={{ $current }}
-                           ></tenant-hotel-sucursale>
-                        @endif
-                    </li>
+                        // Verificar establecimientos
+                        $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
+                        $showMultiUser = $multiUserCount > 1 && config('configuration.multi_user_enabled');
+                        $showEstablishments = auth()->user()->type == 'admin' && count($establishments) > 1;
+                        $configuration = App\Models\Tenant\Configuration::first();
+                        $visual = $configuration ? $configuration->visual : null;
+                        $showInHeader = true;
+                        if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
+                            $showInHeader = !(bool)$visual->branch_selector_in_sidebar;
+                        } elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
+                            $showInHeader = !(bool)$visual['branch_selector_in_sidebar'];
+                        }
+
+                        $showDivider = $showMultiUser || ($showEstablishments && $showInHeader);
+                    @endphp
+
+                    @if($showDivider)
+                        <li class="divider my-2" id="header-branch-divider"></li>
+
+                        <li class="multi-user-content px-4 pb-1">
+                            @if($showMultiUser)
+                                <tenant-multi-users-change-client></tenant-multi-users-change-client>
+                            @endif
+                            {{-- <div id="reception-component-container" style="width: 100%;">
+                                <reception-component
+                                    :user-type="'admin'"
+                                    :establishment-id="{{ auth()->user()->establishment_id }}"
+                                    :establishments="{{ isset($establishments) ? json_encode($establishments) : json_encode([]) }}"
+                                ></reception-component>
+                            </div> --}}
+                            @php
+                                $current = auth()->user()->establishment_id;
+                                $showBranchSelector = true;
+                            @endphp
+                            @if($showEstablishments)
+                               <tenant-hotel-sucursale
+                                id="header-establishment-selector"
+                                :establishments='@json($establishments)'
+                                :current_establishment={{ $current }}
+                                style="display: {{ $showInHeader ? 'block' : 'none' }};"
+                               ></tenant-hotel-sucursale>
+                            @endif
+                        </li>
+                    @endif
 
                     <li class="divider my-2"></li>
 
@@ -666,6 +704,25 @@
         sidebar.classList.toggle('show');
         backdrop.classList.toggle('show');
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('branchSelectorVisibilityChanged', function(event) {
+            const headerSelector = document.getElementById('header-establishment-selector');
+            const headerDivider = document.getElementById('header-branch-divider');
+
+            if (!headerSelector) {
+                return;
+            }
+
+            if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
+                headerSelector.style.display = event.detail.showInHeader ? 'block' : 'none';
+
+                if (headerDivider) {
+                    headerDivider.style.display = event.detail.showInHeader ? 'block' : 'none';
+                }
+            }
+        });
+    });
 </script>
 @endpush
 {{--

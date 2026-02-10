@@ -127,6 +127,7 @@ label.control-label {
 } 
 .sidebar-left .sidebar-header{
     margin-bottom: 0;
+    height: 59px !important;
 }
 .el-radio__input {
     display: none !important;
@@ -1251,6 +1252,47 @@ html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:ho
     background-color: color-mix(in srgb, var(--primary-color) 10%, #ffffff00);
     color: var(--primary-color);
 }
+.input-select-establishment{
+    height: 32px;
+    line-height: 32px;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+html.sidebar-light .establishment-selector-container{
+    border-top: 1px solid color-mix(in srgb, var(--light-color) 96%, #000000);
+    border-bottom: 1px solid color-mix(in srgb, var(--light-color) 96%, #000000);
+}
+html.sidebar-light .establishment-selector-container{
+    padding: 0 15px .6rem 15px !important;
+}
+.contain-icon-establishment{
+    margin: 0 8px 8px;
+    padding: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark-color);
+    cursor: pointer;
+    border-radius: 6px;
+}
+.contain-icon-establishment:hover,
+.contain-icon-establishment.active{
+    background-color: var(--primary-color) !important;
+    color: var(--light-color) !important;
+}
+.establishment-dropdown{
+    border-color: var(--accent-color) !important;
+    left: 65px !important;
+    top: 118% !important;
+}
+.establishment-dropdown-header{
+    background-color: var(--light-color) !important;
+    color: var(--dark-color) !important;
+    border-color: var(--accent-color) !important;
+}
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
+    height: calc(100% - 104px) !important;
+}
 /* modo oscuro */
 html.dark .table-responsive.payment {
     border: 1px solid var(--inputs-dark);
@@ -1667,7 +1709,8 @@ html.dark .add-row-table:hover{
 html.dark .border-bottom-dashed,
 html.dark .border-top-dashed,
 html.dark .table-list-prices,
-html.dark .table-list-prices tbody tr{
+html.dark .table-list-prices tbody tr,
+html.dark .establishment-selector-container {
     border-color: var(--borders-dark);
 }
 html.dark .payment-container-pos {

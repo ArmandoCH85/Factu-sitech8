@@ -21999,6 +21999,21 @@ div.welcome-card .welcome-subtitle{
     border-color: #007bff;
     background-color: color-mix(in srgb, #007bff 10%, #ffffff);
 }
+html.sidebar-light .establishment-selector-container{
+    padding: 0 .5rem .5rem .5rem;
+}
+html.sidebar-left-collapsed .sidebar-left .establishment-selector-container {
+    display: none !important;
+}
+html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
+    display: flex !important;
+}
+.contain-icon-establishment{
+    display: none !important;
+}
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
+    height: calc(100% - 90px);
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

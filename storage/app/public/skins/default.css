@@ -1919,8 +1919,51 @@ section.auth__form-right .auth__form .auth__social a{
     background-color: color-mix(in srgb, var(--primary-color) 10%, #ffffff00);
     color: var(--primary-color);
 }
+.establishment-selector-container{
+    padding: 0 15px 8px 15px !important;
+    margin-bottom: 0 !important;
+}
+.establishment-selector-container .form-group {
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    border-radius: 12px;
+}
+label.control-label {
+    color: var(--dark-color);
+}
 html.sidebar-light:not(.dark) .style-switcher {
     background: #ffffff;
+}
+html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
+    height: calc(100% - 142px) !important;
+}
+.contain-icon-establishment{
+    margin: 0 8px 8px;
+    padding: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark-color);
+    cursor: pointer;
+    border-radius: 12px;
+}
+.contain-icon-establishment:hover,
+.contain-icon-establishment.active{
+    background-color: var(--primary-color) !important;
+    color: var(--light-color) !important;
+}
+.establishment-dropdown{
+    border-color: var(--accent-color) !important;
+    left: 65px !important;
+    top: 118% !important;
+}
+.establishment-dropdown-header{
+    background-color: var(--light-color) !important;
+    color: var(--dark-color) !important;
+    border-color: var(--accent-color) !important;
+}
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
+    height: calc(100% - 105px) !important;
 }
 /************************************ tema morado ************************************/
 /* header */
@@ -3426,5 +3469,11 @@ html.dark .table-list-prices .btn-dropdown-toggle:hover,
 html.dark .table-list-prices .btn-dropdown-toggle:focus,
 html.dark .table-list-prices .btn-dropdown-toggle:active {
     background-color: var(--inputs-dark);
+}
+html.dark label.control-label {
+    color: var(--accent-color);
+}
+html.dark .establishment-selector-container .form-group{
+    background-color: var(--contents-dark);
 }
 /* end */

@@ -507,6 +507,7 @@ label {
 label.control-label {
     margin-top: 8px;
     font-weight: 500;
+    color: var(--black-dark);
 }
 
 .text-info,
@@ -718,7 +719,12 @@ html.fixed.sidebar-white:not(.dark) .sidebar-left a {
 .el-checkbox {
     color: var(--black-dark) !important;
 }
-
+.input-select-establishment{
+    height: 32px;
+    line-height: 32px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
 html.fixed.sidebar-white .sidebar-left a:hover,
 html.fixed.sidebar-white .sidebar-left a:active,
 html.fixed.sidebar-white .sidebar-left a:focus {
@@ -768,6 +774,10 @@ ul.nav-main li.nav-description {
 }
 html.sidebar-light ul.nav-main > li > a {
     margin: 0 8px;
+}
+html.sidebar-light .establishment-selector-container{
+    border-top: 1px solid color-mix(in srgb, var(--black-highlight) 96%, #000000);
+    border-bottom: 1px solid color-mix(in srgb, var(--black-highlight) 96%, #000000);
 }
 html.sidebar-left-collapsed .sidebar-left .nav-main>li>a {
     padding-left: 10px;
@@ -1731,6 +1741,21 @@ a.ws-flotante {
     html.sidebarMode-dark .logo-dark {
         display: var(--show-dark-logo, block);
     }
+    html.sidebarMode-dark .establishment-selector-container{
+        border-color: var(--black-border-dark);
+    }
+    html.sidebarMode-dark .establishment-selector-container .form-group label.control-label{
+        color: var(--black-light);
+    }
+    html.sidebarMode-dark .establishment-selector-container .form-group select{
+        border: 1px solid var(--black-border-dark) !important;
+        color: var(--black-light) !important;
+        background-color: var(--black-input-dark) !important;
+    }
+    html.sidebarMode-dark .establishment-selector-container .form-group select:focus{
+        box-shadow: 0 0 0 0.2rem var(--black-border-dark);
+        border-color: var(--black-content-dark) !important;
+    }
 }
 /* end */
 
@@ -2502,6 +2527,30 @@ div.welcome-card .welcome-subtitle{
     background-color: color-mix(in srgb, var(--black-primary) 10%, #ffffff00);
     color: var(--black-primary);
 }
+.contain-icon-establishment{
+    margin: 0 8px 8px;
+    padding: 0.50rem 11px .50rem 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--black-dark);
+    cursor: pointer;
+    border-radius: 8px;
+}
+.contain-icon-establishment:hover,
+.contain-icon-establishment.active{
+    background-color: oklch(calc(var(--base-l) + 0.71) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86)) !important;
+}
+.establishment-dropdown{
+    border-color: color-mix(in srgb, var(--black-highlight) 96%, #000000) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+.establishment-dropdown-header{
+    background-color: #fff !important;
+    border-color: color-mix(in srgb, var(--black-highlight) 96%, #000000) !important;
+}
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {
@@ -3238,7 +3287,8 @@ html.dark .black-theme-selected::after {
     background-color: var(--black-highlight);
     
 }
-html.dark .sidebar-margin-selector .sidebar-example div{
+html.dark .sidebar-margin-selector .sidebar-example div,
+html.dark .establishment-selector-container{
     border-color: var(--black-border-dark);
 }
 html.dark .sidebar-example.sidebar-example-selected > div,

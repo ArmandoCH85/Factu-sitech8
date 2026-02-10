@@ -256,6 +256,19 @@
                     </div>
                 </div>
 
+                <div class="mt-3">
+                    <h5>Mostrar selector de sucursal en el sidebar</h5>
+                    <div>
+                        <el-switch
+                            v-model="branchSelectorInSidebar"
+                            active-text="Si"
+                            inactive-text="No"
+                            @change="updateBranchSelectorConfig"
+                        >
+                        </el-switch>
+                    </div>
+                </div>
+
                 <div class="pt-3 form-modern">
                     <label class="control-label"
                         >Visualización de productos en POS</label
@@ -368,6 +381,7 @@ export default {
             themes: {},
             blackThemes: {},
             showWelcome: false,
+            branchSelectorInSidebar: false,
             loading_submit: false,
             resource: "configurations",
             errors: {},
@@ -435,6 +449,15 @@ export default {
             this.$set(this.visuals, 'show_welcome_panel', this.showWelcome);
             this.submit();
             this.toggleWelcomeComponent();
+        },
+        updateBranchSelectorConfig() {
+            this.$set(this.visuals, 'branch_selector_in_sidebar', this.branchSelectorInSidebar);
+            this.submit();
+            
+            const event = new CustomEvent('branchSelectorVisibilityChanged', {
+                detail: { showInHeader: !this.branchSelectorInSidebar }
+            });
+            window.dispatchEvent(event);
         },
         toggleWelcomeComponent() {
             try {
@@ -610,6 +633,12 @@ export default {
 
                     this.showWelcome = !!this.visuals.show_welcome_panel;
                     this.toggleWelcomeComponent();
+
+                    if (typeof this.visuals.branch_selector_in_sidebar === 'undefined') {
+                        this.$set(this.visuals, 'branch_selector_in_sidebar', false);
+                    }
+
+                    this.branchSelectorInSidebar = !!this.visuals.branch_selector_in_sidebar;
 
                     if (this.visual.sidebar_theme) {
                         this.applyTheme(this.visual.sidebar_theme);

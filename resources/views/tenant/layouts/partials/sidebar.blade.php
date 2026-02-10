@@ -10,8 +10,21 @@ $thridLevel = $path[2] ?? null;
 
 $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
 
+// Obtener configuración visual para selector de establecimiento
+$visual = $configuration->visual ?? null;
+$showInSidebar = false;
+if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
+    $showInSidebar = (bool)$visual->branch_selector_in_sidebar;
+} elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
+    $showInSidebar = (bool)$visual['branch_selector_in_sidebar'];
+}
+
+$establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
+$current = auth()->user()->establishment_id;
+$canShowBranchSelector = auth()->user()->type == 'admin' && count($establishments) > 1;
+
 ?>
-<aside id="sidebar-left" class="sidebar-left">
+<aside id="sidebar-left" class="sidebar-left {{ ($showInSidebar && $canShowBranchSelector) ? 'show-branch-selector' : 'no-branch-selector' }}">
     <div class="sidebar-header sidebar-header-desktop">
         <div class="logo-container-sidebar pe-2">
             <a href="{{ route('tenant.dashboard.index') }}" class="logo pt-2 pt-md-0">
@@ -39,6 +52,58 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
             <i class="fas fa-times"></i>
         </div>
     </div>
+    {{-- Selector de establecimiento --}}
+    @if ($canShowBranchSelector)
+        <div class="establishment-selector-container mb-2" id="sidebar-establishment-selector-container" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+            <div class="form-group">
+                <label class="control-label mt-1">Cambiar Sucursal:</label>
+                <select
+                    class="el-input__inner input-select-establishment"
+                    name="establishment_selector"
+                    id="sidebar-establishment-selector"
+                    onchange="changeSidebarEstablishment(this.value)"
+                >
+                    @foreach($establishments as $establishment)
+                        <option
+                            value="{{ $establishment->id }}"
+                            {{ $establishment->id == $current ? 'selected' : '' }}
+                        >
+                            {{ $establishment->description }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    @endif
+    @if ($canShowBranchSelector)
+        <div class="contain-icon-establishment-wrapper" id="sidebar-establishment-icon-wrapper" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+            <div class="contain-icon-establishment" id="establishment-icon-trigger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 21l18 0"></path><path d="M4 21l0 -10"></path><path d="M20 21l0 -10"></path><path d="M5 11l14 0"></path><path d="M5 11l1 -6h12l1 6"></path><path d="M9 21l0 -8l6 0l0 8"></path></svg>
+            </div>
+            <div class="establishment-dropdown" id="establishment-dropdown">
+                <div class="establishment-dropdown-header">
+                    <span>Cambiar Sucursal</span>
+                </div>
+                <div class="establishment-dropdown-content">
+                    <select
+                        class="el-input__inner input-select-establishment"
+                        name="establishment_selector_dropdown"
+                        id="dropdown-establishment-selector"
+                        onchange="changeSidebarEstablishment(this.value)"
+                    >
+                        @foreach($establishments as $establishment)
+                            <option
+                                value="{{ $establishment->id }}"
+                                {{ $establishment->id == $current ? 'selected' : '' }}
+                            >
+                                {{ $establishment->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="nano">
         <div class="sidebar-header sidebar-header-mobile">
             <a href="{{route('tenant.dashboard.index')}}" class="logo pt-2 pt-md-0 logo-container-sidebar">
@@ -59,9 +124,10 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                 <i class="fas fa-times"></i>
             </div>
         </div>
-        <div class="nano-content nano-content-mobile">
+        <div class="nano-content nano-content-mobile pt-0">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main nav-main-mobile">
+
                     @if(in_array('dashboard', $vc_modules))
                         <li class="{{ ($firstLevel === 'dashboard') ? 'nav-active' : '' }}">
                             <a class="nav-link dashboard-link" href="{{ route('tenant.dashboard.index') }}">
@@ -1640,6 +1706,66 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
 </aside>
 
 <script>
+    // Función para cambiar establecimiento desde el sidebar
+    function changeSidebarEstablishment(establishmentId) {
+        const payload = {
+            establishment_id: establishmentId
+        };
+        
+        const selector = document.getElementById('sidebar-establishment-selector');
+        if (selector) {
+            selector.disabled = true;
+        }
+
+        fetch('/hotels/reception/change-user-establishment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const mainWrapper = document.getElementById('main-wrapper');
+                if (mainWrapper && mainWrapper.__vue__) {
+                    const vueInstance = mainWrapper.__vue__;
+                    
+                    if (vueInstance.$message) {
+                        vueInstance.$message({
+                            type: 'success',
+                            message: data.message
+                        });
+                    }
+                    
+                    if (vueInstance.$eventHub) {
+                        vueInstance.$eventHub.$emit('establishmentChanged', establishmentId);
+                    }
+                }
+                
+                if (selector) {
+                    selector.disabled = false;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error al cambiar establecimiento:', error);
+            
+            const mainWrapper = document.getElementById('main-wrapper');
+            if (mainWrapper && mainWrapper.__vue__ && mainWrapper.__vue__.$message) {
+                mainWrapper.__vue__.$message({
+                    type: 'error',
+                    message: 'Error al cambiar establecimiento'
+                });
+            }
+            
+            if (selector) {
+                selector.disabled = false;
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const sidebarToggle = document.querySelector('.sidebar-toggle');
 
@@ -1668,10 +1794,64 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                 attributeFilter: ['class']
             });
         }
+
+        // Dropdown de establecimiento
+        const establishmentIcon = document.getElementById('establishment-icon-trigger');
+        const establishmentDropdown = document.getElementById('establishment-dropdown');
+        
+        if (establishmentIcon && establishmentDropdown) {
+            
+            establishmentIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                establishmentDropdown.classList.toggle('show');
+                establishmentIcon.classList.toggle('active');
+
+            });
+
+            
+            document.addEventListener('click', function(e) {
+                if (!establishmentIcon.contains(e.target) && !establishmentDropdown.contains(e.target)) {
+                    establishmentDropdown.classList.remove('show');
+                    establishmentIcon.classList.remove('active');
+                }
+            });
+
+            
+            establishmentDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // Listener para cambios de visibilidad del selector de establecimiento en sidebar
+        window.addEventListener('branchSelectorVisibilityChanged', function(event) {
+            const selectorContainer = document.getElementById('sidebar-establishment-selector-container');
+            const iconWrapper = document.getElementById('sidebar-establishment-icon-wrapper');
+            const sidebar = document.getElementById('sidebar-left');
+            
+            if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
+                const showInSidebar = !event.detail.showInHeader;
+                
+                if (selectorContainer) {
+                    selectorContainer.style.display = showInSidebar ? 'block' : 'none';
+                }
+                
+                if (iconWrapper) {
+                    iconWrapper.style.display = showInSidebar ? 'block' : 'none';
+                }
+
+                if (sidebar) {
+                    sidebar.classList.toggle('show-branch-selector', showInSidebar);
+                    sidebar.classList.toggle('no-branch-selector', !showInSidebar);
+                }
+            }
+        });
     });
 </script>
 
 <style>
+    html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
+        height: calc(100% - 122px);
+    }
     html.no-overflowscrolling .nano {
         height: calc(100% - 50px);
     }
@@ -1745,5 +1925,51 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
     .nav-item-with-action button{
         padding: 0 4px !important;
         font-size: 12px !important;
+    }
+
+    .contain-icon-establishment-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .contain-icon-establishment {
+        transition: all 0.3s ease;
+    }
+
+    .establishment-dropdown {
+        position: absolute;
+        left: 50px;
+        top: 105%;
+        transform: translateY(-50%);
+        background-color: #fff;
+        border: 1px solid #e0e6f8;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        min-width: 250px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 9999;
+    }
+
+    .establishment-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .establishment-dropdown-header {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e0e6f8;
+        font-weight: 600;
+        font-size: 13px;
+        color: #333;
+        background-color: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .establishment-dropdown-content {
+        padding: 15px;
     }
 </style>

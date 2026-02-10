@@ -517,6 +517,13 @@ class ConfigurationController extends Controller
             $currentShowWelcome = (bool)$currentVisual['show_welcome_panel'];
         }
 
+        $currentBranchSelector = false;
+        if (is_object($currentVisual) && property_exists($currentVisual, 'branch_selector_in_sidebar')) {
+            $currentBranchSelector = (bool)$currentVisual->branch_selector_in_sidebar;
+        } elseif (is_array($currentVisual) && array_key_exists('branch_selector_in_sidebar', $currentVisual)) {
+            $currentBranchSelector = (bool)$currentVisual['branch_selector_in_sidebar'];
+        }
+
         $sidebarMargin = $currentSidebarMargin;
         if ($request->has('sidebar_margin')) {
             $parsed = filter_var($request->sidebar_margin, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -534,6 +541,9 @@ class ConfigurationController extends Controller
             'show_welcome_panel' => $request->has('show_welcome_panel')
                 ? (filter_var($request->show_welcome_panel, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $currentShowWelcome)
                 : $currentShowWelcome,
+            'branch_selector_in_sidebar' => $request->has('branch_selector_in_sidebar')
+                ? (filter_var($request->branch_selector_in_sidebar, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $currentBranchSelector)
+                : $currentBranchSelector,
         ];
         $configuration->visual = $visuals;
         if ($request->has('sidebar_mode')) {

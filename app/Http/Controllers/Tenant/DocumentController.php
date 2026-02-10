@@ -174,7 +174,8 @@ class DocumentController extends Controller
 
         $customers = Person::where('number', 'like', "%{$request->input}%")
             ->orWhere('name', 'like', "%{$request->input}%")
-            ->whereType('customers')->orderBy('name')
+            ->whereType('customers')
+            ->orderBy('name')
             ->whereIn('identity_document_type_id', $identity_document_type_id)
             ->whereIsEnabled()
             ->whereFilterCustomerBySeller('customers')
@@ -193,6 +194,7 @@ class DocumentController extends Controller
                     'address' => $row->address
                 ];
             });
+        // dd($customers);
 
         return compact('customers');
     }
@@ -1127,7 +1129,7 @@ class DocumentController extends Controller
         if (in_array($operation_type_id, ['0101', '1001', '1004'])) {
 
             if ($document_type_id == '01') {
-                $identity_document_type_id = [6];
+                $identity_document_type_id = [6, 0];
             } else {
                 if (config('tenant.document_type_03_filter')) {
                     $identity_document_type_id = [1];

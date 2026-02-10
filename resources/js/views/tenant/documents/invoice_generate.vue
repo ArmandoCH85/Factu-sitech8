@@ -3681,17 +3681,17 @@
             :showDialog.sync="showDialogOptions"
         ></document-options>
 
-        <document-hotel-form
+        <!-- <document-hotel-form
             :hotel="form.hotel"
             :showDialog.sync="showDialogFormHotel"
             @addDocumentHotel="addDocumentHotel"
-        ></document-hotel-form>
+        ></document-hotel-form> -->
 
-        <document-transport-form
+        <!-- <document-transport-form
             :showDialog.sync="showDialogFormTransport"
             :transport="form.transport"
             @addDocumentTransport="addDocumentTransport"
-        ></document-transport-form>
+        ></document-transport-form> -->
 
         <document-detraction
             :currency-type-id-active="form.currency_type_id"
@@ -4286,7 +4286,6 @@ export default {
             this.startConnectionQzTray();
             this.verifySelectedSeller();
         });
-        console.log(this.config.ticket_single_shipment);
 
         await this.getPercentageIgv();
         this.loading_form = true;
@@ -4402,9 +4401,9 @@ export default {
             this.form.customer_id = client.id;
             this.changeEstablishment();
             this.filterSeries();
-            this.filterCustomers();
+            // this.filterCustomers();
             this.changeCurrencyType();
-            localStorage.removeItem("client");
+            // localStorage.removeItem("client");
         }
         const dispatchesNumbersFromDispatches = localStorage.getItem(
             "dispatches"

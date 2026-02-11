@@ -1307,6 +1307,7 @@ class Item extends ModelTenant
                             'id' => $price->id,
                             'position' => $price->priceLabel ? (int) $price->priceLabel->position : 1,
                             'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
+                            'price_label_id' => $price->price_label_id,
                             'price' => $price->price,
                             'is_active' => (bool) $price->is_active,
                         ];

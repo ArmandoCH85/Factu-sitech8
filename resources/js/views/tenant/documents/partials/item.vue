@@ -1804,8 +1804,6 @@ export default {
                 if (this.form.item_unit_types.length) {
                     let first_list = this.form.item_unit_types[0];
 
-                    console.log('selectedOptionPrice:', this.selectedOptionPrice);
-                    console.log('first_list.prices:', first_list.prices);
 
                     // Extraer price_label_id del selectedOptionPrice
                     let price_label_id = null;
@@ -1813,16 +1811,13 @@ export default {
                         price_label_id = parseInt(this.selectedOptionPrice.replace('price_label_', ''));
                     }
 
-                    console.log('price_label_id extraído:', price_label_id);
 
                     // Buscar el precio en el array prices por id
                     if (price_label_id && first_list.prices && Array.isArray(first_list.prices)) {
                         const foundPrice = first_list.prices.find(p => p.id === price_label_id);
-                        console.log('Precio encontrado:', foundPrice);
 
                         if (foundPrice && foundPrice.price) {
                             this.form.unit_price_value = foundPrice.price;
-                            console.log('Precio asignado:', this.form.unit_price_value);
                         }
                     }
                 }

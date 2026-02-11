@@ -337,7 +337,7 @@
 
                         // Buscar el precio correspondiente en el array prices usando 'id'
                         if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
-                            const priceObj = first_list.prices.find(p => p.id === priceLabelId);
+                            const priceObj = first_list.prices.find(p => p.price_label_id === priceLabelId);
                             if(priceObj) {
                                 return row.unit_price_value = parseFloat(priceObj.price).toFixed(2);
                             }

@@ -77,9 +77,10 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
     @endif
     @if ($canShowBranchSelector)
         <div class="contain-icon-establishment-wrapper" id="sidebar-establishment-icon-wrapper" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
-            <div class="contain-icon-establishment" id="establishment-icon-trigger">
+            <div class="contain-icon-establishment" id="establishment-icon-trigger" role="button" tabindex="0" aria-label="Cambiar sucursal">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 21l18 0"></path><path d="M4 21l0 -10"></path><path d="M20 21l0 -10"></path><path d="M5 11l14 0"></path><path d="M5 11l1 -6h12l1 6"></path><path d="M9 21l0 -8l6 0l0 8"></path></svg>
             </div>
+            <div class="tooltip-right" role="tooltip">Cambiar sucursal</div>
             <div class="establishment-dropdown" id="establishment-dropdown">
                 <div class="establishment-dropdown-header">
                     <span>Cambiar Sucursal</span>
@@ -1971,5 +1972,45 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
 
     .establishment-dropdown-content {
         padding: 15px;
+    }
+
+    .tooltip-right {
+        position: absolute;
+        left: calc(100% + 0px);
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #000;
+        color: #fff;
+        font-size: 12px;
+        padding: 4px 7px;
+        border-radius: 6px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        pointer-events: none;
+        z-index: 10000;
+    }
+
+    .tooltip-right::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: -14px;
+        transform: translateY(-50%);
+        border-width: 8px;
+        border-style: solid;
+        border-color: transparent #000 transparent transparent;
+    }
+
+    .contain-icon-establishment-wrapper:hover .tooltip-right,
+    .contain-icon-establishment-wrapper:focus-within .tooltip-right {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .contain-icon-establishment.active ~ .tooltip-right {
+        opacity: 0;
+        visibility: hidden;
     }
 </style>

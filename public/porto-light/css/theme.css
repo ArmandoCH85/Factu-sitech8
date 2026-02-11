@@ -16760,7 +16760,6 @@ p.drop-caps.drop-caps-style-2:first-letter {
 
 .userbox.show .dropdown-menu a {
     /* border-radius: 2px; */
-    color: #7d7d7d;
     display: flex;
     align-items: center;
     line-height: 38px;
@@ -21306,7 +21305,6 @@ top: 70px !important;
 float: left;
 padding: 0.5rem 0;
 margin: 0.125rem 0 0;
-color: #7d7d7d;
 text-align: left;
 list-style: none;
 background-clip: padding-box;
@@ -21332,7 +21330,6 @@ visibility: hidden !important;
     align-items: center;
     justify-content: start;
     padding: 0 20px;
-    color: #7d7d7d;
     &:hover{
       background-color: #007bff;
       color: #ffff;

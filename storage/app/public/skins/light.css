@@ -1266,7 +1266,7 @@ html.sidebar-light .establishment-selector-container{
     padding: 0 15px .6rem 15px !important;
 }
 .contain-icon-establishment{
-    margin: 0 8px 8px;
+    margin: 0 15px 8px 15px;
     padding: 11px;
     display: flex;
     align-items: center;
@@ -1283,7 +1283,7 @@ html.sidebar-light .establishment-selector-container{
 .establishment-dropdown{
     border-color: var(--accent-color) !important;
     left: 65px !important;
-    top: 118% !important;
+    top: 138% !important;
 }
 .establishment-dropdown-header{
     background-color: var(--light-color) !important;
@@ -1724,6 +1724,15 @@ html.dark .table-list-prices .btn-dropdown-toggle:hover,
 html.dark .table-list-prices .btn-dropdown-toggle:focus,
 html.dark .table-list-prices .btn-dropdown-toggle:active {
     background-color: var(--inputs-dark);
+}
+html.dark .contain-icon-establishment{
+    color: var(--accent-color);
+}
+html.dark .establishment-dropdown,
+html.dark .establishment-dropdown-header {
+    background-color: var(--contents-dark) !important;
+    border-color: var(--borders-dark) !important;
+    color: var(--light-color) !important;
 }
 @media only screen and (min-width: 391px){
     .card-body-invoice div .row .filter-invoice{

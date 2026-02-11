@@ -1700,10 +1700,13 @@ a.ws-flotante {
         border-color: var(--black-border-dark) !important;
     }
     html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a,
-    html.fixed.sidebarMode-dark:not(.dark) .sidebar-left a{
+    html.fixed.sidebarMode-dark:not(.dark) .sidebar-left a,
+    html.sidebarMode-dark .contain-icon-establishment {
         color: var(--black-light) !important;
     }
-    html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a{
+    html.sidebarMode-dark ul.nav-main li.nav-active:not(.nav-parent)>a,
+    html.sidebarMode-dark .contain-icon-establishment:hover, 
+    html.sidebarMode-dark .contain-icon-establishment.active {
         background: var(--black-content-dark) !important;
     }
     html.sidebarMode-dark ul.nav-main>li a:hover{
@@ -2539,9 +2542,10 @@ div.welcome-card .welcome-subtitle{
 }
 .contain-icon-establishment:hover,
 .contain-icon-establishment.active{
-    background-color: oklch(calc(var(--base-l) + 0.71) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86)) !important;
+    background-color: oklch(calc(var(--base-l) + 0.71) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
 }
 .establishment-dropdown{
+    top: 125% !important;
     border-color: color-mix(in srgb, var(--black-highlight) 96%, #000000) !important;
     border-radius: 10px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -2549,6 +2553,7 @@ div.welcome-card .welcome-subtitle{
 }
 .establishment-dropdown-header{
     background-color: #fff !important;
+    color: var(--black-dark) !important;
     border-color: color-mix(in srgb, var(--black-highlight) 96%, #000000) !important;
 }
 /* ESTILOS MODO OSCURO */
@@ -3318,4 +3323,20 @@ html.dark .add-row-table:hover{
 html.dark .border-bottom-dashed,
 html.dark .border-top-dashed{
     border-color: var(--black-border-dark);
+}
+html.dark .establishment-dropdown,
+html.dark .establishment-dropdown-header {
+    background-color: var(--black-input-dark) !important;
+    border-color: var(--black-border-dark) !important;
+    color: var(--black-light) !important;
+}
+html.dark .establishment-dropdown{
+    top: 138% !important;
+}
+html.dark .contain-icon-establishment {
+    color: var(--black-light) !important;
+}
+html.dark .contain-icon-establishment:hover, 
+html.dark .contain-icon-establishment.active {
+    background: var(--black-content-dark) !important;
 }

@@ -10,16 +10,15 @@
         <div class="price-labels-manager">
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <div class="price-label-card border rounded p-3 border-primary">
-                        <label class="control-label">Etiqueta Precio Principal</label>
-                        <div class="d-flex mt-2">
-                            <el-input
-                                v-model="localPrice1Label"
-                                placeholder="Precio principal"
-                                :disabled="loading"
-                            ></el-input>
-                            <el-button type="primary" @click="updateMainLabel" :loading="loading" style="margin-left:8px;">Actualizar</el-button>
-                        </div>
+                    <div class="price-label-card border rounded p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="control-label m-0">Etiqueta Precio Principal</label>                            
+                        </div>                        
+                        <el-input
+                            v-model="localPrice1Label"
+                            placeholder="Precio principal"
+                            :disabled="loading"
+                        ></el-input> 
                     </div>
                 </div>
                 <div
@@ -85,7 +84,8 @@
         </div>
 
         <span slot="footer" class="dialog-footer">
-            <el-button @click="close" :disabled="loading">Cerrar</el-button>
+            <el-button class="me-2" @click="close" :disabled="loading">Cerrar</el-button>
+            <el-button type="primary" @click="updateMainLabel" :loading="loading">Actualizar</el-button>
         </span>
     </el-dialog>
 </template>

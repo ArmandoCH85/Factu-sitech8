@@ -1938,7 +1938,7 @@ html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
     height: calc(100% - 142px) !important;
 }
 .contain-icon-establishment{
-    margin: 0 8px 8px;
+    margin: 0 15px 8px 15px;
     padding: 11px;
     display: flex;
     align-items: center;
@@ -1955,7 +1955,7 @@ html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
 .establishment-dropdown{
     border-color: var(--accent-color) !important;
     left: 65px !important;
-    top: 118% !important;
+    top: 148% !important;
 }
 .establishment-dropdown-header{
     background-color: var(--light-color) !important;
@@ -3475,5 +3475,14 @@ html.dark label.control-label {
 }
 html.dark .establishment-selector-container .form-group{
     background-color: var(--contents-dark);
+}
+html.dark .contain-icon-establishment{
+    color: var(--light-color);
+}
+html.dark .establishment-dropdown,
+html.dark .establishment-dropdown-header {
+    background-color: var(--contents-dark) !important;
+    border-color: var(--borders-dark) !important;
+    color: var(--light-color) !important;
 }
 /* end */

@@ -978,14 +978,14 @@ html.sidebar-light .establishment-selector-container{
     padding: 0 15px .6rem 15px !important;
 }
 .contain-icon-establishment{
-    margin: 0 8px 8px;
+    margin: 0 15px 8px 15px;
     padding: 11px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #66789c;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 .contain-icon-establishment:hover,
 .contain-icon-establishment.active{
@@ -995,7 +995,7 @@ html.sidebar-light .establishment-selector-container{
 .establishment-dropdown{
     border-color: #E0E6F7 !important;
     left: 65px !important;
-    top: 118% !important;
+    top: 140% !important;
 }
 .establishment-dropdown-header{
     background-color: #f3f4fb !important;
@@ -1369,6 +1369,15 @@ html.dark .table-list-prices .btn-dropdown-toggle:hover,
 html.dark .table-list-prices .btn-dropdown-toggle:focus,
 html.dark .table-list-prices .btn-dropdown-toggle:active {
     background-color: var(--md-input-dark);
+}
+html.dark .contain-icon-establishment{
+    color: #d0d2d6;
+}
+html.dark .establishment-dropdown,
+html.dark .establishment-dropdown-header {
+    background-color: var(--md-content-dark) !important;
+    border-color: var(--md-border-dark) !important;
+    color: #fff !important;
 }
 @media only screen and (max-width: 991px){
     .d-lg-block{

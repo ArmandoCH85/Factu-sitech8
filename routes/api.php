@@ -101,6 +101,7 @@ if ($hostname) {
                 Route::get('/search_by_customer/{id}', 'Tenant\Api\ConsignedController@searchByCustomer');
                 Route::get('/addresses', 'Tenant\Api\ConsignedController@consignedAddresses');
             });
+            Route::get('price-labels/active', 'Tenant\Api\MobileController@priceLabels');
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 

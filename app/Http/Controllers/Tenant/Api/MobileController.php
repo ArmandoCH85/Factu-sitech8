@@ -39,6 +39,7 @@ use App\Http\Controllers\Tenant\ItemController as ItemWebController;
 use App\Models\Tenant\Consigned;
 use Modules\Dispatch\Models\DispatchAddress;
 use App\Models\Tenant\PersonAddress;
+use App\Models\Tenant\PriceLabel;
 use Modules\QrApi\Http\Controllers\QrApiController;
 use Modules\BusinessTurn\Models\BusinessTurn;
 
@@ -767,6 +768,18 @@ class MobileController extends Controller
                 "enable_consigned" => $configuration->enable_consigned
             ]
         ];
+    }
+
+    public function priceLabels()
+    {
+        $labels = PriceLabel::active()->ordered()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $labels->map->getCollectionData(),
+            'label_default' => (Configuration::first()->price1_label) ? Configuration::first()->price1_label : 'Precio principal'
+        ]);
+
     }
 }
 

@@ -9,6 +9,7 @@
                         type="number"
                         size="small"
                         v-model.number="price.price"
+                        step="0.01"
                         :min="0"
                         @input="emitChanges"
                     />

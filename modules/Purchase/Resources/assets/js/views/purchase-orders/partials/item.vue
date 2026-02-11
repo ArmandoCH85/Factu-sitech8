@@ -198,23 +198,9 @@
 
                     </div>
                     <div class="col-md-12 mt-3">
-                        <section id="card-section"
-                                 class="card mb-2 card-transparent card-collapsed">
-                            <header id="card-click"
-                                    class="card-header hoverable bg-light border-top rounded-0 py-1"
-                                    data-card-toggle
-                                    style="cursor: pointer;">
-                                <div class="card-actions"
-                                     style="margin-top: -12px;">
-                                    <a class="card-action card-action-toggle text-info"
-                                       data-card-toggle=""
-                                       href="#"></a>
-                                </div>
-
-                                <p class="ps-1">Información adicional atributos UBL 2.1</p>
-                            </header>
-                            <div class="card-body px-0 pt-2"
-                                 style="display: none;">
+                        <el-collapse v-model="activeNames" @change="handleChange">
+                            <el-collapse-item title="Información adicional atributos UBL 2.1" name="1">
+                            <div>
                                 <div v-if="discount_types.length > 0"
                                      class="col-md-12 px-0">
                                     <label class="control-label">
@@ -360,7 +346,11 @@
                                     </div>
                                 </div>
                             </div>
-                        </section>
+
+
+                            </el-collapse-item>
+
+                        </el-collapse>
                     </div>
                 </div>
             </div>

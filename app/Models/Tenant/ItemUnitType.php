@@ -62,7 +62,8 @@ class ItemUnitType extends ModelTenant
         return $this->hasMany(ItemUnitTypePrice::class, 'item_unit_type_id')
             ->join('price_labels', 'item_unit_type_prices.price_label_id', '=', 'price_labels.id')
             ->orderBy('price_labels.position')
-            ->select('item_unit_type_prices.*');
+            ->select('item_unit_type_prices.*')
+            ;
     }
 
 
@@ -74,7 +75,6 @@ class ItemUnitType extends ModelTenant
      * @return array
      */
     public function getCollectionData($decimal_units = 2){
-
         return [
             'id'            => $this->id,
             'description'   => "{$this->description}",
@@ -83,14 +83,15 @@ class ItemUnitType extends ModelTenant
             'quantity_unit' => number_format($this->quantity_unit, $decimal_units, '.', ''),
             'price_default' => $this->price_default,
             'barcode'       => $this->barcode,
-            'prices'        => $this->prices->map(function($price) use ($decimal_units) {
+            'prices'        => PriceLabel::all()->map(function($price_label) use ($decimal_units) {
+                $price = $this->prices->firstWhere('price_label_id', $price_label->id);
                 return [
-                    'id'             => $price->id,
-                    'price_label_id' => $price->price_label_id,
-                    'position'       => $price->priceLabel ? $price->priceLabel->position : null,
-                    'label'          => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
-                    'price'          => number_format($price->price, $decimal_units, '.', ''),
-                    'is_active'      => (bool) $price->is_active,
+                    'id'             => $price ? $price->id : null,
+                    'price_label_id' => $price_label->id,
+                    'position'       => $price_label->position,
+                    'label'          => $price_label->label,
+                    'price'          => $price ? number_format($price->price, $decimal_units, '.', '') : 0,
+                    'is_active'      => $price ? (bool) $price->is_active : false,
                 ];
             })->toArray(),
         ];

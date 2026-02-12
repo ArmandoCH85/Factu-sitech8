@@ -1300,18 +1300,19 @@ class Item extends ModelTenant
                     $this->loadMissing('item_unit_types.prices.priceLabel');
                 }
 
-                return $this->item_unit_types->map(function ($row) {
+                return $this->item_unit_types->map(function ($row) use ($firstItem) {
                     // Obtener prices de la relación
-                    $prices = $row->prices->map(function ($price) {
+                    $prices = PriceLabel::all()->map(function($price_label)  use ($firstItem) {
+                        $price = $firstItem->prices->firstWhere('price_label_id', $price_label->id);
                         return [
-                            'id' => $price->id,
-                            'position' => $price->priceLabel ? (int) $price->priceLabel->position : 1,
-                            'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
-                            'price_label_id' => $price->price_label_id,
-                            'price' => $price->price,
-                            'is_active' => (bool) $price->is_active,
+                            'id'             => $price ? $price->id : null,
+                            'price_label_id' => $price_label->id,
+                            'position'       => $price_label->position,
+                            'label'          => $price_label->label,
+                            'price'          => $price ? number_format($price->price, 2, '.', '') : 0,
+                            'is_active'      => $price ? (bool) $price->is_active : false,
                         ];
-                    })->values()->toArray();
+                    })->toArray();
 
                     return [
                         'id' => $row->id,

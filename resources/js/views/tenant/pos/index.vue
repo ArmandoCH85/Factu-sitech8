@@ -1958,9 +1958,8 @@ export default {
         },
         async clickAddItem(item, index, input = false) {
             //Validar precio mínimo
-            let havePrices = item.item_unit_types.length > 0 && item.item_unit_types[0].prices?.length > 0;
             
-            if (parseFloat(item.sale_unit_price) < 0.1 && !havePrices) {
+            if (parseFloat(item.sale_unit_price) < 0.1) {
                 this.$message.error(
                     "El precio del producto debe ser mayor a 0.1"
                 );
@@ -1972,13 +1971,38 @@ export default {
             let exchangeRateSale = this.form.exchange_rate_sale;
             let presentation = item.presentation;
 
+            
             let exist_item = false;
-            if (presentation === undefined) {
+            if (this.selected_option_price) {
+                exist_item = _.filter(this.form.items, {
+                    item_id: item.item_id,
+                    unit_type_id: item.unit_type_id
+                });
+
+                let price_list = this.itemSetSaleUnitPrice(item)
+
+                let price = null
+                if (this.selected_option_price === 1) {
+                    price = item.sale_unit_price
+                } else {
+                    price = Number(price_list) == 0 ? item.sale_unit_price : price_list
+
+                }
+                
+                exist_item = _.find(this.form.items, i => {
+                    return i.item_id === item.item_id &&
+                        i.unit_type_id === item.unit_type_id &&
+                        i.item.sale_unit_price == price 
+                });
+                
+            }
+            else if (presentation === undefined) {
                 exist_item = _.find(this.form.items, {
                     item_id: item.item_id,
                     unit_type_id: item.unit_type_id
                 });
-            } else {
+            } 
+            else {
                 // Se evalua si existe presentation de item
                 exist_item = _.find(this.form.items, {
                     item_id: item.item_id,
@@ -2764,8 +2788,13 @@ export default {
                             if(priceObj && Number(priceObj.price) > 0) {
                                 row.sale_unit_price = parseFloat(priceObj.price);
                                 row.affected_list_price = true;
-                            } 
+                            } else {
+                                row.sale_unit_price = row.original_sale_unit_price
+                            }
+                            
                             // Si no se encuentra o es 0, mantener el sale_unit_price original
+                        } else {
+                            row.sale_unit_price = row.original_sale_unit_price
                         }
                     }
                 

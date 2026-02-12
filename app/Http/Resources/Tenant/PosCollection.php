@@ -6,6 +6,7 @@ use App\Models\Tenant\Configuration;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Log;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\PriceLabel;
 
 class PosCollection extends ResourceCollection
 {
@@ -85,19 +86,18 @@ class PosCollection extends ResourceCollection
                         'quantity_unit' => number_format($row->quantity_unit, $configuration->decimal_quantity, ".",""),
                         'price_default' => $row->price_default,
                         'barcode' => $row->barcode ?? '',
-                        'prices' => $row->prices->map(function($price) use ($configuration) {
-                            return [
-                                'id' => $price->id,
-                                'position' => $price->position,
-                                'label' => $price->label,
-                                'price_label_id' => $price->price_label_id,
-                                'position' => $price->priceLabel ? $price->priceLabel->position : null,
-                                'label' => $price->priceLabel ? $price->priceLabel->label : 'Sin etiqueta',
-                                'price' => number_format($price->price, $configuration->decimal_quantity, ".",""),
-                                'is_active' => $price->is_active,
-                                'is_active' => (bool) $price->is_active,
-                            ];
-                        })->toArray(),
+                        'prices' => PriceLabel::all()->map(function($price_label) use ($configuration, $row) {
+                                $price = $row->prices->firstWhere('price_label_id', $price_label->id);
+                                return [
+                                    'id'             => $price ? $price->id : null,
+                                    'price_label_id' => $price_label->id,
+                                    'position'       => $price_label->position,
+                                    'label'          => $price_label->label,
+                                    'price'          => $price ? number_format($price->price, $configuration->decimal_quantity, '.', '') : 0,
+                                    'is_active'      => $price ? (bool) $price->is_active : false,
+                                ];
+                            })->toArray(),
+
                     ];
                 }),
                 'unit_type' => $row->item_unit_types,

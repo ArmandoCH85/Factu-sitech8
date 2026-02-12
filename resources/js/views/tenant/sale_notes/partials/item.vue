@@ -1857,7 +1857,11 @@ export default {
             this.form.unit_price_value = price;
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
-        selectedPrice(row) {
+        selectedPrice(row, price) {
+            console.log('row:', row);
+            console.log('price param:', price);
+            console.log('price_default:', row.price_default);
+            console.log('price1:', row.price1, 'price2:', row.price2, 'price3:', row.price3);
             if (this.isSelectedPrice(row)) {
                 this.form.item_unit_type_id = null;
                 this.item_unit_type = {};
@@ -1865,18 +1869,8 @@ export default {
                 this.form.unit_price_value = this.form.item.sale_unit_price;
                 this.form.item.unit_type_id = this.form.item.original_unit_type_id;
             } else {
-                let valor = 0;
-                switch (row.price_default) {
-                    case 1:
-                        valor = row.price1;
-                        break;
-                    case 2:
-                        valor = row.price2;
-                        break;
-                    case 3:
-                        valor = row.price3;
-                        break;
-                }
+                let valor = parseFloat(price) || 0;
+                
                 this.form.item_unit_type_id = row.id;
                 this.item_unit_type = row;
                 this.form.unit_price = valor;

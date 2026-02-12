@@ -22011,6 +22011,35 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
     height: calc(100% - 90px);
 }
+.btn-outline-danger{
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff) !important;
+}
+.btn-outline-danger:hover{
+    border-color: var(--danger) !important;
+    color: #fff !important;
+    background-color: var(--danger) !important;
+}
+.container-tag-editor .btn-icon-tags.destructive:hover{
+    color: var(--danger);
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff00);
+}
+.container-tag-editor .default-badge{
+    color: var(--success);
+    background-color: color-mix(in srgb, var(--success) 10%, #ffffff00);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    line-height: normal;
+}
+.container-tag-editor .btn-icon.default.default {
+  color: var(--success) !important;
+}
+.container-tag-editor .template-card.default{
+    border-color: var(--success);
+    background-color: transparent;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

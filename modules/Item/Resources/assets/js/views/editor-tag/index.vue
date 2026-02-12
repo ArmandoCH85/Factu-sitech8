@@ -1,8 +1,8 @@
 <template>
-    <div class="container">
+    <div class="container container-tag-editor p-0">
       <!-- HEADER -->
-      <div class="header">
-        <h1>Editor de Etiquetas</h1>
+      <div class="header header-tag-editor">
+        <h2>Editor de Etiquetas</h2>
   
         <div class="header-center">
           <!-- Dimensiones -->
@@ -41,12 +41,14 @@
         </div>
   
         <div class="header-actions">
-          <button class="btn btn-outline" @click="downloadAsImage">
-            <span>📥</span> Descargar PNG
-          </button>
-          <button class="btn btn-outline" @click="downloadAsPDF">
-            <span>📄</span> Descargar PDF
-          </button>
+          <el-button @click="downloadAsImage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo-down me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01" /><path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l4 4" /><path d="M14 14l1 -1c.653 -.629 1.413 -.815 2.13 -.559" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
+            Descargar PNG
+          </el-button>
+          <el-button @click="downloadAsPDF">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-download me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 17v-6" /><path d="M9.5 14.5l2.5 2.5l2.5 -2.5" /></svg>
+            Descargar PDF
+          </el-button>
         </div>
       </div>
   
@@ -56,24 +58,22 @@
         <div class="sidebar">
           <!-- Datos del sistema -->
           <div class="tool-section">
-            <h3>Datos del Sistema</h3>
+            <h4 class="mt-0">Datos del Sistema</h4>
             <div class="input-group">
               <label>Buscar y seleccionar datos</label>
   
-              <div class="tag-selector">
+              <div class="w-100">
                 <!-- Tags seleccionados -->
-                <div class="selected-tags">
-                  <div
+                <div class="mb-1">
+                  <el-tag
                     v-for="tagKey in selectedTags"
                     :key="tagKey"
-                    class="selected-tag"
+                    closable
+                    @close="removeTag(tagKey)"
+                    class="mb-1"
                   >
                     {{ dataLabels[tagKey] }}
-                    <button
-                      class="remove-tag"
-                      @click.stop="removeTag(tagKey)"
-                    >×</button>
-                  </div>
+                  </el-tag>
                 </div>
   
                 <!-- Buscador de tags -->
@@ -81,31 +81,22 @@
                   class="tag-input-container"
                   v-if="selectedTags.length < availableTags.length"
                 >
-                  <input
-                    type="text"
-                    v-model="tagSearch"
-                    placeholder="Buscar datos..."
-                    autocomplete="off"
-                    @focus="showTagDropdown = true"
-                    @keydown.esc="showTagDropdown = false"
-                    @keydown.enter.prevent="selectFirstVisibleTag"
-                  />
-  
-                  <div
-                    class="tag-dropdown"
-                    :class="{ show: showTagDropdown }"
+                  <el-select
+                    v-model="tagSelectValue"
+                    filterable
+                    :filter-method="handleTagFilter"
+                    placeholder="Buscar"
+                    style="width: 100%;"
+                    @change="handleTagSelect"
+                    prefix-icon="el-icon-search"
                   >
-                    <div
-                      class="tag-option"
+                    <el-option
                       v-for="tag in filteredTags"
                       :key="tag.key"
-                      :class="{ selected: selectedTags.includes(tag.key) }"
-                      @click="selectTag(tag.key)"
-                    >
-                      <div class="tag-option-name">{{ tag.label }}</div>
-                      <div class="tag-option-value">{{ tag.value }}</div>
-                    </div>
-                  </div>
+                      :label="tag.label + ' - ' + tag.value"
+                      :value="tag.key"
+                    />
+                  </el-select>
                 </div>
               </div>
             </div>
@@ -114,17 +105,19 @@
   
           <!-- Agregar elementos -->
           <div class="tool-section">
-            <h3>Agregar Elementos</h3>
+            <h4>Agregar Elementos</h4>
             <div style="display: flex; gap: 0.25rem;">
               <!-- <button class="btn btn-secondary btn-full" @click="addField('text')">
                 Texto
               </button> -->
-              <button
-                class="btn btn-secondary btn-full"
+              <el-button
+                type="primary"
+                class="btn btn-primary btn-full"
                 @click="$refs.imageUpload.click()"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo-up me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01" /><path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l3.5 3.5" /><path d="M14 14l1 -1c.679 -.653 1.473 -.829 2.214 -.526" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
                 Subir Imagen
-              </button>
+              </el-button>
               <input
                 ref="imageUpload"
                 type="file"
@@ -148,13 +141,13 @@
             class="field-properties-section"
             v-show="showFieldProperties"
           >
-            <h3>Propiedades del Campo</h3>
+            <h4>Propiedades del Campo</h4>
   
             <!-- TEXTO -->
             <div v-if="fieldType === 'text'">
               <div class="input-group">
                 <label>Contenido</label>
-                <input
+                <el-input
                   type="text"
                   v-model="fieldContent"
                   @input="updateFieldContent"
@@ -163,8 +156,8 @@
   
               <div class="input-group">
                 <label>Tamaño de Letra</label>
-                <div style="display: flex; gap: 0.25rem;">
-                  <input
+                <div class="d-flex gap-1">
+                  <el-input
                     type="number"
                     v-model.number="fontSize"
                     min="8"
@@ -179,11 +172,7 @@
                     @click="toggleFontWeight"
                     title="Negrita"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2">
-                      <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-                      <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bold"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 5h6a3.5 3.5 0 0 1 0 7h-6l0 -7" /><path d="M13 12h1a3.5 3.5 0 0 1 0 7h-7v-7" /></svg>
                   </button>
   
                   <button
@@ -192,13 +181,7 @@
                     @click="setAlignment('left')"
                     title="Izquierda"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2">
-                      <line x1="17" y1="10" x2="3" y2="10"></line>
-                      <line x1="21" y1="6" x2="3" y2="6"></line>
-                      <line x1="21" y1="14" x2="3" y2="14"></line>
-                      <line x1="17" y1="18" x2="3" y2="18"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-align-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0" /><path d="M4 12l10 0" /><path d="M4 18l14 0" /></svg>
                   </button>
   
                   <button
@@ -207,13 +190,7 @@
                     @click="setAlignment('center')"
                     title="Centro"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2">
-                      <line x1="18" y1="10" x2="6" y2="10"></line>
-                      <line x1="21" y1="6" x2="3" y2="6"></line>
-                      <line x1="21" y1="14" x2="3" y2="14"></line>
-                      <line x1="18" y1="18" x2="6" y2="18"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-align-center"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0" /><path d="M8 12l8 0" /><path d="M6 18l12 0" /></svg>
                   </button>
   
                   <button
@@ -222,13 +199,7 @@
                     @click="setAlignment('right')"
                     title="Derecha"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2">
-                      <line x1="21" y1="10" x2="7" y2="10"></line>
-                      <line x1="21" y1="6" x2="3" y2="6"></line>
-                      <line x1="21" y1="14" x2="3" y2="14"></line>
-                      <line x1="21" y1="18" x2="7" y2="18"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-align-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6l16 0" /><path d="M10 12l10 0" /><path d="M6 18l14 0" /></svg>
                   </button>
                 </div>
               </div>
@@ -238,7 +209,7 @@
             <div v-if="fieldType === 'barcode'">
               <div class="input-group">
                 <label>Contenido del Código</label>
-                <input
+                <el-input
                   type="text"
                   v-model="barcodeContent"
                   @input="handleBarcodeInput"
@@ -247,13 +218,13 @@
   
               <div class="input-group">
                 <label>Formato</label>
-                <select v-model="barcodeFormat" @change="updateBarcodeStyle">
-                  <option value="CODE128">CODE128</option>
-                  <option value="EAN13">EAN13</option>
-                  <option value="EAN8">EAN8</option>
-                  <option value="UPC">UPC</option>
-                  <option value="CODE39">CODE39</option>
-                </select>
+                <el-select v-model="barcodeFormat" @change="updateBarcodeStyle">
+                  <el-option value="CODE128">CODE128</el-option>
+                  <el-option value="EAN13">EAN13</el-option>
+                  <el-option value="EAN8">EAN8</el-option>
+                  <el-option value="UPC">UPC</el-option>
+                  <el-option value="CODE39">CODE39</el-option>
+                </el-select>
               </div>
   
               <div class="input-group">
@@ -261,7 +232,7 @@
                 <div style="display: flex; gap: 0.25rem;">
                   <div style="flex: 1;">
                     <label style="font-size: 0.8rem; margin-bottom: 0.1rem;">Altura</label>
-                    <input
+                    <el-input
                       type="number"
                       v-model.number="barcodeHeight"
                       min="20"
@@ -272,14 +243,14 @@
                   </div>
                   <div style="flex: 1;">
                     <label style="font-size: 0.8rem; margin-bottom: 0.1rem;">Mostrar Valor</label>
-                    <select
+                    <el-select
                       v-model="barcodeDisplayValue"
                       @change="updateBarcodeStyle"
                       style="width: 100%;"
                     >
-                      <option value="true">Sí</option>
-                      <option value="false">No</option>
-                    </select>
+                      <el-option :value="'true'" label="Sí">Sí</el-option>
+                      <el-option :value="'false'" label="No">No</el-option>
+                    </el-select>
                   </div>
                 </div>
               </div>
@@ -289,24 +260,27 @@
             <div v-if="fieldType === 'image'">
               <div class="input-group">
                 <label>Acciones de Imagen</label>
-                <button class="btn btn-destructive btn-full" @click="deleteSelectedField">
+                <el-button type="danger" class="btn btn-full" @click="deleteSelectedField">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo-x me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01" /><path d="M13 21h-7a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v7" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l3 3" /><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0" /><path d="M22 22l-5 -5" /><path d="M17 22l5 -5" /></svg>
                   Eliminar imagen
-                </button>
+                </el-button>
               </div>
             </div>
   
             <div class="tool-section">
-              <button class="btn btn-outline btn-full" @click="deleteSelectedField">
+              <el-button class="btn btn-outline-danger btn-full" @click="deleteSelectedField">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash-x me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7h16" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /><path d="M10 12l4 4m0 -4l-4 4" /></svg>
                 Eliminar Campo
-              </button>
+              </el-button>
             </div>
           </div>
   
           <!-- Limpiar todo -->
           <div class="tool-section">
-            <button class="btn btn-outline btn-full" @click="clearCanvas">
+            <el-button class="btn btn-full" @click="clearCanvas">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
               Limpiar Todo
-            </button>
+            </el-button>
           </div>
         </div>
   
@@ -326,18 +300,27 @@
         <!-- RIGHT SIDEBAR -->
         <div class="right-sidebar">
           <div class="tool-section">
-            <h3>Diseños Guardados</h3>
+            <h4>Diseños Guardados</h4>
             <div class="input-group">
               <label>Nombre del diseño</label>
-              <input
+              <el-input
                 type="text"
                 v-model="templateName"
                 placeholder="Ingresa un nombre para el diseño"
               />
             </div>
-            <button class="btn btn-primary btn-full" @click="saveTemplate(null)">
-              Guardar Diseño Actual
-            </button>
+            <el-button type="primary" class="btn btn-primary btn-full" @click="saveCurrentTemplateAction">
+              <svg v-if="selectTemplate === null" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
+              
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-check me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M15 19l2 2l4 -4" /></svg>
+
+              {{ selectTemplate !== null ? 'Actualizar Diseño' : 'Guardar Diseño Actual' }}
+            </el-button>
+
+            <el-button v-if="selectTemplate !== null" class="btn btn-secondary btn-full mt-2" @click="saveTemplate(null)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
+              Guardar como Nuevo
+            </el-button>
   
             <div style="margin-top: 1rem;">
               <div
@@ -346,37 +329,42 @@
                 class="template-card"
                 :data-template-index="index"
                 @click="applyTemplate(index)"
-                :class="{ select: index === selectTemplate, default: index === defaultTemplateIndex }"
+                :class="{ select: index === selectTemplate, default: index === defaultTemplateIndex, 'default': tpl.is_default }"
               >
 
-              <div v-if="tpl.is_default" class="default-badge">POR DEFECTO</div>
-                <div
-                  class="template-name"
-                >
-                  {{ tpl.name }}
+                <div class="template-name">
+                  <span class="template-text me-2">
+                    {{ tpl.name }}
+                  </span>
+                
+                  <span v-if="tpl.is_default" class="default-badge">
+                    POR DEFECTO
+                  </span>
                 </div>
                 <div class="template-actions">
                   <button
-                    class="btn-icon"
+                    class="btn-icon btn-icon-tags"
                     :class="{ default: tpl.is_default }"
                     @click.stop="isDefault(tpl.id)"
                     :title="index === defaultTemplateIndex ? 'Diseño predeterminado' : 'Establecer como predeterminado'"
                   >
-                    {{ index === defaultTemplateIndex ? '★' : '☆' }}
+                    <svg v-if="tpl.is_default" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-star"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245" /></svg>
                   </button>
                   <button
-                    class="btn-icon primary"
+                    class="btn-icon btn-icon-tags primary"
                     @click.stop="saveTemplate(tpl.id)"
                     title="Guardar diseño"
                   >
-                    ⤓
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
                   </button>
                   <button
-                    class="btn-icon destructive"
+                    class="btn-icon btn-icon-tags destructive"
                     @click.stop="deleteTemplate(tpl.id)"
                     title="Eliminar diseño"
                   >
-                    🗑
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                   </button>
                 </div>
               </div>
@@ -394,18 +382,12 @@
     background: hsl(142.1 76.2% 36.3% / 0.05);
   }
   .default-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
     background: hsl(142.1 76.2% 36.3%);
     color: white;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 9999px;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.15);
-    z-index: 10;
+    padding: 2px 8px;
+    border-radius: 20px;
   }
 </style>
   
@@ -438,6 +420,7 @@
         startTop: 0,
         fieldCounter: 0,
         uploadedImages: {},
+        isDirty: false,
   
         // Datos del sistema
         systemData: {
@@ -470,7 +453,7 @@
         infoFields: [], // Información de los campos en el canvas
         infoCanva: {},
         tagSearch: '',
-        showTagDropdown: false,
+        tagSelectValue: null,
         selectTemplate:  null,
   
         // Propiedades del campo seleccionado
@@ -484,6 +467,7 @@
         barcodeFormat: 'CODE128',
         barcodeHeight: 50,
         barcodeDisplayValue: 'true',
+        barcodeDisplayValueText: 'Sí',
   
         // Plantillas
         templates: [],
@@ -518,7 +502,7 @@
     },
   
     mounted () {
-      this.updateCanvasSize()
+    this.updateCanvasSize(false)
       this.initCanvasListeners()
       this.getRecords()
   
@@ -551,7 +535,8 @@
         return 3.7795275591
       },
   
-      updateCanvasSize () {
+      updateCanvasSize (markDirty = true) {
+        if (markDirty) this.isDirty = true
         const canvas = this.$refs.labelCanvas
         if (!canvas) return
         const baseWidth = this.labelWidth * this.mmToPx()
@@ -569,13 +554,13 @@
         )
         if (newZoom !== this.currentZoom) {
           this.currentZoom = newZoom
-          this.updateCanvasSize()
+          this.updateCanvasSize(false)
         }
       },
   
       resetZoom () {
         this.currentZoom = 1
-        this.updateCanvasSize()
+        this.updateCanvasSize(false)
       },
   
       onCanvasWheel (e) {
@@ -603,7 +588,26 @@
       },
   
       removeTag (key) {
+        const canvas = this.$refs.labelCanvas
+        if (canvas) {
+          const fields = Array.from(canvas.querySelectorAll('.field'))
+          fields.forEach(f => {
+            if (f.dataset.systemData === key) {
+              this.removeFieldByElement(f)
+            }
+          })
+        }
         this.selectedTags = this.selectedTags.filter(k => k !== key)
+      },
+
+      handleTagSelect (key) {
+        if (!key) return
+        this.selectTag(key)
+        this.tagSelectValue = null
+      },
+
+      handleTagFilter (query) {
+        this.tagSearch = query
       },
   
       selectFirstVisibleTag () {
@@ -722,14 +726,8 @@
         deleteBtn.className = 'delete-btn'
         deleteBtn.textContent = '×'
         deleteBtn.onclick = ev => {
-          console.log();
-          
           ev.stopPropagation()
-          field.remove()
-          if (this.selectedField === field) {
-            this.selectedField = null
-            this.showFieldProperties = false
-          }
+          this.removeFieldByElement(field)
         }
   
         // Resize handle
@@ -761,6 +759,7 @@
   
         this.infoFields.push(infoField);
         this.selectField(field)
+        this.isDirty = true
         
       },
   
@@ -793,12 +792,7 @@
           deleteBtn.textContent = '×'
           deleteBtn.onclick = ev => {
             ev.stopPropagation()
-            field.remove()
-            delete this.uploadedImages[field.id]
-            if (this.selectedField === field) {
-              this.selectedField = null
-              this.showFieldProperties = false
-            }
+            this.removeFieldByElement(field)
           }
   
           const resizeHandle = document.createElement('div')
@@ -823,6 +817,7 @@
           })
   
           this.selectField(field)
+          this.isDirty = true
         event.target.value = ''
       },
   
@@ -906,8 +901,11 @@
       },
   
       onMouseUp () {
+        const wasDragging = this.isDragging
+        const wasResizing = this.isResizing
         this.isDragging = false
         this.isResizing = false
+        if (wasDragging || wasResizing) this.isDirty = true
       },
   
       onKeyDown (e) {
@@ -986,22 +984,57 @@
         if (this.selectedField.dataset.systemData) {
           this.systemData[this.selectedField.dataset.systemData] = this.fieldContent
         }
+        this.isDirty = true
       },
   
       updateFieldStyle () {
         if (!this.selectedField || this.fieldType !== 'text') return
         const content = this.selectedField.querySelector('.field-content')
         content.style.fontSize = (this.fontSize || 14) + 'px'
+        this.isDirty = true
+      },
+
+      removeFieldByElement(field) {
+        if (!field) return
+
+        const canvas = this.$refs.labelCanvas
+        const systemKey = field.dataset.systemData
+
+        // remove uploaded image reference if any
+        if (field.dataset.type === 'image') {
+          delete this.uploadedImages[field.id]
+        }
+
+        // remove DOM element
+        try {
+          field.remove()
+        } catch (e) {
+          // ignore
+        }
+
+        // remove from infoFields
+        const idx = this.infoFields.findIndex(f => f.id === field.id)
+        if (idx !== -1) this.infoFields.splice(idx, 1)
+
+        this.isDirty = true
+
+        // if no other field exists for this systemKey, remove the selected tag
+        if (systemKey && canvas) {
+          const remaining = canvas.querySelectorAll(`.field[data-system-data="${systemKey}"]`)
+          if (remaining.length === 0) {
+            this.selectedTags = this.selectedTags.filter(k => k !== systemKey)
+          }
+        }
+
+        if (this.selectedField === field) {
+          this.selectedField = null
+          this.showFieldProperties = false
+        }
       },
   
       deleteSelectedField () {
         if (!this.selectedField) return
-        if (this.selectedField.dataset.type === 'image') {
-          delete this.uploadedImages[this.selectedField.id]
-        }
-        this.selectedField.remove()
-        this.selectedField = null
-        this.showFieldProperties = false
+        this.removeFieldByElement(this.selectedField)
       },
   
       clearCanvas () {
@@ -1027,12 +1060,14 @@
         const format = this.barcodeFormat
         const height = this.barcodeHeight
         const displayValue = this.barcodeDisplayValue === 'true'
-  
+
+        this.barcodeDisplayValueText = this.barcodeDisplayValue === 'true' ? 'Sí' : 'No'
+
         if (!value) return
-  
+
         let isValid = true
         let errorMsg = ''
-  
+
         switch (format) {
           case 'EAN13':
             if (value.length !== 13 && value.length !== 12) {
@@ -1053,12 +1088,12 @@
             }
             break
         }
-  
+
         if (!isValid) {
           alert(errorMsg)
           return
         }
-  
+
         const svg = this.selectedField.querySelector('svg')
         if (svg && window.JsBarcode) {
           try {
@@ -1294,6 +1329,7 @@
                 await this.getRecords();
                 this.$message.success(response.data.message);
                 this.selectTemplate = this.templates.length -1;
+                this.isDirty = false
               }
             })
           
@@ -1305,7 +1341,7 @@
                 await this.getRecords();
                 this.$message.success(response.data.message);
                 this.selectTemplate = this.templates.length -1;
-                
+                this.isDirty = false
               }
             })
         }
@@ -1325,22 +1361,61 @@
       },
 
       applyTemplate (index) {
+
+        if (this.selectTemplate === index) {
+          if (this.isDirty) {
+            this.$confirm('Se perderán los cambios no guardados. ¿Deseas continuar?', 'Confirmar', {
+              confirmButtonText: 'Desechar cambios',
+              cancelButtonText: 'Cancelar',
+              type: 'warning'
+            }).then(() => {
+              this.clearCanvas()
+              this.selectTemplate = null
+              this.isDirty = false
+            }).catch(() => {
+              
+            })
+            return
+          }
+
+          this.clearCanvas()
+          this.selectTemplate = null
+          return
+        }
+
+        if (this.selectTemplate !== null && this.selectTemplate !== index && this.isDirty) {
+          this.$confirm('Se perderán los cambios no guardados. ¿Deseas continuar y cambiar de diseño?', 'Confirmar', {
+            confirmButtonText: 'Cambiar diseño',
+            cancelButtonText: 'Cancelar',
+            type: 'warning'
+          }).then(() => {
+            this.proceedToApply(index)
+          }).catch(() => {
+            
+          })
+          return
+        }
+
+        this.proceedToApply(index)
+      },
+
+      proceedToApply (index) {
         this.selectedTags = []
         const template = this.templates[index]
-        
+
         if (!template) return
-  
+
         this.labelWidth = parseFloat(template.canvas.width || 100)
         this.labelHeight = parseFloat(template.canvas.height || 60)
-        this.updateCanvasSize()
-  
+        this.updateCanvasSize(false)
+
         const canvas = this.$refs.labelCanvas
         if (!canvas) return
         canvas.innerHTML = ''
         this.uploadedImages = {}
         this.selectedField = null
         this.fieldCounter = 0
-  
+
         template.fields.forEach((fieldData, index) => {
           const field = document.createElement('div')
           field.className = 'field'
@@ -1350,12 +1425,12 @@
           if (fieldData.systemData) {
             field.dataset.systemData = fieldData.systemData
           }
-  
+
           field.style.left = fieldData.position.left
           field.style.top = fieldData.position.top
           field.style.width = fieldData.position.width
           field.style.height = fieldData.position.height
-  
+
           const content = document.createElement('div')
           content.className = 'field-content'
           if (!this.selectedTags.includes(fieldData.systemData) && fieldData.systemData !== 'image') {
@@ -1371,7 +1446,7 @@
           } else if (fieldData.type === 'barcode' && fieldData.barcode) {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
             content.appendChild(svg)
-  
+
             field.dataset.barcodeValue = fieldData.barcode.value
             field.dataset.barcodeFormat = fieldData.barcode.format
             field.dataset.barcodeHeight = fieldData.barcode.height
@@ -1398,30 +1473,18 @@
             img.src = fieldData.image
             content.appendChild(img)
           }
-  
+
           const deleteBtn = document.createElement('button')
           deleteBtn.className = 'delete-btn'
           deleteBtn.textContent = '×'
           deleteBtn.onclick = e => {
-            let element = e.target;
-            let parent = element.closest('.field');
-            
             e.stopPropagation()
-            field.remove()
-            if (this.selectedField === field) {
-              this.selectedField = null
-              this.showFieldProperties = false
-              const canvas = this.$refs.labelCanvas
-              if (!canvas) return
-  
-              this.selectedTags = this.selectedTags.filter( key => key !== parent.dataset.systemData)
-              
-            }
+            this.removeFieldByElement(field)
           }
-  
+
           const resizeHandle = document.createElement('div')
           resizeHandle.className = 'resize-handle'
-  
+
           const badge = document.createElement('div')
           badge.className = 'field-badge'
           const typeLabels = {
@@ -1430,13 +1493,13 @@
             image: 'Imagen'
           }
           badge.textContent = typeLabels[fieldData.type] || fieldData.type
-  
+
           field.appendChild(content)
           field.appendChild(badge)
           field.appendChild(deleteBtn)
           field.appendChild(resizeHandle)
           canvas.appendChild(field)
-  
+
           field.addEventListener('mousedown', e => {
             if (e.target === resizeHandle) {
               this.startResize(e, field)
@@ -1444,29 +1507,62 @@
               this.startDrag(e, field)
             }
           })
-  
+
           const fieldNumber = parseInt(field.id.split('_')[1]) || 0
           if (fieldNumber >= this.fieldCounter) {
             this.fieldCounter = fieldNumber
           }
         })
 
-
         this.selectTemplate = index
+        
+        this.isDirty = false
+      },
+
+      saveCurrentTemplateAction () {
+        if (this.selectTemplate === null) {
+          
+          this.saveTemplate(null)
+          return
+        }
+
+        const tpl = this.templates[this.selectTemplate]
+        if (!tpl || !tpl.id) {
+          
+          this.saveTemplate(null)
+          return
+        }
+
+        this.saveTemplate(tpl.id)
       },
   
       deleteTemplate (id) {
-        this.$http.get(`${this.resource}/tags/delete/${id}`)
-          .then(response => {
-            if (response.data.success) {
-              this.$message.success(response.data.message);
-              this.clearCanvas();
-              this.getRecords();
-            }
-          })
-          .catch(error => {
-            console.error('Error al eliminar la plantilla:', error);
-          });
+        this.$confirm('¿Estás seguro de eliminar este diseño? Esta acción no se puede deshacer.', 'Confirmar', {
+          confirmButtonText: 'Eliminar',
+          cancelButtonText: 'Cancelar',
+          type: 'warning'
+        }).then(() => {
+          this.$http.get(`${this.resource}/tags/delete/${id}`)
+            .then(response => {
+              if (response.data.success) {
+                this.$message.success(response.data.message);
+                
+                if (this.selectTemplate !== null) {
+                  const tpl = this.templates[this.selectTemplate]
+                  if (tpl && tpl.id === id) {
+                    this.clearCanvas()
+                    this.selectTemplate = null
+                  }
+                }
+                this.getRecords();
+              }
+            })
+            .catch(error => {
+              console.error('Error al eliminar la plantilla:', error);
+            });
+        }).catch(() => {
+
+        });
       },
       isDefault(id) {
         this.$http.get(`${this.resource}/tags/default/${id}`)

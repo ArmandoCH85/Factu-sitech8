@@ -630,7 +630,7 @@ foreach($document->items as $row) {
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
-                    {{ number_format($row->quantity, 0) }}
+                    {{ number_format($row->quantity, 2) }}
                 @endif
             </td>
             <td class="text-center">{{ number_format($row->item->unit_price, 2) }}</td>
@@ -702,10 +702,10 @@ foreach($document->items as $row) {
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-right">
-                @if(((int)$row->quantity != $row->quantity))
-                    {{ $row->quantity }}
-                @else
+                @if ($row->item->unit_type_id == 'NIU')
                     {{ number_format($row->quantity, 0) }}
+                @else 
+                    {{ $row->quantity }}
                 @endif
             </td>
          </tr>

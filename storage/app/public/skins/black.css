@@ -653,7 +653,16 @@ label.control-label {
 .sidebar-left .sidebar-header {
     margin-bottom: 0;
 }
-
+.btn-outline-danger{
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff) !important;
+}
+.btn-outline-danger:hover{
+    border-color: var(--danger) !important;
+    color: #fff !important;
+    background-color: var(--danger) !important;
+}
 nav#menu {
     padding-top: 10px;
 }
@@ -919,19 +928,6 @@ form.style-switcher-wrap h3 {
     color: #fff;
     text-decoration: none;
     background-color: #18181b;
-}
-
-.el-button--primary {
-    color: #fff;
-    background-color: var(--black-primary);
-    border-color: var(--black-primary);
-}
-
-.el-button--primary:hover {
-    color: #fff;
-    background-color: var(--black-primary);
-    border-color: var(--black-primary);
-    opacity: 0.8;
 }
 
 .el-button--danger {
@@ -1784,7 +1780,7 @@ html.dark ul.nav-main li .nav-children li a:after {
 /* -------- config -------- */
 html.dark .card.card-dashboard .card-title,
 html.dark .card.card-dashboard small.text-muted {
-    background: #283046;
+    background: var(--black-content-dark);
 }
 
 /* menu top */
@@ -1800,13 +1796,16 @@ html.sidebar-light .userbox.show .dropdown-menu a:hover {
 
 /* -------------------------- botones -------------------------- */
 /* -------------------------- white -------------------------- */
-html.sidebar-white .el-button--primary {
+html.sidebar-white .el-button--primary,
+.el-button--primary {
     color: #FFFFFF !important;
     background-color: var(--black-primary) !important;
     border: none;
 }
 
-html.sidebar-white .el-button--primary:hover {
+html.sidebar-white .el-button--primary:hover,
+.el-button--primary:hover,
+.el-button--primary:focus {
     background-color: var(--black-primary) !important;
     border: none;
     color: #FFF !important;
@@ -2556,6 +2555,67 @@ div.welcome-card .welcome-subtitle{
     color: var(--black-dark) !important;
     border-color: color-mix(in srgb, var(--black-highlight) 96%, #000000) !important;
 }
+.el-tag{
+    background-color: color-mix(in srgb, var(--black-primary) 10%, #ffffff00);
+    border-radius: 10px;
+    border-color: var(--black-primary);
+    font-size: 12px;
+    color: var(--black-primary);
+}
+.el-tag .el-icon-close{
+    color: var(--black-primary);
+}
+.el-tag .el-tag__close:hover{
+    background-color: var(--black-primary);
+    color: var(--black-light);
+}
+/* style editor de etiquetas */
+.container-tag-editor .btn-icon-tags{
+    background-color: transparent;
+    border: none;
+    color: var(--black-accent);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.container-tag-editor .btn-icon-tags:hover{
+    background-color: var(--black-highlight);
+    color: var(--black-dark);
+}
+.container-tag-editor .btn-icon-tags.destructive:hover{
+    color: var(--danger);
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff00);
+}
+.container-tag-editor .default-badge{
+    color: var(--success);
+    background-color: color-mix(in srgb, var(--success) 10%, #ffffff00);
+    white-space: nowrap; /* 👈 clave */
+    display: inline-flex; /* opcional pero recomendado */
+    align-items: center;
+    line-height: normal;
+}
+.container-tag-editor .btn-icon.default.default {
+  color: var(--success) !important;
+}
+.container-tag-editor .template-card{
+    border-radius: 10px;
+}
+.container-tag-editor .template-card.default{
+    border-color: var(--success);
+    background-color: transparent;
+}
+.container-tag-editor .template-card.select{
+    border-color: var(--black-primary);
+    background-color: transparent;
+}
+.container-tag-editor .btn-align.active, .container-tag-editor .btn-toggle.active {
+    background: var(--black-primary);
+    border-color: var(--black-primary);
+    color: #fff;
+}
+.container-tag-editor .btn-align:hover, .container-tag-editor .btn-toggle:hover {
+    background: #fff;
+    border-color: var(--black-primary);
+}
+/* end */
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {

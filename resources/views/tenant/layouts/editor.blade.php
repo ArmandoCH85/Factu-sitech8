@@ -39,8 +39,17 @@
 
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-loading/dist/jquery.loading.css')}}" />
 
+    <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
+    <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
+
     @if (file_exists(public_path('theme/custom_styles.css')))
-        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
+      <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
+    @endif
+
+    @if(isset($vc_compact_sidebar) && $vc_compact_sidebar->skin)
+      @if (file_exists(storage_path('app/public/skins/' . $vc_compact_sidebar->skin->filename)))
+        <link rel="stylesheet" href="{{ asset('storage/skins/' . $vc_compact_sidebar->skin->filename) }}" />
+      @endif
     @endif
     {{--@stack('styles')--}}
 
@@ -48,7 +57,7 @@
     {{--<script src="{{ asset('porto-light/vendor/modernizr/modernizr.js') }}"></script>--}}
 
 </head>
-  <style>
+  <style scope>
   /* Copia directa de tus estilos base, solo añadí alguna clase pequeña para unidades */
   * {
     margin: 0;
@@ -74,6 +83,10 @@
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
+  }
+  .header-tag-editor{
+    position: relative;
+    left: 0;
   }
   .header h1 {
     font-size: 1.5rem;
@@ -158,7 +171,7 @@
   }
   .sidebar,
   .right-sidebar {
-    width: 380px;
+    width: 340px;
     background: hsl(0 0% 100%);
     border-right: 1px solid hsl(0 0% 89.8%);
     padding: 1.5rem;
@@ -179,21 +192,6 @@
   }
   .tool-section {
     margin-bottom: 2rem;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-    padding: 0.5rem 1rem;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
   }
   .btn::before {
     content: '';
@@ -244,16 +242,6 @@
     color: hsl(0 0% 3.9%);
     font-size: 0.875rem;
     font-weight: 500;
-  }
-  .input-group input[type="text"],
-  .input-group input[type="number"],
-  .input-group select {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid hsl(0 0% 89.8%);
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    background: hsl(0 0% 100%);
   }
   .canvas-container {
     flex: 1;
@@ -431,14 +419,6 @@
   .tag-input-container {
     position: relative;
   }
-  .tag-input-container input {
-    border: none;
-    outline: none;
-    background: transparent;
-    width: 100%;
-    padding: 0.25rem;
-    font-size: 0.875rem;
-  }
   .tag-dropdown {
     position: absolute;
     top: 100%;
@@ -521,21 +501,35 @@
     background: hsl(142.1 76.2% 36.3% / 0.05);
   }
   .template-name {
-    font-weight: 600;
-    color: hsl(0 0% 3.9%);
-    font-size: 0.875rem;
-    flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
   }
+
+  .template-text {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+  }
+
+  .default-badge {
+      flex: 0 0 auto;
+      white-space: nowrap;
+  }
+
   .template-actions {
     display: flex;
     gap: 0.25rem;
+    width: 104px;
+    flex-shrink: 0;
   }
   .btn-icon {
     width: 32px;
     height: 32px;
     border-radius: 0.375rem;
-    border: 1px solid hsl(0 0% 89.8%);
-    background: hsl(0 0% 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -546,9 +540,7 @@
     color: hsl(142.1 76.2% 36.3%);
   }
   .btn-icon.default.default {
-    background: hsl(142.1 76.2% 36.3%);
-    color: white;
-    border-color: hsl(142.1 76.2% 36.3%);
+    color: hsl(142.1 76.2% 36.3%);
   }
   
   /* Propiedades campo */
@@ -600,6 +592,5 @@
     {{--<script src="{{asset('porto-light/js/theme.js')}}"></script>--}}
     <!-- Vendor -->
     <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
-    {{--
 </body>
 </html>

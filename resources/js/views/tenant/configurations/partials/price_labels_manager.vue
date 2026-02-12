@@ -16,6 +16,7 @@
                         </div>                        
                         <el-input
                             v-model="localPrice1Label"
+                            @change="updateMainLabel"
                             placeholder="Precio principal"
                             :disabled="loading"
                         ></el-input> 
@@ -85,7 +86,7 @@
 
         <span slot="footer" class="dialog-footer">
             <el-button class="me-2" @click="close" :disabled="loading">Cerrar</el-button>
-            <el-button type="primary" @click="updateMainLabel" :loading="loading">Actualizar</el-button>
+            <!-- <el-button type="primary" @click="updateMainLabel" :loading="loading">Actualizar</el-button> -->
         </span>
     </el-dialog>
 </template>

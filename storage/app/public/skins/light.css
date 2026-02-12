@@ -915,6 +915,48 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 .btn-edit-price-container :last-child{
     border-radius: 0 4px 4px 0 !important;
 }
+.el-tag{
+    background-color: color-mix(in srgb, var(--primary-color) 10%, #ffffff00);
+    border-radius: 4px;
+    border-color: var(--primary-color);
+    font-size: 12px;
+    color: var(--primary-color);
+}
+.el-tag .el-icon-close{
+    color: var(--primary-color);
+}
+.el-tag .el-tag__close:hover{
+    background-color: var(--primary-color);
+    color: var(--light-color);
+}
+/* style editor de etiquetas */
+.container-tag-editor .btn-icon-tags{
+    background-color: transparent;
+    border: none;
+    color: color-mix(in srgb, var(--dark-color) 60%, #ffffff);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.container-tag-editor .btn-icon-tags:hover{
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+.container-tag-editor .template-card{
+    border-radius: 6px;
+}
+.container-tag-editor .template-card.select{
+    border-color: var(--primary-color);
+    background-color: transparent;
+}
+.container-tag-editor .btn-align.active, .container-tag-editor .btn-toggle.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+.container-tag-editor .btn-align:hover, .container-tag-editor .btn-toggle:hover {
+    background: #fff;
+    border-color: var(--primary-color);
+}
+/* end */
 /************************************ tema verde ************************************/
 /* header */
 html.sidebar-green .userbox.show .dropdown-menu a:hover {
@@ -1148,15 +1190,17 @@ html.sidebar-light .userbox.show .dropdown-menu a:hover {
 
 /* -------------------------- botones -------------------------- */
 /* -------------------------- white -------------------------- */
-html.sidebar-white .el-button--primary, .btn-custom, .btn-primary{
+html.sidebar-white .el-button--primary, .btn-custom, .btn-primary, .el-button--primary{
     color: #FFFFFF;
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
 }
-html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:hover, .btn-primary:focus{
+html.sidebar-white .el-button--primary:hover, .btn-custom:hover, .btn-primary:hover, .btn-primary:focus,
+.el-button--primary:hover, .el-button--primary:focus {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
     opacity: 0.8;
+    color: #ffff !important;
 }
 .dropdown-menu-desktop {
     & ul li {

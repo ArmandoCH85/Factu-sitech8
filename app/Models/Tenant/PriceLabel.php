@@ -89,7 +89,7 @@ class PriceLabel extends ModelTenant
             'position' => $this->position,
             'label' => $this->label,
             'is_active' => (bool) $this->is_active,
-            'is_original' => $this->isOriginal(),
+            // 'is_original' => $this->isOriginal(),
             'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
             'updated_at' => $this->updated_at ? $this->updated_at->format('Y-m-d H:i:s') : null,
         ];

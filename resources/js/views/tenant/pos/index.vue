@@ -363,7 +363,7 @@
                                             class="font-weight-semibold text-center"
                                         >
                                             {{ item.currency_type_symbol }}
-                                            {{ item.sale_unit_price }}
+                                            {{ itemSetSaleUnitPrice(item) }}
                                             <button
                                                 v-if="
                                                     configuration.options_pos &&
@@ -1958,7 +1958,9 @@ export default {
         },
         async clickAddItem(item, index, input = false) {
             //Validar precio mínimo
-            if (parseFloat(item.sale_unit_price) < 0.1) {
+            let havePrices = item.item_unit_types.length > 0 && item.item_unit_types[0].prices?.length > 0;
+            
+            if (parseFloat(item.sale_unit_price) < 0.1 && !havePrices) {
                 this.$message.error(
                     "El precio del producto debe ser mayor a 0.1"
                 );
@@ -2742,6 +2744,7 @@ export default {
             this.items.forEach(row => {
                     if(row.item_unit_types && row.item_unit_types.length > 0) {
                         let first_list = row.item_unit_types[0];
+                        let original_price = parseFloat(row.sale_unit_price);
 
                         // Extraer price_label_id del selectedOptionPrice
                         let priceLabelId = null;
@@ -2749,27 +2752,58 @@ export default {
                             priceLabelId = parseInt(this.selected_option_price.replace('price_label_', ''));
                         }
 
-                        console.log({
-                            priceLabelId: priceLabelId,
-                            selected_option_price: this.selected_option_price,
-                            first_list: first_list,
-                        });
+                        if (!row.affected_list_price) { // funcion candado, para colocar el valor original ya que sale_unit_price se ve modificado al cambiar la lista de precios
+                            row.original_sale_unit_price = original_price;
+                        }
                         
                         // Buscar y asignar el precio correspondiente usando 'id'
                         if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
-                            console.log(first_list.prices);
                             
                             const priceObj = first_list.prices.find(p => p.price_label_id == priceLabelId);
                             
                             if(priceObj && Number(priceObj.price) > 0) {
                                 row.sale_unit_price = parseFloat(priceObj.price);
-                            }
+                                row.affected_list_price = true;
+                            } 
                             // Si no se encuentra o es 0, mantener el sale_unit_price original
                         }
                     }
                 
             });
-        }
+        },
+            itemSetSaleUnitPrice(row)
+            {
+                
+                if(!this.configuration.enable_list_product && this.selected_option_price !== 1) {
+                    if(row.item_unit_types.length) {
+                        let first_list = row.item_unit_types[0];
+
+                        // Extraer price_label_id del selectedOptionPrice (formato: "price_label_2")
+                        let priceLabelId = null;
+                        if(typeof this.selected_option_price === 'string' && this.selected_option_price.startsWith('price_label_')) {
+                            priceLabelId = parseInt(this.selected_option_price.replace('price_label_', ''));
+                        }
+
+                        // Buscar el precio correspondiente en el array prices usando 'id'
+                        if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
+                            const priceObj = first_list.prices.find(p => p.price_label_id === priceLabelId);
+                            
+                            if(priceObj) {
+                                return row.unit_price_value = parseFloat(priceObj.price).toFixed(2);
+                            } else {
+                                return row.unit_price_value = parseFloat(row.sale_unit_price).toFixed(2);
+                            }
+                        }
+
+                        // Fallback: usar unit_price_value por defecto
+                        return row.unit_price_value = parseFloat(row.sale_unit_price).toFixed(2);
+                    } else {
+                        return row.unit_price_value = parseFloat(row.sale_unit_price).toFixed(2);
+                    }
+                }
+
+                return row.original_sale_unit_price ? row.original_sale_unit_price.toFixed(2) : parseFloat(row.sale_unit_price).toFixed(2);
+            },
     }
 };
 </script>

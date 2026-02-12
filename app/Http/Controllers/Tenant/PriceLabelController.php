@@ -131,14 +131,6 @@ class PriceLabelController extends Controller
         try {
             $priceLabel = PriceLabel::findOrFail($id);
 
-            // Validar que no sea uno de los 3 originales
-            if ($priceLabel->isOriginal()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No se puede eliminar una etiqueta de precio original',
-                ], 422);
-            }
-
             // Verificar si está en uso
             $inUseCount = $priceLabel->itemUnitTypePrices()->count();
 

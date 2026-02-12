@@ -378,10 +378,10 @@ foreach($document->items as $row) {
             @endif
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-right">
-                @if(((int)$row->quantity != $row->quantity))
-                    {{ $row->quantity }}
-                @else
+                @if ($row->item->unit_type_id == 'NIU')
                     {{ number_format($row->quantity, 0) }}
+                @else 
+                    {{ $row->quantity }}
                 @endif
             </td>
         </tr>

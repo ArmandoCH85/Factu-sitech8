@@ -1858,10 +1858,6 @@ export default {
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
         selectedPrice(row, price) {
-            console.log('row:', row);
-            console.log('price param:', price);
-            console.log('price_default:', row.price_default);
-            console.log('price1:', row.price1, 'price2:', row.price2, 'price3:', row.price3);
             if (this.isSelectedPrice(row)) {
                 this.form.item_unit_type_id = null;
                 this.item_unit_type = {};

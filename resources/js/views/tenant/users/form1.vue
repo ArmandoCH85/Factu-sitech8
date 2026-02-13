@@ -200,18 +200,43 @@
                         <div class="form-comtrol">
                             <label class="control-label">Permisos Módulos</label>
                             <div class="form-group tree-container-admin">
-                                <el-tree
-                                    ref="tree"
-                                    :check-strictly="true"
-                                    :data="modules"
-                                    :props="defaultProps"
-                                    accordion
-                                    highlight-current
-                                    node-key="id"
-                                    show-checkbox
-                                    @check="FixChildren"
-                                >
-                                </el-tree>
+                                <div class="row mb-2">
+                                    <div class="col-md-12">
+                                        <el-checkbox v-model="selectAllModules" @change="toggleSelectAllModules">
+                                            Seleccionar todo
+                                        </el-checkbox>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <el-tree
+                                            ref="treeLeft"
+                                            :check-strictly="true"
+                                            :data="splitModules.left"
+                                            :props="defaultProps"
+                                            accordion
+                                            highlight-current
+                                            node-key="id"
+                                            show-checkbox
+                                            @check="FixChildrenLeft"
+                                        >
+                                        </el-tree>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <el-tree
+                                            ref="treeRight"
+                                            :check-strictly="true"
+                                            :data="splitModules.right"
+                                            :props="defaultProps"
+                                            accordion
+                                            highlight-current
+                                            node-key="id"
+                                            show-checkbox
+                                            @check="FixChildrenRight"
+                                        >
+                                        </el-tree>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -639,6 +664,8 @@ export default {
                 restaurant_pin:''
             },
             modules: [],
+            selectAllModules: false,
+            ignoreSelectAllChange: false,
             datai: [],
             establishments: [],
             documents: [],
@@ -655,14 +682,20 @@ export default {
             identity_document_types: [],
             document_types: [],
             loading: false,
-        };
-    },
-    updated() {
-        // Set default values for multiple selection trees
-        if (this.modules !== undefined && this.$refs.tree !== undefined) {
-            // this.$refs.tree.setCheckedKeys(this.modules)
-        }
-    },
+            };
+        },
+        updated() {
+            // no-op kept intentionally
+        },
+        computed: {
+            splitModules() {
+                const half = Math.ceil(this.modules.length / 2);
+                return {
+                    left: this.modules.slice(0, half),
+                    right: this.modules.slice(half),
+                };
+            },
+        },
     async created() {
         await this.$http.get(`/${this.resource}/tables`).then((response) => {
             this.modules = response.data.modules;
@@ -730,37 +763,88 @@ export default {
                     this.loading_submit = false;
                 });
         },
-        FixChildren(currentObj, treeStatus) {
+        FixChildrenLeft(currentObj, treeStatus) {
+            this.FixChildrenGeneric(currentObj, treeStatus, 'treeLeft')
+        },
+        FixChildrenRight(currentObj, treeStatus) {
+            this.FixChildrenGeneric(currentObj, treeStatus, 'treeRight')
+        },
+        FixChildrenGeneric(currentObj, treeStatus, treeRef) {
             if (currentObj !== undefined) {
                 let selected = treeStatus.checkedKeys.indexOf(currentObj.id) // -1 is unchecked
                 if (selected !== -1) {
-                    this.SelectParent(currentObj)
-                    this.FixSameValueToChild(currentObj, true)
+                    this.SelectParentGeneric(currentObj, treeRef)
+                    this.FixSameValueToChildGeneric(currentObj, true, treeRef)
                 } else {
                     if (currentObj.childrens !== undefined && currentObj.childrens.length !== 0) {
-                        this.FixSameValueToChild(currentObj, false)
+                        this.FixSameValueToChildGeneric(currentObj, false, treeRef)
                     }
                 }
             }
+            // actualizar estado del checkbox "Seleccionar todo"
+            this.updateSelectAllState()
         },
-        FixSameValueToChild(treeList, isSelected) {
+        FixSameValueToChildGeneric(treeList, isSelected, treeRef) {
             if (treeList !== undefined) {
-                this.$refs.tree.setChecked(treeList.id, isSelected)
+                if (this.$refs[treeRef]) this.$refs[treeRef].setChecked(treeList.id, isSelected)
                 if (treeList.childrens !== undefined) {
                     for (let i = 0; i < treeList.childrens.length; i++) {
-                        this.FixSameValueToChild(treeList.childrens[i], isSelected)
+                        this.FixSameValueToChildGeneric(treeList.childrens[i], isSelected, treeRef)
                     }
                 }
             }
         },
-        SelectParent(currentObj) {
+        SelectParentGeneric(currentObj, treeRef) {
             if (currentObj !== undefined) {
-                let currentNode = this.$refs.tree.getNode(currentObj)
-                if (currentNode.parent.key !== undefined) {
-                    this.$refs.tree.setChecked(currentNode.parent, true)
-                    this.SelectParent(currentNode.parent)
+                if (!this.$refs[treeRef]) return
+                let currentNode = this.$refs[treeRef].getNode(currentObj)
+                if (currentNode && currentNode.parent && currentNode.parent.key !== undefined) {
+                    this.$refs[treeRef].setChecked(currentNode.parent, true)
+                    this.SelectParentGeneric(currentNode.parent, treeRef)
                 }
             }
+        },
+
+        getAllModuleKeys() {
+            const keys = [];
+            this.modules.forEach(m => {
+                if (m.id !== undefined) keys.push(m.id);
+                if (m.childrens && m.childrens.length) {
+                    m.childrens.forEach(c => {
+                        if (c.id !== undefined) keys.push(c.id);
+                    })
+                }
+            })
+            return keys;
+        },
+
+        toggleSelectAllModules(value) {
+            if (this.ignoreSelectAllChange) return
+            const keys = this.getAllModuleKeys();
+            if (value) {
+                if (this.$refs.treeLeft) this.$refs.treeLeft.setCheckedKeys(keys);
+                if (this.$refs.treeRight) this.$refs.treeRight.setCheckedKeys(keys);
+            } else {
+                if (this.$refs.treeLeft) this.$refs.treeLeft.setCheckedKeys([]);
+                if (this.$refs.treeRight) this.$refs.treeRight.setCheckedKeys([]);
+            }
+        },
+
+        updateSelectAllState() {
+            const allKeys = this.getAllModuleKeys();
+            if (allKeys.length === 0) {
+                this.ignoreSelectAllChange = true
+                this.selectAllModules = false
+                this.ignoreSelectAllChange = false
+                return
+            }
+            const leftChecked = this.$refs.treeLeft ? this.$refs.treeLeft.getCheckedKeys() : [];
+            const rightChecked = this.$refs.treeRight ? this.$refs.treeRight.getCheckedKeys() : [];
+            const checkedSet = new Set(leftChecked.concat(rightChecked));
+            const allSelected = allKeys.every(k => checkedSet.has(k));
+            this.ignoreSelectAllChange = true
+            this.selectAllModules = allSelected
+            this.ignoreSelectAllChange = false
         },
 
 
@@ -906,7 +990,8 @@ export default {
                     .then((response) => {
                         this.form = response.data.data;
 
-                        this.$refs.tree.setCheckedKeys([]);
+                        if (this.$refs.treeLeft) this.$refs.treeLeft.setCheckedKeys([]);
+                        if (this.$refs.treeRight) this.$refs.treeRight.setCheckedKeys([]);
                         const preSelecteds = [];
                         const preSelectedsModules = this.form.modules;
                         const preSelectedsLevels = this.form.levels;
@@ -923,7 +1008,8 @@ export default {
                             });
                         });
                         setTimeout(() => {
-                            this.$refs.tree.setCheckedKeys(preSelecteds);
+                            if (this.$refs.treeLeft) this.$refs.treeLeft.setCheckedKeys(preSelecteds);
+                            if (this.$refs.treeRight) this.$refs.treeRight.setCheckedKeys(preSelecteds);
                         }, 1000);
 
                     });
@@ -935,7 +1021,8 @@ export default {
             else 
             {
                 await this.$http.get(`/${this.resource}/tables`).then((response) => {
-                    this.$refs.tree.setCheckedKeys([]);
+                    if (this.$refs.treeLeft) this.$refs.treeLeft.setCheckedKeys([]);
+                    if (this.$refs.treeRight) this.$refs.treeRight.setCheckedKeys([]);
                     this.modules = response.data.modules;
                     this.establishments = response.data.establishments;
                     this.zones = response.data.zones;
@@ -955,7 +1042,9 @@ export default {
             })
         },
         submit() {
-            const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();
+            const leftNodes = this.$refs.treeLeft ? this.$refs.treeLeft.getCheckedNodes() : [];
+            const rightNodes = this.$refs.treeRight ? this.$refs.treeRight.getCheckedNodes() : [];
+            const modulesAndLevelsSelecteds = leftNodes.concat(rightNodes);
             const modules = [];
             modulesAndLevelsSelecteds.map((m) => {
                 if (m.is_parent) {

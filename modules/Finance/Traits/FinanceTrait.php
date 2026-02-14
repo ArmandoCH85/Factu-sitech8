@@ -21,7 +21,7 @@
     use App\Models\Tenant\CashDocumentPayment;
     use App\Models\Tenant\CashDocumentCredit;
     use App\Models\Tenant\CashDocument;
-
+    use Illuminate\Http\Exceptions\HttpResponseException;
 
 
     trait FinanceTrait
@@ -116,14 +116,21 @@
         public function getDestinationRecord($row)
         {
             if ($row['payment_destination_id'] === 'cash') {
-                $destination_id = $this->getCash()['cash_id'];
+                $cash = $this->getCash();
+
+                if (!$cash || !isset($cash['cash_id'])) {
+                    // Lanza una excepción con el mensaje y código de error
+                    throw new HttpResponseException(response()->json([
+                        'message' => 'Debe abrir la caja primero.'
+                    ], 400));
+                }
+
+                $destination_id = $cash['cash_id']; // Usa la variable $cash ya validada
                 $destination_type = Cash::class;
 
             } else {
-
                 $destination_id = $row['payment_destination_id'];
                 $destination_type = BankAccount::class;
-
             }
 
             return [
@@ -131,6 +138,7 @@
                 'destination_type' => $destination_type,
             ];
         }
+
 
         public function createCashDocumentPayment($payment, $isDocument = true)
         {

@@ -169,7 +169,13 @@ export default {
             titleDialog: null,
             resource: 'inventory',
             errors: {},
-            form: {},
+            form: {
+                item_id: null,
+                warehouse_id: null, // Campo para el almacén
+                lots_enabled: false,
+                series_enabled: false,
+                lots: []
+            },
             items: [],
             warehouses: [],
             inventory_transactions: [],
@@ -180,22 +186,46 @@ export default {
     //     this.initForm()
     // },
     methods: {
+        async mounted() {
+            try {
+                // Cargar almacenes desde el backend
+                const response = await axios.get('/api/warehouses'); // Cambia la URL si es necesario
+                this.warehouses = response.data.warehouses;
+                console.log('Almacenes cargados:', this.warehouses);
+            } catch (error) {
+                console.error('Error al cargar los almacenes:', error);
+            }
+        },
         async changeItem() {
             if (this.items.length > 0) {
-                if (this.type === 'output') {
-                    this.form.lots = []
-                    let item = await _.find(this.items, {'id': this.form.item_id})
-                    this.form.lots_enabled = item.lots_enabled
-                    let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
-                    // console.log(item)
-                    this.form.lots = lots
-                    this.form.lots_enabled = item.lots_enabled
-                    this.form.series_enabled = item.series_enabled
-                } else {
-                    let item = await _.find(this.items, {'id': this.form.item_id})
-                    this.form.lots_enabled = item.lots_enabled
-                    this.form.series_enabled = item.series_enabled
+                // Buscar el producto seleccionado
+                let item = await _.find(this.items, { id: this.form.item_id });
+                console.log('Producto seleccionado:', item);
+
+                if (item) {
+                    // Configurar las propiedades del formulario según el producto seleccionado
+                    this.form.lots_enabled = item.lots_enabled;
+                    this.form.series_enabled = item.series_enabled;
+
+                    // Si el producto tiene lotes, seleccionar el almacén del primer lote
+                    if (item.lots && item.lots.length > 0) {
+                        this.form.warehouse_id = item.lots[0].warehouse_id; // Autocompletar el almacén
+                        console.log('Almacén seleccionado:', this.form.warehouse_id);
+                    } else {
+                        // Si no hay lotes, asignar un valor predeterminado al almacén
+                        this.form.warehouse_id = this.warehouses.length > 0 ? this.warehouses[0].id : null;
+                        console.log('No hay lotes, asignando almacén predeterminado:', this.form.warehouse_id);
+                    }
+
+                    // Si el tipo es "output", filtrar los lotes por almacén
+                    if (this.type === 'output') {
+                        this.form.lots = [];
+                        let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
+                        this.form.lots = lots;
+                    }
                 }
+
+                // Ajustar la precisión según las propiedades del producto
                 this.ChangePrecision();
             }
         },

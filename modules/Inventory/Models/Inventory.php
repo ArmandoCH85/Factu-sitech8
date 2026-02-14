@@ -94,7 +94,7 @@ class Inventory extends ModelTenant
      */
     public function warehouse()
     {
-        return $this->belongsTo(Warehouse::class);
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
     /**

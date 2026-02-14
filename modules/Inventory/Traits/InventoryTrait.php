@@ -165,7 +165,12 @@ trait InventoryTrait
     public function optionsItemFull($search = null, $take = null, $search_item_by_barcode = false)
     {
         $query = Item::query()
-            ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
+            ->with([
+                'item_lots' => function ($q) {
+                    $q->with('warehouse'); // Cargar la relación con el almacén
+                },
+                'lots_group'
+            ])
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
 
@@ -217,7 +222,8 @@ trait InventoryTrait
                         'series' => $row1->series,
                         'date' => $row1->date,
                         'item_id' => $row1->item_id,
-                        'warehouse_id' => $row1->warehouse_id,
+                        'warehouse_id' => $row1->warehouse->id ?? null,
+                        'warehouse_description' => $row1->warehouse->description ?? null,
                         'has_sale' => (bool)$row1->has_sale,
                         'lot_code' => ($row1->item_loteable_type) ? (isset($row1->item_loteable->lot_code) ? $row1->item_loteable->lot_code : null) : null
                     ];

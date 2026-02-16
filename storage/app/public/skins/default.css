@@ -1924,12 +1924,12 @@ section.auth__form-right .auth__form .auth__social a{
     background-color: color-mix(in srgb, var(--primary-color) 10%, #ffffff00);
     color: var(--primary-color);
 }
-.establishment-selector-container{
-    padding: 0 15px 8px 15px !important;
-    margin-bottom: 0 !important;
+.establishment-selector-container .form-establishment{
+    padding: 0 .25rem;
 }
-.establishment-selector-container .form-group {
-    padding: 10px 15px;
+.establishment-selector-container {
+    margin: 10px 15px;
+    padding: 8px 13px;
     background-color: var(--accent-color);
     border-radius: 12px;
 }
@@ -1960,15 +1960,23 @@ html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
 .establishment-dropdown{
     border-color: var(--accent-color) !important;
     left: 65px !important;
-    top: 148% !important;
+    top: 105px !important;
 }
 .establishment-dropdown-header{
     background-color: var(--light-color) !important;
     color: var(--dark-color) !important;
     border-color: var(--accent-color) !important;
 }
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
     height: calc(100% - 105px) !important;
+}
+html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
+    height: calc(100% - 210px) !important;
+}
+.sidebar-multi-user-placeholder {
+    margin: 0 5px !important;
+    border-radius: 8px;
 }
 /************************************ tema morado ************************************/
 /* header */
@@ -3522,7 +3530,7 @@ html.dark .table-list-prices .btn-dropdown-toggle:active {
 html.dark label.control-label {
     color: var(--accent-color);
 }
-html.dark .establishment-selector-container .form-group{
+html.dark .establishment-selector-container{
     background-color: var(--contents-dark);
 }
 html.dark .contain-icon-establishment{

@@ -257,7 +257,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <h5>Mostrar selector de sucursal en el sidebar</h5>
+                    <h5>Permitir cambiar de empresa y sucursal desde el sidebar</h5>
                     <div>
                         <el-switch
                             v-model="branchSelectorInSidebar"

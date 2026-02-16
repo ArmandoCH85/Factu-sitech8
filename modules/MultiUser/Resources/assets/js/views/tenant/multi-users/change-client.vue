@@ -21,9 +21,9 @@
 
             <div class="col-md-12 pr-0 pl-0">
                 <div class="form-group">
-                    <label class="mt-0">Cambiar empresa:</label>
+                    <label class="control-label mt-1">Cambiar empresa:</label>
                     <select
-                        class="form-control"
+                        class="el-input__inner input-select-establishment"
                         v-model="form.multi_user_id"
                         name="multi_user_id"
                         @change="changeUser"
@@ -66,6 +66,15 @@ export default {
         async getRecords() {
             await this.$http.get(`/${this.resource}/records`).then(response => {
                 this.multi_users = response.data;
+                this.$nextTick(() => {
+                    try {
+                        const ev = new CustomEvent('tenant-multi-users-mounted', { bubbles: true });
+                        if (this.$el) this.$el.dispatchEvent(ev);
+                        else window.dispatchEvent(ev);
+                    } catch (e) {
+                        
+                    }
+                });
             });
         },
         sleep(ms) {

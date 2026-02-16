@@ -12,19 +12,63 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
 
 // Obtener configuración visual para selector de establecimiento
 $visual = $configuration->visual ?? null;
-$showInSidebar = false;
-if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
-    $showInSidebar = (bool)$visual->branch_selector_in_sidebar;
-} elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
-    $showInSidebar = (bool)$visual['branch_selector_in_sidebar'];
-}
+$showInSidebar = null; // will be resolved after multi-user calculation
 
 $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
+
+$multiUserCount = 0;
+if(config('configuration.multi_user_enabled')) {
+    try {
+        $website = app(\Hyn\Tenancy\Environment::class)->tenant();
+        $currentClient = \App\Models\System\Client::currentClientByWebsite($website)->first();
+        if($currentClient && auth()->check()) {
+            $currentUser = auth()->user();
+            if(!empty($currentUser->is_multi_user) && $currentUser->is_multi_user) {
+                $originMulti = \Modules\MultiUser\Models\System\MultiUser::find($currentUser->multi_user_id);
+                if($originMulti) {
+                    $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $originMulti->origin_client_id)
+                        ->where('origin_user_id', $originMulti->origin_user_id)
+                        ->count();
+                    $multiUserCount = $multiUserCount + 1;
+                } else {
+                    $multiUserCount = 0;
+                }
+            } else {
+                $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $currentClient->id)
+                    ->where('origin_user_id', $currentUser->id)
+                    ->count();
+                $multiUserCount = $multiUserCount + 1;
+            }
+        }
+    } catch (\Exception $e) {
+        $multiUserCount = 0;
+    }
+}
+$showMultiUser = $multiUserCount > 1 && config('configuration.multi_user_enabled');
+
+if (is_null($showInSidebar)) {
+    if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
+        $showInSidebar = (bool)$visual->branch_selector_in_sidebar;
+    } elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
+        $showInSidebar = (bool)$visual['branch_selector_in_sidebar'];
+    } else {
+        $showInSidebar = (count($establishments) > 1) || $showMultiUser;
+    }
+}
+
 $current = auth()->user()->establishment_id;
 $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishments) > 1;
 
+try {
+    $website = app(\Hyn\Tenancy\Environment::class)->tenant();
+    $currentClient = \App\Models\System\Client::currentClientByWebsite($website)->first();
+    $current_client_fqdn = $currentClient->hostname->fqdn ?? '';
+} catch (\Exception $e) {
+    $current_client_fqdn = '';
+}
+
 ?>
-<aside id="sidebar-left" class="sidebar-left {{ ($showInSidebar && $canShowBranchSelector) ? 'show-branch-selector' : 'no-branch-selector' }}">
+<aside id="sidebar-left" class="sidebar-left {{ ($showInSidebar && $canShowBranchSelector && $showMultiUser) ? 'show-both-selectors' : (($showInSidebar && ($canShowBranchSelector || $showMultiUser)) ? 'show-branch-selector' : '') }}">
     <div class="sidebar-header sidebar-header-desktop">
         <div class="logo-container-sidebar pe-2">
             <a href="{{ route('tenant.dashboard.index') }}" class="logo pt-2 pt-md-0">
@@ -52,44 +96,16 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
             <i class="fas fa-times"></i>
         </div>
     </div>
-    {{-- Selector de establecimiento --}}
-    @if ($canShowBranchSelector)
-        <div class="establishment-selector-container mb-2" id="sidebar-establishment-selector-container" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
-            <div class="form-group">
-                <label class="control-label mt-1">Cambiar Sucursal:</label>
-                <select
-                    class="el-input__inner input-select-establishment"
-                    name="establishment_selector"
-                    id="sidebar-establishment-selector"
-                    onchange="changeSidebarEstablishment(this.value)"
-                >
-                    @foreach($establishments as $establishment)
-                        <option
-                            value="{{ $establishment->id }}"
-                            {{ $establishment->id == $current ? 'selected' : '' }}
-                        >
-                            {{ $establishment->description }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    @endif
-    @if ($canShowBranchSelector)
-        <div class="contain-icon-establishment-wrapper" id="sidebar-establishment-icon-wrapper" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
-            <div class="contain-icon-establishment" id="establishment-icon-trigger" role="button" tabindex="0" aria-label="Cambiar sucursal">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 21l18 0"></path><path d="M4 21l0 -10"></path><path d="M20 21l0 -10"></path><path d="M5 11l14 0"></path><path d="M5 11l1 -6h12l1 6"></path><path d="M9 21l0 -8l6 0l0 8"></path></svg>
-            </div>
-            <div class="tooltip-right" role="tooltip">Cambiar sucursal</div>
-            <div class="establishment-dropdown" id="establishment-dropdown">
-                <div class="establishment-dropdown-header">
-                    <span>Cambiar Sucursal</span>
-                </div>
-                <div class="establishment-dropdown-content">
+
+    @if ($canShowBranchSelector || $showMultiUser)
+        <div class="establishment-selector-container mb-2" id="sidebar-selectors-container" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+            @if ($canShowBranchSelector)
+                <div class="form-group mb-1 form-establishment" id="sidebar-establishment-selector-container" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+                    <label class="control-label mt-1">Cambiar sucursal</label>
                     <select
                         class="el-input__inner input-select-establishment"
-                        name="establishment_selector_dropdown"
-                        id="dropdown-establishment-selector"
+                        name="establishment_selector"
+                        id="sidebar-establishment-selector"
                         onchange="changeSidebarEstablishment(this.value)"
                     >
                         @foreach($establishments as $establishment)
@@ -102,6 +118,61 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
                         @endforeach
                     </select>
                 </div>
+            @endif            
+
+            @if($showMultiUser)
+                <div class="sidebar-multi-user-selector-container" id="sidebar-multi-user-selector-container" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+                    <div class="sidebar-multi-user-selector-wrapper">
+                        <div class="sidebar-multi-user-placeholder" aria-hidden="true">
+                            <?xml version="1.0" encoding="utf-8"?><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2400 2400" xml:space="preserve"><g stroke-width="200" stroke-linecap="round" stroke="currentColor" fill="none" id="spinner"><line x1="1200" y1="600" x2="1200" y2="100"/><line opacity="0.5" x1="1200" y1="2300" x2="1200" y2="1800"/><line opacity="0.917" x1="900" y1="680.4" x2="650" y2="247.4"/><line opacity="0.417" x1="1750" y1="2152.6" x2="1500" y2="1719.6"/><line opacity="0.833" x1="680.4" y1="900" x2="247.4" y2="650"/><line opacity="0.333" x1="2152.6" y1="1750" x2="1719.6" y2="1500"/><line opacity="0.75" x1="600" y1="1200" x2="100" y2="1200"/><line opacity="0.25" x1="2300" y1="1200" x2="1800" y2="1200"/><line opacity="0.667" x1="680.4" y1="1500" x2="247.4" y2="1750"/><line opacity="0.167" x1="2152.6" y1="650" x2="1719.6" y2="900"/><line opacity="0.583" x1="900" y1="1719.6" x2="650" y2="2152.6"/><line opacity="0.083" x1="1750" y1="247.4" x2="1500" y2="680.4"/><animateTransform attributeName="transform" attributeType="XML" type="rotate" keyTimes="0;0.08333;0.16667;0.25;0.33333;0.41667;0.5;0.58333;0.66667;0.75;0.83333;0.91667" values="0 1199 1199;30 1199 1199;60 1199 1199;90 1199 1199;120 1199 1199;150 1199 1199;180 1199 1199;210 1199 1199;240 1199 1199;270 1199 1199;300 1199 1199;330 1199 1199" dur="0.83333s" begin="0s" repeatCount="indefinite" calcMode="discrete"/></g></svg>
+                            Cargando...
+                        </div>
+                        <tenant-multi-users-change-client class="sidebar-multi-user-selector"></tenant-multi-users-change-client>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+    @if ($canShowBranchSelector || $showMultiUser)
+        <div class="contain-icon-establishment-wrapper" id="sidebar-establishment-icon-wrapper" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+            <div class="contain-icon-establishment" id="establishment-icon-trigger" role="button" tabindex="0" aria-label="Cambiar sucursal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M3 21l18 0"></path><path d="M4 21l0 -10"></path><path d="M20 21l0 -10"></path><path d="M5 11l14 0"></path><path d="M5 11l1 -6h12l1 6"></path><path d="M9 21l0 -8l6 0l0 8"></path></svg>
+            </div>
+            <div class="tooltip-right" role="tooltip">Cambiar @if ($canShowBranchSelector) sucursal @endif @if ($canShowBranchSelector && $showMultiUser) o @endif @if ($showMultiUser) empresa @endif</div>
+            <div class="establishment-dropdown" id="establishment-dropdown">
+                <div class="establishment-dropdown-header">
+                    <span>Cambiar @if ($canShowBranchSelector) Sucursal @endif @if ($canShowBranchSelector && $showMultiUser) / @endif @if ($showMultiUser) Empresa @endif</span>
+                </div>
+                <div class="establishment-dropdown-content">
+                    @if ($canShowBranchSelector)
+                        <div id="branch-selector-dropdown" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+                            <label class="control-label mt-0">Cambiar sucursal:</label>
+                            <select
+                                class="el-input__inner input-select-establishment"
+                                name="establishment_selector_dropdown"
+                                id="dropdown-establishment-selector"
+                                onchange="changeSidebarEstablishment(this.value)"
+                            >
+                                @foreach($establishments as $establishment)
+                                    <option
+                                        value="{{ $establishment->id }}"
+                                        {{ $establishment->id == $current ? 'selected' : '' }}
+                                    >
+                                        {{ $establishment->description }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                    @if($showMultiUser)
+                        <div class="sidebar-multi-user-selector-container" id="multi-user-selector-dropdown" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
+                            <div class="sidebar-multi-user-selector-wrapper">
+                                <div class="sidebar-multi-user-placeholder" aria-hidden="true"></div>
+                                <tenant-multi-users-change-client class="sidebar-multi-user-selector"></tenant-multi-users-change-client>
+                            </div>
+                        </div>
+                    @endif
+                </div>                
             </div>
         </div>
     @endif
@@ -1826,32 +1897,118 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
         // Listener para cambios de visibilidad del selector de establecimiento en sidebar
         window.addEventListener('branchSelectorVisibilityChanged', function(event) {
             const selectorContainer = document.getElementById('sidebar-establishment-selector-container');
+            const sidebarSelectorsContainer = document.getElementById('sidebar-selectors-container');
+            const multiuserSelector = document.getElementById('sidebar-multi-user-selector-container');
             const iconWrapper = document.getElementById('sidebar-establishment-icon-wrapper');
+            const branchSelectorDropdown = document.getElementById('branch-selector-dropdown');
+            const multiUserSelectorDropdown = document.getElementById('multi-user-selector-dropdown');
             const sidebar = document.getElementById('sidebar-left');
-            
-            if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
-                const showInSidebar = !event.detail.showInHeader;
-                
-                if (selectorContainer) {
-                    selectorContainer.style.display = showInSidebar ? 'block' : 'none';
-                }
-                
-                if (iconWrapper) {
-                    iconWrapper.style.display = showInSidebar ? 'block' : 'none';
-                }
 
-                if (sidebar) {
-                    sidebar.classList.toggle('show-branch-selector', showInSidebar);
-                    sidebar.classList.toggle('no-branch-selector', !showInSidebar);
+            let showInSidebarEvent;
+            if (event.detail) {
+                if (typeof event.detail.showInSidebar !== 'undefined') {
+                    showInSidebarEvent = !!event.detail.showInSidebar;
+                } else if (typeof event.detail.showInHeader !== 'undefined') {
+                    showInSidebarEvent = !event.detail.showInHeader;
                 }
             }
+
+            if (typeof showInSidebarEvent !== 'undefined') {
+                
+                if (selectorContainer) {
+                    selectorContainer.style.display = showInSidebarEvent ? 'block' : 'none';
+                }
+                if (sidebarSelectorsContainer) {
+                    sidebarSelectorsContainer.style.display = showInSidebarEvent ? 'block' : 'none';
+                }
+                if (multiuserSelector) {
+                    multiuserSelector.style.display = showInSidebarEvent ? 'block' : 'none';
+                }
+                if (iconWrapper) {
+                    iconWrapper.style.display = showInSidebarEvent ? 'block' : 'none';
+                }
+                if (branchSelectorDropdown) {
+                    branchSelectorDropdown.style.display = showInSidebarEvent ? 'block' : 'none';
+                }
+                if (multiUserSelectorDropdown) {
+                    multiUserSelectorDropdown.style.display = showInSidebarEvent ? 'block' : 'none';
+                }
+
+                var shouldShowBranch = !!selectorContainer && showInSidebarEvent;
+                var shouldShowMulti = !!multiuserSelector && showInSidebarEvent;
+
+                if (sidebar) {
+                    sidebar.classList.remove('show-branch-selector', 'show-both-selectors', 'no-branch-selector');
+                    if (shouldShowBranch && shouldShowMulti) {
+                        sidebar.classList.add('show-both-selectors');
+                    } else if (shouldShowBranch || shouldShowMulti) {
+                        sidebar.classList.add('show-branch-selector');
+                    } else {
+                        sidebar.classList.add('no-branch-selector');
+                    }
+                }
+            }
+        });
+
+        // Función global para actualizar la visibilidad del selector desde cualquier script sin recargar
+        window.updateBranchSelectorVisibility = function(showInSidebar) {
+            const ev = new CustomEvent('branchSelectorVisibilityChanged', { detail: { showInSidebar: !!showInSidebar } });
+            window.dispatchEvent(ev);
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrappers = document.querySelectorAll('.sidebar-multi-user-selector-wrapper');
+            wrappers.forEach(function(wrap) {
+                const placeholder = wrap.querySelector('.sidebar-multi-user-placeholder');
+                const tenantEl = wrap.querySelector('tenant-multi-users-change-client');
+                if (!tenantEl || !placeholder) return;
+
+                const removePlaceholder = function() {
+                    placeholder.style.transition = 'opacity .25s ease';
+                    placeholder.style.opacity = '0';
+                    setTimeout(function() { if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder); }, 300);
+                };
+
+                const checkAndRemove = function() {
+                    try {
+                        if (tenantEl.offsetHeight > 0) { removePlaceholder(); return true; }
+                        if (tenantEl.innerHTML && tenantEl.innerHTML.trim().length > 0) { removePlaceholder(); return true; }
+                    } catch (e) { }
+                    return false;
+                };
+
+                if (checkAndRemove()) return;
+
+                const mo = new MutationObserver(function() {
+                    if (checkAndRemove()) mo.disconnect();
+                });
+
+                mo.observe(tenantEl, { childList: true, subtree: true, attributes: true });
+
+                setTimeout(function() { if (document.body.contains(placeholder)) removePlaceholder(); mo.disconnect(); }, 3000);
+            });
+        });
+
+        document.addEventListener('tenant-multi-users-mounted', function(e) {
+            try {
+                const wrapper = e.target.closest && e.target.closest('.sidebar-multi-user-selector-wrapper');
+                const placeholder = wrapper ? wrapper.querySelector('.sidebar-multi-user-placeholder') : null;
+                if (placeholder) {
+                    placeholder.style.transition = 'opacity .18s ease';
+                    placeholder.style.opacity = '0';
+                    setTimeout(function() { if (placeholder.parentNode) placeholder.parentNode.removeChild(placeholder); }, 220);
+                }
+            } catch (err) { }
         });
     });
 </script>
 
 <style>
     html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
-        height: calc(100% - 122px);
+        height: calc(100% - 130px);
+    }
+    html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
+        height: calc(100% - 184px);
     }
     html.no-overflowscrolling .nano {
         height: calc(100% - 50px);
@@ -1942,7 +2099,7 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
     .establishment-dropdown {
         position: absolute;
         left: 50px;
-        top: 105%;
+        top: 94px;
         transform: translateY(-50%);
         background-color: #fff;
         border: 1px solid #e0e6f8;
@@ -1971,7 +2128,7 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
     }
 
     .establishment-dropdown-content {
-        padding: 15px;
+        padding: 10px 15px 15px 15px;
     }
 
     .tooltip-right {
@@ -2012,5 +2169,47 @@ $canShowBranchSelector = auth()->user()->type == 'admin' && count($establishment
     .contain-icon-establishment.active ~ .tooltip-right {
         opacity: 0;
         visibility: hidden;
+    }
+
+    .establishment-selector-container {
+        min-height: 76px;
+    }
+
+    .sidebar-multi-user-selector-wrapper {
+        min-height: 56px;
+        display: block;
+        position: relative;
+    }
+
+    .sidebar-multi-user-placeholder {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 58px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #eeeeee50 25%, #f5f5f598 50%, #eeeeee4f 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s linear infinite;
+        z-index: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sidebar-multi-user-placeholder svg{
+        width: 12px;
+        height: 12px;
+        margin-right: 5px
+    }        
+    tenant-multi-users-change-client.sidebar-multi-user-selector {
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
     }
 </style>

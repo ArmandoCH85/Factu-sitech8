@@ -123,3 +123,13 @@ if (mainWrapper) {
         el: '#main-wrapper'
     });
 }
+
+const sidebarMultiUserRoots = document.querySelectorAll('.sidebar-multi-user-selector-container');
+if (sidebarMultiUserRoots && sidebarMultiUserRoots.length) {
+    sidebarMultiUserRoots.forEach((el) => {
+        new Vue({
+            store: store,
+            el: el
+        });
+    });
+}

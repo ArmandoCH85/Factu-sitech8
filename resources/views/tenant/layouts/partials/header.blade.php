@@ -535,10 +535,23 @@
                                 $website = app(\Hyn\Tenancy\Environment::class)->tenant();
                                 $currentClient = \App\Models\System\Client::currentClientByWebsite($website)->first();
                                 if($currentClient && auth()->check()) {
-                                    $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $currentClient->id)
-                                        ->where('origin_user_id', auth()->user()->id)
-                                        ->count();
-                                    $multiUserCount = $multiUserCount + 1;
+                                    $currentUser = auth()->user();
+                                    if(!empty($currentUser->is_multi_user) && $currentUser->is_multi_user) {
+                                        $originMulti = \Modules\MultiUser\Models\System\MultiUser::find($currentUser->multi_user_id);
+                                        if($originMulti) {
+                                            $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $originMulti->origin_client_id)
+                                                ->where('origin_user_id', $originMulti->origin_user_id)
+                                                ->count();
+                                            $multiUserCount = $multiUserCount + 1;
+                                        } else {
+                                            $multiUserCount = 0;
+                                        }
+                                    } else {
+                                        $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $currentClient->id)
+                                            ->where('origin_user_id', $currentUser->id)
+                                            ->count();
+                                        $multiUserCount = $multiUserCount + 1;
+                                    }
                                 }
                             } catch (\Exception $e) {
                                 $multiUserCount = 0;
@@ -562,11 +575,11 @@
                     @endphp
 
                     @if($showDivider)
-                        <li class="divider my-2" id="header-branch-divider"></li>
+                        <li class="divider my-2" id="header-branch-divider" style="display: {{ $showInHeader ? 'block' : 'none !important' }};"></li>
 
-                        <li class="multi-user-content px-4 pb-1">
+                        <li id="header-branch-container" class="multi-user-content px-4 pb-1" style="display: {{ $showInHeader ? 'block' : 'none !important' }};">
                             @if($showMultiUser)
-                                <tenant-multi-users-change-client></tenant-multi-users-change-client>
+                                <tenant-multi-users-change-client id="header-multi-user-selector" style="display: {{ $showInHeader ? 'block' : 'none !important' }};"></tenant-multi-users-change-client>
                             @endif
                             {{-- <div id="reception-component-container" style="width: 100%;">
                                 <reception-component
@@ -584,7 +597,7 @@
                                 id="header-establishment-selector"
                                 :establishments='@json($establishments)'
                                 :current_establishment={{ $current }}
-                                style="display: {{ $showInHeader ? 'block' : 'none' }};"
+                                style="display: {{ $showInHeader ? 'block' : 'none !important' }};"
                                ></tenant-hotel-sucursale>
                             @endif
                         </li>
@@ -707,18 +720,30 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('branchSelectorVisibilityChanged', function(event) {
+            const headerBranchContainer = document.getElementById('header-branch-container');
             const headerSelector = document.getElementById('header-establishment-selector');
+            const headerMultiUser = document.getElementById('header-multi-user-selector');
             const headerDivider = document.getElementById('header-branch-divider');
 
-            if (!headerSelector) {
+            if (!headerBranchContainer) {
+                if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
+                    if (headerSelector) headerSelector.style.display = event.detail.showInHeader ? 'block' : 'none';
+                    if (headerMultiUser) headerMultiUser.style.display = event.detail.showInHeader ? 'block' : 'none';
+                    if (headerDivider) headerDivider.style.display = event.detail.showInHeader ? 'block' : 'none';
+                }
                 return;
             }
 
             if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
-                headerSelector.style.display = event.detail.showInHeader ? 'block' : 'none';
+                const visible = event.detail.showInHeader;
+
+                headerBranchContainer.style.display = visible ? 'block' : 'none !important';
+
+                if (headerSelector) headerSelector.style.display = visible ? 'block' : 'none';
+                if (headerMultiUser) headerMultiUser.style.display = visible ? 'block' : 'none';
 
                 if (headerDivider) {
-                    headerDivider.style.display = event.detail.showInHeader ? 'block' : 'none';
+                    headerDivider.style.display = visible ? 'block' : 'none';
                 }
             }
         });

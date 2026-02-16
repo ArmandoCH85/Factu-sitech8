@@ -2544,7 +2544,6 @@ div.welcome-card .welcome-subtitle{
     background-color: oklch(calc(var(--base-l) + 0.71) calc(var(--base-c) - 0.0375) calc(var(--base-h) - 29.86));
 }
 .establishment-dropdown{
-    top: 125% !important;
     border-color: color-mix(in srgb, var(--black-highlight) 96%, #000000) !important;
     border-radius: 10px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -3389,9 +3388,6 @@ html.dark .establishment-dropdown-header {
     background-color: var(--black-input-dark) !important;
     border-color: var(--black-border-dark) !important;
     color: var(--black-light) !important;
-}
-html.dark .establishment-dropdown{
-    top: 138% !important;
 }
 html.dark .contain-icon-establishment {
     color: var(--black-light) !important;

@@ -1,7 +1,7 @@
 <template>
     <div class="col-md-12 pr-0 pl-0 mt-1">
         <div class="form-group">
-            <label class="mt-0">Cambiar Sucursal:</label>
+            <label class="control-label mt-1">Cambiar Sucursal:</label>
 
             <!-- <button
             aria-expanded="false"
@@ -14,7 +14,7 @@
                 <span class="caret"></span>
         </button> -->
             <select
-                class="form-control"
+                class="el-input__inner input-select-establishment"
                 name="multi_user_id"
                 @change="clickChangeEstablishment()"
                 v-model="establishment_id"

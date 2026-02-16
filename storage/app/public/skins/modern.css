@@ -994,14 +994,14 @@ html.sidebar-light .establishment-selector-container{
 .establishment-dropdown{
     border-color: #E0E6F7 !important;
     left: 65px !important;
-    top: 140% !important;
 }
 .establishment-dropdown-header{
     background-color: #f3f4fb !important;
     color: #66789c !important;
     border-color: #E0E6F7 !important;
 }
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
     height: calc(100% - 104px) !important;
 }
 .el-tag{
@@ -1046,6 +1046,9 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selec
     border-color: #2346e8;
 }
 /* end */
+html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
+    height: calc(100% - 128px) !important;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

@@ -1327,14 +1327,17 @@ html.sidebar-light .establishment-selector-container{
 .establishment-dropdown{
     border-color: var(--accent-color) !important;
     left: 65px !important;
-    top: 138% !important;
 }
 .establishment-dropdown-header{
     background-color: var(--light-color) !important;
     color: var(--dark-color) !important;
     border-color: var(--accent-color) !important;
 }
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano {
+html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
+    height: calc(100% - 130px) !important;
+}
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
+html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
     height: calc(100% - 104px) !important;
 }
 /* modo oscuro */

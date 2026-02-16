@@ -35,6 +35,9 @@ class PosCollection extends ResourceCollection
             $defaultImagePath = $defaultImage === 'imagen-no-disponible.jpg'
                 ? asset('logo/imagen-no-disponible.jpg')
                 : asset('storage/defaults/' . $defaultImage); 
+            
+            $allPricesLabel = PriceLabel::all();
+
 
             return [
                 'stock' => $row->getStockByWarehouse(),
@@ -76,8 +79,34 @@ class PosCollection extends ResourceCollection
                         $r->individual_item->description,
                     ];
                 }),
-                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) use($configuration){
+                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) use($configuration, $allPricesLabel){
                     $row->load('prices');
+                    $labels_id = $row->prices->pluck('price_label_id')->toArray();
+                    $prices = $row->prices->map(function($price)  {
+                            $price_label = $price->priceLabel;
+                                return [
+                                    'id'             => $price->id,
+                                    'price_label_id' => $price->price_label_id,
+                                    'position'       => $price_label->position,
+                                    'label'          => $price_label->label,
+                                    'price'          => $price ? number_format($price->price, 2, '.', '') : 0,
+                                    'is_active'      => $price ? (bool) $price->is_active : false,
+                                ];
+                            });
+                    
+                    
+                    $missingLabel = $allPricesLabel->whereNotIn('id', $labels_id)->first();
+
+                    if ($missingLabel) {
+                        $prices->push([
+                            'id' => null,
+                            'price_label_id' => $missingLabel->id,
+                            'position' => $missingLabel->position,
+                            'label' => $missingLabel->label,
+                            'price' => 0,
+                            'is_active' => $missingLabel->is_active
+                        ]);
+                    }
                     return [
                         'id' => $row->id,
                         'description' => "{$row->description}",
@@ -86,18 +115,7 @@ class PosCollection extends ResourceCollection
                         'quantity_unit' => number_format($row->quantity_unit, $configuration->decimal_quantity, ".",""),
                         'price_default' => $row->price_default,
                         'barcode' => $row->barcode ?? '',
-                        'prices' => PriceLabel::all()->map(function($price_label) use ($configuration, $row) {
-                                $price = $row->prices->firstWhere('price_label_id', $price_label->id);
-                                return [
-                                    'id'             => $price ? $price->id : null,
-                                    'price_label_id' => $price_label->id,
-                                    'position'       => $price_label->position,
-                                    'label'          => $price_label->label,
-                                    'price'          => $price ? number_format($price->price, $configuration->decimal_quantity, '.', '') : 0,
-                                    'is_active'      => $price ? (bool) $price->is_active : false,
-                                ];
-                            })->toArray(),
-
+                        'prices' => $prices->toArray(),
                     ];
                 }),
                 'unit_type' => $row->item_unit_types,

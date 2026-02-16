@@ -1280,39 +1280,79 @@ class Item extends ModelTenant
     protected function getItemUnitTypesWithPrices()
     {
         // Si ya es un array plano, retornar tal cual
+        $allPricesLabel = PriceLabel::all();
         if (is_array($this->item_unit_types)) {
             return $this->item_unit_types;
         }
 
         // Si es una Collection, verificar si los elementos son arrays o modelos Eloquent
         if ($this->item_unit_types instanceof \Illuminate\Database\Eloquent\Collection) {
-            $firstItem = $this->item_unit_types->first();
-
+            $itemPrices = $this->item_unit_types;
             // Si el primer elemento es un array, significa que ya fue transformado por getCollectionData()
-            if ($firstItem && is_array($firstItem)) {
+            if ($itemPrices && is_array($itemPrices)) {
                 return $this->item_unit_types;
             }
 
             // Si el primer elemento es un modelo Eloquent, cargar prices y transformar
-            if ($firstItem && is_object($firstItem)) {
-                // Cargar relación prices con priceLabel solo si aún no está cargada
-                if (!$firstItem->relationLoaded('prices')) {
-                    $this->loadMissing('item_unit_types.prices.priceLabel');
-                }
+            if ($itemPrices && is_object($itemPrices)) {
 
-                return $this->item_unit_types->map(function ($row) use ($firstItem) {
-                    // Obtener prices de la relación
-                    $prices = PriceLabel::all()->map(function($price_label)  use ($firstItem) {
-                        $price = $firstItem->prices->firstWhere('price_label_id', $price_label->id);
-                        return [
-                            'id'             => $price ? $price->id : null,
-                            'price_label_id' => $price_label->id,
-                            'position'       => $price_label->position,
-                            'label'          => $price_label->label,
-                            'price'          => $price ? number_format($price->price, 2, '.', '') : 0,
-                            'is_active'      => $price ? (bool) $price->is_active : false,
-                        ];
-                    })->toArray();
+                $itemPrices->each(function ($value, $key) {
+                    // Cargar relación prices con priceLabel solo si aún no está cargada
+                    if (!is_array($value)) {
+                        if (!$value->relationLoaded('prices')) {
+                            $value->loadMissing('prices.priceLabel');
+                        }
+                    }
+                });
+                return $this->item_unit_types->map(function ($row) use ($allPricesLabel) {
+
+                    if (is_array($row)) {
+                        $prices = collect($row['prices']);
+                    } else {
+                        $prices = $row->prices;
+                    }
+
+                    $labels_id = $prices->pluck('price_label_id')->toArray();
+
+                    $prices =  $prices->map(function($price)  {
+                        if (is_array($price)) {
+                            $price = (object) $price; // Convertir array a objeto para acceder a propiedades
+                            return [
+                                'id'             => $price->id,
+                                'price_label_id' => $price->price_label_id,
+                                'position'       => $price->position,
+                                'label'          => $price->label,
+                                'price'          => $price ? number_format($price->price, 2, '.', '') : 0,
+                                'is_active'      => $price ? (bool) $price->is_active : false,
+                            ];
+                        } else {
+                            $price_label = $price->priceLabel;
+                                return [
+                                    'id'             => $price->id,
+                                    'price_label_id' => $price->price_label_id,
+                                    'position'       => $price_label->position,
+                                    'label'          => $price_label->label,
+                                    'price'          => $price ? number_format($price->price, 2, '.', '') : 0,
+                                    'is_active'      => $price ? (bool) $price->is_active : false,
+                                ];
+
+                        }
+                    });
+
+                    $missingLabel = $allPricesLabel->whereNotIn('id', $labels_id)->first();
+
+                    if ($missingLabel) {
+                        $prices->push([
+                            'id' => null,
+                            'price_label_id' => $missingLabel->id,
+                            'position' => $missingLabel->position,
+                            'label' => $missingLabel->label,
+                            'price' => 0,
+                            'is_active' => $missingLabel->is_active
+                        ]);
+                    }
+
+                    $row = (object) $row;
 
                     return [
                         'id' => $row->id,
@@ -1320,13 +1360,11 @@ class Item extends ModelTenant
                         'item_id' => $row->item_id,
                         'unit_type_id' => $row->unit_type_id,
                         'quantity_unit' => $row->quantity_unit,
-                        'price1' => $row->price1,
-                        'price2' => $row->price2,
-                        'price3' => $row->price3,
                         'price_default' => $row->price_default,
                         'barcode' => $row->barcode,
                         'prices' => $prices,
                     ];
+
                 })->values();
             }
         }

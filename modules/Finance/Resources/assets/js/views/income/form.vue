@@ -200,7 +200,6 @@
     import IncomeFormItem from './partials/item.vue'
     import IncomeOptions from './partials/options.vue'
     import {functions, exchangeRate} from '@mixins/functions'
-    import Swal from 'sweetalert2';
 
 
     export default {
@@ -376,23 +375,9 @@
                     })
                     .catch(error => {
                         if (error.response && error.response.data && error.response.data.message) {
-                            // Muestra el mensaje del backend con SweetAlert
-                            Swal.fire({
-                                text: error.response.data.message,
-                                icon: 'error',
-                                confirmButtonText: 'Aceptar',
-                                customClass: {
-                                    confirmButton: 'btn btn-primary',
-                                    popup: 'border rounded shadow-lg p-3'
-                                },
-                                buttonsStyling: false
-                            });
+                            this.$message.error(error.response.data.message)
                         } else {
-                            // Mensaje genérico si no hay mensaje en la respuesta
-                            this.$alert('Ocurrió un error inesperado en el servidor.', 'Error', {
-                                confirmButtonText: 'Aceptar',
-                                type: 'error'
-                            });
+                            this.$message.warning('Ocurrió un error inesperado en el servidor.')
                         }
                     })
 

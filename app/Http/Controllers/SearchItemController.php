@@ -732,6 +732,7 @@
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $detail = self::getFullDescriptionToSaleNote($row, $warehouse);
+                // dd($row->item_unit_types);
                 return [
                     'id' => $row->id,
                     'full_description' => $detail['full_description'],
@@ -759,7 +760,9 @@
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];
                     }),
-                    'item_unit_types' => $row->item_unit_types,
+                    'item_unit_types' => $row->item_unit_types->transform(function ($iut) {
+                        return $iut->getCollectionData();
+                    }),
                     'lots' => [],
                     'lots_group' => collect($row->lots_group)->transform(function ($row) {
                         return [

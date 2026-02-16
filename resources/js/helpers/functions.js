@@ -350,7 +350,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     row.total_without_rounding = total
 
 
-    if (row.affectation_igv_type.free) {
+    if (row.affectation_igv_type && row.affectation_igv_type.free) {
         row.price_type_id = '02'
         row.unit_value = 0
         // row.total_value = 0

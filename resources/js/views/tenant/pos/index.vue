@@ -1970,10 +1970,9 @@ export default {
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
             let presentation = item.presentation;
-
-            
             let exist_item = false;
-            if (this.selected_option_price) {
+
+            if (this.selected_option_price && !input) {
                 exist_item = _.filter(this.form.items, {
                     item_id: item.item_id,
                     unit_type_id: item.unit_type_id

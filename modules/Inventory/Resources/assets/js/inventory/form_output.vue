@@ -175,7 +175,13 @@ export default {
             titleDialog: null,
             resource: 'inventory',
             errors: {},
-            form: {},
+            form: {
+                item_id: null,
+                warehouse_id: null, // Campo para el almacén
+                lots_enabled: false,
+                series_enabled: false,
+                lots: []
+            },
             items: [],
             warehouses: [],
             inventory_transactions: [],
@@ -187,19 +193,54 @@ export default {
         this.initForm()
     },
     methods: {
-        async changeItem() {
-            this.form.lots = []
-            let item = await _.find(this.items, {'id': this.form.item_id})
-            this.form.lots_enabled = item.lots_enabled
-            this.lotsAll = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
-            // console.log(item)
-            // this.form.lots = lots
-            this.form.lots_enabled = item.lots_enabled
-            this.form.series_enabled = item.series_enabled
-            this.form.lots_group = [];
-
-            this.lotsGroupAll = item.lots_group;
+        async mounted() {
+            try {
+                // Cargar almacenes desde el backend
+                const response = await axios.get('/api/warehouses'); // Cambia la URL si es necesario
+                this.warehouses = response.data.warehouses;
+                console.log('Almacenes cargados:', this.warehouses);
+            } catch (error) {
+                console.error('Error al cargar los almacenes:', error);
+            }
         },
+        async changeItem() {
+            this.form.lots = []; // Reiniciar los lotes
+            this.form.lots_group = []; // Reiniciar los grupos de lotes
+            this.lotsAll = []; // Reiniciar todos los lotes disponibles
+            this.lotsGroupAll = []; // Reiniciar todos los grupos de lotes disponibles
+
+            // Buscar el producto seleccionado
+            let item = await _.find(this.items, { id: this.form.item_id });
+            console.log('Producto seleccionado:', item);
+
+            if (item) {
+                // Configurar las propiedades del formulario según el producto seleccionado
+                this.form.lots_enabled = item.lots_enabled;
+                this.form.series_enabled = item.series_enabled;
+
+                // Si hay lotes disponibles, filtrarlos por almacén
+                if (item.lots && item.lots.length > 0) {
+                    this.lotsAll = item.lots; // Guardar todos los lotes del producto
+                    this.form.lots = _.filter(this.lotsAll, { warehouse_id: this.form.warehouse_id }); // Filtrar lotes por almacén
+                    console.log('Lotes filtrados:', this.form.lots);
+                } else {
+                    console.log('No hay lotes disponibles para este producto.');
+                }
+
+                // Si hay grupos de lotes, asignarlos
+                if (item.lots_group && item.lots_group.length > 0) {
+                    this.lotsGroupAll = item.lots_group;
+                    console.log('Grupos de lotes disponibles:', this.lotsGroupAll);
+                }
+
+                // Si no hay almacén seleccionado, asignar el primero disponible
+                if (!this.form.warehouse_id && this.warehouses.length > 0) {
+                    this.form.warehouse_id = this.warehouses[0].id;
+                    console.log('Almacén predeterminado asignado:', this.form.warehouse_id);
+                }
+            }
+        },
+
         // addRowOutputLot(lots) {
         //     this.form.lots = lots
         // },
@@ -279,53 +320,46 @@ export default {
             this.loading_search = false;
         },
         async submit() {
+            // Validar si se seleccionaron los lotes correctos
             if (this.form.lots.length > 0 && this.form.series_enabled) {
-                //let select_lots = await _.filter(this.form.lots, {'has_sale': true})
                 if (this.form.lots.length !== parseInt(this.form.quantity)) {
                     return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
                 }
             }
-            if (this.form.lots_enabled) {
-                if (!this.form.IdLoteSelected)
-                    return this.$message.error('Debe seleccionar un lote.');
+
+            if (this.form.lots_enabled && !this.form.IdLoteSelected) {
+                return this.$message.error('Debe seleccionar un lote.');
             }
 
-            // let _lots_group = [];
-            // _.forEach(this.form.lots_group, row => {
-            //     _lots_group.push({
-            //         'checked': row.checked,
-            //         'code': row.code,
-            //         'date_of_due': row.date_of_due,
-            //         'id': row.id,
-            //         'quantity': row.quantity,
-            //     })
-            // })
-            //this.form.lots_group = _.head(this.form.lots_group);
-            this.loading_submit = true
-            this.form.type = this.type
-            // console.log(this.form)
+            if (!this.form.warehouse_id) {
+                return this.$message.error('Debe seleccionar un almacén.');
+            }
+
+            this.loading_submit = true;
+            this.form.type = this.type;
+
             await this.$http.post(`/${this.resource}/transaction`, this.form)
                 .then(response => {
                     if (response.data.success) {
-                        this.$message.success(response.data.message)
-                        this.$eventHub.$emit('reloadData')
-                        this.close()
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit('reloadData');
+                        this.close();
                     } else {
-                        this.$message.error(response.data.message)
+                        this.$message.error(response.data.message);
                     }
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
-                        this.errors = error.response.data
-                        // console.log(error.response.data)
+                        this.errors = error.response.data;
                     } else {
-                        console.log(error)
+                        console.error(error);
                     }
                 })
-                .then(() => {
-                    this.loading_submit = false
-                })
+                .finally(() => {
+                    this.loading_submit = false;
+                });
         },
+
         close() {
             this.$emit('update:showDialog', false)
             this.initForm()

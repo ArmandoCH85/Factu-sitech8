@@ -640,7 +640,7 @@
                                     </thead>
                                     <tbody>
                                         <template v-for="(row, index) in form.item_unit_types">
-                                            <tr :key="'unit-' + index" :class="{'border-bottom-dashed': row.showPrices === true}">
+                                            <tr :key="'unit-' + index" class="border-0 border-bottom-prices-list">
                                                 <td class="text-center align-middle">
                                                     <button
                                                         type="button"
@@ -701,9 +701,10 @@
                                             <tr
                                                 v-show="row.showPrices === true"
                                                 :key="'prices-' + index"
-                                                class="prices-row border-top-dashed"
-                                            >
-                                                <td :colspan="config.enable_list_product ? 5 : 4" class="p-3">
+                                                class="prices-row"
+                                            >   
+                                                <td></td>
+                                                <td colspan="3" class="pt-0 pb-2 td-prices-list">
                                                     <ItemPricesTable
                                                         v-model="row.prices"
                                                         :price-labels="{
@@ -713,6 +714,7 @@
                                                         }"
                                                     />
                                                 </td>
+                                                <td v-if="config.enable_list_product"></td>
                                             </tr>
                                         </template>
                                     </tbody>

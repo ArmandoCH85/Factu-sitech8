@@ -22041,6 +22041,18 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selecto
     border-color: var(--success);
     background-color: transparent;
 }
+.btn-copy-token,
+.btn-view-token {
+    border: none;
+    background-color: transparent;
+    margin-left: 4px;
+}
+.btn-copy-token.copied{
+    color: var(--success) !important;
+}
+.border-bottom-prices-list{
+    border-bottom: 0 solid transparent !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

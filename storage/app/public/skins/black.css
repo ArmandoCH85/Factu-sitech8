@@ -2598,7 +2598,6 @@ div.welcome-card .welcome-subtitle{
     border-radius: 10px;
 }
 .container-tag-editor .template-card.default{
-    border-color: var(--success);
     background-color: transparent;
 }
 .container-tag-editor .template-card.select{

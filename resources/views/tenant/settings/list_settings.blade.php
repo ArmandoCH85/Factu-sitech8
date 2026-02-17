@@ -191,7 +191,7 @@
                         </li>
                     @endif
                     <li>
-                        <a href="{{route('tenant.item-editor-tag.index')}}">Editor de etiqueta
+                        <a href="{{route('tenant.item-editor-tag.index')}}" target="_blank">Editor de etiqueta
                                         <sup
                                         style="background: #ffc300;padding: 3px 3px;border-radius: 4px;">Nuevo</sup>
                         </a>

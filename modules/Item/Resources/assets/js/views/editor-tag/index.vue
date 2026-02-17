@@ -2,7 +2,7 @@
     <div class="container container-tag-editor p-0">
       <!-- HEADER -->
       <div class="header header-tag-editor">
-        <h2>Editor de Etiquetas</h2>
+        <h2 class="tag-title">Editor de Etiquetas</h2>
   
         <div class="header-center">
           <!-- Dimensiones -->
@@ -41,11 +41,11 @@
         </div>
   
         <div class="header-actions">
-          <el-button @click="downloadAsImage">
+          <el-button @click="downloadAsImage" :style="!canExport ? { pointerEvents: 'none', opacity: 0 } : {}">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo-down me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01" /><path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l4 4" /><path d="M14 14l1 -1c.653 -.629 1.413 -.815 2.13 -.559" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
             Descargar PNG
           </el-button>
-          <el-button @click="downloadAsPDF">
+          <el-button @click="downloadAsPDF" :style="!canExport ? { pointerEvents: 'none', opacity: 0 } : {}">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-download me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 17v-6" /><path d="M9.5 14.5l2.5 2.5l2.5 -2.5" /></svg>
             Descargar PDF
           </el-button>
@@ -277,7 +277,7 @@
   
           <!-- Limpiar todo -->
           <div class="tool-section">
-            <el-button class="btn btn-full" @click="clearCanvas">
+            <el-button class="btn btn-full" @click="clearCanvas()">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
               Limpiar Todo
             </el-button>
@@ -357,7 +357,7 @@
                     @click.stop="saveTemplate(tpl.id)"
                     title="Guardar diseño"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
                   </button>
                   <button
                     class="btn-icon btn-icon-tags destructive"
@@ -499,6 +499,10 @@
           )
         })
       }
+      ,
+      canExport () {
+        return (this.infoFields && this.infoFields.length > 0) || this.selectTemplate !== null
+      }
     },
   
     mounted () {
@@ -511,6 +515,7 @@
       document.addEventListener('mousemove', this.onMouseMove)
       document.addEventListener('mouseup', this.onMouseUp)
       document.addEventListener('keydown', this.onKeyDown)
+      window.addEventListener('beforeunload', this.beforeUnloadHandler)
     },
   
     beforeDestroy () {
@@ -518,6 +523,7 @@
       document.removeEventListener('mousemove', this.onMouseMove)
       document.removeEventListener('mouseup', this.onMouseUp)
       document.removeEventListener('keydown', this.onKeyDown)
+      window.removeEventListener('beforeunload', this.beforeUnloadHandler)
     },
   
     methods: {
@@ -727,7 +733,7 @@
         deleteBtn.textContent = '×'
         deleteBtn.onclick = ev => {
           ev.stopPropagation()
-          this.removeFieldByElement(field)
+          this.confirmRemoveField(field)
         }
   
         // Resize handle
@@ -792,7 +798,7 @@
           deleteBtn.textContent = '×'
           deleteBtn.onclick = ev => {
             ev.stopPropagation()
-            this.removeFieldByElement(field)
+            this.confirmRemoveField(field)
           }
   
           const resizeHandle = document.createElement('div')
@@ -818,6 +824,15 @@
   
           this.selectField(field)
           this.isDirty = true
+          const infoField = {
+            id: field.id,
+            type: 'image',
+            x: field.style.left,
+            y: field.style.top,
+            width: field.style.width,
+            height: field.style.height
+          }
+          this.infoFields.push(infoField)
         event.target.value = ''
       },
   
@@ -1031,20 +1046,53 @@
           this.showFieldProperties = false
         }
       },
+
+      confirmRemoveField(field) {
+        if (!field) return
+        this.$confirm('¿Estás seguro de eliminar este campo? Esta acción no se puede deshacer.', 'Confirmar', {
+          confirmButtonText: 'Eliminar',
+          cancelButtonText: 'Cancelar',
+          type: 'warning'
+        }).then(() => {
+          this.removeFieldByElement(field)
+        }).catch(() => {})
+      },
   
       deleteSelectedField () {
         if (!this.selectedField) return
-        this.removeFieldByElement(this.selectedField)
+        this.$confirm('¿Estás seguro de eliminar este campo? Esta acción no se puede deshacer.', 'Confirmar', {
+          confirmButtonText: 'Eliminar',
+          cancelButtonText: 'Cancelar',
+          type: 'warning'
+        }).then(() => {
+          this.removeFieldByElement(this.selectedField)
+        }).catch(() => {})
       },
   
-      clearCanvas () {
-        const canvas = this.$refs.labelCanvas
-        if (canvas) canvas.innerHTML = ''
-        this.uploadedImages = {}
-        this.selectedField = null
-        this.fieldCounter = 0
-        this.selectedTags = []
-        this.showFieldProperties = false
+      clearCanvas (skipConfirm = false) {
+        const doClear = () => {
+          const canvas = this.$refs.labelCanvas
+          if (canvas) canvas.innerHTML = ''
+          this.uploadedImages = {}
+          this.selectedField = null
+          this.fieldCounter = 0
+          this.selectedTags = []
+          this.showFieldProperties = false
+          this.infoFields = []
+        }
+
+        if (skipConfirm) {
+          doClear()
+          return
+        }
+
+        this.$confirm('¿Estás seguro de limpiar todo? Se perderán los cambios no guardados.', 'Confirmar', {
+          confirmButtonText: 'Limpiar',
+          cancelButtonText: 'Cancelar',
+          type: 'warning'
+        }).then(() => {
+          doClear()
+        }).catch(() => {})
       },
   
       // ---- BARRAS ----
@@ -1119,6 +1167,25 @@
       updateBarcodeStyle () {
         this.updateBarcode()
       },
+
+      beforeUnloadHandler (e) {
+        if (this.isDirty) {
+          const msg = 'Tienes una etiqueta en construcción. Si sales, se perderán los cambios.'
+          e.preventDefault()
+          e.returnValue = msg
+          return msg
+        }
+
+        const hasFields = this.infoFields && this.infoFields.length > 0
+        if (hasFields && this.selectTemplate === null) {
+          const msg = 'Tienes una etiqueta en construcción. Si sales, se perderán los cambios.'
+          e.preventDefault()
+          e.returnValue = msg
+          return msg
+        }
+
+        return undefined
+      },
   
       // ---- EXPORTAR ----
       async downloadAsImage () {
@@ -1146,12 +1213,29 @@
         })
   
         try {
-          const canvasImg = await window.html2canvas(canvas, {
+            const canvasImg = await window.html2canvas(canvas, {
             scale: 3,
             backgroundColor: '#ffffff',
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            onclone: (clonedDoc) => {
+              try {
+                const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]')
+                links.forEach(l => {
+                  try {
+                    if (l.href && l.href.includes('black.css')) l.remove()
+                  } catch (e) {}
+                })
+
+                const styles = clonedDoc.querySelectorAll('style')
+                styles.forEach(s => {
+                  try {
+                    if (s.textContent && s.textContent.includes('oklch')) s.remove()
+                  } catch (e) {}
+                })
+              } catch (e) {}
+            }
           })
   
           canvasImg.toBlob(blob => {
@@ -1209,7 +1293,23 @@
             backgroundColor: '#ffffff',
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            onclone: (clonedDoc) => {
+              try {
+                const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]')
+                links.forEach(l => {
+                  try {
+                    if (l.href && l.href.includes('black.css')) l.remove()
+                  } catch (e) {}
+                })
+                const styles = clonedDoc.querySelectorAll('style')
+                styles.forEach(s => {
+                  try {
+                    if (s.textContent && s.textContent.includes('oklch')) s.remove()
+                  } catch (e) {}
+                })
+              } catch (e) {}
+            }
           })
   
           const imgData = canvasImg.toDataURL('image/png')
@@ -1369,7 +1469,7 @@
               cancelButtonText: 'Cancelar',
               type: 'warning'
             }).then(() => {
-              this.clearCanvas()
+              this.clearCanvas(true)
               this.selectTemplate = null
               this.isDirty = false
             }).catch(() => {
@@ -1377,15 +1477,28 @@
             })
             return
           }
-
-          this.clearCanvas()
+          this.clearCanvas(true)
           this.selectTemplate = null
           return
         }
 
+        // Si no hay plantilla seleccionada actualmente pero ya existen campos
+        const canvas = this.$refs.labelCanvas
+        const hasFields = canvas && canvas.querySelectorAll('.field').length > 0
+        if (this.selectTemplate === null && hasFields) {
+          this.$confirm('Se perderán los cambios no guardados. ¿Deseas continuar?', 'Confirmar', {
+            confirmButtonText: 'Desechar cambios',
+            cancelButtonText: 'Cancelar',
+            type: 'warning'
+          }).then(() => {
+            this.proceedToApply(index)
+          }).catch(() => {})
+          return
+        }
+
         if (this.selectTemplate !== null && this.selectTemplate !== index && this.isDirty) {
-          this.$confirm('Se perderán los cambios no guardados. ¿Deseas continuar y cambiar de diseño?', 'Confirmar', {
-            confirmButtonText: 'Cambiar diseño',
+          this.$confirm('Se perderán los cambios no guardados. ¿Deseas continuar?', 'Confirmar', {
+            confirmButtonText: 'Desechar cambios',
             cancelButtonText: 'Cancelar',
             type: 'warning'
           }).then(() => {
@@ -1415,6 +1528,7 @@
         this.uploadedImages = {}
         this.selectedField = null
         this.fieldCounter = 0
+        this.infoFields = []
 
         template.fields.forEach((fieldData, index) => {
           const field = document.createElement('div')
@@ -1479,7 +1593,7 @@
           deleteBtn.textContent = '×'
           deleteBtn.onclick = e => {
             e.stopPropagation()
-            this.removeFieldByElement(field)
+            this.confirmRemoveField(field)
           }
 
           const resizeHandle = document.createElement('div')
@@ -1512,6 +1626,15 @@
           if (fieldNumber >= this.fieldCounter) {
             this.fieldCounter = fieldNumber
           }
+
+          this.infoFields.push({
+            id: field.id,
+            type: fieldData.type,
+            x: field.style.left,
+            y: field.style.top,
+            width: field.style.width,
+            height: field.style.height
+          })
         })
 
         this.selectTemplate = index
@@ -1550,7 +1673,7 @@
                 if (this.selectTemplate !== null) {
                   const tpl = this.templates[this.selectTemplate]
                   if (tpl && tpl.id === id) {
-                    this.clearCanvas()
+                    this.clearCanvas(true)
                     this.selectTemplate = null
                   }
                 }

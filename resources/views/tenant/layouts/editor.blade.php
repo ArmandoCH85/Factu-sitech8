@@ -497,7 +497,6 @@
     position: relative;
   }
   .template-card.default {
-    border-color: hsl(142.1 76.2% 36.3%);
     background: hsl(142.1 76.2% 36.3% / 0.05);
   }
   .template-name {

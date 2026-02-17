@@ -109,7 +109,7 @@
         </form>
     <el-dialog :visible.sync="showDialogEditor"
                width="80%"
-               custom-class="no-top"
+               custom-class="no-top tag-editor-dialog"
 
                >
                <iframe src="/item-editor-tag" width="100%" height="800px"></iframe>
@@ -119,8 +119,12 @@
 
 <style>
     .no-top {
-  margin-top: 2vh !important;
-}
+      margin-top: 2vh !important;
+    }
+    .tag-editor-dialog .el-dialog__header,
+    .tag-editor-dialog .el-dialog__body {
+        padding: 0;
+    }
 </style>
 
 <script>

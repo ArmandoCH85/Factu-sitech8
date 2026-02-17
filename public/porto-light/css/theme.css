@@ -22038,7 +22038,6 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selecto
   color: var(--success) !important;
 }
 .container-tag-editor .template-card.default{
-    border-color: var(--success);
     background-color: transparent;
 }
 .btn-copy-token,

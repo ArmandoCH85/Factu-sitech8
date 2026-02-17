@@ -22052,6 +22052,12 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selecto
 .border-bottom-prices-list{
     border-bottom: 0 solid transparent !important;
 }
+.container-tag-editor .header-center{
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

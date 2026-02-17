@@ -646,10 +646,8 @@
 }
 .btn-icon{
     border-radius: 8px;
-    padding: 2px !important;
+    padding: 3px !important;
     line-height: normal;
-    width: 23px;
-    height: 23px;
 }
 </style>
 <script>

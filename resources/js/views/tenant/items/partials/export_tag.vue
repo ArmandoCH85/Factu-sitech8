@@ -13,9 +13,12 @@
                     <!-- Minimo -->
                     <div class="col-6">
                         <div class="form-group">
-                            <label class="control-label">
+                            <label class="control-label w-100 d-flex justify-content-between">
                                 Tipo de etiqueta
-                                <a href="/" @click.prevent="showDialogEditor = true">[Abrir editor de etiqueta]</a>
+                                <a href="/" @click.prevent="showDialogEditor = true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
+                                    Editor de etiqueta
+                                </a>
                             </label>
                             <div>
                                 <el-select v-model="form.template_id">
@@ -107,13 +110,15 @@
                 </div>
             </div>
         </form>
-    <el-dialog :visible.sync="showDialogEditor"
-               width="80%"
-               custom-class="no-top tag-editor-dialog"
-
-               >
-               <iframe src="/item-editor-tag" width="100%" height="800px"></iframe>
-    </el-dialog>
+        <el-dialog
+            :visible.sync="showDialogEditor"
+            width="80%"
+            custom-class="no-top tag-editor-dialog"
+            title="Editor de Etiquetas"
+            :close-on-click-modal="false"
+        >
+            <iframe src="/item-editor-tag" width="100%" height="800px"></iframe>
+        </el-dialog>
     </el-dialog>
 </template>
 
@@ -121,7 +126,6 @@
     .no-top {
       margin-top: 2vh !important;
     }
-    .tag-editor-dialog .el-dialog__header,
     .tag-editor-dialog .el-dialog__body {
         padding: 0;
     }

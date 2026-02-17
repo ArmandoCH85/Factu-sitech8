@@ -114,7 +114,7 @@
     margin-right: 0.25rem;
   }
   .dimensions-controls input {
-    width: 60px;
+    width: 50px;
     padding: 0.25rem 0.5rem;
     border: 1px solid hsl(0 0% 89.8%);
     border-radius: 0.25rem;
@@ -171,11 +171,11 @@
   }
   .sidebar,
   .right-sidebar {
-    width: 340px;
     background: hsl(0 0% 100%);
     border-right: 1px solid hsl(0 0% 89.8%);
-    padding: 1.5rem;
+    padding: 1.2rem;
     overflow-y: auto;
+    min-width: 215px;
   }
   .right-sidebar {
     border-right: none;
@@ -503,7 +503,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      width: 100%;
+      width: calc(100% - 86px);
   }
 
   .template-text {
@@ -522,12 +522,10 @@
   .template-actions {
     display: flex;
     gap: 0.25rem;
-    width: 104px;
+    width: 86px;
     flex-shrink: 0;
   }
   .btn-icon {
-    width: 32px;
-    height: 32px;
     border-radius: 0.375rem;
     display: flex;
     align-items: center;
@@ -580,7 +578,7 @@
   </style>
   
 <body >
-<div id="main-wrapper">
+<div id="main-wrapper" class="pt-0">
     @yield('content')
 </div>
 

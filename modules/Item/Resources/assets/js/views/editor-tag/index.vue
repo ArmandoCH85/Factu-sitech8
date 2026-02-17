@@ -2,65 +2,69 @@
     <div class="container container-tag-editor p-0">
       <!-- HEADER -->
       <div class="header header-tag-editor">
-        <h2 class="tag-title">Editor de Etiquetas</h2>
+        <div>
+          <h2 v-if="showTitle" class="tag-title">Editor de Etiquetas</h2>          
+        </div>
   
         <div class="header-center">
           <!-- Dimensiones -->
           <div class="dimensions-controls">
-            <label>Ancho:</label>
             <input
               type="number"
               v-model.number="labelWidth"
               @change="updateCanvasSize"
             />
-            <span class="unit-label">mm</span>
-  
-            <label style="margin-left: 1rem;">Alto:</label>
+            <span class="unit-label">x</span>
             <input
               type="number"
               v-model.number="labelHeight"
               @change="updateCanvasSize"
             />
             <span class="unit-label">mm</span>
-          </div>
-  
-          <!-- Zoom -->
-          <div class="zoom-controls">
-            <button class="zoom-btn" @click="changeZoom(-0.1)" title="Alejar">-</button>
-            <span class="zoom-level">{{ zoomPercent }}%</span>
-            <button class="zoom-btn" @click="changeZoom(0.1)" title="Acercar">+</button>
-            <button
-              class="zoom-btn"
-              style="margin-left: 0.25rem; width: auto; padding: 0 0.5rem; font-size: 0.75rem;"
-              @click="resetZoom"
-              title="Zoom 100%"
-            >
-              1:1
-            </button>
-          </div>
+            <span>|</span>
+            <div class="d-flex align-items-center gap-1">            
+              <span class="zoom-level">{{ zoomPercent }}%</span>
+              <button class="zoom-btn" @click="changeZoom(-0.1)" title="Alejar">-</button>
+              <button class="zoom-btn" @click="changeZoom(0.1)" title="Acercar">+</button>                          
+            </div>
+          </div>          
         </div>
   
         <div class="header-actions">
-          <el-button @click="downloadAsImage" :style="!canExport ? { pointerEvents: 'none', opacity: 0 } : {}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-photo-down me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01" /><path d="M12.5 21h-6.5a3 3 0 0 1 -3 -3v-12a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v6.5" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l4 4" /><path d="M14 14l1 -1c.653 -.629 1.413 -.815 2.13 -.559" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
-            Descargar PNG
-          </el-button>
-          <el-button @click="downloadAsPDF" :style="!canExport ? { pointerEvents: 'none', opacity: 0 } : {}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-download me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M12 17v-6" /><path d="M9.5 14.5l2.5 2.5l2.5 -2.5" /></svg>
-            Descargar PDF
-          </el-button>
+          <el-popover placement="bottom" width="300" trigger="click" :visible.sync="downloadPopoverVisible">
+            <div class="">
+              <div class="form-group">
+                <label class="control-label">Formato de descarga</label>
+                <el-select v-model="downloadFormat" placeholder="Selecciona formato">
+                  <el-option label="PNG" value="png" />
+                  <el-option label="PDF" value="pdf" />
+                </el-select>                
+              </div>
+
+              <el-button type="primary" class="w-100 mt-3" @click="downloadFromDropdown" :disabled="!downloadFormat">
+                Descargar
+              </el-button>
+            </div>
+
+            <template #reference>
+              <el-button @click.stop>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+                Descargar
+              </el-button>
+            </template>
+          </el-popover>
         </div>
       </div>
   
       <!-- MAIN -->
       <div class="main-content">
         <!-- LEFT SIDEBAR -->
-        <div class="sidebar">
+        <div class="sidebar col-3">
           <!-- Datos del sistema -->
           <div class="tool-section">
             <h4 class="mt-0">Datos del Sistema</h4>
             <div class="input-group">
-              <label>Buscar y seleccionar datos</label>
+              <label>Seleccionar datos</label>
   
               <div class="w-100">
                 <!-- Tags seleccionados -->
@@ -286,7 +290,7 @@
   
         <!-- CANVAS -->
         <div
-          class="canvas-container"
+          class="canvas-container col-6"
           ref="canvasContainer"
           @click="handleCanvasContainerClick"
           @wheel.prevent="onCanvasWheel"
@@ -298,7 +302,7 @@
         </div>
   
         <!-- RIGHT SIDEBAR -->
-        <div class="right-sidebar">
+        <div class="right-sidebar col-3">
           <div class="tool-section">
             <h4>Diseños Guardados</h4>
             <div class="input-group">
@@ -314,12 +318,12 @@
               
               <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-pencil-check me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /><path d="M15 19l2 2l4 -4" /></svg>
 
-              {{ selectTemplate !== null ? 'Actualizar Diseño' : 'Guardar Diseño Actual' }}
+              {{ selectTemplate !== null ? 'Actualizar Diseño' : 'Guardar Diseño' }}
             </el-button>
 
             <el-button v-if="selectTemplate !== null" class="btn btn-secondary btn-full mt-2" @click="saveTemplate(null)">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
-              Guardar como Nuevo
+              Guardar Nuevo
             </el-button>
   
             <div style="margin-top: 1rem;">
@@ -468,6 +472,9 @@
         barcodeHeight: 50,
         barcodeDisplayValue: 'true',
         barcodeDisplayValueText: 'Sí',
+        // Descarga
+        downloadFormat: null,
+        downloadPopoverVisible: false,
   
         // Plantillas
         templates: [],
@@ -479,6 +486,13 @@
     computed: {
       zoomPercent () {
         return Math.round(this.currentZoom * 100)
+      },
+      showTitle () {
+        // Oculta el título cuando se ejecuta dentro de un iframe (p. ej. diálogo) o cuando la ruta es /items
+        const inIframe = (typeof window !== 'undefined') && window.self !== window.top
+        if (inIframe) return false
+        const path = (this.$route && this.$route.path) || (typeof window !== 'undefined' && window.location && window.location.pathname) || ''
+        return path !== '/items'
       },
       availableTags () {
         return Object.keys(this.dataLabels).map(key => ({
@@ -1333,6 +1347,16 @@
           alert('Error al generar el PDF: ' + error.message)
           this.restoreEditingElements(fields)
           canvas.style.transform = originalTransform
+        }
+      },
+
+      async downloadFromDropdown () {
+        if (!this.downloadFormat) return
+        this.downloadPopoverVisible = false
+        if (this.downloadFormat === 'png') {
+          await this.downloadAsImage()
+        } else if (this.downloadFormat === 'pdf') {
+          await this.downloadAsPDF()
         }
       },
   

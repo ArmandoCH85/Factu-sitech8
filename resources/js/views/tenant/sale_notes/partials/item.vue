@@ -485,7 +485,10 @@
                                                 v-show="p.is_active"
                                                 :key="p.id"
                                                 size="small"
-                                                @click.prevent="selectedPrice(row, p.price)"
+                                                @click.prevent="selectedPrice({
+                                                    unit_price: form.unit_price_value,
+                                                    ...row
+                                                }, p.price)"
                                             >
                                                 {{ p.label }} - {{ p.price }}
                                             </el-button>
@@ -1865,8 +1868,7 @@ export default {
                 this.form.unit_price_value = this.form.item.sale_unit_price;
                 this.form.item.unit_type_id = this.form.item.original_unit_type_id;
             } else {
-                let valor = parseFloat(price) || 0;
-                
+                let valor = Number(price) > 0 ?  Number(price) : row.unit_price;
                 this.form.item_unit_type_id = row.id;
                 this.item_unit_type = row;
                 this.form.unit_price = valor;

@@ -500,27 +500,18 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </h5>
+                            </div>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-light">
                                         <tr>
                                             <th class="text-center">Unidad</th>
                                             <th class="text-center">
                                                 Descripción
                                             </th>
                                             <th class="text-center">Factor</th>
-                                            <th class="text-center">
-                                                {{ config.price1_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                {{ config.price2_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                {{ config.price3_label }}
-                                            </th>
-                                            <th class="text-center">
-                                                Precio Default
-                                            </th>
-                                            <th></th>
+                                            <th class="text-center">Precios</th>
+                                            <!-- <th class="text-center">Precio Default</th>
+                                        <th></th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -529,46 +520,50 @@
                                             index) in form.item_unit_types"
                                             :key="index"
                                         >
-                                            <td class="text-center">
+                                            <td
+                                                class="text-center align-middle"
+                                            >
                                                 {{ row.unit_type_id }}
                                             </td>
-                                            <td class="text-center">
+                                            <td
+                                                class="text-center align-middle"
+                                            >
                                                 {{ row.description }}
                                             </td>
-                                            <td class="text-center">
+                                            <td
+                                                class="text-center align-middle"
+                                            >
                                                 {{ row.quantity_unit }}
                                             </td>
-                                            <td class="text-center">
-                                                {{ row.price1 }}
+                                            <td class="text-center align-middle">
+                                                <div v-if="row.prices && row.prices.length" class="d-flex justify-content-center flex-wrap gap-1">
+                                                    <el-button
+                                                        v-for="p in row.prices"
+                                                        v-show="p.is_active"
+                                                        :key="p.id"
+                                                        size="small"
+                                                        @click.prevent="selectedPrice({
+                                                            unit_price: form.unit_price,
+                                                            ...row
+                                                        }, p.price)"
+                                                    >{{ p.label }} - {{ p.price }}</el-button>
+                                                </div>
+                                                <div v-else class="text-muted">
+                                                    <small>Sin precios configurados</small>
+                                                </div>
                                             </td>
-                                            <td class="text-center">
-                                                {{ row.price2 }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ row.price3 }}
-                                            </td>
-                                            <td class="text-center">
-                                                Precio {{ row.price_default }}
-                                            </td>
-                                            <td
-                                                class="series-table-actions text-right"
-                                            >
-                                                <button
-                                                    class="btn waves-effect waves-light btn-xs btn-success"
+                                            <!-- <td class="text-center">Precio {{ row.price_default }}</td>
+                                        <td class="series-table-actions text-right">
+                                            <button :class="getSelectedClass(row)"
+                                                    class="btn waves-effect waves-light btn-xs"
                                                     type="button"
-                                                    @click.prevent="
-                                                        selectedPrice(row)
-                                                    "
-                                                >
-                                                    <i
-                                                        class="el-icon-check"
-                                                    ></i>
-                                                </button>
-                                            </td>
+                                                    @click.prevent="selectedPrice(row)">
+                                                <i class="el-icon-check"></i>
+                                            </button>
+                                        </td> -->
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
                         </div>
 
                         <div class="col-md-12 mt-2" v-if="showDiscounts">
@@ -1644,8 +1639,10 @@ export default {
                     this.total_item / this.form.unit_price,
                     4
                 );
+                this.calculateTotal()
+                return true;
             }
-            this.calculateTotal();
+            return false
         },
         calculateTotal() {
             this.readonly_total = _.round(
@@ -1826,32 +1823,51 @@ export default {
             this.form.unit_price_value = price;
             this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
         },
-        selectedPrice(row) {
-            let valor = 0;
-            switch (row.price_default) {
-                case 1:
-                    valor = row.price1;
-                    break;
-                case 2:
-                    valor = row.price2;
-                    break;
-                case 3:
-                    valor = row.price3;
-                    break;
+        selectedPrice(row, amount = false) {
+            if (this.isSelectedPrice(row) && !amount) {
+                this.form.item_unit_type_id = null;
+                this.item_unit_type = {};
+                this.form.unit_price = this.form.item.sale_unit_price;
+                this.form.unit_price_value = this.form.item.sale_unit_price;
+                this.form.item.unit_type_id = this.form.item.original_unit_type_id;
+            } else {
+                let value = null;
+                if (amount) {
+                    value = Number(amount) > 0 ? Number(amount) : Number(row.unit_price);
+                } else {
+                    switch (row.price_default) {
+                        case 1:
+                            value = row.price1;
+                            break;
+                        case 2:
+                            value = row.price2;
+                            break;
+                        case 3:
+                            value = row.price3;
+                            break;
+                    }
+                }
+
+                this.form.item_unit_type_id = row.id;
+                this.item_unit_type = row;
+                this.form.unit_price = value;
+                this.form.unit_price_value = value;
+                this.form.item.unit_type_id = row.unit_type_id;
             }
-            this.form.item_unit_type_id = row.id;
-            this.item_unit_type = row;
-            this.form.unit_price = valor;
-            this.form.unit_price_value = valor;
-            this.form.item.unit_type_id = row.unit_type_id;
-            this.calculateQuantity();
-            this.getTables();
+            if (!this.calculateQuantity()) {
+                this.calculateTotal();
+            }
         },
         addRowLotGroup(id) {
             this.form.IdLoteSelected = id;
         },
+        isSelectedPrice(item_unit_type) {
+            if (!_.isEmpty(this.item_unit_type)) {
+                return this.item_unit_type.id === item_unit_type.id;
+            }
+            return false;
+        },
         clickLotGroup() {
-            console.log(this.form.lots_group);
             this.showDialogLots = true;
         },
         async clickSelectLots() {

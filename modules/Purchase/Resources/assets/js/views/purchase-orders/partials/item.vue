@@ -705,7 +705,9 @@ export default {
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv)
+
             this.row = this.changeWarehouse(this.row)
+            console.log(this.form, this.recordItem, this.row);
             if (this.recordItem) {
                 this.row.indexi = this.recordItem.indexi
             }
@@ -762,6 +764,7 @@ export default {
 
                     if(this.recordItem) {
                         this.form.unit_price = this.recordItem.unit_value
+                        this.form.item = _.find(this.items, {'id': this.form.item_id})
                         this.form.quantity = this.recordItem.quantity
                         this.form.affectation_igv_type = this.recordItem.affectation_igv_type
                         this.form.affectation_igv_type_id = this.recordItem.affectation_igv_type_id

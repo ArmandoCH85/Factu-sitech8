@@ -145,6 +145,28 @@
                                                                 {{ form.total_isc }}</p>
                         </div>
                     </div>
+                    <template v-if="form.has_retention">
+                    <div class="row m-0 p-0 bg-white d-flex align-items-center" v-if="form.has_retention">
+                        <div class="col-sm-6">
+                            <p class="mb-0">IMPORTE TOTAL</p>
+                        </div>
+                        <div class="col-sm-6 text-end">
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                {{ form.total }}</p>
+                        </div>
+                    </div>
+                    <div class="row m-0 p-0 bg-white d-flex align-items-center" v-if="form.has_retention">
+                        <div class="col-sm-6">
+                            <p class="mb-0">M. RETENCIÓN</p>
+                        </div>
+                        <div class="col-sm-6 text-end">
+                            <p class="font-weight-semibold mb-0">{{ currencyTypeActive.symbol }}
+                                                                {{ form.retention.amount }}</p>
+                        </div>
+                    </div>
+
+                    </template>
+
 
                 </template>
 
@@ -156,6 +178,18 @@
                         <p class="font-weight-semibold mb-0">{{currencyTypeActive.symbol}} 4.00</p>
                     </div>
                 </div> -->
+                <template v-if="form.has_retention">
+                    <div class="row mt-0 mb-3 justify-content-center m-0 text-secondary card-body pos-client-info">
+                        <div class="col-sm-6 p-0">
+                            <p class="font-weight-semibold text-sm text-secondary mb-0">TOTAL A PAGAR</p>
+                        </div>
+                        <div class="col-sm-6 p-0 text-end">
+                            <p class="font-weight-semibold text-sm text-secondary mb-0">{{ currencyTypeActive.symbol }} {{getTotal()}}</p>
+                        </div>
+                    </div>
+
+                </template>
+                <template v-else>
                 <div class="row mt-0 mb-3 justify-content-center m-0 text-secondary card-body pos-client-info">
                     <div class="col-sm-6 p-0">
                         <p class="font-weight-semibold text-sm text-secondary mb-0">TOTAL</p>
@@ -164,6 +198,8 @@
                         <p class="font-weight-semibold text-sm text-secondary mb-0">{{ currencyTypeActive.symbol }} {{form.total}}</p>
                     </div>
                 </div>
+
+                </template>
                 <div class="row m-0 p-0 d-flex align-items-center">
                     <div class="col-lg-12">
                         <button :disabled="button_payment && payment_method_type_id != '09'"
@@ -208,7 +244,7 @@
                         <el-radio-group v-model="form.document_type_id"
                                         size="small"
                                         @change="filterSeries">
-                            <el-radio-button label="01">FACTURA</el-radio-button>
+                            <el-radio-button  label="01">FACTURA</el-radio-button>
                             <el-radio-button label="03">BOLETA</el-radio-button>
                             <el-radio-button label="80">N. VENTA</el-radio-button>
                         </el-radio-group>
@@ -228,7 +264,8 @@
                                 <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total_payable_amount }}</h1>
                             </template>
                             <template v-else> -->
-                                <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ form.total }}</h1>
+
+                                <h1 class="mb-2 mt-0">{{ currencyTypeActive.symbol }} {{ getTotal() }}</h1>
                             <!-- </template> -->
                         </div>
                     </div>
@@ -503,7 +540,7 @@
         <multiple-payment-form
             :payments="payments"
             :showDialog.sync="showDialogMultiplePayment"
-            :total="form.total"
+            :total="getTotal()"
             @add="addRow"
             @setPaymentMethod="setPaymentMethod"
 
@@ -653,9 +690,6 @@ export default {
 
         await this.setInitialAmount()
 
-        await this.getFormPosLocalStorage()
-        // console.log(this.form.payments, this.payments)
-        // console.log(this.isPrint);
         if (!qz.websocket.isActive() && this.isPrint) {
             startConnection();
         }
@@ -666,8 +700,11 @@ export default {
             this.setTotalExchangePoints()
             this.checkUsedPointsByItem()
         }
+        await this.getFormPosLocalStorage()
+        
 
         this.setTotalPointsBySale(this.configuration)
+
 
     },
     mounted() {
@@ -690,7 +727,7 @@ export default {
         disabledDiscountForSeller()
         {
             return this.configuration.restrict_seller_discount && this.typeUser === 'seller';
-        }
+        },
     },
     methods:
     {
@@ -769,7 +806,7 @@ export default {
 
         },
         async setInitialAmount() {
-            this.enter_amount = this.form.total
+            this.enter_amount = this.getTotal() 
             // this.form.payments = this.payments
             // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
             await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
@@ -1062,21 +1099,45 @@ export default {
         calculatePayments() {
             let payment_count = this.form.payments.length;
             // let total = this.form.total;
-            let total = this.form.total
+            let total = this.getTotal()
 
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
-            // console.log(amount);
+            
             _.forEach(this.form.payments, row => {
                 payment += amount;
                 if (total - payment < 0) {
                     amount = _.round(total - payment + amount, 2);
                 }
                 row.payment = amount;
+                this.$set(row, 'payment', amount)
                 // console.error(row.payment)
             })
         },
-        deleteDiscountGlobal() {
+        calculateAmountToPayments() {
+            // if(this.form.payments.length > 0){
+            //     // this.form.payments[0].payment = this.form.total_pending_payment
+            // }
+            this.calculatePayments();
+            // this.calculateFee();
+        },
+        getTotal() {
+            let total_pay = this.form.total;
+            if (this.form.has_retention) {
+                total_pay -= this.form.retention.amount;
+            }
+
+            if (
+                !_.isEmpty(this.form.retention) &&
+                this.form.total_pending_payment > 0
+            ) {
+                return this.form.total_pending_payment;
+            }
+
+            // console.log('2');
+            return _.round(total_pay, 2)
+        },
+        deleteDiscountGlobal(kkj) {
 
             this.form.discounts = []
             this.form.total_discount = 0
@@ -1223,7 +1284,7 @@ export default {
         },
         inputAmount() {
 
-            this.difference = this.amount - this.form.total
+            this.difference = this.amount - this.getTotal()
             if(this.payment_method_type_id == '09') {
                 this.button_payment = false
             }
@@ -1232,7 +1293,7 @@ export default {
                 this.difference = "-"
             } else if (this.difference >= 0) {
                 this.button_payment = false
-                this.difference = this.amount - this.form.total
+                this.difference = this.amount - this.getTotal()
             } else {
                 this.button_payment = true
             }
@@ -1263,13 +1324,15 @@ export default {
                 card_brand_id: null,
                 document_id: null,
                 sale_note_id: null,
-                payment: this.form.total,
+                payment: this.getTotal(),
             }
 
             this.form_cash_document = {
                 document_id: null,
                 sale_note_id: null
             }
+
+            console.log(this.form_payment);
 
             this.is_discount_amount = true
 
@@ -1429,6 +1492,10 @@ export default {
                 await this.asignPlateNumberToItems()
             }
 
+            if (this.form.has_retention) {
+                this.setTotalPendingAmountRetention(this.form.retention.amount);
+            }
+
             this.loading_submit = true
             this.locked_submit = true
 
@@ -1530,8 +1597,6 @@ export default {
             if (!this.responseForm || !this.responseForm.links ) return;
 
             try {
-                console.log(this.responseForm);
-                
                 await this.printPdfFromUrl(this.responseForm.links.print_ticket);
             } catch (e) {
                 console.error('options autoPrint error', e);
@@ -1672,7 +1737,7 @@ export default {
                     }
                 })
         },
-        getTables() {
+        async getTables() {
             this.$http.get(`/${this.resource}/payment_tables`)
                 .then(response => {
                     this.all_series = response.data.series
@@ -1684,6 +1749,16 @@ export default {
                     this.setDefaultDocumentType()
                 })
 
+        },
+        setTotalPendingAmountRetention(amount) {
+            //monto neto pendiente aplica si la condicion de pago es credito
+            this.form.total_pending_payment = ["02", "03"].includes(
+                this.form.payments.length == 0 ? '02' : '01'
+            )
+                ? this.form.total - amount
+                : 0;
+                
+            // this.calculateAmountToPayments();
         },
     }
 }

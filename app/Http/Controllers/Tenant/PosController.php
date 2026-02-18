@@ -219,6 +219,7 @@ class PosController extends Controller
                     'identity_document_type_id' => $row->identity_document_type_id,
                     'identity_document_type_code' => $row->identity_document_type->code,
                     'has_discount' => $row->has_discount,
+                    'is_agent_retention' => $row->is_agent_retention,
                     'discount_type' => $row->discount_type,
                     'discount_amount' => $row->discount_amount,
                     'plates' => $row->plates->transform(function ($plate) {

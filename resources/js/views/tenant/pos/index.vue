@@ -823,6 +823,19 @@
                                         {{ form.total_igv }}
                                     </td>
                                 </tr>
+                                <template v-if="form.has_retention">
+                                    <tr v-if="form.retention && form.retention.amount > 0" class="m-0">
+                                        <td>M. RETENCIÓN 
+                                                    ({{
+                                                        configuration.igv_retention_percentage
+                                                                    }}%):
+                                            </td>
+                                        <td class="text-end font-weight-semibold">
+                                            {{ currency_type.symbol }}
+                                            {{ form.retention.amount }}
+                                        </td>
+                                    </tr>
+                                </template>
                                 <tr v-if="form.total_isc > 0" class="m-0">
                                     <td>ISC</td>
                                     <td class="text-end font-weight-semibold">
@@ -1688,7 +1701,11 @@ export default {
             let customer = _.find(this.all_customers, {
                 id: this.form.customer_id
             });
+            
             this.customer = customer;
+            this.form.has_retention = customer.is_agent_retention
+            
+            this.validateCustomerRetention(customer.identity_document_type_id);
 
             if (this.configuration.default_document_type_80) {
                 this.form.document_type_id = "80";
@@ -1696,13 +1713,75 @@ export default {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
-                    customer.identity_document_type_id == "6" ? "01" : "03";
+                    customer.identity_document_type_id === "6" ? "01" : "03";
+            }
+
+            if (this.form.has_retention) {
+                this.changeRetention();
             }
 
             this.setLocalStorageIndex("customer", this.customer);
             this.setFormPosLocalStorage();
         },
+        changeRetention() {
+            if (this.form.has_retention) {
+                let base = this.form.total;
+                let percentage = _.round(
+                    parseFloat(this.configuration.igv_retention_percentage) / 100,
+                    5
+                );
+                let amount = _.round(base * percentage, 2);
 
+                let amount_pen = amount;
+                let amount_usd = _.round(
+                    amount / this.form.exchange_rate_sale,
+                    2
+                );
+                if (this.form.currency_type_id === "USD") {
+                    amount_usd = amount;
+                    amount_pen = _.round(
+                        amount * this.form.exchange_rate_sale,
+                        2
+                    );
+                }
+                this.form.retention = {
+                    base: base,
+                    code: "62", //Código de Retención del IGV
+                    amount: amount,
+                    percentage: percentage,
+                    currency_type_id: this.form.currency_type_id,
+                    exchange_rate: this.form.exchange_rate_sale,
+                    amount_pen: amount_pen,
+                    amount_usd: amount_usd
+                };
+
+                this.setDataVoucherRetention();
+            } else {
+                this.form.retention = {};
+                this.form.total_pending_payment = 0;
+
+            }
+        },
+        setDataVoucherRetention() {
+            if (this.isUpdateDocument && this.retention_query_data) {
+                this.form.retention.voucher_date_of_issue = this.retention_query_data.voucher_date_of_issue;
+                this.form.retention.voucher_number = this.retention_query_data.voucher_number;
+                this.form.retention.voucher_amount = this.retention_query_data.voucher_amount;
+                this.form.retention.voucher_filename = this.retention_query_data.voucher_filename;
+            }
+        },
+        validateCustomerRetention(identity_document_type_id) {
+            
+            if (identity_document_type_id != "6" || !this.form.has_retention) {
+                if (this.form.has_retention) {
+                    this.form.has_retention = false;
+                    this.changeRetention();
+                }
+                this.show_has_retention = false;
+            } else {
+                this.show_has_retention = true;
+            }
+        },
         getLocalStorageIndex(key, re_default = null) {
             let ls_obj = localStorage.getItem(key);
             ls_obj = JSON.parse(ls_obj);
@@ -1818,6 +1897,7 @@ export default {
                 reference_data: null,
                 is_print: true,
                 worker_full_name_tips: null, //propinas
+                total_pending_payment: 0,
                 total_tips: 0, //propinas
                 created_from_pos: true,
                 token_validated_for_discount: false,
@@ -1929,6 +2009,8 @@ export default {
             this.form.establishment_id = this.establishment.id;
             this.loading = true;
             await this.sleep(800);
+            this.form.payments = []
+            this.payments = []
             this.is_payment = true;
             this.loading = false;
         },
@@ -2360,6 +2442,10 @@ export default {
             // this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
 
             this.form.subtotal = this.form.total;
+
+            if (this.form.has_retention) {
+                this.changeRetention();
+            }
         },
         recalculateDecimalTotalTaxed(total, igv) {
             return total - igv;
@@ -2408,8 +2494,9 @@ export default {
         selectDefaultCustomer() {
             if (this.establishment.customer_id && !this.form.customer_id) {
                 this.form.customer_id = this.establishment.customer_id;
-                this.changeCustomer();
             }
+            this.changeCustomer();
+            
         },
         renderCategories(source) {
             const contex = this;

@@ -146,7 +146,7 @@
                                 <label class="control-label">Marca
                                 </label>
 
-                                <el-select v-model="form.brand_id" filterable  popper-class="el-select-customers"  clearable
+                                <el-select v-model="form.brand_id" filterable @change="clearDependentFilters" popper-class="el-select-customers"  clearable
                                     placeholder="Nombre de la marca">
                                     <el-option v-for="option in brands" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
@@ -340,6 +340,10 @@
             });
         },
         methods: {
+            clearDependentFilters() {
+                this.form.item_id = null;
+                this.form.person_id = null;
+            },
             checkScrollShadows() {
                 const el = this.$refs.scrollContainer;
                 if (!el) return;
@@ -475,7 +479,7 @@
                 this.loading_submit = await true
                 await this.getRecords()
                 this.loading_submit = await false
-
+                this.form.brand_id = null
             },
             getRecords() {
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {

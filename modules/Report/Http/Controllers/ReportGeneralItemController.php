@@ -81,7 +81,7 @@ class ReportGeneralItemController extends Controller
         $person_id = isset($request['person_id']) ? $request['person_id'] : null;
         $type_person = isset($request['type_person']) ? $request['type_person'] : null;
         $item_id = isset($request['item_id']) ? $request['item_id'] : null;
-        $brand_id = isset($request['brand_id']);
+        $brand_id = isset($request['brand_id']) ? $request['brand_id'] : null;
         $category_id = isset($request['category_id']) ? $request['category_id'] : null;
 
         $user_id = isset($request['user_id']) ? $request['user_id'] : null;

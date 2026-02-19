@@ -895,7 +895,7 @@ use App\Http\Controllers\Tenant\SaleNoteController;
          */
         public function suscription_plan()
         {
-            return $this->belongsTo(SuscriptionPlan::class);
+            return $this->belongsTo(SuscriptionPlan::class, 'suscription_plan_id');
         }
 
         /**

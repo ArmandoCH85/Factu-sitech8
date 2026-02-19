@@ -78,6 +78,7 @@
                             Route::post('/tables', 'PaymentsFullSuscriptionController@Tables');
                             Route::post('/record', 'PaymentsFullSuscriptionController@Record');
                             Route::post('/search/customers', 'PaymentsFullSuscriptionController@searchCustomer');
+                            Route::get('/payments-full-suscription/{id}/plan-period', 'PaymentsFullSuscriptionController@getPlanPeriod');
 
                         });
                         /**

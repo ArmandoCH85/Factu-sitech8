@@ -177,5 +177,37 @@
 
         }
 
+        public function getPlanPeriod($id)
+        {
+            $userRel = UserRelSuscriptionPlan::with('suscription_plan.cat_period')->findOrFail($id);
+
+            $plan = $userRel->suscription_plan;
+            $period = $plan->cat_period->period; // 'M', 'Y', etc.
+            $plan_name = $plan->name;
+
+            // Usando Carbon para fechas
+            $fecha_inicio = $userRel->created_at; // o el campo que uses como inicio
+
+            // Calcula el due_date según el periodo
+            switch ($period) {
+                case 'M':
+                    $due_date = Carbon::parse($fecha_inicio)->addMonth();
+                    break;
+                case 'Y':
+                    $due_date = Carbon::parse($fecha_inicio)->addYear();
+                    break;
+                default:
+                    $due_date = Carbon::parse($fecha_inicio);
+            }
+
+            return response()->json([
+                'suscription_plan_id' => $plan->id,
+                'plan_name' => $plan_name,
+                'period' => $period,
+                'due_date' => $due_date->format('Y-m-d'),
+            ]);
+        }
+
+
 
     }

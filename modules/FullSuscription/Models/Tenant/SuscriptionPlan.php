@@ -341,7 +341,7 @@
          */
         public function cat_period()
         {
-            return $this->belongsTo(CatPeriod::class);
+            return $this->belongsTo(CatPeriod::class, 'cat_period_id');
         }
 
         /**

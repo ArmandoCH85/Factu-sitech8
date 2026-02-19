@@ -159,7 +159,6 @@
 
                     <tr></tr>
                     <tr slot-scope="{ index, row }">
-                        {{ getDueDate(row.id) }}
                         <!-- # -->
                         <!-- <td>{{ index }}</td> -->
                         <!-- Fecha Emisión -->
@@ -180,10 +179,7 @@
 
                         <!-- F. Vencimiento -->
                         <td class="text-end">
-                            <span v-if="dueDates[row.id]">
-                                {{ formatDate(dueDates[row.id]) }}
-                            </span>
-                            <span v-else>Cargando...</span>
+                            {{ formatDate(row.due_date) }}
                         </td>
                         <!-- -- >
                         <td v-if="columns.total_exportation.visible"
@@ -477,13 +473,10 @@ export default {
     computed: {
         ...mapState([
             'config',
-            'resource',
-            'table_data',
         ])
     },
     data() {
         return {
-            dueDates: {}, // { id: due_date }
             showModalGenerateCPE: false,
             showMigrateNv: false,
             resource: "sale-notes",
@@ -557,11 +550,6 @@ export default {
         this.loadColumnVisibility();
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
-        this.$eventHub.$on('reloadData', () => {
-            this.$nextTick(() => {
-                this.table_data.forEach(row => this.getDueDate(row.id));
-            });
-        });
     },
     filters: {
         period(name) {
@@ -581,24 +569,8 @@ export default {
         }
     },
     mounted() {
-        this.$nextTick(() => {
-            this.table_data.forEach(row => this.getDueDate(row.id));
-        });
     },
     methods: {
-        getDueDate(id) {
-            // Si ya existe, no la pidas de nuevo
-            if (this.dueDates[id] !== undefined) return;
-            this.$http.get(`/full_suscription/payments/payments-full-suscription/${id}/plan-period`)
-                .then(response => {
-                    this.$set(this.dueDates, id, response.data.due_date);
-                    console.log(`Due date for ${id}: ${response.data.due_date}`);
-                })
-                .catch(() => {
-                    this.$set(this.dueDates, id, null);
-                });
-        },
-
         formatDate(date) {
             if (!date) return null;
             const parsedDate = moment(date);

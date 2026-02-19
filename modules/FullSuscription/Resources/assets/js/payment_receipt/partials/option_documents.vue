@@ -547,10 +547,9 @@ export default {
             // console.log(q);
             let today =  moment().format('YYYY-MM-DD');
 
-
             this.document.establishment_id = q.establishment_id
             this.document.date_of_issue =today//q.date_of_issue
-            this.document.date_of_due =today //q.date_of_issue
+            this.document.date_of_due = q.date_of_due //q.date_of_issue
             this.document.time_of_issue = q.time_of_issue
             this.document.customer_id = q.customer_id
             this.document.currency_type_id = q.currency_type_id

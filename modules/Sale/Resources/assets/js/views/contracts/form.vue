@@ -13,19 +13,18 @@
             v-if="loading_form"
         >
             <div class="invoice p-0">
-                <header class="clearfix clearfix-default p-2">
-                    <div class="d-flex head-notes">
+                <header class="clearfix clearfix-default py-2 px-0 px-md-2">
+                    <div class="row mx-1 my-1 mx-md-1 my-md-0">
                         <div
-                            class="col-sm-2 text-center mt-3 mb-0"
-                            style="margin-right: auto;"
+                            class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block"
                         >
-                        <logo 
-                            url="/"
-                            :path_logo="getCurrentLogo"
-                        ></logo>
+                            <logo 
+                                url="/"
+                                :path_logo="getCurrentLogo"
+                            ></logo>
                         </div>
-                        <div class="text-left mt-3 mb-0">
-                            <address class="ib mr-2">
+                        <div class="col-sm-5 text-start mt-3 mb-0 d-none d-md-block">
+                            <address class="ib me-2">
                                 <span class="font-weight-bold d-block"
                                     >CONTRATO</span
                                 >
@@ -53,10 +52,9 @@
                         <!-- </div> -->
 
                         <div
-                            class="d-flex align-items-center justify-content-end dates"
-                            style="margin-left: auto; width: auto;"
+                            class="row p-0 m-0 col-md-5"
                         >
-                            <div class="p-1 issue-date" style="width: 30%;">
+                            <div class="p-1 col-4 col-md-6 col-lg-4">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -82,8 +80,7 @@
                                 </div>
                             </div>
                             <div
-                                class="p-1 expiration-date"
-                                style="width: 30%;"
+                                class="p-1 col-4 col-md-6 col-lg-4"
                             >
                                 <div
                                     class="form-group"
@@ -107,7 +104,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="p-1 delivery-date" style="width: 30%;">
+                            <div class="p-1 col-4 col-md-12 col-lg-4">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -142,7 +139,7 @@
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit">
-                    <div class="form-body m-4">
+                    <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
                             <div class="col-lg-6 pb-2">
                                 <div
@@ -211,7 +208,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-4 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -243,7 +240,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-4 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -269,7 +266,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-4 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -524,21 +521,18 @@
                                                             )
                                                         "
                                                     >
-                                                        <span
-                                                            style="font-size:10px;"
-                                                            >&#9998;</span
-                                                        >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        class="btn waves-effect waves-light btn-xs btn-danger"
+                                                        class="btn waves-effect waves-light btn-xs btn-danger ms-1"
                                                         @click.prevent="
                                                             clickRemoveItem(
                                                                 index
                                                             )
                                                         "
                                                     >
-                                                        x
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -576,54 +570,54 @@
 
                             <div class="col-md-4">
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_exportation > 0"
                                 >
                                     OP.EXPORTACIÓN: {{ currency_type.symbol }}
                                     {{ form.total_exportation }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_free > 0"
                                 >
                                     OP.GRATUITAS: {{ currency_type.symbol }}
                                     {{ form.total_free }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_unaffected > 0"
                                 >
                                     OP.INAFECTAS: {{ currency_type.symbol }}
                                     {{ form.total_unaffected }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_exonerated > 0"
                                 >
                                     OP.EXONERADAS: {{ currency_type.symbol }}
                                     {{ form.total_exonerated }}
                                 </p>
                                 <p
-                                    class="text-right"
+                                    class="text-end"
                                     v-if="form.total_taxed > 0"
                                 >
                                     OP.GRAVADA: {{ currency_type.symbol }}
                                     {{ form.total_taxed }}
                                 </p>
-                                <p class="text-right" v-if="form.total_igv > 0">
+                                <p class="text-end" v-if="form.total_igv > 0">
                                     IGV: {{ currency_type.symbol }}
                                     {{ form.total_igv }}
                                 </p>
-                                <h3 class="text-right" v-if="form.total > 0">
+                                <h3 class="text-end" v-if="form.total > 0">
                                     <b>TOTAL A PAGAR: </b
                                     >{{ currency_type.symbol }} {{ form.total }}
                                 </h3>
                             </div>
 
                             <!-- pago -->
-                            <div style="margin-left: auto;">
+                            <div class="col-12">
                                 <div
-                                    class="p-2 payment-container"
+                                    class="p-2 payment-container col-12 col-lg-8 ms-auto"
                                     v-if="showPayments && !form.quotation_id"
                                 >
                                     <table>
@@ -681,7 +675,7 @@
                                             >
                                                 <td>
                                                     <div
-                                                        class="form-group mb-2 mr-2"
+                                                        class="form-group mb-2 me-2"
                                                     >
                                                         <el-select
                                                             v-model="
@@ -703,7 +697,7 @@
                                                 </td>
                                                 <td>
                                                     <div
-                                                        class="form-group mb-2 mr-2"
+                                                        class="form-group mb-2 me-2"
                                                     >
                                                         <el-select
                                                             v-model="
@@ -726,7 +720,7 @@
                                                 </td>
                                                 <td>
                                                     <div
-                                                        class="form-group mb-2 mr-2"
+                                                        class="form-group mb-2 me-2"
                                                     >
                                                         <el-input
                                                             v-model="
@@ -737,7 +731,7 @@
                                                 </td>
                                                 <td>
                                                     <div
-                                                        class="form-group mb-2 mr-2"
+                                                        class="form-group mb-2 me-2"
                                                     >
                                                         <el-input
                                                             v-model="
@@ -835,7 +829,7 @@
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
-    z-index: 1;
+    z-index: 2;
     transition: all 0.3s ease-in-out;
     font-weight: 400;
     font-size: 16px;

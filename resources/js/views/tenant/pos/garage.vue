@@ -183,7 +183,7 @@
                             @click="filterCategorie(item.id, true)"
                             :style="{ backgroundColor: item.color }"
                             :key="index"
-                            class="col-sm-3 pointer"
+                            class="col-sm-3 pointer col-sm-3-name"
                         >
                             {{ item.name }}
                         </div>
@@ -840,13 +840,13 @@
     overflow-y: hidden;
 }
 
-.testimonial-group > .row > .col-sm-3 {
+.testimonial-group > .row > .col-sm-3-name {
     display: inline-block;
     float: none;
 }
 
 /* Decorations */
-.col-sm-3 {
+.col-sm-3-name {
     height: 70px;
     margin-right: 0.5%;
     color: white;

@@ -360,7 +360,7 @@ ul.nav-main li .nav-children li a:after {
 }
 .card-body {
     background: var(--black-highlight);
-    padding: 1.3rem !important;
+    padding: 1.3rem;
 }
 .invoice .card-header {
     border-radius: 12px 12px 0 0 !important;
@@ -428,7 +428,7 @@ ul.nav-main li .nav-children li a:after {
 }
 .product-search-model .el-tooltip {
     position: absolute;
-    right: 13px !important;
+    right: 5px !important;
     top: 46px;
 }
 .tooltips-container button{
@@ -1045,7 +1045,6 @@ html.fixed.sidebar-white .sidebar-left .nano {
 }
 
 html.sidebar-left-collapsed .sidebar-left .nano:hover {
-    width: 300px;
     box-shadow: 0 30px 30px rgb(0 0 0 / 20%);
 }
 
@@ -1882,13 +1881,13 @@ tbody tr:hover, tfoot tr:hover,
     padding: 0px;
 }
 .shadow-left {
-    left: 13px;
+    left: 6px;
     height: calc(100% - 11px);
     bottom: 0;
     top: auto;
 }
 .shadow-right {
-    right: 13px;
+    right: 6px;
     height: calc(100% - 11px);
     bottom: 0;
     top: auto;
@@ -2336,15 +2335,15 @@ html.sidebar-light:not(.dark) .style-switcher:before{
     opacity: .6;
 }
 .btn-add-new-invoice{
-    bottom: 36px;
-    right: 25px;
+    top: 34px;
+    right: 14px;
 }
 .btn-add-new:hover{
     opacity: 1;
 }
-.el-input--suffix .el-input__inner{
+/* .el-input--suffix .el-input__inner{
     padding-right: 45px;
-}
+} */
 .btn-add-new-product{
     width: 18px;
     height: 18px;
@@ -2418,7 +2417,7 @@ div.welcome-card .welcome-subtitle{
     display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
     gap: 10px;
-    margin: 0 !important;
+    margin: 7px !important;
 }
 .actions-cards-row .col{
     max-width: none !important;

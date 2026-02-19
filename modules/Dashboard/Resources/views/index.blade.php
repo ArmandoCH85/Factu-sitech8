@@ -7,7 +7,7 @@ $show_welcome_panel = data_get($configuration, 'visual.show_welcome_panel', true
 @endphp
     <div class="card welcome-component" style="display: {{ $show_welcome_panel ? 'block' : 'none' }};">
         <div class="welcome-card-body">
-            <div class="row">
+            <div class="row welcome-card-row">
                 <div class="col-md-3 welcome-card">
                     <div class="row justify-content-center align-items-center h-100">
                         <div class="p-0">

@@ -15,7 +15,7 @@
             <div class="card-body">
              
                 <div v-loading="loading_submit">
-                    <div class="row ">   
+                    <div class="row mx-0">   
                         <div class="col-md-12 col-lg-12 col-xl-12 filter-container">
                             <div class="btn-filter-content">
                                 <el-button

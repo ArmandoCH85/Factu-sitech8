@@ -13,7 +13,7 @@
                     </el-button>
                 </div>
                 <div v-if="applyFilter && isVisible"
-                     class="row">
+                     class="row mx-0">
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
                         <div class="d-flex">
                             <div class="d-flex align-items-center" style="width:100px">

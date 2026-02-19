@@ -13,15 +13,15 @@
             v-if="loading_form"
         >
             <div class="invoice p-0">
-                <header class="clearfix clearfix-default p-2">
-                    <div class="d-flex head-notes">
-                        <div class="col-sm-2 text-center mt-3 mb-0 is-hidden-mobile">
+                <header class="clearfix clearfix-default py-2 px-0 px-md-2">
+                    <div class="row mx-1 my-1 mx-md-1 my-md-0">
+                        <div class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block">
                             <logo
                                 url="/"
                                 :path_logo="getCurrentLogo"
                             ></logo>
                         </div>
-                        <div class="text-start mt-3 mb-0 is-hidden-mobile">
+                        <div class="col-md-5 text-start mt-3 mb-0 d-none d-md-block">
                             <address class="ib me-2">
                                 <span class="font-weight-bold d-block"
                                     >PEDIDO</span
@@ -51,10 +51,9 @@
                         </div>
 
                         <div
-                            class="d-flex justify-content-end align-items-center dates"
-                            style="margin-left: auto;"
+                            class="row p-0 m-0 col-md-5"
                         >
-                            <div class="p-1 issue-date" style="width: 30%;">
+                            <div class="p-1 col-4 col-md-6 col-lg-4">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -80,8 +79,7 @@
                                 </div>
                             </div>
                             <div
-                                class="p-1 expiration-date"
-                                style="width: 30%;"
+                                class="p-1 col-4 col-md-6 col-lg-4"
                             >
                                 <div
                                     class="form-group"
@@ -105,7 +103,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="p-1 delivery-date" style="width: 30%;">
+                            <div class="p-1 col-4 col-md-12 col-lg-4">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -132,9 +130,9 @@
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit">
-                    <div class="form-body m-4">
+                    <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-lg-8 pb-2">
+                            <div class="col-md-6 col-lg-8 pb-2">
                                 <div
                                     class="form-group position-relative"
                                     :class="{
@@ -215,7 +213,7 @@
                                            v-text="errors.payment_method_type_id[0]"></small>
                                 </div>
                             </div> -->
-                            <div class="col-lg-2">
+                            <div class="col-6 col-md-3 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -241,7 +239,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-6 col-md-3 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -514,7 +512,7 @@
                                 document-type="order_notes"
                                 :form-data.sync="form.custom_fields_data">
                             </custom-fields-renderer>
-                            <div class="row mt-3">
+                            <div class="row mt-3 mx-0 px-0">
                                 <div class="col-md-12">
                                     <div class="table-responsive">
                                         <table class="table mb-1">
@@ -677,21 +675,18 @@
                                                                 )
                                                             "
                                                         >
-                                                            <span
-                                                                style="font-size:10px;"
-                                                                >&#9998;</span
-                                                            >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                         </button>
                                                         <button
                                                             type="button"
-                                                            class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            class="btn waves-effect waves-light btn-xs btn-danger ms-1"
                                                             @click.prevent="
                                                                 clickRemoveItem(
                                                                     index
                                                                 )
                                                             "
                                                         >
-                                                            x
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -792,9 +787,8 @@
 
                                 <!-- pago -->
                                 <div
-                                    class="p-2 payment-container"
+                                    class="p-2 payment-container col-12 col-lg-8 ms-auto"
                                     v-if="showPayments"
-                                    style="margin-left: auto;"
                                 >
                                     <label class="control-label">
                                         Pagos referenciales
@@ -1037,7 +1031,7 @@
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
-    z-index: 1;
+    z-index: 2;
     transition: all 0.3s ease-in-out;
     font-weight: 400;
     font-size: 16px;

@@ -351,10 +351,6 @@ a.text-info:hover, a.text-info:focus {
 html.fixed.sidebar-white .sidebar-left, html.fixed.sidebar-white .sidebar-header, html.fixed.sidebar-white .sidebar-left .nano {
     transition: all .15s ease;
 }
-html.sidebar-left-collapsed .sidebar-left .nano:hover {
-    width: 300px;
-    box-shadow: 0 30px 30px rgb(0 0 0 / 20%);
-}
 .btn-signin {
     background-color: var(--primary-color);
     text-transform: uppercase;
@@ -548,9 +544,6 @@ html.sidebar-light:not(.dark) .page-header .breadcrumbs span {
     border: 1px solid var(--accent-color);
     color: var(--dark-color);
     line-height: 1.5;
-}
-.second-buton-default {
-    min-width: 180px;
 }
 .el-button:hover, .second-buton:hover,
 .el-button:focus, .second-buton:focus {
@@ -845,7 +838,7 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 }
 .product-model .tooltips-container {
     position: absolute;
-    right: 37px;
+    right: 26px;
     top: 46px;
 }
 .btn-add-new-product{
@@ -869,6 +862,10 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
     .welcome-component {
         margin-right: -18px;
         margin-left: -18px;
+    }
+    html.sidebar-left-collapsed .sidebar-left .nano:hover {
+        width: 300px;
+        box-shadow: 0 30px 30px rgb(0 0 0 / 20%);
     }
 }
 .welcome-component,
@@ -955,6 +952,10 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 .container-tag-editor .btn-align:hover, .container-tag-editor .btn-toggle:hover {
     background: #fff;
     border-color: var(--primary-color);
+}
+.welcome-card-row{
+    padding-left: .49rem;
+    padding-right: .49rem;
 }
 /* end */
 /************************************ tema verde ************************************/
@@ -1333,12 +1334,14 @@ html.sidebar-light .establishment-selector-container{
     color: var(--dark-color) !important;
     border-color: var(--accent-color) !important;
 }
-html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
-    height: calc(100% - 130px) !important;
-}
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-    height: calc(100% - 104px) !important;
+@media only screen and (min-width: 767px) {
+    html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
+        height: calc(100% - 130px) !important;
+    }
+    html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
+    html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
+        height: calc(100% - 104px) !important;
+    }
 }
 /* modo oscuro */
 html.dark .table-responsive.payment {

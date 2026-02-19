@@ -11,7 +11,7 @@
             <div class="form-body">
                 <div class="row">
                     <div
-                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-search-model"
+                        class="col-md-7 col-lg-7 col-xl-7 product-search-model"
                     >
                         <el-tooltip
                             slot="append"
@@ -137,7 +137,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-lg-3">
                         <div
                             :class="{ 'has-danger': errors.quantity }"
                             class="form-group"
@@ -155,7 +155,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-6 col-lg-3">
                         <div
                             :class="{ 'has-danger': errors.unit_price }"
                             class="form-group"
@@ -362,6 +362,7 @@ export default {
             titleAction: "",
             is_client: false,
             titleAction: " Agregar",
+            titleDialog: this.recordItem ? " Editar Producto o Servicio" : " Agregar Producto o Servicio",
             resource: "sale-opportunities",
             showDialogNewItem: false,
             has_list_prices: false,
@@ -401,6 +402,8 @@ export default {
         showDialog(newVal) {
             if (newVal) {
                 this.itemSearchTerm = ''
+                this.titleDialog = this.recordItem ? " Editar Producto o Servicio" : " Agregar Producto o Servicio";
+                this.titleAction = this.recordItem ? " Editar" : " Agregar";
             }
         }
     },

@@ -13,7 +13,7 @@
                         {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
                     </el-button>
                 </div>
-                <div class="row" v-if="applyFilter && isVisible">
+                <div class="row mx-0" v-if="applyFilter && isVisible">
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
                         <div class="d-flex">
                             <div class="d-flex align-items-center" style="width:100px">

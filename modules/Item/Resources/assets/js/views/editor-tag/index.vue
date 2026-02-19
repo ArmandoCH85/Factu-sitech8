@@ -1381,6 +1381,20 @@
           this.$message.warning('Por favor ingresa un nombre para el diseño')
           return
         }
+
+        if (!id) {
+          const exists = (this.templates || []).some(t => (t.name || '').trim().toLowerCase() === name.toLowerCase())
+          if (exists) {
+            this.$message.warning('Ya existe una plantilla con ese nombre')
+            return
+          }
+        } else {
+          const conflict = (this.templates || []).some(t => t.id !== id && (t.name || '').trim().toLowerCase() === name.toLowerCase())
+          if (conflict) {
+            this.$message.warning('Otro diseño ya utiliza ese nombre')
+            return
+          }
+        }
   
         const canvas = this.$refs.labelCanvas
         if (!canvas) return
@@ -1444,29 +1458,45 @@
           fields
         }
         
-        this.templateName = ''
         if (id) {
-          await this.$http.post('item-editor-tag\\tags\\update\\' + id,templateData )
+          await this.$http.post('item-editor-tag\\tags\\update\\' + id, templateData)
             .then(async (response) => {
               if (response.data.success) {
-                await this.saveImages(response.data.fields_image);
+                await this.saveImages(response.data.fields_image || []);
                 await this.getRecords();
-                this.$message.success(response.data.message);
-                this.selectTemplate = this.templates.length -1;
+                this.$message.success(response.data.message || 'Plantilla actualizada');
+                const idx = (this.templates || []).findIndex(t => t.id === id)
+                if (idx !== -1) {
+                  this.selectTemplate = idx
+                  this.templateName = this.templates[idx].name || name
+                } else {
+                  this.selectTemplate = null
+                }
                 this.isDirty = false
               }
             })
-          
+            .catch(err => {
+              console.error('Error updating template:', err)
+            })
         } else {
-          await this.$http.post('item-editor-tag\\tags\\save',templateData )
-            .then( async (response) => {
+          await this.$http.post('item-editor-tag\\tags\\save', templateData)
+            .then(async (response) => {
               if (response.data.success) {
-                await this.saveImages(response.data.fields_image);
+                await this.saveImages(response.data.fields_image || []);
                 await this.getRecords();
-                this.$message.success(response.data.message);
-                this.selectTemplate = this.templates.length -1;
+                this.$message.success(response.data.message || 'Plantilla guardada');
+                const idx = (this.templates || []).findIndex(t => (t.name || '').trim().toLowerCase() === name.toLowerCase())
+                if (idx !== -1) {
+                  this.selectTemplate = idx
+                  this.templateName = this.templates[idx].name || name
+                } else {
+                  this.selectTemplate = null
+                }
                 this.isDirty = false
               }
+            })
+            .catch(err => {
+              console.error('Error saving template:', err)
             })
         }
       },
@@ -1495,6 +1525,7 @@
             }).then(() => {
               this.clearCanvas(true)
               this.selectTemplate = null
+              this.templateName = ''
               this.isDirty = false
             }).catch(() => {
               
@@ -1503,6 +1534,7 @@
           }
           this.clearCanvas(true)
           this.selectTemplate = null
+          this.templateName = ''
           return
         }
 
@@ -1661,8 +1693,9 @@
           })
         })
 
+        this.templateName = template.name || ''
         this.selectTemplate = index
-        
+
         this.isDirty = false
       },
 

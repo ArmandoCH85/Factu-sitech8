@@ -13,7 +13,7 @@
                         {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
                     </el-button>
                 </div>
-                <div class="row" v-if="applyFilter && isVisible">
+                <div class="row mx-0" v-if="applyFilter && isVisible">
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-2 ml-1">
                         <div class="d-flex">
                             <div class="d-flex align-items-center" style="width:100px">
@@ -48,7 +48,7 @@
 
             <div class="col-md-12 col-lg-12 col-xl-12" v-if="isVisible">
 
-                <div class="row mt-2">
+                <div class="row mt-2 mx-0">
                         <div class="col-md-3 form-modern">
                             <label class="control-label">Periodo</label>
                             <el-select v-model="form.period" @change="changePeriod">
@@ -73,7 +73,7 @@
                             </div>
                         </template>
                         <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                            <div class="col-md-3 form-modern">
+                            <div class="col-6 col-md-3 form-modern">
                                 <label class="control-label">Fecha del</label>
                                 <el-date-picker v-model="form.d_start" type="date"
                                                 @change="changeDisabledDates"
@@ -81,7 +81,7 @@
                             </div>
                         </template>
                         <template v-if="form.period === 'between_dates'">
-                            <div class="col-md-3 form-modern">
+                            <div class="col-6 col-md-3 form-modern">
                                 <label class="control-label">Fecha al</label>
                                 <el-date-picker v-model="form.d_end" type="date"
                                                 @change="changeDisabledDates"

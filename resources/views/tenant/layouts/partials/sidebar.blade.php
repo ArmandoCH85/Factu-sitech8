@@ -57,7 +57,7 @@ if (is_null($showInSidebar)) {
 }
 
 $current = auth()->user()->establishment_id;
-$canShowBranchSelector = auth()->user()->type == 'admin' && count($establishments) > 1;
+$canShowBranchSelector = auth()->user()->type == 'admin' && count($establishments) > 0;
 
 try {
     $website = app(\Hyn\Tenancy\Environment::class)->tenant();
@@ -2004,16 +2004,17 @@ try {
 </script>
 
 <style>
-    html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
-        height: calc(100% - 130px);
-    }
-    html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
-        height: calc(100% - 184px);
-    }
     html.no-overflowscrolling .nano {
         height: calc(100% - 50px);
     }
-
+    @media only screen and (min-width: 767px) {
+        html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
+            height: calc(100% - 130px);
+        }
+        html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
+            height: calc(100% - 184px);
+        }
+    }
     .more-config {
         position: relative;
         display: inline-block;

@@ -20,14 +20,14 @@
         <div class="col-12 p-0">
             <div class="row m-0 pt-2 pb-0">
                 <div class="col-md-4 d-flex px-0">
-                    <div class="col-md-6 ps-2 pe-0">
+                    <div class="col-md-6">
                         <el-select v-model="form.document_type_id" size="small" @change="filterSeries" class="">
                             <el-option label="FACTURA" value="01"></el-option>
                             <el-option label="BOLETA" value="03"></el-option>
                             <el-option label="N. VENTA" value="80"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-md-6 pe-0">
+                    <div class="col-md-6">
                         <el-select v-model="form.series_id" class="" style="height: 30px;">
                             <el-option v-for="option in series"
                                        :key="option.id"
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row d-flex align-items-end mb-1 px-2">
+            <div class="row d-flex align-items-end mb-1 mx-0">
                 <div class="col-md-4 position-relative">
                     <span slot="prepend" style="px-1" class="currency-symbol-span fast-payment">{{ currencyTypeActive.symbol }}</span>
                     <div class="form-group amount-container">

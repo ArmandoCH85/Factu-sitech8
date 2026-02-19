@@ -11,99 +11,97 @@
             <div class="invoice p-0">
                 <form
                 autocomplete="off"
-                class="row no-gutters"
+                class="row no-gutters mx-0"
                 @submit.prevent="submit"
                 >
-                <div class="col-xl-12 col-md-12 col-12">
-                    <div
-                        class="row card-header card-header-invoice no-gutters align-items-start m-0"
-                    >
-                        <div class="col-xl-2 col-md-2 col-12 is-hidden-mobile">
-                            <logo
-                                url="/"
-                                :path_logo="getCurrentLogo"
-                            ></logo>
-                        </div>
+                <div class="col-xl-12 col-md-12 col-12 px-0">
+                    <header class="clearfix clearfix-default py-2 px-0 px-md-2">
                         <div
-                            class="col-xl-6 col-md-6 col-12 pl-2 align-self-center is-hidden-mobile"
+                            class="row mx-1 my-1 mx-md-1 my-md-0"
                         >
-                            <address class="mb-0" style="line-height: initial;">
-                                <span class="font-weight-bold">{{
-                                    company.name
-                                }}</span>
-                                <br />
-                                <span v-if="establishment.address != '-'"
-                                    >{{ establishment.address }}
-                                </span>
-                                <br />
-                                <span v-if="establishment.email != '-'"
-                                    >{{ establishment.email }} </span
-                                ><span v-if="establishment.telephone != '-'"
-                                    >- {{ establishment.telephone }}</span
-                                >
-                            </address>
-                        </div>
-                        <div class="col-xl-4 col-md-4 col-12 align-self-end">
-                            <div class="">
-                                <div class="row datetime-container">
-                                    <div class="col-lg-6 align-self-end">
-                                        <div
-                                            :class="{
-                                                'has-danger':
-                                                    errors.date_of_issue
-                                            }"
-                                            class="form-group"
+                            <div class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block">
+                                <logo
+                                    url="/"
+                                    :path_logo="getCurrentLogo"
+                                ></logo>
+                            </div>
+                            <div
+                                class="col-sm-5 text-start mt-3 mb-0 d-none d-md-block"
+                            >
+                                <address class="ib me-2">
+                                    <span class="font-weight-bold">{{
+                                        company.name
+                                    }}</span>
+                                    <br />
+                                    <span v-if="establishment.address != '-'"
+                                        >{{ establishment.address }}
+                                    </span>
+                                    <br />
+                                    <span v-if="establishment.email != '-'"
+                                        >{{ establishment.email }} </span
+                                    ><span v-if="establishment.telephone != '-'"
+                                        >- {{ establishment.telephone }}</span
+                                    >
+                                </address>
+                            </div>
+                            <div class="row p-0 m-0 col-md-5">
+                                <div class="col-6">
+                                    <div
+                                        :class="{
+                                            'has-danger':
+                                                errors.date_of_issue
+                                        }"
+                                        class="form-group"
+                                    >
+                                        <label class="control-label"
+                                            >Fec. Emisión</label
                                         >
-                                            <label class="control-label"
-                                                >Fec. Emisión</label
-                                            >
-                                            <el-date-picker
-                                                v-model="form.date_of_issue"
-                                                :clearable="false"
-                                                :picker-options="datEmision"
-                                                :readonly="readonly_date_of_due"
-                                                type="date"
-                                                value-format="yyyy-MM-dd"
-                                                @change="changeDateOfIssue"
-                                            ></el-date-picker>
-                                            <small
-                                                v-if="errors.date_of_issue"
-                                                class="form-control-feedback"
-                                                v-text="errors.date_of_issue[0]"
-                                            ></small>
-                                        </div>
+                                        <el-date-picker
+                                            v-model="form.date_of_issue"
+                                            :clearable="false"
+                                            :picker-options="datEmision"
+                                            :readonly="readonly_date_of_due"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"
+                                            @change="changeDateOfIssue"
+                                        ></el-date-picker>
+                                        <small
+                                            v-if="errors.date_of_issue"
+                                            class="form-control-feedback"
+                                            v-text="errors.date_of_issue[0]"
+                                        ></small>
                                     </div>
-                                    <div class="col-lg-6 align-self-end">
-                                        <div
-                                            :class="{
-                                                'has-danger': errors.date_of_due
-                                            }"
-                                            class="form-group"
+                                </div>
+                                <div class="col-6">
+                                    <div
+                                        :class="{
+                                            'has-danger': errors.date_of_due
+                                        }"
+                                        class="form-group"
+                                    >
+                                        <label class="control-label"
+                                            >Fec. Vencimiento</label
                                         >
-                                            <label class="control-label"
-                                                >Fec. Vencimiento</label
-                                            >
-                                            <el-date-picker
-                                                v-model="form.date_of_due"
-                                                :clearable="false"
-                                                :readonly="readonly_date_of_due"
-                                                type="date"
-                                                value-format="yyyy-MM-dd"
-                                            ></el-date-picker>
-                                            <small
-                                                v-if="errors.date_of_due"
-                                                class="form-control-feedback"
-                                                v-text="errors.date_of_due[0]"
-                                            ></small>
-                                        </div>
+                                        <el-date-picker
+                                            v-model="form.date_of_due"
+                                            :clearable="false"
+                                            :readonly="readonly_date_of_due"
+                                            type="date"
+                                            value-format="yyyy-MM-dd"
+                                        ></el-date-picker>
+                                        <small
+                                            v-if="errors.date_of_due"
+                                            class="form-control-feedback"
+                                            v-text="errors.date_of_due[0]"
+                                        ></small>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none">
-                        <div class="row inputs-container">
-                            <div class="col-lg-4 align-self-end invoice-type">
+                    </header>                    
+                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none p-0 py-1 py-md-2 px-md-2">
+                        <div class="row inputs-container mx-1">
+                            <div class="col-md-5 col-lg-4 align-self-end invoice-type">
                                 <div
                                     :class="{
                                         'has-danger': errors.document_type_id
@@ -164,7 +162,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 align-self-end serie-input">
+                            <div class="col-md-2 align-self-end serie-input">
                                 <div
                                     :class="{ 'has-danger': errors.series_id }"
                                     class="form-group"
@@ -189,7 +187,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 align-self-end operation-type">
+                            <div class="col-md-5 col-lg-2 align-self-end operation-type">
                                 <div
                                     :class="{
                                         'has-danger': errors.operation_type_id
@@ -236,7 +234,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 align-self-end money-input">
+                            <div class="col-md-6 col-lg-2 align-self-end money-input">
                                 <div
                                     :class="{
                                         'has-danger': errors.currency_type_id
@@ -262,7 +260,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 align-self-end change-type">
+                            <div class="col-md-6 col-lg-2 align-self-end change-type">
                                 <div
                                     :class="{
                                         'has-danger': errors.exchange_rate_sale
@@ -293,11 +291,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none">
-                        <div class="row inputs-container">
+                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none p-0 py-1 py-md-2 px-md-2">
+                        <div class="row inputs-container mx-1">
                             <div
                                 :class="{ 'has-danger': errors.customer_id }"
-                                class="form-group col-md-4 position-relative"
+                                class="form-group col-sm-6 col-lg-4 position-relative"
                             >
                                 <label
                                     class="control-label font-weight-bold"
@@ -426,7 +424,7 @@
                             </div>
                             <div
                                 v-if="customer_addresses.length > 0 && this.itinerant_option_id == 1"
-                                class="form-group col-sm-4 mb-0"
+                                class="form-group col-sm-6 col-lg-4 mb-0"
                             >
                                 <label
                                     class="control-label font-weight-bold text-info"
@@ -445,7 +443,7 @@
                             <!-- sistema por puntos -->
                             <div
                                 v-if="config.enabled_point_system && form.customer_id"
-                                class="form-group col-sm-3 mb-0"
+                                class="form-group col-12 col-lg-4 mb-0"
                             >
                                 <p class="fs-point-system">
                                     <label class="font-weight-bold text-info"
@@ -520,7 +518,7 @@
                             </div>
                         </div>
                     </template>
-                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none">
+                    <div class="card-body card-body-invoice no-gutters border-0 shadow-none px-2 px-md-4">
                         <template v-if="showSearchItemsMainForm">
                             <div class="row">
                                 <div
@@ -1392,13 +1390,13 @@
                                             </template>
 
                                             <p
-                                                class="control-label font-weight-bold text-info"
+                                                class="control-label font-weight-bold text-info mt-2"
                                             >
                                                 <a
                                                     v-if="
                                                         configuration.show_all_item_details
                                                     "
-                                                    class="btn btn-default btn-xs"
+                                                    class="btn btn-sm second-buton btn-xs"
                                                     href="#"
                                                     @click.prevent="
                                                         clickShowItemDetail(
@@ -1408,20 +1406,20 @@
                                                     >Ver detalle</a
                                                 >
                                                 <button
-                                                    class="btn waves-effect waves-light btn-xs btn-outline-info"
+                                                    class="btn waves-effect waves-light btn-xs btn-info ms-1"
                                                     type="button"
                                                     @click="ediItem(row, index)"
                                                 >
-                                                    <i class="fas fa-edit"></i>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                 </button>
                                                 <button
-                                                    class="btn waves-effect waves-light btn-xs btn-outline-danger"
+                                                    class="btn waves-effect waves-light btn-xs btn-danger ms-1"
                                                     type="button"
                                                     @click.prevent="
                                                         clickRemoveItem(index)
                                                     "
                                                 >
-                                                    <i class="fas fa-trash"></i>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                 </button>
                                             </p>
                                         </td>
@@ -1811,6 +1809,7 @@
                                                                 @change="
                                                                     changeTotalGlobalDiscount
                                                                 "
+                                                                style="min-width: 90px"
                                                             ></el-input-number>
 
                                                             <!-- <el-input v-model="total_global_discount"
@@ -2045,6 +2044,7 @@
                                                                 @change="
                                                                     calculateTotal
                                                                 "
+                                                                style="min-width: 90px"
                                                             ></el-input-number>
                                                         </td>
                                                     </tr>
@@ -2491,7 +2491,7 @@
                                                                                 "
                                                                             >
                                                                                 <th
-                                                                                    style="width:50px"
+                                                                                    style="min-width:55px"
                                                                                 >
                                                                                     Voucher
                                                                                 </th>
@@ -2504,7 +2504,7 @@
                                                                                         .length >
                                                                                         0
                                                                                 "
-                                                                                style="width: 120px"
+                                                                                style="min-width: 140px"
                                                                             >
                                                                                 Método
                                                                                 de
@@ -2522,7 +2522,7 @@
                                                                                             .length >
                                                                                             0
                                                                                     "
-                                                                                    style="width: 120px"
+                                                                                    style="min-width: 140px"
                                                                                 >
                                                                                     Destino
                                                                                     <el-tooltip
@@ -2543,7 +2543,7 @@
                                                                                             .length >
                                                                                             0
                                                                                     "
-                                                                                    style="width: 100px"
+                                                                                    style="min-width: 140px"
                                                                                 >
                                                                                     Referencia
                                                                                 </th>
@@ -2554,12 +2554,12 @@
                                                                                             .length >
                                                                                             0
                                                                                     "
-                                                                                    style="width: 100px"
+                                                                                    style="min-width: 90px"
                                                                                 >
                                                                                     Monto
                                                                                 </th>
                                                                                 <th
-                                                                                    style="width: 30px"
+                                                                                    style="min-width: 40px"
                                                                                 ></th>
                                                                             </template>
                                                                         </tr>
@@ -2578,8 +2578,6 @@
                                                                                 "
                                                                             >
                                                                                 <td
-                                                                                    class=""
-                                                                                    style="width: 50px"
                                                                                 >
                                                                                     <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
                                                                                     <el-upload
@@ -3796,7 +3794,7 @@
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
-    z-index: 1;
+    z-index: 2;
     transition: all 0.3s ease-in-out;
     font-weight: 400;
     font-size: 16px;

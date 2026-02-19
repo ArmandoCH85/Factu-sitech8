@@ -8668,6 +8668,10 @@ html .card-dark .card-title {
     .card-group .card + .card {
         border-left: 1px solid #ddd;
     }
+    .second-buton-default,
+    .btn-submit-default{
+        min-width: 180px;
+    }
 }
 /* Owl Carousel */
 .owl-carousel {
@@ -21194,7 +21198,7 @@ li.multi-user-content{
 .currency-symbol-span {
     position: absolute;
     top: 31px;
-    left: 13px;
+    left: 7px;
     z-index: 2;
     height: 30px;
     width: 20px;
@@ -21237,13 +21241,13 @@ tbody tr:hover,tfoot tr:hover {
 }
 
 .shadow-left {
-    left: 0px;
+    left: 5px;
     background: linear-gradient(to right, rgb(0 0 0 / 35%), transparent);
     border-radius: 6px 0 0 6px;
 }
 
 .shadow-right {
-    right: 0px;
+    right: 5px;
     background: linear-gradient(to left, rgb(0 0 0 / 35%), transparent);
     border-radius: 0 6px 6px 0;
 }
@@ -21809,8 +21813,8 @@ div.sub-title.text-muted {
     opacity: .6;
 }
 .btn-add-new-invoice{
-    bottom: 36px;
-    right: 25px;
+    top: 34px;
+    right: 14px;
 }
 .btn-add-new:hover{
     opacity: 1;
@@ -22008,10 +22012,6 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 .contain-icon-establishment{
     display: none !important;
 }
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-    height: calc(100% - 90px);
-}
 .btn-outline-danger{
     border-color: var(--danger) !important;
     color: var(--danger) !important;
@@ -22058,6 +22058,18 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selecto
     left: 50%;
     transform: translateX(-50%);
 }
+.col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm, .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md, .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg, .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl, .col-xl-auto {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+.el-dialog__body .form-body .row,
+.el-dialog__body .row{
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+.table-overflow-x-auto{
+    overflow-x: auto;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;
@@ -22066,6 +22078,15 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selecto
     
     .support-sidebar.show {
         right: 0;
+    }
+    .nano-content-mobile{
+        padding-top: 20px !important;
+    }
+}
+@media (min-width: 767px) {
+    html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
+    html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
+        height: calc(100% - 90px);
     }
 }
 @media (max-width: 766px) {

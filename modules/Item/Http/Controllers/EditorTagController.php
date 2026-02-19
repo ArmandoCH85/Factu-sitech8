@@ -227,6 +227,7 @@ class EditorTagController extends Controller
     {
         $template = TagTemplate::findOrFail($id);
 
+        $template->name = $request->input('name', $template->name);
         $template->width = $request->input('canvas.width');
         $template->height = $request->input('canvas.height');
         $template->save();

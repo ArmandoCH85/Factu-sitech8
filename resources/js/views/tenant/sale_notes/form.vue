@@ -13,49 +13,45 @@
             v-if="company && establishment"
         >
             <div class="invoice p-0">
-                <header class="clearfix clearfix-default p-2">
-                    <div class="d-flex head-notes">
-                        <div class="d-flex is-hidden-mobile">
-                            <div class="text-center mt-3 mb-0">
-                                <logo
-                                    url="/"
-                                    :path_logo="getCurrentLogo"
-                                ></logo>
-                            </div>
-                            <div
-                                class="text-start mt-3 mb-0"
-                                style="margin-left: 10%;"
-                            >
-                                <address class="ib mr-2">
-                                    <span class="font-weight-bold d-block"
-                                        >NOTA DE VENTA</span
-                                    >
-                                    <!-- <span class="font-weight-bold  d-block">NV-XXX</span> -->
-                                    <span class="font-weight-bold">{{
-                                        company.name
-                                    }}</span>
-                                    <br />
-                                    <div v-if="establishment.address != '-'">
-                                        {{ establishment.address }},
-                                    </div>
-                                    {{ establishment.district.description }},
-                                    {{ establishment.province.description }},
-                                    {{ establishment.department.description }} -
-                                    {{ establishment.country.description }}
-                                    <br />
-                                    {{ establishment.email }} -
-                                    <span
-                                        v-if="establishment.telephone != '-'"
-                                        >{{ establishment.telephone }}</span
-                                    >
-                                </address>
-                            </div>
+                <header class="clearfix clearfix-default py-2 px-0 px-md-2">
+                    <div class="row mx-1 my-1 mx-md-1 my-md-0">
+                        <div class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block">
+                            <logo
+                                url="/"
+                                :path_logo="getCurrentLogo"
+                            ></logo>
                         </div>
                         <div
-                            class="d-flex align-items-center justify-content-end dates datetime-container"
-                            style="margin-left: auto;"
+                            class="col-sm-5 text-start mt-3 mb-0 d-none d-md-block"
                         >
-                            <div class="p-1 issue-date" style="width: 45%;">
+                            <address class="ib mr-2">
+                                <span class="font-weight-bold d-block"
+                                    >NOTA DE VENTA</span
+                                >
+                                <!-- <span class="font-weight-bold  d-block">NV-XXX</span> -->
+                                <span class="font-weight-bold">{{
+                                    company.name
+                                }}</span>
+                                <br />
+                                <div v-if="establishment.address != '-'">
+                                    {{ establishment.address }},
+                                </div>
+                                {{ establishment.district.description }},
+                                {{ establishment.province.description }},
+                                {{ establishment.department.description }} -
+                                {{ establishment.country.description }}
+                                <br />
+                                {{ establishment.email }} -
+                                <span
+                                    v-if="establishment.telephone != '-'"
+                                    >{{ establishment.telephone }}</span
+                                >
+                            </address>
+                        </div>
+                        <div
+                            class="row p-0 m-0 col-md-5"
+                        >
+                            <div class="col-6">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -81,8 +77,7 @@
                                 </div>
                             </div>
                             <div
-                                class="p-1 expiration-date"
-                                style="width: 45%;"
+                                class="col-6"
                             >
                                 <div
                                     class="form-group"
@@ -110,9 +105,9 @@
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit" class="">
-                    <div class="form-body m-3">
+                    <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-lg-5">
+                            <div class="col-lg-4 col-sm-7">
                                 <div
                                     class="form-group position-relative"
                                     :class="{
@@ -182,125 +177,123 @@
                                 </div>
                             </div>
 
-                            <div class="row col-lg-7 pe-0">
-                                <div class="col-lg-3 branch-input">
-                                    <div
-                                        class="form-group"
-                                        :class="{
-                                            'has-danger':
-                                                errors.establishment_id
-                                        }"
+                            <div class="col-lg-2 col-sm-5">
+                                <div
+                                    class="form-group"
+                                    :class="{
+                                        'has-danger':
+                                            errors.establishment_id
+                                    }"
+                                >
+                                    <label class="control-label"
+                                        >Sucursal</label
                                     >
-                                        <label class="control-label"
-                                            >Sucursal</label
-                                        >
-                                        <el-select
-                                            v-model="form.establishment_id"
-                                            @change="changeEstablishment"
-                                        >
-                                            <el-option
-                                                v-for="option in establishments"
-                                                :key="option.id"
-                                                :value="option.id"
-                                                :label="option.description"
-                                            ></el-option>
-                                        </el-select>
-                                        <small
-                                            class="form-control-feedback"
-                                            v-if="errors.establishment_id"
-                                            v-text="errors.establishment_id[0]"
-                                        ></small>
-                                    </div>
+                                    <el-select
+                                        v-model="form.establishment_id"
+                                        @change="changeEstablishment"
+                                    >
+                                        <el-option
+                                            v-for="option in establishments"
+                                            :key="option.id"
+                                            :value="option.id"
+                                            :label="option.description"
+                                        ></el-option>
+                                    </el-select>
+                                    <small
+                                        class="form-control-feedback"
+                                        v-if="errors.establishment_id"
+                                        v-text="errors.establishment_id[0]"
+                                    ></small>
                                 </div>
-                                <div class="col-lg-3 serie-input">
-                                    <div
-                                        class="form-group"
-                                        :class="{
-                                            'has-danger': errors.series_id
-                                        }"
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <div
+                                    class="form-group"
+                                    :class="{
+                                        'has-danger': errors.series_id
+                                    }"
+                                >
+                                    <label class="control-label"
+                                        >Serie</label
                                     >
-                                        <label class="control-label"
-                                            >Serie</label
-                                        >
-                                        <el-select
-                                            v-model="form.series_id"
-                                            :disabled="disabledSeries()"
-                                        >
-                                            <el-option
-                                                v-for="option in series"
-                                                :key="option.id"
-                                                :value="option.id"
-                                                :label="option.number"
-                                            ></el-option>
-                                        </el-select>
-                                        <small
-                                            class="form-control-feedback"
-                                            v-if="errors.series_id"
-                                            v-text="errors.series_id[0]"
-                                        ></small>
-                                    </div>
+                                    <el-select
+                                        v-model="form.series_id"
+                                        :disabled="disabledSeries()"
+                                    >
+                                        <el-option
+                                            v-for="option in series"
+                                            :key="option.id"
+                                            :value="option.id"
+                                            :label="option.number"
+                                        ></el-option>
+                                    </el-select>
+                                    <small
+                                        class="form-control-feedback"
+                                        v-if="errors.series_id"
+                                        v-text="errors.series_id[0]"
+                                    ></small>
                                 </div>
-                                <div class="col-lg-3 money-input">
-                                    <div
-                                        class="form-group"
-                                        :class="{
-                                            'has-danger':
-                                                errors.currency_type_id
-                                        }"
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <div
+                                    class="form-group"
+                                    :class="{
+                                        'has-danger':
+                                            errors.currency_type_id
+                                    }"
+                                >
+                                    <label class="control-label"
+                                        >Moneda</label
                                     >
-                                        <label class="control-label"
-                                            >Moneda</label
-                                        >
-                                        <el-select
-                                            v-model="form.currency_type_id"
-                                            @change="changeCurrencyType"
-                                        >
-                                            <el-option
-                                                v-for="option in currency_types"
-                                                :key="option.id"
-                                                :value="option.id"
-                                                :label="option.description"
-                                            ></el-option>
-                                        </el-select>
-                                        <small
-                                            class="form-control-feedback"
-                                            v-if="errors.currency_type_id"
-                                            v-text="errors.currency_type_id[0]"
-                                        ></small>
-                                    </div>
+                                    <el-select
+                                        v-model="form.currency_type_id"
+                                        @change="changeCurrencyType"
+                                    >
+                                        <el-option
+                                            v-for="option in currency_types"
+                                            :key="option.id"
+                                            :value="option.id"
+                                            :label="option.description"
+                                        ></el-option>
+                                    </el-select>
+                                    <small
+                                        class="form-control-feedback"
+                                        v-if="errors.currency_type_id"
+                                        v-text="errors.currency_type_id[0]"
+                                    ></small>
                                 </div>
-                                <div class="col-lg-3 change-type">
-                                    <div
-                                        class="form-group"
-                                        :class="{
-                                            'has-danger':
-                                                errors.exchange_rate_sale
-                                        }"
-                                    >
-                                        <label class="control-label"
-                                            >Tipo de cambio
-                                            <el-tooltip
-                                                class="item"
-                                                effect="dark"
-                                                content="Tipo de cambio del día, extraído de SUNAT"
-                                                placement="top-end"
-                                            >
-                                                <i
-                                                    class="fa fa-info-circle"
-                                                ></i>
-                                            </el-tooltip>
-                                        </label>
-                                        <el-input
-                                            v-model="form.exchange_rate_sale"
-                                        ></el-input>
-                                        <small
-                                            class="form-control-feedback"
-                                            v-if="errors.exchange_rate_sale"
-                                            v-text="
-                                                errors.exchange_rate_sale[0]
-                                            "
-                                        ></small>
-                                    </div>
+                            </div>
+                            <div class="col-lg-2 col-4">
+                                <div
+                                    class="form-group"
+                                    :class="{
+                                        'has-danger':
+                                            errors.exchange_rate_sale
+                                    }"
+                                >
+                                    <label class="control-label"
+                                        >Tipo de cambio
+                                        <el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Tipo de cambio del día, extraído de SUNAT"
+                                            placement="top-end"
+                                        >
+                                            <i
+                                                class="fa fa-info-circle"
+                                            ></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-input
+                                        v-model="form.exchange_rate_sale"
+                                    ></el-input>
+                                    <small
+                                        class="form-control-feedback"
+                                        v-if="errors.exchange_rate_sale"
+                                        v-text="
+                                            errors.exchange_rate_sale[0]
+                                        "
+                                    ></small>
                                 </div>
                             </div>
 
@@ -942,24 +935,19 @@
                                                                 )
                                                             "
                                                         >
-                                                            <span
-                                                                style="font-size:10px;"
-                                                                >&#9998;</span
-                                                            >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                         </button>
 
                                                         <button
                                                             type="button"
-                                                            class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            class="btn waves-effect waves-light btn-xs btn-danger ms-1"
                                                             @click.prevent="
                                                                 clickRemoveItem(
                                                                     index
                                                                 )
                                                             "
                                                         >
-                                                            <i
-                                                                class="fas fa-trash"
-                                                            ></i>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -1171,24 +1159,19 @@
                                                                 )
                                                             "
                                                         >
-                                                            <span
-                                                                style="font-size:10px;"
-                                                                >&#9998;</span
-                                                            >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                         </button>
 
                                                         <button
                                                             type="button"
-                                                            class="btn waves-effect waves-light btn-xs btn-danger"
+                                                            class="btn waves-effect waves-light btn-xs btn-danger ms-1"
                                                             @click.prevent="
                                                                 clickRemoveItem(
                                                                     index
                                                                 )
                                                             "
                                                         >
-                                                            <i
-                                                                class="fas fa-trash"
-                                                            ></i>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -1374,577 +1357,575 @@
                                     <b>TOTAL A PAGAR: </b
                                     >{{ currency_type.symbol }} {{ form.total }}
                                 </h3>
-
-                                                    <h5 class="text-end" v-if="form.total > 0">
-                                                            CONDICIÓN DE PAGO:
-                                                            <el-select
-                                                                v-model="
-                                                                    form.payment_condition_id
-                                                                "
-                                                                dusk="document_type_id"
-                                                                popper-class="el-select-document_type"
-                                                                style="max-width: 200px;"
-                                                                @change="
-                                                                    changePaymentCondition"
-                                                            >
-                                                                <el-option
-                                                                    label="Crédito con cuotas"
-                                                                    value="03"
-                                                                    :disabled="customer_has_expired"
-                                                                ></el-option>
-                                                                <el-option
-                                                                    label="Crédito"
-                                                                    value="02"
-                                                                    :disabled="customer_has_expired"
-                                                                ></el-option>
-                                                                <el-option
-                                                                    label="Contado"
-                                                                    value="01"
-                                                                ></el-option>
-                                                            </el-select>
-                                                    </h5>
-                                            <div v-if="form.total > 0 && customer_has_expired" class="alert float-end alert-danger mt-2 mb-0 text-center">
-                                                El cliente excede los {{ config.finances.max_expired_days }} días de vencimiento de crédito. Solo puede emitir comprobantes al contado.
-                                            </div>
+                                <h5 class="text-end" v-if="form.total > 0">
+                                    CONDICIÓN DE PAGO:
+                                    <el-select
+                                        v-model="
+                                            form.payment_condition_id
+                                        "
+                                        dusk="document_type_id"
+                                        popper-class="el-select-document_type"
+                                        style="max-width: 200px;"
+                                        @change="
+                                            changePaymentCondition"
+                                    >
+                                        <el-option
+                                            label="Crédito con cuotas"
+                                            value="03"
+                                            :disabled="customer_has_expired"
+                                        ></el-option>
+                                        <el-option
+                                            label="Crédito"
+                                            value="02"
+                                            :disabled="customer_has_expired"
+                                        ></el-option>
+                                        <el-option
+                                            label="Contado"
+                                            value="01"
+                                        ></el-option>
+                                    </el-select>
+                                </h5>
+                                <div v-if="form.total > 0 && customer_has_expired" class="alert float-end alert-danger mt-2 mb-0 text-center">
+                                    El cliente excede los {{ config.finances.max_expired_days }} días de vencimiento de crédito. Solo puede emitir comprobantes al contado.
+                                </div>
                             </div>
-                            <div class="col-md-4 mt-3"></div>
-                            <div class="col-md-8">
-                                <div class="d-flex justify-content-end">
+                            <div class="col-lg-8 col-12 ms-auto">
+                            <div class="table-overflow-x-auto">
 
                             <!-- Pagos -->
                              <table width="100%">
                                 <tr v-if="form.total > 0">
-                                                        <!-- Metodos de pago -->
-                                                        <td
-                                                            class="p-0"
-                                                            colspan="2"
+                                    <!-- Metodos de pago -->
+                                    <td
+                                        class="p-0"
+                                        colspan="2"
+                                    >
+                                        <!-- Crédito con cuotas -->
+                                        <div
+                                            v-if="
+                                                form.payment_condition_id ===
+                                                    '03'
+                                            "
+                                            class="table-responsive"
+                                        >
+                                            <table
+                                                class="text-start table"
+                                                style="table-layout: auto;"
+                                                width="100%"
+                                            >
+                                                <thead>
+                                                    <tr
+                                                        v-if="
+                                                            form
+                                                                .fee
+                                                                .length >
+                                                                0
+                                                        "
+                                                    >
+                                                        <th
+                                                            class="text-start"
+                                                            style="width: 100px"
                                                         >
-                                                            <!-- Crédito con cuotas -->
-                                                            <div
-                                                                v-if="
-                                                                    form.payment_condition_id ===
-                                                                        '03'
+                                                            Fecha
+                                                        </th>
+                                                        <th
+                                                            class="text-start"
+                                                            style="width: 100px"
+                                                        >
+                                                            Monto
+                                                        </th>
+                                                        <th
+                                                            style="width: 30px"
+                                                        ></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="(row,
+                                                        index) in form.fee"
+                                                        :key="
+                                                            index
+                                                        "
+                                                    >
+                                                        <td>
+                                                            <el-date-picker
+                                                                v-model="
+                                                                    row.date
                                                                 "
-                                                                class="table-responsive"
-                                                            >
-                                                                <table
-                                                                    class="text-start table"
-                                                                    style="table-layout: auto;"
-                                                                    width="100%"
-                                                                >
-                                                                    <thead>
-                                                                        <tr
-                                                                            v-if="
-                                                                                form
-                                                                                    .fee
-                                                                                    .length >
-                                                                                    0
-                                                                            "
-                                                                        >
-                                                                            <th
-                                                                                class="text-start"
-                                                                                style="width: 100px"
-                                                                            >
-                                                                                Fecha
-                                                                            </th>
-                                                                            <th
-                                                                                class="text-start"
-                                                                                style="width: 100px"
-                                                                            >
-                                                                                Monto
-                                                                            </th>
-                                                                            <th
-                                                                                style="width: 30px"
-                                                                            ></th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr
-                                                                            v-for="(row,
-                                                                            index) in form.fee"
-                                                                            :key="
-                                                                                index
-                                                                            "
-                                                                        >
-                                                                            <td>
-                                                                                <el-date-picker
-                                                                                    v-model="
-                                                                                        row.date
-                                                                                    "
-                                                                                    :clearable="
-                                                                                        false
-                                                                                    "
-                                                                                    format="dd/MM/yyyy"
-                                                                                    type="date"
-                                                                                    @change="
-                                                                                        changeCreditFeeDate(
-                                                                                            index
-                                                                                        )
-                                                                                    "
-                                                                                    value-format="yyyy-MM-dd"
-                                                                                ></el-date-picker>
-                                                                            </td>
-                                                                            <td>
-                                                                                <el-input
-                                                                                    v-model="
-                                                                                        row.amount
-                                                                                    "
-                                                                                ></el-input>
-                                                                            </td>
-                                                                            <td
-                                                                                class="text-center"
-                                                                            >
-                                                                                <button
-                                                                                    v-if="
-                                                                                        index >
-                                                                                            0
-                                                                                    "
-                                                                                    class="btn waves-effect waves-light btn-xs btn-danger"
-                                                                                    type="button"
-                                                                                    @click.prevent="
-                                                                                        clickRemoveFee(
-                                                                                            index
-                                                                                        )
-                                                                                    "
-                                                                                >
-                                                                                    <i
-                                                                                        class="fa fa-trash"
-                                                                                    ></i>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td
-                                                                                colspan="5"
-                                                                            >
-                                                                                <label
-                                                                                    class="control-label"
-                                                                                >
-                                                                                    <a
-                                                                                        class=""
-                                                                                        href="#"
-                                                                                        @click.prevent="
-                                                                                            clickAddFee
-                                                                                        "
-                                                                                        ><i
-                                                                                            class="fa fa-plus font-weight-bold text-info"
-                                                                                        ></i>
-                                                                                        <span
-                                                                                            style="color: #777777"
-                                                                                            >Agregar
-                                                                                            cuota</span
-                                                                                        ></a
-                                                                                    >
-                                                                                </label>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                            <!-- Credito -->
-                                                            <div
-                                                                v-if="
-                                                                    form.payment_condition_id ===
-                                                                        '02'
+                                                                :clearable="
+                                                                    false
                                                                 "
-                                                                class="table-responsive"
-                                                            >
-                                                                <table
-                                                                    v-if="
-                                                                        form.fee
-                                                                            .length >
-                                                                            0
-                                                                    "
-                                                                    class="text-start table"
-                                                                    width="100%"
-                                                                >
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th
-                                                                                v-if="
-                                                                                    form
-                                                                                        .fee
-                                                                                        .length >
-                                                                                        0
-                                                                                "
-                                                                                style="width: 120px"
-                                                                            >
-                                                                                Método
-                                                                                de
-                                                                                pago
-                                                                            </th>
-                                                                            <th
-                                                                                class="text-start"
-                                                                                style="width: 100px"
-                                                                            >
-                                                                                Fecha
-                                                                            </th>
-                                                                            <th
-                                                                                class="text-start"
-                                                                                style="width: 100px"
-                                                                            >
-                                                                                Monto
-                                                                            </th>
-                                                                            <th
-                                                                                style="width: 30px"
-                                                                            ></th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr
-                                                                            v-for="(row,
-                                                                            index) in form.fee"
-                                                                            :key="
-                                                                                index
-                                                                            "
-                                                                        >
-                                                                            <td>
-                                                                                <el-select
-                                                                                    v-model="
-                                                                                        row.payment_method_type_id
-                                                                                    "
-                                                                                    @change="
-                                                                                        changePaymentMethodType(
-                                                                                            index
-                                                                                        )
-                                                                                    "
-                                                                                >
-                                                                                    <el-option
-                                                                                        v-for="option in credit_payment_metod"
-                                                                                        :key="
-                                                                                            option.id
-                                                                                        "
-                                                                                        :label="
-                                                                                            option.description
-                                                                                        "
-                                                                                        :value="
-                                                                                            option.id
-                                                                                        "
-                                                                                    ></el-option>
-                                                                                </el-select>
-                                                                            </td>
-                                                                            <td>
-                                                                                <el-date-picker
-                                                                                    v-model="
-                                                                                        row.date
-                                                                                    "
-                                                                                    :clearable="
-                                                                                        false
-                                                                                    "
-                                                                                    format="dd/MM/yyyy"
-                                                                                    type="date"
-                                                                                    value-format="yyyy-MM-dd"
-                                                                                    :readonly="
-                                                                                        row.payment_method_type_id !==
-                                                                                            '09'
-                                                                                    "
-                                                                                >
-                                                                                </el-date-picker>
-                                                                            </td>
-                                                                            <td>
-                                                                                <el-input
-                                                                                    v-model="
-                                                                                        row.amount
-                                                                                    "
-                                                                                    :readonly="
-                                                                                        true
-                                                                                    "
-                                                                                ></el-input>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                            <!-- Contado -->
-                                                            <div
-                                                                v-if="
-                                                                    !is_receivable &&
-                                                                        form.payment_condition_id ===
-                                                                            '01'
+                                                                format="dd/MM/yyyy"
+                                                                type="date"
+                                                                @change="
+                                                                    changeCreditFeeDate(
+                                                                        index
+                                                                    )
                                                                 "
-                                                                class="table-responsive payment mt-4"
+                                                                value-format="yyyy-MM-dd"
+                                                            ></el-date-picker>
+                                                        </td>
+                                                        <td>
+                                                            <el-input
+                                                                v-model="
+                                                                    row.amount
+                                                                "
+                                                            ></el-input>
+                                                        </td>
+                                                        <td
+                                                            class="text-center"
+                                                        >
+                                                            <button
+                                                                v-if="
+                                                                    index >
+                                                                        0
+                                                                "
+                                                                class="btn waves-effect waves-light btn-xs btn-danger"
+                                                                type="button"
+                                                                @click.prevent="
+                                                                    clickRemoveFee(
+                                                                        index
+                                                                    )
+                                                                "
                                                             >
-                                                                <table
-                                                                    class="text-start table"
-                                                                >
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <template
-                                                                                v-if="
-                                                                                    showLoadVoucher &&
-                                                                                        form
-                                                                                            .payments
-                                                                                            .length >
-                                                                                            0
-                                                                                "
-                                                                            >
-                                                                                <th
-                                                                                    style="width:50px"
-                                                                                >
-                                                                                    Voucher
-                                                                                </th>
-                                                                            </template>
-
-                                                                            <th
-                                                                                v-if="
-                                                                                    form
-                                                                                        .payments
-                                                                                        .length >
-                                                                                        0
-                                                                                "
-                                                                                style="width: 120px"
-                                                                            >
-                                                                                Método
-                                                                                de
-                                                                                pago
-                                                                            </th>
-                                                                            <template
-                                                                                v-if="
-                                                                                    enabled_payments
-                                                                                "
-                                                                            >
-                                                                                <th
-                                                                                    v-if="
-                                                                                        form
-                                                                                            .payments
-                                                                                            .length >
-                                                                                            0
-                                                                                    "
-                                                                                    style="width: 120px"
-                                                                                >
-                                                                                    Destino
-                                                                                    <el-tooltip
-                                                                                        class="item"
-                                                                                        content="Aperture caja o cuentas bancarias"
-                                                                                        effect="dark"
-                                                                                        placement="top-start"
-                                                                                    >
-                                                                                        <i
-                                                                                            class="fa fa-info-circle"
-                                                                                        ></i>
-                                                                                    </el-tooltip>
-                                                                                </th>
-                                                                                <th
-                                                                                    v-if="
-                                                                                        form
-                                                                                            .payments
-                                                                                            .length >
-                                                                                            0
-                                                                                    "
-                                                                                    style="width: 100px"
-                                                                                >
-                                                                                    Referencia
-                                                                                </th>
-                                                                                <th
-                                                                                    v-if="
-                                                                                        form
-                                                                                            .payments
-                                                                                            .length >
-                                                                                            0
-                                                                                    "
-                                                                                    style="width: 100px"
-                                                                                >
-                                                                                    Monto
-                                                                                </th>
-                                                                                <th
-                                                                                    style="width: 30px"
-                                                                                ></th>
-                                                                            </template>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr
-                                                                            v-for="(row,
-                                                                            index) in form.payments"
-                                                                            :key="
-                                                                                index
-                                                                            "
-                                                                        >
-                                                                            <template
-                                                                                v-if="
-                                                                                    showLoadVoucher
-                                                                                "
-                                                                            >
-                                                                                <td
-                                                                                    class=""
-                                                                                    style="width: 50px"
-                                                                                >
-                                                                                    <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
-                                                                                    <el-upload
-                                                                                        :data="{
-                                                                                            index: index
-                                                                                        }"
-                                                                                        :headers="
-                                                                                            headers_token
-                                                                                        "
-                                                                                        :multiple="
-                                                                                            false
-                                                                                        "
-                                                                                        :on-remove="
-                                                                                            (
-                                                                                                file,
-                                                                                                fileList
-                                                                                            ) =>
-                                                                                                handleRemoveUploadVoucher(
-                                                                                                    file,
-                                                                                                    fileList,
-                                                                                                    index
-                                                                                                )
-                                                                                        "
-                                                                                        :action="
-                                                                                            `/finances/payment-file/upload`
-                                                                                        "
-                                                                                        :show-file-list="
-                                                                                            true
-                                                                                        "
-                                                                                        :file-list="
-                                                                                            row.file_list
-                                                                                        "
-                                                                                        :on-success="
-                                                                                            (
-                                                                                                response,
-                                                                                                file,
-                                                                                                fileList
-                                                                                            ) =>
-                                                                                                onSuccessUploadVoucher(
-                                                                                                    response,
-                                                                                                    file,
-                                                                                                    fileList,
-                                                                                                    index
-                                                                                                )
-                                                                                        "
-                                                                                        :limit="
-                                                                                            1
-                                                                                        "
-                                                                                    >
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            class="btn btn-sm btn-primary"
-                                                                                            slot="trigger"
-                                                                                        >
-                                                                                            <i
-                                                                                                class="fasa fa-fw fa-upload"
-                                                                                            ></i>
-                                                                                        </button>
-                                                                                    </el-upload>
-                                                                                    <!-- </el-tooltip> -->
-                                                                                </td>
-                                                                            </template>
-
-                                                                            <td>
-                                                                                <el-select
-                                                                                    v-model="
-                                                                                        row.payment_method_type_id
-                                                                                    "
-                                                                                    @change="
-                                                                                        changePaymentMethodType(
-                                                                                            index
-                                                                                        )
-                                                                                    "
-                                                                                >
-                                                                                    <el-option
-                                                                                        v-for="option in cash_payment_metod"
-                                                                                        :key="
-                                                                                            option.id
-                                                                                        "
-                                                                                        :label="
-                                                                                            option.description
-                                                                                        "
-                                                                                        :value="
-                                                                                            option.id
-                                                                                        "
-                                                                                    ></el-option>
-                                                                                </el-select>
-                                                                            </td>
-                                                                            <template
-                                                                                v-if="
-                                                                                    enabled_payments
-                                                                                "
-                                                                            >
-                                                                                <td>
-                                                                                    <el-select
-                                                                                        v-model="
-                                                                                            row.payment_destination_id
-                                                                                        "
-                                                                                        filterable
-                                                                                    >
-                                                                                        <el-option
-                                                                                            v-for="option in payment_destinations"
-                                                                                            :key="
-                                                                                                option.id
-                                                                                            "
-                                                                                            :label="
-                                                                                                option.description
-                                                                                            "
-                                                                                            :value="
-                                                                                                option.id
-                                                                                            "
-                                                                                        ></el-option>
-                                                                                    </el-select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <el-input
-                                                                                        v-model="
-                                                                                            row.reference
-                                                                                        "
-                                                                                    ></el-input>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <el-input
-                                                                                        v-model="
-                                                                                            row.payment
-                                                                                        "
-                                                                                    ></el-input>
-                                                                                </td>
-
-                                                                                <td
-                                                                                    class="text-center"
-                                                                                >
-                                                                                    <button
-                                                                                        class="btn waves-effect waves-light btn-xs btn-danger"
-                                                                                        type="button"
-                                                                                        @click.prevent="
-                                                                                            clickCancel(
-                                                                                                index
-                                                                                            )
-                                                                                        "
-                                                                                    >
-                                                                                        <i
-                                                                                            class="fa fa-trash"
-                                                                                        ></i>
-                                                                                    </button>
-                                                                                </td>
-                                                                            </template>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td
-                                                                                colspan="5"
-                                                                            >
-                                                                                <label
-                                                                                    class="control-label"
-                                                                                >
-                                                                                    <a
-                                                                                        class=""
-                                                                                        href="#"
-                                                                                        @click.prevent="
-                                                                                            clickAddPayment
-                                                                                        "
-                                                                                        ><i
-                                                                                            class="fa fa-plus font-weight-bold text-info"
-                                                                                        ></i>
-                                                                                        <span
-                                                                                            >Agregar
-                                                                                            pago</span
-                                                                                        ></a
-                                                                                    >
-                                                                                </label>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                                                <i
+                                                                    class="fa fa-trash"
+                                                                ></i>
+                                                            </button>
                                                         </td>
                                                     </tr>
+                                                    <tr>
+                                                        <td
+                                                            colspan="5"
+                                                        >
+                                                            <label
+                                                                class="control-label"
+                                                            >
+                                                                <a
+                                                                    class=""
+                                                                    href="#"
+                                                                    @click.prevent="
+                                                                        clickAddFee
+                                                                    "
+                                                                    ><i
+                                                                        class="fa fa-plus font-weight-bold text-info"
+                                                                    ></i>
+                                                                    <span
+                                                                        style="color: #777777"
+                                                                        >Agregar
+                                                                        cuota</span
+                                                                    ></a
+                                                                >
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!-- Credito -->
+                                        <div
+                                            v-if="
+                                                form.payment_condition_id ===
+                                                    '02'
+                                            "
+                                            class="table-responsive"
+                                        >
+                                            <table
+                                                v-if="
+                                                    form.fee
+                                                        .length >
+                                                        0
+                                                "
+                                                class="text-start table"
+                                                width="100%"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <th
+                                                            v-if="
+                                                                form
+                                                                    .fee
+                                                                    .length >
+                                                                    0
+                                                            "
+                                                            style="min-width: 130px"
+                                                        >
+                                                            Método
+                                                            de
+                                                            pago
+                                                        </th>
+                                                        <th
+                                                            class="text-start"
+                                                            style="min-width: 100px"
+                                                        >
+                                                            Fecha
+                                                        </th>
+                                                        <th
+                                                            class="text-start"
+                                                            style="min-width: 100px"
+                                                        >
+                                                            Monto
+                                                        </th>
+                                                        <th
+                                                            style="min-width: 30px"
+                                                        ></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="(row,
+                                                        index) in form.fee"
+                                                        :key="
+                                                            index
+                                                        "
+                                                    >
+                                                        <td>
+                                                            <el-select
+                                                                v-model="
+                                                                    row.payment_method_type_id
+                                                                "
+                                                                @change="
+                                                                    changePaymentMethodType(
+                                                                        index
+                                                                    )
+                                                                "
+                                                            >
+                                                                <el-option
+                                                                    v-for="option in credit_payment_metod"
+                                                                    :key="
+                                                                        option.id
+                                                                    "
+                                                                    :label="
+                                                                        option.description
+                                                                    "
+                                                                    :value="
+                                                                        option.id
+                                                                    "
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </td>
+                                                        <td>
+                                                            <el-date-picker
+                                                                v-model="
+                                                                    row.date
+                                                                "
+                                                                :clearable="
+                                                                    false
+                                                                "
+                                                                format="dd/MM/yyyy"
+                                                                type="date"
+                                                                value-format="yyyy-MM-dd"
+                                                                :readonly="
+                                                                    row.payment_method_type_id !==
+                                                                        '09'
+                                                                "
+                                                            >
+                                                            </el-date-picker>
+                                                        </td>
+                                                        <td>
+                                                            <el-input
+                                                                v-model="
+                                                                    row.amount
+                                                                "
+                                                                :readonly="
+                                                                    true
+                                                                "
+                                                            ></el-input>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!-- Contado -->
+                                        <div
+                                            v-if="
+                                                !is_receivable &&
+                                                    form.payment_condition_id ===
+                                                        '01'
+                                            "
+                                            class="table-responsive payment mt-4"
+                                        >
+                                            <table
+                                                class="text-start table"
+                                            >
+                                                <thead>
+                                                    <tr>
+                                                        <template
+                                                            v-if="
+                                                                showLoadVoucher &&
+                                                                    form
+                                                                        .payments
+                                                                        .length >
+                                                                        0
+                                                            "
+                                                        >
+                                                            <th
+                                                                style="width:50px"
+                                                            >
+                                                                Voucher
+                                                            </th>
+                                                        </template>
+
+                                                        <th
+                                                            v-if="
+                                                                form
+                                                                    .payments
+                                                                    .length >
+                                                                    0
+                                                            "
+                                                            style="min-width: 130px"
+                                                        >
+                                                            Método
+                                                            de
+                                                            pago
+                                                        </th>
+                                                        <template
+                                                            v-if="
+                                                                enabled_payments
+                                                            "
+                                                        >
+                                                            <th
+                                                                v-if="
+                                                                    form
+                                                                        .payments
+                                                                        .length >
+                                                                        0
+                                                                "
+                                                                style="min-width: 130px"
+                                                            >
+                                                                Destino
+                                                                <el-tooltip
+                                                                    class="item"
+                                                                    content="Aperture caja o cuentas bancarias"
+                                                                    effect="dark"
+                                                                    placement="top-start"
+                                                                >
+                                                                    <i
+                                                                        class="fa fa-info-circle"
+                                                                    ></i>
+                                                                </el-tooltip>
+                                                            </th>
+                                                            <th
+                                                                v-if="
+                                                                    form
+                                                                        .payments
+                                                                        .length >
+                                                                        0
+                                                                "
+                                                                style="min-width: 130px"
+                                                            >
+                                                                Referencia
+                                                            </th>
+                                                            <th
+                                                                v-if="
+                                                                    form
+                                                                        .payments
+                                                                        .length >
+                                                                        0
+                                                                "
+                                                                style="min-width: 90px"
+                                                            >
+                                                                Monto
+                                                            </th>
+                                                            <th
+                                                                style="min-width: 30px"
+                                                            ></th>
+                                                        </template>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="(row,
+                                                        index) in form.payments"
+                                                        :key="
+                                                            index
+                                                        "
+                                                    >
+                                                        <template
+                                                            v-if="
+                                                                showLoadVoucher
+                                                            "
+                                                        >
+                                                            <td
+                                                                class=""
+                                                                style="width: 50px"
+                                                            >
+                                                                <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
+                                                                <el-upload
+                                                                    :data="{
+                                                                        index: index
+                                                                    }"
+                                                                    :headers="
+                                                                        headers_token
+                                                                    "
+                                                                    :multiple="
+                                                                        false
+                                                                    "
+                                                                    :on-remove="
+                                                                        (
+                                                                            file,
+                                                                            fileList
+                                                                        ) =>
+                                                                            handleRemoveUploadVoucher(
+                                                                                file,
+                                                                                fileList,
+                                                                                index
+                                                                            )
+                                                                    "
+                                                                    :action="
+                                                                        `/finances/payment-file/upload`
+                                                                    "
+                                                                    :show-file-list="
+                                                                        true
+                                                                    "
+                                                                    :file-list="
+                                                                        row.file_list
+                                                                    "
+                                                                    :on-success="
+                                                                        (
+                                                                            response,
+                                                                            file,
+                                                                            fileList
+                                                                        ) =>
+                                                                            onSuccessUploadVoucher(
+                                                                                response,
+                                                                                file,
+                                                                                fileList,
+                                                                                index
+                                                                            )
+                                                                    "
+                                                                    :limit="
+                                                                        1
+                                                                    "
+                                                                >
+                                                                    <button
+                                                                        type="button"
+                                                                        class="btn btn-sm btn-primary"
+                                                                        slot="trigger"
+                                                                    >
+                                                                        <i
+                                                                            class="fasa fa-fw fa-upload"
+                                                                        ></i>
+                                                                    </button>
+                                                                </el-upload>
+                                                                <!-- </el-tooltip> -->
+                                                            </td>
+                                                        </template>
+
+                                                        <td>
+                                                            <el-select
+                                                                v-model="
+                                                                    row.payment_method_type_id
+                                                                "
+                                                                @change="
+                                                                    changePaymentMethodType(
+                                                                        index
+                                                                    )
+                                                                "
+                                                            >
+                                                                <el-option
+                                                                    v-for="option in cash_payment_metod"
+                                                                    :key="
+                                                                        option.id
+                                                                    "
+                                                                    :label="
+                                                                        option.description
+                                                                    "
+                                                                    :value="
+                                                                        option.id
+                                                                    "
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </td>
+                                                        <template
+                                                            v-if="
+                                                                enabled_payments
+                                                            "
+                                                        >
+                                                            <td>
+                                                                <el-select
+                                                                    v-model="
+                                                                        row.payment_destination_id
+                                                                    "
+                                                                    filterable
+                                                                >
+                                                                    <el-option
+                                                                        v-for="option in payment_destinations"
+                                                                        :key="
+                                                                            option.id
+                                                                        "
+                                                                        :label="
+                                                                            option.description
+                                                                        "
+                                                                        :value="
+                                                                            option.id
+                                                                        "
+                                                                    ></el-option>
+                                                                </el-select>
+                                                            </td>
+                                                            <td>
+                                                                <el-input
+                                                                    v-model="
+                                                                        row.reference
+                                                                    "
+                                                                ></el-input>
+                                                            </td>
+                                                            <td>
+                                                                <el-input
+                                                                    v-model="
+                                                                        row.payment
+                                                                    "
+                                                                ></el-input>
+                                                            </td>
+
+                                                            <td
+                                                                class="text-center"
+                                                            >
+                                                                <button
+                                                                    class="btn waves-effect waves-light btn-xs btn-danger"
+                                                                    type="button"
+                                                                    @click.prevent="
+                                                                        clickCancel(
+                                                                            index
+                                                                        )
+                                                                    "
+                                                                >
+                                                                    <i
+                                                                        class="fa fa-trash"
+                                                                    ></i>
+                                                                </button>
+                                                            </td>
+                                                        </template>
+                                                    </tr>
+                                                    <tr>
+                                                        <td
+                                                            colspan="5"
+                                                        >
+                                                            <label
+                                                                class="control-label"
+                                                            >
+                                                                <a
+                                                                    class=""
+                                                                    href="#"
+                                                                    @click.prevent="
+                                                                        clickAddPayment
+                                                                    "
+                                                                    ><i
+                                                                        class="fa fa-plus font-weight-bold text-info"
+                                                                    ></i>
+                                                                    <span
+                                                                        >Agregar
+                                                                        pago</span
+                                                                    ></a
+                                                                >
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
                              </table>
                                 </div>
                             <!-- Fin Pagos -->
@@ -2042,7 +2023,7 @@ header .head-notes > div {
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
-    z-index: 1;
+    z-index: 2;
     transition: all 0.3s ease-in-out;
     font-weight: 400;
     font-size: 16px;

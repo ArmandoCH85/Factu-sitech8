@@ -13,7 +13,7 @@
                         {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
                     </el-button>
                 </div>
-                <div class="row" v-if="applyFilter && isVisible">
+                <div class="row mx-0" v-if="applyFilter && isVisible">
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
                         <label for="">Tipo</label>
                         <el-select v-model="search.column"  placeholder="Select" @change="changeClearInput">
@@ -55,7 +55,7 @@
                         </el-select>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mx-0">
                     <div class="col-lg-3 col-md-4 col-sm-12 pb-2 btn-container-mobile">
                         <el-button type="primary" v-if="typeUser == 'admin' &&  soapCompany != '03'" @click.prevent="clickGenerateDocuments()" >
                             Generar comprobantes

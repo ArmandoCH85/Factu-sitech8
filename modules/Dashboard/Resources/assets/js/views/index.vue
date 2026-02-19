@@ -133,7 +133,7 @@
 
             <RowTop :company="company" :utilities="utilities"></RowTop>
 
-            <div class="row">
+            <div class="row mx-0 px-1">
                 <div class="col-xl-12 card-dashboard-section">
                     <div class="row">
                     <template v-if="configuration.dashboard_sales">

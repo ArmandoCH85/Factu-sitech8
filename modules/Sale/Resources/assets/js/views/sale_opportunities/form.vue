@@ -6,15 +6,15 @@
         </div> -->
         <div class="tab-content tab-content-default row-new" v-if="loading_form">
             <div class="invoice p-0">
-                <header class="clearfix clearfix-default p-2">
-                    <div class="row">
-                        <div class="col-sm-2 text-center mt-3 mb-0">
+                <header class="clearfix clearfix-default py-2 px-1 px-md-2">
+                    <div class="row mx-0 my-1 mx-md-1 my-md-0">
+                        <div class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block">
                             <logo 
                                 url="/"
                                 :path_logo="getCurrentLogo"
                             ></logo>
                         </div>
-                        <div class="col-sm-6 text-start mt-3 mb-0">
+                        <div class="col-sm-6 text-start mt-3 mb-0 d-none d-md-block">
                             <address class="ib mr-2">
                                 <span class="font-weight-bold d-block">OPORTUNIDAD DE VENTA</span>
                                 <!-- <span class="font-weight-bold d-block">CASO-XXX</span> -->
@@ -29,8 +29,8 @@
                             </address>
                         </div>
 
-                        <div class="col-sm-4 pt-3">
-                            <div class="form-group col-sm-6 ms-auto me-2" :class="{'has-danger': errors.date_of_issue}">
+                        <div class="col-md-4 p-0">
+                            <div class="form-group col-lg-6 col-12 ms-auto" :class="{'has-danger': errors.date_of_issue}">
                                 <!--<label class="control-label">Fecha de emisión</label>-->
                                 <label class="control-label">Fec. Emisión</label>
                                 <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd"
@@ -42,9 +42,9 @@
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit">
-                    <div class="form-body m-4">
+                    <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-lg-8 pb-2">
+                            <div class="col-md-6 col-lg-8 pb-2">
                                 <div class="form-group position-relative" :class="{'has-danger': errors.customer_id}">
                                     <label class="control-label font-weight-bold">
                                         Cliente
@@ -92,7 +92,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-6 col-md-3 col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -103,7 +103,7 @@
                                            v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-6 col-md-3 col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark"
@@ -118,7 +118,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-4">
+                            <div class="col-md-6 col-lg-4">
                                 <div class="form-group" :class="{'has-danger': errors.observation}">
                                     <label class="control-label">Observaciónes
                                     </label>
@@ -127,7 +127,7 @@
                                            v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-md-6 col-lg-4">
                                 <div class="form-group" :class="{'has-danger': errors.detail}">
                                     <label class="control-label">Detalles
                                     </label>
@@ -193,11 +193,12 @@
                                                     type="button"
                                                     @click="clickEditItem(row, index)"
                                                 >
-                                                    <span style="font-size:10px;">&#9998;</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                 </button>
                                                 <button type="button"
-                                                        class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        @click.prevent="clickRemoveItem(index)">x
+                                                        class="btn waves-effect waves-light btn-xs btn-danger ms-1"
+                                                        @click.prevent="clickRemoveItem(index)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                 </button>
                                             </td>
                                         </tr>

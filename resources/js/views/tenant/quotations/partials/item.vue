@@ -20,7 +20,7 @@
                         </el-checkbox>
                     </div>
                     <div
-                        class="col-md-7 col-lg-7 col-xl-7 col-sm-7 product-model position-relative"
+                        class="col-md-7 col-lg-7 col-xl-7 product-model position-relative"
                     >
                         <template v-if="various_item">
                             <div class="form-group">
@@ -268,7 +268,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-4 col-4">
                         <div
                             :class="{ 'has-danger': errors.quantity }"
                             class="form-group"
@@ -288,7 +288,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-4 col-4">
                         <div
                             :class="{ 'has-danger': errors.unit_price }"
                             class="form-group"
@@ -364,7 +364,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-4 col-4">
                         <div class="form-group">
                             <label class="control-label">Total</label>
                             <el-input
@@ -436,7 +436,7 @@
                             >Atributo extra (visible en PDF)</label
                         >
                     </div>
-                    <div class="col-md-6" v-if="showDiscounts">
+                    <div class="col-6" v-if="showDiscounts">
                         <div
                             :class="{ 'has-danger': errors.extra_attr_name }"
                             class="form-group"
@@ -449,7 +449,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div class="col-md-6" v-if="showDiscounts">
+                    <div class="col-6" v-if="showDiscounts">
                         <div
                             :class="{ 'has-danger': errors.extra_attr_value }"
                             class="form-group"
@@ -585,103 +585,105 @@
                                                 >[+ Agregar]</a
                                             >
                                         </label>
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tipo</th>
-                                                    <th>Descripción</th>
-                                                    <th>Porcentaje</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr
-                                                    v-for="(row,
-                                                    index) in form.discounts"
-                                                    :key="index"
-                                                >
-                                                    <td>
-                                                        <el-select
-                                                            v-model="
-                                                                row.discount_type_id
-                                                            "
-                                                            @change="
-                                                                changeDiscountType(
-                                                                    index
-                                                                )
-                                                            "
-                                                        >
-                                                            <el-option
-                                                                v-for="option in discount_types"
-                                                                :key="option.id"
-                                                                :label="
-                                                                    option.description
+                                        <div class="table-overflow-x-auto">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="min-width: 145px;">Tipo</th>
+                                                        <th style="min-width: 155px;">Descripción</th>
+                                                        <th style="min-width: 145px;">Porcentaje</th>
+                                                        <th style="min-width: 48px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="(row,
+                                                        index) in form.discounts"
+                                                        :key="index"
+                                                    >
+                                                        <td>
+                                                            <el-select
+                                                                v-model="
+                                                                    row.discount_type_id
                                                                 "
-                                                                :value="
-                                                                    option.id
+                                                                @change="
+                                                                    changeDiscountType(
+                                                                        index
+                                                                    )
                                                                 "
-                                                            ></el-option>
-                                                        </el-select>
-                                                    </td>
-                                                    <td>
-                                                        <el-input
-                                                            v-model="
-                                                                row.description
-                                                            "
-                                                        ></el-input>
-                                                    </td>
-                                                    <td>
-                                                        <el-checkbox
-                                                            v-model="
-                                                                row.is_amount
-                                                            "
-                                                            @change="
-                                                                changeIsDiscountAmount(
-                                                                    index
-                                                                )
-                                                            "
-                                                            >Ingresar monto
-                                                            fijo</el-checkbox
-                                                        >
-                                                        <br />
-                                                        <template
-                                                            v-if="row.is_amount"
-                                                        >
+                                                            >
+                                                                <el-option
+                                                                    v-for="option in discount_types"
+                                                                    :key="option.id"
+                                                                    :label="
+                                                                        option.description
+                                                                    "
+                                                                    :value="
+                                                                        option.id
+                                                                    "
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </td>
+                                                        <td>
                                                             <el-input
                                                                 v-model="
-                                                                    row.amount
+                                                                    row.description
                                                                 "
                                                             ></el-input>
-                                                        </template>
-                                                        <template v-else>
-                                                            <el-input
+                                                        </td>
+                                                        <td>
+                                                            <el-checkbox
                                                                 v-model="
-                                                                    row.percentage
+                                                                    row.is_amount
                                                                 "
-                                                            ></el-input>
-                                                        </template>
-                                                        <!--
-                                                    <el-checkbox v-model="row.is_amount">Ingresar monto fijo
-                                                    </el-checkbox>
-                                                    <br>
-                                                    <el-input v-model="row.percentage"></el-input>
-                                                    --></td>
-                                                    <td>
-                                                        <button
-                                                            class="btn btn-danger"
-                                                            type="button"
-                                                            @click.prevent="
-                                                                clickRemoveDiscount(
-                                                                    index
-                                                                )
-                                                            "
-                                                        >
-                                                            x
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                                @change="
+                                                                    changeIsDiscountAmount(
+                                                                        index
+                                                                    )
+                                                                "
+                                                                >Ingresar monto
+                                                                fijo</el-checkbox
+                                                            >
+                                                            <br />
+                                                            <template
+                                                                v-if="row.is_amount"
+                                                            >
+                                                                <el-input
+                                                                    v-model="
+                                                                        row.amount
+                                                                    "
+                                                                ></el-input>
+                                                            </template>
+                                                            <template v-else>
+                                                                <el-input
+                                                                    v-model="
+                                                                        row.percentage
+                                                                    "
+                                                                ></el-input>
+                                                            </template>
+                                                            <!--
+                                                        <el-checkbox v-model="row.is_amount">Ingresar monto fijo
+                                                        </el-checkbox>
+                                                        <br>
+                                                        <el-input v-model="row.percentage"></el-input>
+                                                        --></td>
+                                                        <td>
+                                                            <button
+                                                                class="btn btn-danger"
+                                                                type="button"
+                                                                @click.prevent="
+                                                                    clickRemoveDiscount(
+                                                                        index
+                                                                    )
+                                                                "
+                                                            >
+                                                                x
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     <div v-if="charge_types.length > 0">
                                         <label class="control-label">
@@ -692,74 +694,76 @@
                                                 >[+ Agregar]</a
                                             >
                                         </label>
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tipo</th>
-                                                    <th>Descripción</th>
-                                                    <th>Porcentaje</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr
-                                                    v-for="(row,
-                                                    index) in form.charges"
-                                                    :key="index"
-                                                >
-                                                    <td>
-                                                        <el-select
-                                                            v-model="
-                                                                row.charge_type_id
-                                                            "
-                                                            @change="
-                                                                changeChargeType(
-                                                                    index
-                                                                )
-                                                            "
-                                                        >
-                                                            <el-option
-                                                                v-for="option in charge_types"
-                                                                :key="option.id"
-                                                                :label="
-                                                                    option.description
+                                        <div class="table-overflow-x-auto">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="min-width: 145px;">Tipo</th>
+                                                        <th style="min-width: 155px;">Descripción</th>
+                                                        <th style="min-width: 75px;">Porcentaje</th>
+                                                        <th style="min-width: 48px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="(row,
+                                                        index) in form.charges"
+                                                        :key="index"
+                                                    >
+                                                        <td>
+                                                            <el-select
+                                                                v-model="
+                                                                    row.charge_type_id
                                                                 "
-                                                                :value="
-                                                                    option.id
+                                                                @change="
+                                                                    changeChargeType(
+                                                                        index
+                                                                    )
                                                                 "
-                                                            ></el-option>
-                                                        </el-select>
-                                                    </td>
-                                                    <td>
-                                                        <el-input
-                                                            v-model="
-                                                                row.description
-                                                            "
-                                                        ></el-input>
-                                                    </td>
-                                                    <td>
-                                                        <el-input
-                                                            v-model="
-                                                                row.percentage
-                                                            "
-                                                        ></el-input>
-                                                    </td>
-                                                    <td>
-                                                        <button
-                                                            class="btn btn-danger"
-                                                            type="button"
-                                                            @click.prevent="
-                                                                clickRemoveCharge(
-                                                                    index
-                                                                )
-                                                            "
-                                                        >
-                                                            x
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                            >
+                                                                <el-option
+                                                                    v-for="option in charge_types"
+                                                                    :key="option.id"
+                                                                    :label="
+                                                                        option.description
+                                                                    "
+                                                                    :value="
+                                                                        option.id
+                                                                    "
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </td>
+                                                        <td>
+                                                            <el-input
+                                                                v-model="
+                                                                    row.description
+                                                                "
+                                                            ></el-input>
+                                                        </td>
+                                                        <td>
+                                                            <el-input
+                                                                v-model="
+                                                                    row.percentage
+                                                                "
+                                                            ></el-input>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                class="btn btn-danger"
+                                                                type="button"
+                                                                @click.prevent="
+                                                                    clickRemoveCharge(
+                                                                        index
+                                                                    )
+                                                                "
+                                                            >
+                                                                x
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>                                        
                                     </div>
                                     <div v-if="attribute_types.length > 0">
                                         <label class="control-label">
@@ -772,70 +776,72 @@
                                                 >[+ Agregar]</a
                                             >
                                         </label>
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tipo</th>
-                                                    <th>Descripción</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr
-                                                    v-for="(row,
-                                                    index) in form.attributes"
-                                                    :key="index"
-                                                >
-                                                    <td>
-                                                        <el-select
-                                                            v-model="
-                                                                row.attribute_type_id
-                                                            "
-                                                            filterable
-                                                            @change="
-                                                                changeAttributeType(
-                                                                    index
-                                                                )
-                                                            "
-                                                        >
-                                                            <el-option
-                                                                v-for="option in attribute_types"
-                                                                :key="option.id"
-                                                                :label="
-                                                                    option.description
+                                        <div class="table-overflow-x-auto">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="min-width: 145px;">Tipo</th>
+                                                        <th style="min-width: 155px;">Descripción</th>
+                                                        <th style="min-width: 48px;"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="(row,
+                                                        index) in form.attributes"
+                                                        :key="index"
+                                                    >
+                                                        <td>
+                                                            <el-select
+                                                                v-model="
+                                                                    row.attribute_type_id
                                                                 "
-                                                                :value="
-                                                                    option.id
+                                                                filterable
+                                                                @change="
+                                                                    changeAttributeType(
+                                                                        index
+                                                                    )
                                                                 "
-                                                            ></el-option>
-                                                        </el-select>
-                                                    </td>
-                                                    <td>
-                                                        <el-input
-                                                            v-model="row.value"
-                                                            @input="
-                                                                inputAttribute(
-                                                                    index
-                                                                )
-                                                            "
-                                                        ></el-input>
-                                                    </td>
-                                                    <td>
-                                                        <button
-                                                            class="btn btn-danger"
-                                                            type="button"
-                                                            @click.prevent="
-                                                                clickRemoveAttribute(
-                                                                    index
-                                                                )
-                                                            "
-                                                        >
-                                                            x
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                            >
+                                                                <el-option
+                                                                    v-for="option in attribute_types"
+                                                                    :key="option.id"
+                                                                    :label="
+                                                                        option.description
+                                                                    "
+                                                                    :value="
+                                                                        option.id
+                                                                    "
+                                                                ></el-option>
+                                                            </el-select>
+                                                        </td>
+                                                        <td>
+                                                            <el-input
+                                                                v-model="row.value"
+                                                                @input="
+                                                                    inputAttribute(
+                                                                        index
+                                                                    )
+                                                                "
+                                                            ></el-input>
+                                                        </td>
+                                                        <td>
+                                                            <button
+                                                                class="btn btn-danger"
+                                                                type="button"
+                                                                @click.prevent="
+                                                                    clickRemoveAttribute(
+                                                                        index
+                                                                    )
+                                                                "
+                                                            >
+                                                                x
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>                                        
                                     </div>
                                 </el-collapse-item>
                             </el-collapse>

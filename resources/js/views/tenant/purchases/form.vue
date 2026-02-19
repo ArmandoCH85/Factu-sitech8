@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="page-header pe-0">
+        <div class="page-header pe-0 d-none d-md-block">
             <h2><a href="/purchases">
                 <svg  xmlns="http://www.w3.org/2000/svg" style="margin-top: -5px;"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>
             </a></h2>
@@ -8,18 +8,18 @@
                 <li class="active"><span> Nueva Compra </span></li>
             </ol>
         </div>
-        <div class="card tab-content-default row-new mb-0 pt-2 pt-md-0 mt-5">
+        <div class="card tab-content-default row-new mb-0 pt-2 pt-md-0 mt-0 mt-md-5">
             <!-- <div class="card-header bg-info">
                 <h3 class="my-0">Nueva Compra</h3>
             </div> -->
             <div class="tab-content tab-content-default card-body">
-                <div class="invoice p-3">
+                <div class="invoice p-1 p-md-3">
                 <form autocomplete="off"
                       @submit.prevent="submit">
                     <div class="form-body">
 
-                        <div class="row">
-                            <div class="col-lg-4">
+                        <div class="row mx-0">
+                            <div class="col-6 col-lg-4">
                                 <div :class="{'has-danger': errors.document_type_id}"
                                      class="form-group">
                                     <label class="control-label">Tipo comprobante</label>
@@ -35,7 +35,7 @@
                                            v-text="errors.document_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-3 col-lg-2">
                                 <div :class="{'has-danger': errors.series}"
                                      class="form-group">
                                     <label class="control-label">Serie <span class="text-danger">*</span></label>
@@ -48,7 +48,7 @@
                                            v-text="errors.series[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-3 col-lg-2">
                                 <div :class="{'has-danger': errors.number}"
                                      class="form-group">
                                     <label class="control-label">Número <span class="text-danger">*</span></label>
@@ -61,7 +61,7 @@
                             </div>
 
 
-                            <div class="col-lg-2">
+                            <div class="col-6 col-lg-2">
                                 <div :class="{'has-danger': errors.date_of_issue}"
                                      class="form-group">
                                     <label class="control-label">Fec Emisión</label>
@@ -77,7 +77,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-6 col-lg-2">
                                 <div :class="{'has-danger': errors.date_of_due}"
                                      class="form-group">
                                     <label class="control-label">Fec. Vencimiento</label>
@@ -92,8 +92,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6">
+                        <div class="row mx-0">
+                            <div class="col-6">
                                 <div :class="{'has-danger': errors.supplier_id}"
                                      class="form-group position-relative">
                                     <label class="control-label">
@@ -152,7 +152,7 @@
                                     <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                                 </div>
                             </div> -->
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-3">
                                 <div :class="{'has-danger': errors.currency_type_id}"
                                      class="form-group">
                                     <label class="control-label">Moneda</label>
@@ -168,7 +168,7 @@
                                            v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-3">
                                 <div :class="{'has-danger': errors.exchange_rate_sale}"
                                      class="form-group">
                                     <label class="control-label">Tipo de cambio
@@ -186,7 +186,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2"
+                            <div class="col-lg-2 col-md-6"
                                  v-if="purchase_order_id === null">
                                 <div class="form-group">
                                     <label class="control-label control-label--buys">
@@ -277,7 +277,7 @@
 
 
                         </div>
-                        <div class="row">
+                        <div class="row mx-0">
                             <template v-if="form.has_payment">
 
                                 <div class="col-lg-2 col-md-2">
@@ -474,9 +474,9 @@
                                 </div>
                             </template>
                         </div>
-                        <div class="row">
+                        <div class="row mx-0">
 
-                            <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
+                            <div class="col-12 d-flex align-items-end mt-4">
                                 <div class="form-group">
                                     <button class="btn waves-effect waves-light btn-primary"
                                             type="button"
@@ -492,7 +492,7 @@
                             </div>
                         </div>
                         <div v-if="form.items !== undefined && form.items.length > 0"
-                             class="row mt-3">
+                             class="row mt-3 mx-0">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -545,22 +545,23 @@
                                             <td class="text-end">
 
                                                 <button v-if="applyLotsGroup(row.item)"
-                                                        class="btn waves-effect waves-light btn-xs btn-info me-2"
+                                                        class="btn waves-effect waves-light btn-xs btn-info"
                                                         type="button"
                                                         @click.prevent="clickOpenLotsGroup(index)">
                                                     Lote
                                                 </button>
 
                                                 <button v-if="purchase_order_id && row.item.series_enabled"
-                                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                                        class="btn waves-effect waves-light btn-xs btn-info ms-1"
                                                         type="button"
                                                         @click.prevent="clickOpenSeries(index, row.quantity, row.lots)">
                                                     Series
                                                 </button>
 
-                                                <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                                <button class="btn waves-effect waves-light btn-xs btn-danger ms-1"
                                                         type="button"
-                                                        @click.prevent="clickRemoveItem(index)">x
+                                                        @click.prevent="clickRemoveItem(index)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                 </button>
                                             </td>
                                         </tr>

@@ -114,12 +114,6 @@ ul.nav-main li .nav-children li a:focus,
     border-color: #c2cdff;
     background-color: #e3e7fc;
 }
-@media only screen and (min-width: 600px) {
-    .second-buton-default,
-    .btn-submit-default {
-        min-width: 180px;
-    }
-}
 ul.nav-main li .nav-children li a:after {
     padding: 6px 15px;
 }
@@ -380,10 +374,6 @@ a.text-info:hover, a.text-info:focus {
 }
 html.fixed.sidebar-white .sidebar-left, html.fixed.sidebar-white .sidebar-header, html.fixed.sidebar-white .sidebar-left .nano {
     transition: all .15s ease;
-}
-html.sidebar-left-collapsed .sidebar-left .nano:hover {
-    width: 300px;
-    box-shadow: 0 30px 30px rgb(0 0 0 / 20%);
 }
 /* estilos login */
 .btn-signin {
@@ -889,10 +879,6 @@ a, a:hover, a:focus{
     background-color: #283046;
 }
 
-.row{
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-}
 .card-dashboard-section{
     padding: 0 !important;
 }
@@ -1000,10 +986,6 @@ html.sidebar-light .establishment-selector-container{
     color: #66789c !important;
     border-color: #E0E6F7 !important;
 }
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
-html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-    height: calc(100% - 104px) !important;
-}
 .el-tag{
     background-color: color-mix(in srgb, #2346e8 10%, #ffffff00);
     border-radius: 4px;
@@ -1045,9 +1027,27 @@ html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selecto
     background: #fff;
     border-color: #2346e8;
 }
+.welcome-card-row{
+    padding-left: .25rem;
+    padding-right: .25rem;
+}
+.kpi-row{
+    padding-left: .25rem !important;
+    padding-right: .25rem !important;
+}
 /* end */
-html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
-    height: calc(100% - 128px) !important;
+@media only screen and (min-width: 767px) {
+    html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
+        height: calc(100% - 128px) !important;
+    }
+    html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
+    html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
+        height: calc(100% - 104px) !important;
+    }
+    html.sidebar-left-collapsed .sidebar-left .nano:hover {
+        width: 300px;
+        box-shadow: 0 30px 30px rgb(0 0 0 / 20%);
+    }
 }
 /* theme dark */
 html.dark,html.dark body{

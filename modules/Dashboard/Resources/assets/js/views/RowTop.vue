@@ -1,5 +1,5 @@
 <template>
-  <div class="row top">
+  <div class="row top px-2 kpi-row">
     <div class="col" v-if="company.certificate_due">
       <div class="card card-dashboard">
         <div

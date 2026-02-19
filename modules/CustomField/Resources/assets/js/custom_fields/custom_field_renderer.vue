@@ -1,5 +1,5 @@
 <template>
-  <div v-if="customFields.length > 0" class="row">
+  <div v-if="customFields.length > 0" class="row mx-0 px-0">
     <div class="col-12">
       <hr>
       <h5 class="mb-0">Campos Personalizados</h5>

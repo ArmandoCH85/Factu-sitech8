@@ -11,7 +11,7 @@
             <div class="form-body">
                 <div class="row">
                     <!-- Cliente -->
-                    <div class="col-md-6 pb-2">
+                    <div class="col-sm-6 pb-2">
                         <div
                             :class="{ 'has-danger': errors.customer_id }"
                             class="form-group position-relative"
@@ -75,7 +75,7 @@
                     </div>
 
                     <!-- Telefono Contacto -->
-                    <div class="col-md-6 pb-2">
+                    <div class="col-sm-6 pb-2">
                         <div
                             :class="{ 'has-danger': errors.cellphone }"
                             class="form-group"
@@ -114,7 +114,7 @@
                             ><h3 class="m-0 mt-2">General</h3></span
                         >
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <div
                                     :class="{ 'has-danger': errors.reason }"
                                     class="form-group"
@@ -133,7 +133,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <div
                                     :class="{ 'has-danger': errors.state }"
                                     class="form-group"
@@ -151,7 +151,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <div
                                     :class="{
                                         'has-danger': errors.serial_number
@@ -214,7 +214,7 @@
                                 </div>
                             </div> -->
 
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <div
                                     :class="{ 'has-danger': errors.brand }"
                                     class="form-group"
@@ -228,7 +228,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <div
                                     :class="{ 'has-danger': errors.equipment }"
                                     class="form-group"
@@ -245,7 +245,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <div
                                     :class="{ 'has-danger': errors.cost }"
                                     class="form-group"
@@ -289,22 +289,22 @@
                             </div>
                         </div>
                         <div class="row" style="padding:2%;">
-                            <div class="col-md-3">
+                            <div class="col-6 col-sm-3 col-md-6 col-lg-3">
                                 <el-checkbox v-model="form.repair"
                                     >Reparación</el-checkbox
                                 >
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-6 col-sm-3 col-md-6 col-lg-3">
                                 <el-checkbox v-model="form.warranty"
                                     >Garantía</el-checkbox
                                 >
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-6 col-sm-3 col-md-6 col-lg-3">
                                 <el-checkbox v-model="form.maintenance"
                                     >Mantenimiento</el-checkbox
                                 >
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-6 col-sm-3 col-md-6 col-lg-3">
                                 <el-checkbox v-model="form.diagnosis"
                                     >Diagnostico</el-checkbox
                                 >
@@ -531,21 +531,16 @@
                                                             )
                                                         "
                                                     >
-                                                        <i
-                                                            class="fas fa-trash"
-                                                        ></i>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                     </button>
                                                     <button
-                                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                                        class="btn waves-effect waves-light btn-xs btn-info ms-1"
                                                         type="button"
                                                         @click="
                                                             ediItem(row, index)
                                                         "
                                                     >
-                                                        <span
-                                                            style="font-size:10px;"
-                                                            >&#9998;</span
-                                                        >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
                                                     </button>
                                                 </td>
                                             </tr>

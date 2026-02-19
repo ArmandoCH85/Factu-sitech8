@@ -35,12 +35,12 @@
                     </el-checkbox>
                 </div>
 
-                <div class="col-lg-12 col-md-12">
+                <div class="col-lg-12 col-md-12 table-overflow-x-auto">
                     <table class="table">
                         <thead>
                         <tr>
                             <!--<th>Seleccionado</th>-->
-                            <th width="145">Comprometer</th>
+                            <th style="min-width: 115px;">Comprometer</th>
                             <th></th>
                             <th>Código</th>
                             <th>Cantidad</th>

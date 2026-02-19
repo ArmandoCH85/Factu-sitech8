@@ -9,7 +9,7 @@
                :show-close="false">
 
         <div class="form-body">
-            <div class="col-md-12 text-right">
+            <div class="col-md-12 text-end">
                 <h5>Cant. Pedida: {{ quantity }}</h5>
                 <h5 v-bind:class="{ 'text-danger': (toAttend < 0) }">Por Atender: {{ toAttend }}</h5>
             </div>
@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <div class="form-actions text-right pt-2">
+        <div class="form-actions text-end pt-2">
             <el-button @click.prevent="close">Cerrar</el-button>
             <el-button type="primary"
                        :disabled="toAttend < 0"

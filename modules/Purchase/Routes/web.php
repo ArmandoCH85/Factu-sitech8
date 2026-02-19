@@ -107,6 +107,7 @@ if($current_hostname) {
                 Route::get('purchases', 'FixedAssetPurchaseController@index')->name('tenant.fixed_asset_purchases.index');
                 Route::get('purchases/columns', 'FixedAssetPurchaseController@columns');
                 Route::get('purchases/records', 'FixedAssetPurchaseController@records');
+                Route::get('purchases/search-items', 'FixedAssetPurchaseController@searchItems');
                 Route::get('purchases/create/{id?}', 'FixedAssetPurchaseController@create')->name('tenant.fixed_asset_purchases.create');
                 Route::get('purchases/tables', 'FixedAssetPurchaseController@tables');
                 Route::get('purchases/table/{table}', 'FixedAssetPurchaseController@table');

@@ -59,6 +59,26 @@ class FixedAssetPurchaseController extends Controller
         return new FixedAssetPurchaseCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+    public function searchItems(Request $request)
+    {
+        $fixed_asset_items = FixedAssetItem::orderBy('description')->where('name', 'like', "%{$request->input}%")->get();
+        $items =  $fixed_asset_items->transform(function($row) {
+                    $full_description = ($row->internal_id) ? $row->internal_id.' - '.$row->name:$row->name;
+                            return [
+                                'id' => $row->id,
+                                'full_description' => $full_description,
+                                'description' => $row->name,
+                                'currency_type_id' => $row->currency_type_id,
+                                'currency_type_symbol' => $row->currency_type->symbol,
+                                'purchase_unit_price' => $row->purchase_unit_price,
+                                'unit_type_id' => $row->unit_type_id,
+                                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                            ];
+                    });
+
+        return compact('items');
+    }
+
     public function getRecords($request){
 
         switch ($request->column) {

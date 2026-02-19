@@ -747,10 +747,22 @@
         @endif
     @endif
 
-    <tr>
-        <td colspan="5" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-        <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
-    </tr>
+    @if ($document->retention)
+        <tr>
+            <td colspan="5" class="text-right font-bold desc">IMPORTE TOTAL: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-right font-bold desc">IMPORTE NETO: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total - $document->retention->amount_pen, 2) }}</td>
+        </tr>
+        
+    @else 
+        <tr>
+            <td colspan="5" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
+        </tr>
+    @endif
 
     @if(($document->retention || $document->detraction) && $document->total_pending_payment > 0)
         <tr>

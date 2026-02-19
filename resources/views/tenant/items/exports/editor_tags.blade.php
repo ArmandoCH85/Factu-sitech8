@@ -78,8 +78,10 @@
                             S/&nbsp;{{ $item->{$field->column} ?? '' }}
                         </span>
 
+                        @elseif(optional($item->{$field->column})->name !== null)
+                            {{ $item->{$field->column}->name  }}
                         @else
-                            {{ optional($item->{$field->column})->name ?? '' }}
+                            {{ $item->{$field->column} ?? '' }}
                         @endif
                     @endif
 

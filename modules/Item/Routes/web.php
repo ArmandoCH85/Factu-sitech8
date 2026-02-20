@@ -48,6 +48,7 @@ if($hostname) {
 
 
             Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
+            Route::get('items/import/download/item-price-lists', 'ItemController@excelImportItemPriceList');
             Route::post('items/import/item-with-extra-data', 'ItemController@importItemWithExtraData');
 
             //history

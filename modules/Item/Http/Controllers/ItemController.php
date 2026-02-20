@@ -12,7 +12,8 @@
     use App\Models\Tenant\SaleNoteItem;
     use App\Models\Tenant\QuotationItem;
     use App\Models\Tenant\Establishment;
-    use Illuminate\Http\Request;
+use App\Models\Tenant\PriceLabel;
+use Illuminate\Http\Request;
     use Illuminate\Routing\Controller;
     use Illuminate\Support\Facades\DB;
     use Maatwebsite\Excel\Excel;
@@ -31,7 +32,9 @@
     use Modules\Purchase\Helpers\WeightedAverageCostHelper;
     use Modules\Item\Exports\PricesEstablishmentFormatExport;
     use App\Models\Tenant\Warehouse;
-
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Facades\Excel as FacadesExcel;
 
     class ItemController extends Controller
     {
@@ -57,6 +60,30 @@
 
         }
 
+        public function excelImportItemPriceList()
+        {
+            return FacadesExcel::download(new class() implements WithHeadings {
+
+                public $heading = [
+                    'Codigo interno',
+                    'Unidad',
+                    'Factor'
+                ];
+
+                public function headings(): array
+                {
+                    $prices_label = PriceLabel::all();
+
+                    $prices_label->each(function($label) {
+                        $this->heading[] = $label->label;
+                    });
+
+                    return $this->heading;
+
+                }
+
+            }, 'item_price_lists.xlsx');
+        }
 
         public function importItemPriceLists(Request $request)
         {

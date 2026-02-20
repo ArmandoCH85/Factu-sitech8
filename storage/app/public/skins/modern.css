@@ -1049,6 +1049,11 @@ html.sidebar-light .establishment-selector-container{
         box-shadow: 0 30px 30px rgb(0 0 0 / 20%);
     }
 }
+.tag-preview .preview-canvas-wrap{
+    border: 1px dashed #EAEEF7;
+    border-radius: 8px;
+    margin-top: 10px !important;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

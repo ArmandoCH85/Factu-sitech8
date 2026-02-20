@@ -1,13 +1,13 @@
 {
-  "_vue-clipboard-bec84599.js": {
+  "_vue-clipboard-58257f6b.js": {
     "assets": [
       "assets/element-icons-ab40a589.woff",
       "assets/element-icons-a30f5b3b.ttf"
     ],
     "css": [
-      "assets/vue-clipboard-f75f732e.css"
+      "assets/vue-clipboard-a32e5a17.css"
     ],
-    "file": "assets/vue-clipboard-bec84599.js"
+    "file": "assets/vue-clipboard-58257f6b.js"
   },
   "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.ttf": {
     "file": "assets/element-icons-a30f5b3b.ttf",
@@ -18,7 +18,7 @@
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
   "public/images/labeling_machines_img/Bartender.svg": {
-    "file": "assets/Bartender-b9fc2af0.svg",
+    "file": "assets/Bartender-f7840412.svg",
     "src": "public/images/labeling_machines_img/Bartender.svg"
   },
   "public/images/labeling_machines_img/Cybra.png": {
@@ -30,15 +30,15 @@
     "src": "public/images/labeling_machines_img/Honeywell.svg"
   },
   "public/images/labeling_machines_img/Labeljoy.svg": {
-    "file": "assets/Labeljoy-506e8ad6.svg",
+    "file": "assets/Labeljoy-77fd3f21.svg",
     "src": "public/images/labeling_machines_img/Labeljoy.svg"
   },
   "public/images/labeling_machines_img/Nicelabel.svg": {
-    "file": "assets/Nicelabel-f0eff1ff.svg",
+    "file": "assets/Nicelabel-a678859a.svg",
     "src": "public/images/labeling_machines_img/Nicelabel.svg"
   },
   "public/images/labeling_machines_img/Teklynx.svg": {
-    "file": "assets/Teklynx-0603f01e.svg",
+    "file": "assets/Teklynx-df64a2cf.svg",
     "src": "public/images/labeling_machines_img/Teklynx.svg"
   },
   "public/images/labeling_machines_img/Tlashford.png": {
@@ -46,7 +46,7 @@
     "src": "public/images/labeling_machines_img/Tlashford.png"
   },
   "public/images/labeling_machines_img/Zebra.svg": {
-    "file": "assets/Zebra-32a3c31c.svg",
+    "file": "assets/Zebra-54fe7d47.svg",
     "src": "public/images/labeling_machines_img/Zebra.svg"
   },
   "public/images/labeling_machines_img/golabel.png": {
@@ -54,48 +54,48 @@
     "src": "public/images/labeling_machines_img/golabel.png"
   },
   "resources/js/app.css": {
-    "file": "assets/app-34f04a69.css",
+    "file": "assets/app-7e1d468a.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "assets": [
-      "assets/Bartender-b9fc2af0.svg",
+      "assets/Bartender-f7840412.svg",
       "assets/Cybra-0baac118.png",
       "assets/golabel-6a3ee9ed.png",
       "assets/Honeywell-26b9a232.svg",
-      "assets/Labeljoy-506e8ad6.svg",
-      "assets/Nicelabel-f0eff1ff.svg",
-      "assets/Teklynx-0603f01e.svg",
+      "assets/Labeljoy-77fd3f21.svg",
+      "assets/Nicelabel-a678859a.svg",
+      "assets/Teklynx-df64a2cf.svg",
       "assets/Tlashford-de70d63e.png",
-      "assets/Zebra-32a3c31c.svg"
+      "assets/Zebra-54fe7d47.svg"
     ],
     "css": [
-      "assets/app-34f04a69.css"
+      "assets/app-7e1d468a.css"
     ],
-    "file": "assets/app-dd4ea721.js",
+    "file": "assets/app-ec1821b5.js",
     "imports": [
-      "_vue-clipboard-bec84599.js"
+      "_vue-clipboard-58257f6b.js"
     ],
     "isEntry": true,
     "src": "resources/js/app.js"
   },
   "resources/js/system.css": {
-    "file": "assets/system-aa981ac8.css",
+    "file": "assets/system-2b5adb72.css",
     "src": "resources/js/system.css"
   },
   "resources/js/system.js": {
     "css": [
-      "assets/system-aa981ac8.css"
+      "assets/system-2b5adb72.css"
     ],
-    "file": "assets/system-4eafdb47.js",
+    "file": "assets/system-177f505a.js",
     "imports": [
-      "_vue-clipboard-bec84599.js"
+      "_vue-clipboard-58257f6b.js"
     ],
     "isEntry": true,
     "src": "resources/js/system.js"
   },
   "vue-clipboard.css": {
-    "file": "assets/vue-clipboard-f75f732e.css",
+    "file": "assets/vue-clipboard-a32e5a17.css",
     "src": "vue-clipboard.css"
   }
 }

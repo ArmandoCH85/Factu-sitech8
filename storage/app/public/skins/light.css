@@ -957,6 +957,11 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
     padding-left: .49rem;
     padding-right: .49rem;
 }
+.tag-preview .preview-canvas-wrap{
+    border: 1px dashed var(--accent-color);
+    border-radius: 6px;
+    margin-top: 10px !important;
+}
 /* end */
 /************************************ tema verde ************************************/
 /* header */

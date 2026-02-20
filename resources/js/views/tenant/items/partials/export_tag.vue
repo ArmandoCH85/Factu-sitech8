@@ -14,11 +14,7 @@
                     <div class="col-6">
                         <div class="form-group">
                             <label class="control-label w-100 d-flex justify-content-between">
-                                Tipo de etiqueta
-                                <a href="/" @click.prevent="showDialogEditor = true">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
-                                    Editor de etiqueta
-                                </a>
+                                Tipo de etiqueta                                
                             </label>
                             <div>
                                 <el-select v-model="form.template_id">
@@ -30,6 +26,16 @@
                                     ></el-option>
                                 </el-select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-6 tag-preview">
+                        <div ref="tagPreview" class="preview-canvas-wrap mt-2">
+                        </div>
+                        <div class="text-center mt-1">
+                            <el-button type="primary" class="btn btn-sm col-12" @click.prevent="showDialogEditor = true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-tags"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 8v4.172a2 2 0 0 0 .586 1.414l5.71 5.71a2.41 2.41 0 0 0 3.408 0l3.592 -3.592a2.41 2.41 0 0 0 0 -3.408l-5.71 -5.71a2 2 0 0 0 -1.414 -.586h-4.172a2 2 0 0 0 -2 2" /><path d="M18 19l1.592 -1.592a4.82 4.82 0 0 0 0 -6.816l-4.592 -4.592" /><path d="M7 10h-.01" /></svg>
+                                Editor de etiquetas
+                            </el-button>
                         </div>
                     </div>
                     <el-tabs class="mt-4" type="card" @tab-click="handClick">
@@ -128,6 +134,25 @@
     }
     .tag-editor-dialog .el-dialog__body {
         padding: 0;
+    }
+    .tag-preview .preview-canvas-wrap{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+    }
+    .tag-preview .preview-canvas{
+        position: relative;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .tag-preview .preview-field{
+        position: absolute;
+        box-sizing: border-box;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 </style>
 
@@ -246,12 +271,13 @@ export default {
             // this.initForm()
         },
         getTables() {
-            this.$http.get(`${this.resource}/tables`)
+            this.$http.get(`${this.resource}/records`)
                 .then(response => {
                     this.templates = response.data.templates;
                     this.all_items = response.data.items;
                     this.count_items = response.data.count_items;
                     this.form.template_id = this.templates.length > 0 ? this.templates.filter( el => el.is_default)[0].id : null;
+                    this.$nextTick(() => this.renderTagPreview())
                 })
         },
         async searchRemoteItems(input) {
@@ -271,6 +297,108 @@ export default {
                     });
             } 
         },
+        renderTagPreview() {
+            const wrap = this.$refs.tagPreview
+            if (!wrap) return
+            wrap.innerHTML = ''
+
+            const tpl = this.templates.find(t => t.id === this.form.template_id)
+            if (!tpl) return
+
+            const mmToPx = 3.7795275591
+            const canvasWmm = tpl.canvas && tpl.canvas.width ? parseFloat(tpl.canvas.width) : 100
+            const canvasHmm = tpl.canvas && tpl.canvas.height ? parseFloat(tpl.canvas.height) : 60
+            const canvasPixelW = canvasWmm * mmToPx
+            const canvasPixelH = canvasHmm * mmToPx
+
+            const maxPreviewW = 220
+            const maxPreviewH = 140
+            const scale = Math.min(maxPreviewW / canvasPixelW, maxPreviewH / canvasPixelH, 1)
+
+            const preview = document.createElement('div')
+            preview.className = 'preview-canvas'
+            preview.style.width = (canvasPixelW * scale) + 'px'
+            preview.style.height = (canvasPixelH * scale) + 'px'
+            preview.style.border = '1px solid #eee'
+            preview.style.background = '#fff'
+
+            const fields = tpl.fields || []
+            fields.forEach((f, idx) => {
+                try {
+                    const el = document.createElement('div')
+                    el.className = 'preview-field'
+
+                    const pos = f.position || {}
+                    const contentObj = (f.content && typeof f.content === 'string') ? (() => {
+                        try { return JSON.parse(f.content) } catch (e) { return {} }
+                    })() : (f.content || {})
+                    const barcodeObj = (f.barcode && typeof f.barcode === 'string') ? (() => {
+                        try { return JSON.parse(f.barcode) } catch (e) { return {} }
+                    })() : (f.barcode || {})
+                    const parseVal = v => {
+                        if (v === undefined || v === null) return 0
+                        if (typeof v === 'number') return v
+                        const n = parseFloat(String(v))
+                        return isNaN(n) ? 0 : n
+                    }
+
+                    const leftRaw = pos.left !== undefined ? pos.left : (f.left !== undefined ? f.left : (f.x || 0))
+                    const topRaw = pos.top !== undefined ? pos.top : (f.top !== undefined ? f.top : (f.y || 0))
+                    const widthRaw = pos.width !== undefined ? pos.width : (f.width !== undefined ? f.width : (f.w || 50))
+                    const heightRaw = pos.height !== undefined ? pos.height : (f.height !== undefined ? f.height : (f.h || 16))
+
+                    const left = parseVal(leftRaw) * scale
+                    const top = parseVal(topRaw) * scale
+                    const width = parseVal(widthRaw) * scale
+                    const height = parseVal(heightRaw) * scale
+
+                    el.style.left = left + 'px'
+                    el.style.top = top + 'px'
+                    el.style.width = Math.max(1, width) + 'px'
+                    el.style.height = Math.max(1, height) + 'px'
+                    el.style.fontSize = ((contentObj && contentObj.fontSize) ? parseVal(contentObj.fontSize) : (f.fontSize || 12)) * scale + 'px'
+                    el.style.lineHeight = '1'
+                    el.style.color = (contentObj && contentObj.color) ? contentObj.color : (f.color || '#222')
+
+                    if (f.type === 'image') {
+                        const img = document.createElement('img')
+                        img.src = (f.image) || (contentObj && contentObj.src) || f.path || f.src || f.value || ''
+                        img.style.width = '100%'
+                        img.style.height = '100%'
+                        img.style.objectFit = 'contain'
+                        el.appendChild(img)
+                    } else if (f.type === 'barcode') {
+                        const text = (barcodeObj && barcodeObj.value) || (contentObj && contentObj.text) || f.value || f.text || ''
+                        el.textContent = text
+                        el.style.fontFamily = 'monospace'
+                    } else {
+                        let text = (contentObj && contentObj.text) || f.value || f.text || ''
+                        if ((!text || String(text).trim() === '') && f.systemData) {
+                            text = String(f.systemData)
+                        }
+                        el.textContent = text
+                        el.style.textAlign = (contentObj && contentObj.textAlign) ? contentObj.textAlign : (f.textAlign || 'left')
+                        if ((contentObj && contentObj.fontWeight === 'bold') || f.fontWeight === 'bold' || f.bold) el.style.fontWeight = 'bold'
+                    }
+                    preview.appendChild(el)
+                } catch (err) {
+                    
+                }
+            })
+
+            wrap.appendChild(preview)
+        },
+        clearTagPreview() {
+            const wrap = this.$refs.tagPreview
+            if (!wrap) return
+            wrap.innerHTML = ''
+        }
     }
+    ,
+    watch: {
+        'form.template_id': function () {
+            this.renderTagPreview()
+        }
+    },
 }
 </script>

@@ -2342,6 +2342,11 @@ html.sidebar-ligth-blue .card-header.bg-info {
     padding-left: .49rem;
     padding-right: .49rem;
 }
+.tag-preview .preview-canvas-wrap{
+    border: 1px dashed var(--accent-color);
+    border-radius: 10px;
+    margin-top: 18px !important;
+}
 /* end */
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {

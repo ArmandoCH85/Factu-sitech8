@@ -2612,7 +2612,11 @@ div.welcome-card .welcome-subtitle{
     border-color: var(--black-primary);
 }
 /* end */
-
+.tag-preview .preview-canvas-wrap{
+    border: 1px dashed color-mix(in srgb, var(--black-accent) 25%, #ffffff 75%);
+    border-radius: 8px;
+    margin-top: 10px !important;
+}
 /* ESTILOS MODO OSCURO */
 
 html.dark, html.dark body {

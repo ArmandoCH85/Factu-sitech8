@@ -2585,8 +2585,7 @@ div.welcome-card .welcome-subtitle{
 .container-tag-editor .default-badge{
     color: var(--success);
     background-color: color-mix(in srgb, var(--success) 10%, #ffffff00);
-    white-space: nowrap; /* 👈 clave */
-    display: inline-flex; /* opcional pero recomendado */
+    white-space: nowrap;
     align-items: center;
     line-height: normal;
 }

@@ -3,7 +3,12 @@
       <!-- HEADER -->
       <div class="header header-tag-editor">
         <div>
-          <h2 v-if="showTitle" class="tag-title">Editor de Etiquetas</h2>          
+          <h2 v-if="showTitle" class="tag-title m-0 d-none d-md-block">Editor de Etiquetas</h2>
+          <h3 v-if="showTitle" class="tag-title m-0 d-none d-sm-block d-md-none">Editor de Etiquetas</h3>
+          <h4 v-if="showTitle" class="tag-title m-0 d-block d-sm-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-tags me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 8v4.172a2 2 0 0 0 .586 1.414l5.71 5.71a2.41 2.41 0 0 0 3.408 0l3.592 -3.592a2.41 2.41 0 0 0 0 -3.408l-5.71 -5.71a2 2 0 0 0 -1.414 -.586h-4.172a2 2 0 0 0 -2 2" /><path d="M18 19l1.592 -1.592a4.82 4.82 0 0 0 0 -6.816l-4.592 -4.592" /><path d="M7 10h-.01" /></svg>
+            Etiquetas
+          </h4>
         </div>
   
         <div class="header-center">
@@ -27,8 +32,52 @@
               <button class="zoom-btn" @click="changeZoom(-0.1)" title="Alejar">-</button>
               <button class="zoom-btn" @click="changeZoom(0.1)" title="Acercar">+</button>                          
             </div>
-          </div>          
-        </div>
+          </div> 
+          
+          <div class="settings-button" ref="settingsButton">
+            <el-button @click.stop="toggleSettingsDropdown">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-settings" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg>
+              Ajustes
+            </el-button>
+
+            <!-- Dropdown para mobile: muestra las dimensiones y controles de zoom -->
+            <div v-if="isSettingsDropdownOpen" class="settings-dropdown" @click.stop>
+              <div class="dropdown-section">
+                <h5 class="dropdown-title">Dimensiones</h5>
+                <div class="row mx-0">
+                  <div class="col-5">
+                    <input type="number" v-model.number="labelWidth" @change="updateCanvasSize" class="form-control small-input w-100" />
+                  </div>
+                  <div class="col-1 d-flex align-items-center justify-content-center px-0">
+                    <span class="unit-label">x</span>
+                  </div>
+                  <div class="col-5">
+                    <input type="number" v-model.number="labelHeight" @change="updateCanvasSize" class="form-control small-input w-100" />
+                  </div>
+                  <div class="col-1 px-0 d-flex align-items-center justify-content-center">
+                    <span class="unit-label">mm</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-section mt-2">
+                <h5 class="dropdown-title">Zoom</h5>
+                <div class="d-flex align-items-center justify-content-between gap-1 dimension-controls">                  
+                  <button class="zoom-btn" @click="changeZoom(-0.1)" title="Alejar">-</button>
+                  <span class="zoom-level">{{ zoomPercent }}%</span>
+                  <button class="zoom-btn" @click="changeZoom(0.1)" title="Acercar">+</button>                  
+                </div>
+              </div>
+
+              <div class="mt-3 d-flex align-items-center justify-content-center">
+                <button class="btn btn-sm second-buton" @click="resetZoom" title="Resetear">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-rotate" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.95 11a8 8 0 1 0 -.5 4m.5 5v-5h-5" /></svg>
+                  Restablecer valores
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>        
   
         <div class="header-actions">
           <el-popover placement="bottom" width="300" trigger="click" :visible.sync="downloadPopoverVisible">
@@ -47,10 +96,12 @@
             </div>
 
             <template #reference>
-              <el-button @click.stop>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                Descargar
-              </el-button>
+              <button class="el-button d-flex align-items-center" @click.stop>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+                <span class="d-none d-sm-block">
+                  Descargar
+                </span>
+              </button>
             </template>
           </el-popover>
         </div>
@@ -59,10 +110,15 @@
       <!-- MAIN -->
       <div class="main-content">
         <!-- LEFT SIDEBAR -->
-        <div class="sidebar col-3">
+        <div :class="['sidebar','col-3',{ 'mobile-open': isLeftSidebarOpen }]">
           <!-- Datos del sistema -->
           <div class="tool-section">
-            <h4 class="mt-0">Datos del Sistema</h4>
+            <h4 class="mt-0 d-flex justify-content-between">
+              Datos del Sistema
+              <button class="bg-transparent border-0 btn-close-sidebar" @click="toggleLeftSidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+              </button>
+            </h4>
             <div class="input-group">
               <label>Seleccionar datos</label>
   
@@ -287,6 +343,28 @@
             </el-button>
           </div>
         </div>
+
+        <!-- sidebar copsado -->
+        <div class="sidebar-collapsed d-flex flex-column">
+          <div class="sidebar-option" :class="{'selected' : isLeftSidebarOpen}">
+            <div class="d-flex flex-column align-items-center justify-content-center" title="Abrir panel izquierdo" @click="toggleLeftSidebar">
+              <div class="p-2 icon-container">
+                <svg v-if="!isLeftSidebarOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-template"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-14a1 1 0 0 1 -1 -1l0 -2" /><path d="M4 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M14 12l6 0" /><path d="M14 16l6 0" /><path d="M14 20l6 0" /></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-template"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19 3a2 2 0 0 1 2 2v2a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-2a2 2 0 0 1 2 -2z" /><path d="M9 11a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-4a2 2 0 0 1 -2 -2v-6a2 2 0 0 1 2 -2z" /><path d="M20 11a1 1 0 0 1 0 2h-6a1 1 0 0 1 0 -2z" /><path d="M20 15a1 1 0 0 1 0 2h-6a1 1 0 0 1 0 -2z" /><path d="M20 19a1 1 0 0 1 0 2h-6a1 1 0 0 1 0 -2z" /></svg>
+              </div>
+              Elementos
+            </div>
+          </div>
+          <div class="sidebar-option" :class="{'selected' : isRightSidebarOpen}">
+            <div class="d-flex flex-column align-items-center justify-content-center" title="Abrir panel derecho" @click="toggleRightSidebar">
+              <div class="p-2 icon-container">
+                <svg v-if="!isRightSidebarOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-board-split"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12" /><path d="M4 12h8" /><path d="M12 15h8" /><path d="M12 9h8" /><path d="M12 4v16" /></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-layout-board-split"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 3h5a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-5a2 2 0 0 1 2 -2" /><path d="M14 3h5a2 2 0 0 1 2 2v2a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" /><path d="M13 11a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1z" /><path d="M14 16h6a1 1 0 0 1 1 1v2a2 2 0 0 1 -2 2h-5a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" /><path d="M4 13h6a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-5a2 2 0 0 1 -2 -2v-5a1 1 0 0 1 1 -1" /></svg>
+              </div>
+              Diseños
+            </div>
+          </div>
+        </div>
   
         <!-- CANVAS -->
         <div
@@ -302,9 +380,15 @@
         </div>
   
         <!-- RIGHT SIDEBAR -->
-        <div class="right-sidebar col-3">
+        <div :class="['right-sidebar','col-3',{ 'mobile-open': isRightSidebarOpen }]">
           <div class="tool-section">
-            <h4>Diseños Guardados</h4>
+            <h4 class="mt-0 d-flex justify-content-between">
+              Diseños Guardados
+
+              <button class="bg-transparent border-0 btn-close-sidebar" @click="toggleRightSidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+              </button>
+            </h4>
             <div class="input-group">
               <label>Nombre del diseño</label>
               <el-input
@@ -392,6 +476,108 @@
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 20px;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .container-tag-editor .sidebar-collapsed{display:none !important}
+  .container-tag-editor .settings-button,
+  .container-tag-editor .btn-close-sidebar{
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .container-tag-editor .sidebar, .container-tag-editor .right-sidebar{display:none !important}
+
+    .container-tag-editor .sidebar-collapsed{
+      display:flex !important;
+      position:fixed;
+      left:0;
+      top:calc(50% + 60px);
+      transform:translateY(-50%);
+      width:100px;
+      z-index:2;
+      gap:0.5rem;
+      padding:0.25rem;
+      background:#fff;
+      align-items:center;
+    }
+    .container-tag-editor .sidebar-collapsed .sidebar-option{cursor:pointer}
+
+    .container-tag-editor .sidebar.mobile-open{
+      display:block !important;
+      position:fixed;
+      left:100px;
+      top:60px;
+      bottom:20px;
+      overflow:auto;
+      z-index:1300;
+      width:calc(90% - 90px);
+      max-width: 355px;
+      background:#fff;
+      padding:0.75rem;
+      height: calc(100% - 60px);
+    }
+    .container-tag-editor .right-sidebar.mobile-open{
+      display:block !important;
+      position:fixed;
+      left:100px;
+      top:60px;
+      bottom:20px;
+      right:20px;
+      overflow:auto;
+      z-index:1300;
+      width:calc(90% - 90px);
+      max-width: 355px;
+      padding:0.75rem;
+      background:#fff;
+      height: calc(100% - 60px);
+    }
+    .container-tag-editor .header-center .dimensions-controls{
+      display: none;
+    }
+    .container-tag-editor .settings-button,
+    .container-tag-editor .btn-close-sidebar {
+      display: block;
+    }
+
+    .settings-button{ position: relative; }
+    .settings-dropdown{
+      display: none;
+      position: absolute;
+      right: 50%;
+      transform: translateX(50%);
+      top: calc(100% + 8px);
+      min-width: 280px;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      padding: 0.75rem;
+      z-index: 3;
+    }
+    .settings-dropdown .dropdown-title{ font-size: 0.9rem; margin: 0 0 0.5rem 0; }
+    .settings-dropdown .small-input{ width: 70px; padding: 0.25rem; }
+    .settings-dropdown .zoom-level{ font-weight:600; margin-right:0.5rem }
+
+    .settings-dropdown{ display: block; }
+    .container-tag-editor .dimension-controls{
+      background-color: hsl(0 0% 98%);
+      border: 1px solid hsl(0 0% 89.8%);
+      border-radius: 0.5rem;
+      padding: .5rem;
+    }
+    .container-tag-editor .canvas-container{
+      margin-left: 100px;
+    }
+    .container-tag-editor .sidebar-option.selected .icon-container{
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      color: var(--success);
+    }
   }
 </style>
   
@@ -479,7 +665,10 @@
         // Plantillas
         templates: [],
         templateName: '',
-        defaultTemplateIndex: null
+        defaultTemplateIndex: null,
+        isLeftSidebarOpen: false,
+        isRightSidebarOpen: false,
+        isSettingsDropdownOpen: false,
       }
     },
   
@@ -526,6 +715,7 @@
   
       // Cerrar dropdown de tags al hacer click fuera
       document.addEventListener('click', this.handleGlobalClick)
+      document.addEventListener('click', this.handleSettingsClickOutside)
       document.addEventListener('mousemove', this.onMouseMove)
       document.addEventListener('mouseup', this.onMouseUp)
       document.addEventListener('keydown', this.onKeyDown)
@@ -534,6 +724,7 @@
   
     beforeDestroy () {
       document.removeEventListener('click', this.handleGlobalClick)
+      document.removeEventListener('click', this.handleSettingsClickOutside)
       document.removeEventListener('mousemove', this.onMouseMove)
       document.removeEventListener('mouseup', this.onMouseUp)
       document.removeEventListener('keydown', this.onKeyDown)
@@ -541,6 +732,26 @@
     },
   
     methods: {
+      handleSettingsClickOutside (e) {
+        try {
+          const btn = this.$refs.settingsButton
+          if (!btn) return
+          if (!btn.contains(e.target)) {
+            this.isSettingsDropdownOpen = false
+          }
+        } catch (err) {}
+      },
+
+      toggleSettingsDropdown () {
+        this.isSettingsDropdownOpen = !this.isSettingsDropdownOpen
+        if (this.isSettingsDropdownOpen) {
+          if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+            this.isLeftSidebarOpen = false
+            this.isRightSidebarOpen = false
+          }
+        }
+      },
+
       async getRecords()
       {
         await this.$http.get(`${this.resource}/records`)
@@ -634,6 +845,16 @@
         if (!this.filteredTags.length) return
         this.selectTag(this.filteredTags[0].key)
       },
+
+      toggleLeftSidebar () {
+        this.isLeftSidebarOpen = !this.isLeftSidebarOpen
+        if (this.isLeftSidebarOpen) this.isRightSidebarOpen = false
+      },
+
+      toggleRightSidebar () {
+        this.isRightSidebarOpen = !this.isRightSidebarOpen
+        if (this.isRightSidebarOpen) this.isLeftSidebarOpen = false
+      },
   
       addSystemFields () {
         this.selectedTags.forEach(key => {
@@ -658,6 +879,13 @@
             this.selectedField = null
             this.showFieldProperties = false
           }
+
+          try {
+            if (window && window.innerWidth && window.innerWidth <= 900) {
+              this.isLeftSidebarOpen = false
+              this.isRightSidebarOpen = false
+            }
+          } catch (e) {}
         }
       },
   

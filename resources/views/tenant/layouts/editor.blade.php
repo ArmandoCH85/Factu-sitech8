@@ -87,6 +87,7 @@
   .header-tag-editor{
     position: relative;
     left: 0;
+    height: 60px;
   }
   .header h1 {
     font-size: 1.5rem;

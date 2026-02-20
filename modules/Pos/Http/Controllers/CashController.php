@@ -756,6 +756,7 @@ class CashController extends Controller
 
                             $temp = [
                                 'type_transaction'          => 'Ingresos (finanzas)',
+                                'type_transaction_prefix' => 'income',
                                 'document_type_description' => $income->income_type->description,
                                 'number'                    => $income->number,
                                 'date_of_issue'             => $income->date_of_issue->format('Y-m-d'),

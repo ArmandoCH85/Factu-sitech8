@@ -816,7 +816,7 @@ class QuotationController extends Controller
             if (config('tenant.pdf_template_footer')) {
 
                 $html_footer = $template->pdfFooter($base_template, $this->quotation);
-                $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document) : "";
+                // $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document) : "";
 
                 $html_footer_legend = "";
                 if ($configuration->legend_footer) {
@@ -828,7 +828,7 @@ class QuotationController extends Controller
 
                 $pdf->setAutoBottomMargin = 'stretch';
 
-                $pdf->SetHTMLFooter($html_footer_term_condition . $html_footer_images . $html_footer . $html_footer_legend);
+                $pdf->SetHTMLFooter($html_footer_images . $html_footer . $html_footer_legend);
                 // $pdf->SetHTMLFooter($html_footer_term_condition . $html_footer . $html_footer_legend);
 
             }

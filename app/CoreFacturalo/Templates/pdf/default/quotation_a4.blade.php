@@ -508,6 +508,15 @@
     </tr>
     @endif
 </table>
+<table class="full-width">
+    <tr>
+        <td class="">
+        {{-- <td class="text-center font-bold"> --}}
+            {!!$document->terms_condition!!}
+        </td>
+    </tr>
+    <br><br>
+</table>
 <br>
 <table class="full-width">
 <tr>

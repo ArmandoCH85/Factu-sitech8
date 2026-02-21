@@ -1602,7 +1602,7 @@ class SaleNoteController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $sellers = User::GetSellers(false)->get();
-        $configuration = Configuration::select(['restrict_sale_items_cpe', 'global_discount_type_id','restrict_receipt_date', 'shipping_time_days' ])->first();
+        $configuration = Configuration::select(['restrict_sale_items_cpe', 'global_discount_type_id','restrict_receipt_date', 'shipping_time_days', 'ticket_single_shipment', 'send_auto' ])->first();
         $global_discount_types = ChargeDiscountType::getGlobalDiscounts();
 
         return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers', 'configuration', 'global_discount_types');

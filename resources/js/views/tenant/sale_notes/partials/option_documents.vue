@@ -562,9 +562,16 @@
 
                 this.document.exchange_rate_sale = 1;
 
-                await this.$http.post(`/${this.resource_documents}`, this.document).then(response => {
+                await this.$http.post(`/${this.resource_documents}`, this.document).then( async (response) => {
                         if (response.data.success) {
                             this.documentNewId = response.data.data.id;
+                            let response_sent = response
+                            if (this.configuration.send_auto && this.document.document_type_id === '01') {
+                                response_sent = await this.sendDocument(this.documentNewId); 
+                            } else if (this.configuration.ticket_single_shipment && this.document.document_type_id === '03') {
+                                response_sent = await this.sendDocument(this.documentNewId); 
+                            }
+
                             this.showDialogDocumentOptions = true;
                             this.$http.get(`/${this.resource}/changed/${this.form.id}`).then(() => {
                                 this.$eventHub.$emit('reloadData');
@@ -592,6 +599,11 @@
                             $(b).css('z-index', $(b).css('z-index') - 5);
                         })
                     });
+            },
+            async sendDocument(id)
+            {
+                return await this.$http
+                    .get(`/documents/send/${id}`)
             },
             validatePaymentDates(){
 

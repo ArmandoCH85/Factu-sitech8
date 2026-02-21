@@ -91,6 +91,7 @@ class ReportKardexController extends Controller
         }
 
         $items = $query->latest()
+            ->take(config('tenant.items_per_page'))
             ->get()
             ->transform(function ($row) {
                 $full_description = $this->getFullDescription($row);

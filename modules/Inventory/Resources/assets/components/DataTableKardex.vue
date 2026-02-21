@@ -35,11 +35,25 @@
                     </div>
                     <div class="col-md-6 form-modern">
                         <label class="control-label">Producto</label>
-                        <el-select v-model="form.item_id"
+                        <el-select
+                            v-model="form.item_id"
+                            filterable
+                            remote
+                            placeholder="Please enter a keyword"
+                            :remote-method="searchRemoteItems"
+                            :loading="loading">
+                            <el-option
+                            v-for="item in items"
+                            :key="item.value"
+                            :label="item.full_description"
+                            :value="item.id">
+                            </el-option>
+                        </el-select>
+                        <!-- <el-select v-model="form.item_id"
                                    filterable clearable>
                             <el-option v-for="option in items" :key="option.id" :value="option.id"
                                        :label="option.full_description"></el-option>
-                        </el-select>
+                        </el-select> -->
                     </div>
                 </template>
 
@@ -183,6 +197,22 @@ export default {
         });
     },
     methods: {
+        async searchRemoteItems(input) {
+            if (input.length > 2) {
+                this.loading_search = true;
+                const params = {
+                    input: input,
+                };
+                await this.$http
+                    .get(`/documents/search-items/`, { params })
+                    .then(response => {
+                        this.items = response.data.items;
+                        if (this.items.length == 0) {
+                            this.items = [];
+                        }
+                    });
+            } 
+        },
         checkScrollShadows() {
             const el = this.$refs.scrollContainer;
             if (!el) return;

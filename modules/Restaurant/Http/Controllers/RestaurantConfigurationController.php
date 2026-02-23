@@ -269,8 +269,10 @@ class RestaurantConfigurationController extends Controller
         $data['status'] = (count($data['products'])<1)?$data['status']:'notavailable';
 
         $isDeliveryOrTakeaway = ($table->environment === 'Delivery' || $table->environment === 'Para Llevar');
+        $idClosedFoced = $request->input('closed_forced', false);
 
-        if($isDeliveryOrTakeaway && $table->order_status === 'delivered' || $isDeliveryOrTakeaway && $data['order_status'] === 'deleted') {
+        if(($isDeliveryOrTakeaway && $table->order_status === 'delivered' || $isDeliveryOrTakeaway && $data['order_status'] === 'deleted') || $idClosedFoced) {
+        //if($isDeliveryOrTakeaway) {
             $table->delete();
 
             $itemsToDelete = RestaurantItemOrderStatus::where('table_id', $id);

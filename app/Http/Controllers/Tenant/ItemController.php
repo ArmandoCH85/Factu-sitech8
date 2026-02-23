@@ -169,17 +169,21 @@ class ItemController extends Controller
 
         $cacheKey = 'items_list_' . md5(json_encode($cacheParams));
 
+        if ($this->pingCache()) {
+            return $this->cacheWithTagKey(
+                $cacheKey,
+                ['items_list'],
+                600, // 10 minutos
+                fn() => new ItemCollection($this->getRecords($request)->paginate(config('tenant.items_per_page'))),
+                [
+                    'section' => 'Items List',
+                    'filters' => $cacheParams,
+                ]
+            );
+        } else {
+            return new ItemCollection($this->getRecords($request)->paginate(config('tenant.items_per_page')));
+        }
         // Usar método centralizado de caché
-        return $this->cacheWithTagKey(
-            $cacheKey,
-            ['items_list'],
-            600, // 10 minutos
-            fn() => new ItemCollection($this->getRecords($request)->paginate(config('tenant.items_per_page'))),
-            [
-                'section' => 'Items List',
-                'filters' => $cacheParams,
-            ]
-        );
     }
 
 
@@ -406,14 +410,18 @@ class ItemController extends Controller
 
         // $record = new ItemResource(Item::findOrFail($id));
         // return $record;
+        if ($this->pingCache()) {
+            return $this->cacheWithTagKey(
+                "item_detail_{$id}", // Clave de caché específica para el detalle del item
+                ['item_detail'], // Etiqueta para el detalle del item
+                3600, // 1 hora (el detalle cambia menos frecuentemente que las listas)
+                fn() => new ItemResource(Item::findOrFail($id)),
+                [ 'section' => 'Item Detail', 'item_id' => $id ] // Contexto adicional para logging
+            );
+        } else {
+            return new ItemResource(Item::findOrFail($id));
+        }
 
-        return $this->cacheWithTagKey(
-            "item_detail_{$id}", // Clave de caché específica para el detalle del item
-            ['item_detail'], // Etiqueta para el detalle del item
-            3600, // 1 hora (el detalle cambia menos frecuentemente que las listas)
-            fn() => new ItemResource(Item::findOrFail($id)),
-            [ 'section' => 'Item Detail', 'item_id' => $id ] // Contexto adicional para logging
-        );
     }
 
     public function store(ItemRequest $request) {

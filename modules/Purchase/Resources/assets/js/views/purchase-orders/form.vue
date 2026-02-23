@@ -759,7 +759,10 @@ export default {
             this.changeCurrencyType()
         },
         async changeDateOfIssue() {
-            this.form.date_of_due = this.form.date_of_issue
+            this.form.date_of_due = moment(this.form.date_of_issue)
+                .add(15, 'days')
+                .format('YYYY-MM-DD');
+            
             await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                 this.form.exchange_rate_sale = (response == 0) ? 1 : response
             })

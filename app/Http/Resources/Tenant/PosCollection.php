@@ -25,10 +25,7 @@ class PosCollection extends ResourceCollection
 
             $currency = $row->currency_type;
             if(empty($currency )){
-                Log::info("----ITEM-ARRAY-COLLECTION START----");
-                Log::info($row);
                 $currency = CurrencyType::first();
-                Log::info("----ITEM-ARRAY-COLLECTION END----");
             }
 
             $defaultImage = $configuration->product_default_image ?? 'imagen-no-disponible.jpg';
@@ -82,12 +79,14 @@ class PosCollection extends ResourceCollection
                 'item_unit_types' => collect($row->item_unit_types)->transform(function($row) use($configuration, $allPricesLabel){
                     $row->load('prices');
                     $labels_id = $row->prices->pluck('price_label_id')->toArray();
-                    $prices = $row->prices->map(function($price)  {
+                    $prices = $row->prices->map(function($price)  use($row) {
                             $price_label = $price->priceLabel;
                                 return [
                                     'id'             => $price->id,
                                     'price_label_id' => $price->price_label_id,
                                     'position'       => $price_label->position,
+                                    'description'    => $row->description,  
+                                    'unit_type_id'   => $row->unit_type_id,
                                     'label'          => $price_label->label,
                                     'price'          => $price ? number_format($price->price, 2, '.', '') : 0,
                                     'is_active'      => $price ? (bool) $price->is_active : false,

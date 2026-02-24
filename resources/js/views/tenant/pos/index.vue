@@ -528,9 +528,97 @@
                                                     width="370"
                                                     trigger="click"
                                                 >
-                                                    <el-table
-                                                        v-if="item.unit_type"
-                                                        :data="item.unit_type"
+                                                    <table
+                                                        v-if="item.item_unit_types"
+                                                        class="table table-sm table-bordered mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <td class="text-center">Precio</td>
+                                                                <td class="text-center">Unidad</td>
+                                                                <td class="text-center">Descripción</td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <template v-if="item.item_unit_types.length == 1">
+                                                                <template v-for="(price, _index) in item.item_unit_types[0].prices">
+                                                                    <tr v-if="Number(price.price) > 0">
+                                                                        <td colspan="3" class="text-center">
+                                                                            {{ price.price }}
+                                                                        </td>
+                                                                        <td colspan="3" class="text-center">
+                                                                            {{ item.item_unit_types[0].unit_type_id }}
+                                                                        </td>
+                                                                        <td colspan="3" class="text-center">
+                                                                            {{ item.item_unit_types[0].description }}
+                                                                        </td>
+                                                                        <td colspan="3" class="text-center">
+                                                                            <button
+                                                                                @click="
+                                                                                    setPriceItem(
+                                                                                        price,
+                                                                                        index
+                                                                                    )
+                                                                                "
+                                                                                type="button"
+                                                                                class="btn btn-custom btn-xs"
+                                                                            >
+                                                                                <i
+                                                                                    class="fas fa-check"
+                                                                                ></i>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                </template>
+                                                            </template>
+                                                            <template v-else-if="item.item_unit_types.length == 0">
+                                                                <tr>
+                                                                    <td colspan="3" class="text-center">No hay precios registrados</td>
+                                                                </tr>
+                                                            </template>
+                                                            <template v-else>
+                                                                <template v-for="(item_unit_type, _index) in item.item_unit_types">
+                                                                    <template v-for="(price, _index_price) in item_unit_type.prices">
+                                                                        <tr v-if="Number(price.price) > 0">
+                                                                            <td class="text-center">
+                                                                                {{ price.price }}
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                {{ item_unit_type.unit_type_id }}
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                {{ item_unit_type.description }}
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <button
+                                                                                    @click="
+                                                                                        setPriceItem(
+                                                                                            price,
+                                                                                            index
+                                                                                        )
+                                                                                    "
+                                                                                    type="button"
+                                                                                    class="btn btn-custom btn-xs"
+                                                                                >
+                                                                                    <i
+                                                                                        class="fas fa-check"
+                                                                                    ></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    </template>
+                                                                </template>
+
+
+
+                                                            </template>
+
+
+                                                        </tbody>
+                                                    </table>
+                                                    <!-- <el-table
+                                                        v-if="item.item_unit_types"
+                                                        :data="item.item_unit_types"
                                                     >
                                                         <el-table-column
                                                             width="90"
@@ -541,36 +629,16 @@
                                                                     row
                                                                 }"
                                                             >
-                                                                <span
-                                                                    v-if="
-                                                                        row.price_default ==
-                                                                            1
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        row.price1
-                                                                    }}
-                                                                </span>
-                                                                <span
-                                                                    v-else-if="
-                                                                        row.price_default ==
-                                                                            2
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        row.price2
-                                                                    }}
-                                                                </span>
-                                                                <span
-                                                                    v-else-if="
-                                                                        row.price_default ==
-                                                                            3
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        row.price3
-                                                                    }}
-                                                                </span>
+                                                                <template v-for="p in row">
+                                                                    <span
+                                                                        v-if="Number(p.price) > 0"
+                                                                    >
+                                                                        {{
+                                                                            p.price
+                                                                        }}
+                                                                    </span>
+
+                                                                </template>
                                                             </template>
                                                         </el-table-column>
                                                         <el-table-column
@@ -609,7 +677,7 @@
                                                                 </button>
                                                             </template>
                                                         </el-table-column>
-                                                    </el-table>
+                                                    </el-table> -->
                                                     <button
                                                         slot="reference"
                                                         type="button"
@@ -1562,22 +1630,10 @@ export default {
             this.items[index].edit_unit_price = false;
         },
         setPriceItem(price, index) {
-            let value = 0;
-            switch (price.price_default) {
-                case 1:
-                    value = price.price1;
-                    break;
-                case 2:
-                    value = price.price2;
-                    break;
-                case 3:
-                    value = price.price3;
-                    break;
-            }
 
-            this.items[index].sale_unit_price = value;
+            this.items[index].sale_unit_price = price.price;
             this.items[index].unit_type_id = price.unit_type_id;
-            this.items[index].presentation = price;
+            // this.items[index].presentation = price;
             this.$message.success("Precio seleccionado");
         },
         clickWarehouseDetail(item) {

@@ -759,6 +759,14 @@ export default {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }
 
+            if (!this.form.delivery_address_id) {
+                this.$alert('Debe seleccionar una dirección de entrega con UBIGEO', 'Advertencia', {
+                    confirmButtonText: 'OK',
+                    type: 'warning'
+                });
+                return;
+            }
+
             this.loading_submit = true;
             this.$http.post(`/${this.resource}`, this.form).then(response => {
                 if (response.data.success) {

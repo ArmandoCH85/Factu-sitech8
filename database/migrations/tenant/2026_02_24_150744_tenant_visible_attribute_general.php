@@ -21,7 +21,7 @@ return new class extends Migration
             $array[] = $initial + $i;
         }
         DB::table('cat_attribute_types')
-            ->whereNotIn('id', $array)
+            ->whereNotIn(DB::raw('CAST(id AS CHAR)'), array_map('strval', $array))
             ->update(['active' => false]);
     }
 

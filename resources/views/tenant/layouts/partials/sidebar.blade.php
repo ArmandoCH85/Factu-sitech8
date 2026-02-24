@@ -67,6 +67,7 @@ try {
     $current_client_fqdn = '';
 }
 
+$showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_devolutions', 'inventory_report_kardex', 'inventory_report', 'inventory_report_valued_kardex'])->isEmpty() && in_array('inventory_transfers', $vc_module_levels);
 ?>
 <aside id="sidebar-left" class="sidebar-left {{ ($showInSidebar && $canShowBranchSelector && $showMultiUser) ? 'show-both-selectors' : (($showInSidebar && ($canShowBranchSelector || $showMultiUser)) ? 'show-branch-selector' : '') }}">
     <div class="sidebar-header sidebar-header-desktop">
@@ -629,11 +630,11 @@ try {
                                                         <a class="nav-link" href="{{route('inventory.index')}}">Movimientos</a>
                                                     </li>
                                                 @endif
-                                                {{-- @if(in_array('inventory_transfers', $vc_module_levels))
+                                                @if($showTransfer)
                                                     <li class="{{ ($firstLevel === 'transfers') ? 'nav-active' : '' }}">
                                                         <a class="nav-link" href="{{route('transfers.index')}}">Traslados</a>
                                                     </li>
-                                                @endif --}}
+                                                @endif
                                                 @if(in_array('inventory_devolutions', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'devolutions') ? 'nav-active' : '' }}">
                                                         <a class="nav-link" href="{{route('devolutions.index')}}">Devolucion a proveedor</a>

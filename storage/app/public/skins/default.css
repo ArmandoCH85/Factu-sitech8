@@ -2347,6 +2347,16 @@ html.sidebar-ligth-blue .card-header.bg-info {
     border-radius: 10px;
     margin-top: 18px !important;
 }
+.circle-container{
+    background-color: color-mix(in srgb, var(--accent-color) 25%, #ffffff00);
+}
+.circle-child{
+    background-color: color-mix(in srgb, var(--accent-color) 40%, #ffffff00);
+}
+.table-prices-popover thead tr td,
+.table-prices-popover tbody tr td{
+    border-color: var(--light-color) !important;
+}
 /* end */
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {

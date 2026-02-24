@@ -1054,6 +1054,12 @@ html.sidebar-light .establishment-selector-container{
     border-radius: 8px;
     margin-top: 10px !important;
 }
+.circle-container{
+    background-color: color-mix(in srgb, #808a9c 10%, #ffffff00);
+}
+.circle-child{
+    background-color: color-mix(in srgb, #808a9c 20%, #ffffff00);
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

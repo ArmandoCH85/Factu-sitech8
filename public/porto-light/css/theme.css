@@ -22086,6 +22086,22 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
     align-items: center;
     justify-content: center;
 }
+.table-prices-popover thead tr td,
+.table-prices-popover tbody tr td{
+    padding: 8px 4px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+.table-prices-popover tbody tr:last-child td {
+  border-bottom: none !important;
+}
+.el-tag{
+    display: flex;
+    align-items: center;
+}
+.circle-container,
+.circle-child{
+    border-radius: 50%;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

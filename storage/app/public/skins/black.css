@@ -2133,7 +2133,8 @@ ul.nav.list-config li:hover {
     color: var(--black-accent) !important;
 }
 .dropdown-menu-desktop,
-.dropdown-menu {
+.dropdown-menu,
+.el-popover {
     border: 1px solid var(--black-highlight) !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
                 0 2px 4px -2px rgba(0, 0, 0, 0.1);
@@ -2142,6 +2143,9 @@ ul.nav.list-config li:hover {
     padding: 0.5rem 0;
     color: var(--black-dark);
     border-radius: 10px;
+}
+.el-popover{
+    padding: 20px;
 }
 .el-input-number__increase:hover:not(.is-disabled) ~ .el-input .el-input__inner:not(.is-disabled), .el-input-number__decrease:hover:not(.is-disabled) ~ .el-input .el-input__inner:not(.is-disabled){
     border-color: var(--black-accent);
@@ -2616,6 +2620,12 @@ div.welcome-card .welcome-subtitle{
     border: 1px dashed color-mix(in srgb, var(--black-accent) 25%, #ffffff 75%);
     border-radius: 8px;
     margin-top: 10px !important;
+}
+.circle-container{
+    background-color: color-mix(in srgb, var(--black-accent) 10%, #ffffff00);
+}
+.circle-child{
+    background-color: color-mix(in srgb, var(--black-accent) 20%, #ffffff00);
 }
 /* ESTILOS MODO OSCURO */
 

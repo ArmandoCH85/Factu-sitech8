@@ -152,11 +152,38 @@ class ItemController extends Controller
 
     public function records(Request $request)
     {
+        // Generar clave de caché basada en todos los filtros
+        $cacheParams = [
+            'column' => $request->column,
+            'value' => $request->value,
+            'type' => $request->type,
+            'isEcommerce' => $request->query('isEcommerce'),
+            'isRestaurant' => $request->isRestaurant,
+            'isPharmacy' => $request->isPharmacy,
+            'list_value' => $request->list_value,
+            'show_disabled' => $request->show_disabled,
+            'sort_field' => $request->get('sort_field', 'id'),
+            'sort_direction' => $request->get('sort_direction', 'desc'),
+            'page' => $request->get('page', 1),
+        ];
 
-        // dd($request->all());
-        $records = $this->getRecords($request);
+        $cacheKey = 'items_list_' . md5(json_encode($cacheParams));
 
-        return new ItemCollection($records->paginate(config('tenant.items_per_page')));
+        if ($this->pingCache()) {
+            return $this->cacheWithTagKey(
+                $cacheKey,
+                ['items_list'],
+                600, // 10 minutos
+                fn() => new ItemCollection($this->getRecords($request)->paginate(config('tenant.items_per_page'))),
+                [
+                    'section' => 'Items List',
+                    'filters' => $cacheParams,
+                ]
+            );
+        } else {
+            return new ItemCollection($this->getRecords($request)->paginate(config('tenant.items_per_page')));
+        }
+        // Usar método centralizado de caché
     }
 
 
@@ -380,9 +407,21 @@ class ItemController extends Controller
 
     public function record($id)
     {
-        $record = new ItemResource(Item::findOrFail($id));
 
-        return $record;
+        // $record = new ItemResource(Item::findOrFail($id));
+        // return $record;
+        if ($this->pingCache()) {
+            return $this->cacheWithTagKey(
+                "item_detail_{$id}", // Clave de caché específica para el detalle del item
+                ['item_detail'], // Etiqueta para el detalle del item
+                3600, // 1 hora (el detalle cambia menos frecuentemente que las listas)
+                fn() => new ItemResource(Item::findOrFail($id)),
+                [ 'section' => 'Item Detail', 'item_id' => $id ] // Contexto adicional para logging
+            );
+        } else {
+            return new ItemResource(Item::findOrFail($id));
+        }
+
     }
 
     public function store(ItemRequest $request) {
@@ -774,10 +813,13 @@ class ItemController extends Controller
             */
         // }
 
+        // Invalidar caché del item individual cuando se edita
         if ($id) {
-            Cache::forget("item_{$id}");
-            Log::info('Caché eliminada para el ítem actualizado:', ['item_id' => $id]);
+            Cache::tags(['item_detail'])->forget("item_detail_{$id}");
         }
+
+        // Invalidar caché de listas cuando se crea/edita un item
+        Cache::tags(['items_list'])->flush();
 
         return [
             'success' => true,
@@ -889,6 +931,12 @@ class ItemController extends Controller
             $this->deleteRecordInitialKardex($item);
             $this->deleteRecordInitialWeightedCosts($item);
             $item->delete();
+
+            // Invalidar caché del item individual cuando se elimina
+            Cache::tags(['item_detail'])->forget("item_detail_{$id}");
+
+            // Invalidar caché de listas cuando se elimina un item
+            Cache::tags(['items_list'])->flush();
 
             return [
                 'success' => true,

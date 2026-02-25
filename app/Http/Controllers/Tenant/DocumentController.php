@@ -119,9 +119,37 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
-        $records = $this->getRecords($request);
+        $cacheParams = [
+            'category_id' => $request->category_ido,
+            'page' => $request->page,
+            'customer_id' => $request->customer_id,
+            'd_end' => $request->d_end,
+            'd_start' => $request->d_start,
+            'date_of_issue' => $request->date_of_issue, 
+            'document_type_id' => $request->document_type_id,
+            'item_id' => $request->item_id,
+            'number' => $request->number,
+            'observations' => $request->observations,
+            'pending_payment' => $request->pending_payment,
+            'series' => $request->series,
+            'state_type_id' => $request->state_type_id,
+        ];
+        $cacheKey = 'document_list_' . md5(json_encode($cacheParams));
+        if ($this->pingCache()) {
+            return $this->cacheWithTagKey(
+                $cacheKey,
+                ['document_list'], // Etiqueta para el detalle del item
+                300, // 1 hora (el detalle cambia menos frecuentemente que las listas)
+                fn () => new DocumentCollection($this->getRecords($request)->paginate(config('tenant.items_per_page'))),
+                [ 'section' => 'Document List', 'filters' => $cacheParams ] // Contexto adicional para logging
+            );
+        } else {
+            return new DocumentCollection($this->getRecords($request)->paginate(config('tenant.items_per_page')));
+        }
+        // $records = $this->getRecords($request);
+        
 
-        return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
+        // return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
     }
 
     /**
@@ -587,9 +615,19 @@ class DocumentController extends Controller
 
     public function record($id)
     {
-        $record = new DocumentResource(Document::findOrFail($id));
+        if ($this->pingCache()) {
+            return $this->cacheWithTagKey(
+                "document_detail_{$id}", // Clave de caché específica para el detalle del item
+                ['document_detail'], // Etiqueta para el detalle del item
+                3600, // 1 hora (el detalle cambia menos frecuentemente que las listas)
+                fn() => new DocumentResource(Document::findOrFail($id)) ,
+                [ 'section' => 'Document Detail', 'item_id' => $id ] // Contexto adicional para logging
+            );
 
-        return $record;
+        } else {
+            $record = new DocumentResource(Document::findOrFail($id));
+            return $record;
+        }
     }
 
 

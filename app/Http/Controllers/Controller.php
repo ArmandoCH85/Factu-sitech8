@@ -10,7 +10,7 @@
     use Illuminate\Http\Request;
     use Illuminate\Routing\Controller as BaseController;
     use Illuminate\Support\Collection;
-    use Log;
+    use Illuminate\Support\Facades\Log;
     use function Config;
     use Illuminate\Support\Facades\Route;
     use Modules\Report\Models\ReportConfiguration;
@@ -27,7 +27,8 @@
         DocumentType
     };
     use Exception;
-
+    use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
     /**
      * Class Controller
@@ -431,6 +432,59 @@ $string = var_export($header,true);
         public function getConfigMaxItemsSelect()
         {
             return config('tenant.max_items_in_select') ?? 100;
+        }
+
+
+        /**
+         * Método centralizado para manejo de caché con logging y detección de hit/miss
+         *
+         * @param string $cacheKey Clave única para esta entrada de caché
+         * @param array $tags Tags para agrupar entradas relacionadas (ej: ['items_list'])
+         * @param int $ttl Tiempo de vida en segundos (ej: 600 = 10 minutos)
+         * @param callable $callback Función que retorna los datos a cachear
+         * @param array $logContext Datos adicionales para el log (opcional)
+         * @return mixed El resultado del callback (desde caché o recién ejecutado)
+         */
+        protected function cacheWithTagKey(
+            string $cacheKey,
+            array $tag,
+            int $ttl,
+            callable $callback,
+            array $logContext = []
+        ) {
+            $isCacheMiss = false;
+            $startTime = microtime(true);
+
+            // Ejecutar con caché, pasando la bandera por referencia al callback
+            $result = Cache::tags($tag)->remember($cacheKey, $ttl, function () use (&$isCacheMiss, $callback) {
+                $isCacheMiss = true;
+                return $callback();
+            });
+
+            $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+
+            // Preparar datos del log
+            $logData = array_merge([
+                'cache_key' => $cacheKey,
+                'execution_time_ms' => $executionTime,
+            ], $logContext);
+
+            // Log según resultado
+            if ($isCacheMiss) {
+                Log::info("❌ CACHE MISS - Ejecutando query SQL", $logData);
+            } else {
+                Log::info("✅ CACHE HIT - Retornado desde Redis", $logData);
+            }
+
+            return $result;
+        }
+
+        protected function pingCache()
+        {
+            $config_cache = config('cache.default');
+            $verified_cache = $config_cache === 'redis' ? true : false;
+            $connection = Redis::connection()->ping() == "PONG" ? true : false; 
+            return $verified_cache && $connection; 
         }
 
     }

@@ -1383,7 +1383,7 @@ export default {
 
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 //this.all_items = response.data.items;
-                this.config_tap = response.data.config_tap;
+                this.config_tap = response.data.config_tap || {};
                 this.affectation_igv_types =
                     response.data.affectation_igv_types;
                 this.all_customers = response.data.customers;

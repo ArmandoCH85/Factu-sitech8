@@ -444,92 +444,121 @@
                                             >
                                                 <el-popover
                                                     placement="top"
-                                                    title="Precios"
                                                     width="370"
                                                     trigger="click"
                                                 >
-                                                    <el-table
-                                                        v-if="item.unit_type"
-                                                        :data="item.unit_type"
-                                                    >
-                                                        <el-table-column
-                                                            width="90"
-                                                            label="Precio"
-                                                        >
-                                                            <template
-                                                                slot-scope="{
-                                                                    row
-                                                                }"
-                                                            >
-                                                                <span
-                                                                    v-if="
-                                                                        row.price_default ==
-                                                                            1
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        row.price1
-                                                                    }}
-                                                                </span>
-                                                                <span
-                                                                    v-else-if="
-                                                                        row.price_default ==
-                                                                            2
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        row.price2
-                                                                    }}
-                                                                </span>
-                                                                <span
-                                                                    v-else-if="
-                                                                        row.price_default ==
-                                                                            3
-                                                                    "
-                                                                >
-                                                                    {{
-                                                                        row.price3
-                                                                    }}
-                                                                </span>
-                                                            </template>
-                                                        </el-table-column>
-                                                        <el-table-column
-                                                            width="80"
-                                                            label="Unidad"
-                                                            property="unit_type_id"
-                                                        ></el-table-column>
-                                                        <el-table-column
-                                                            width="120"
-                                                            label="Descripción"
-                                                            property="description"
-                                                        ></el-table-column>
 
-                                                        <el-table-column
-                                                            width="80"
-                                                            label=""
-                                                        >
-                                                            <template
-                                                                slot-scope="{
-                                                                    row
-                                                                }"
-                                                            >
-                                                                <button
-                                                                    @click="
-                                                                        setPriceItem(
-                                                                            row,
-                                                                            index
-                                                                        )
-                                                                    "
-                                                                    type="button"
-                                                                    class="btn btn-custom btn-xs"
-                                                                >
-                                                                    <i
-                                                                        class="fas fa-check"
-                                                                    ></i>
-                                                                </button>
+                                                    <div class="el-popover__title d-flex justify-content-between">
+                                                        Precios
+                                                        <el-tag v-if="priceOptionsCount(item) > 0">
+                                                            {{ priceOptionsCount(item) }} OPCIONES
+                                                        </el-tag>
+                                                        <el-tag v-else>
+                                                            SIN REGISTROS
+                                                        </el-tag>
+                                                    </div>
+                                                    <table
+                                                        v-if="item.item_unit_types"
+                                                        class="table table-sm mb-0 table-prices-popover">
+                                                        <thead>
+                                                            <tr>
+                                                                <td class="text-start">Precio</td>
+                                                                <td class="text-start">Unidad</td>
+                                                                <td class="text-start">Descripción</td>
+                                                                <td class="text-end"></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <template v-if="item.item_unit_types.length == 1">
+                                                                <template v-for="(price, _index) in item.item_unit_types[0].prices">
+                                                                    <tr v-if="Number(price.price) > 0">
+                                                                        <td class="text-start font-weight-semibold">
+                                                                            {{ currency_type.symbol }}
+                                                                            {{ price.price }}
+                                                                        </td>
+                                                                        <td class="text-start">
+                                                                            {{ item.item_unit_types[0].unit_type_id }}
+                                                                        </td>
+                                                                        <td class="text-start">
+                                                                            {{ item.item_unit_types[0].description }}
+                                                                        </td>
+                                                                        <td class="text-end">
+                                                                            <button
+                                                                                @click="
+                                                                                    setPriceItem(
+                                                                                        price,
+                                                                                        index
+                                                                                    )
+                                                                                "
+                                                                                type="button"
+                                                                                class="btn btn-sm btn-custom"
+                                                                                :class="{'btn-success': price.selected}"
+                                                                            >
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                </template>
                                                             </template>
-                                                        </el-table-column>
-                                                    </el-table>
+                                                            <template v-else-if="item.item_unit_types.length == 0">
+                                                                <tr>
+                                                                    <td colspan="4" class="text-center">
+                                                                        <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                                                                            <div class="circle-container p-2">
+                                                                                <div class="circle-child p-2">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card text-muted svg-bounce"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3l0 -8" /><path d="M3 10l18 0" /><path d="M7 15l.01 0" /><path d="M11 15l2 0" /></svg>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <span class="small text-muted">
+                                                                                    Aún no hay precios disponibles para este artículo.
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </template>
+                                                            <template v-else>
+                                                                <template v-for="(item_unit_type, _index) in item.item_unit_types">
+                                                                    <template v-for="(price, _index_price) in item_unit_type.prices">
+                                                                        <tr v-if="Number(price.price) > 0">
+                                                                            <td class="text-start font-weight-semibold">
+                                                                                {{ currency_type.symbol }}
+                                                                                {{ price.price }}
+                                                                            </td>
+                                                                            <td class="text-start">
+                                                                                {{ item_unit_type.unit_type_id }}
+                                                                            </td>
+                                                                            <td class="text-start">
+                                                                                {{ item_unit_type.description }}
+                                                                            </td>
+                                                                            <td class="text-end">
+                                                                                <button
+                                                                                    @click="
+                                                                                        setPriceItem(
+                                                                                            price,
+                                                                                            index
+                                                                                        )
+                                                                                    "
+                                                                                    type="button"
+                                                                                    class="btn btn-custom btn-sm"
+                                                                                    :class="{'btn-success': price.selected}"
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    </template>
+                                                                </template>
+
+
+
+                                                            </template>
+
+
+                                                        </tbody>
+                                                    </table>                                                    
                                                     <button
                                                         slot="reference"
                                                         type="button"
@@ -1030,6 +1059,7 @@ export default {
 
             return false;
         },
+
         classObjectCol() {
             let cols = this.configuration.colums_grid_item;
 
@@ -1128,6 +1158,23 @@ export default {
             }
         },
         ...mapActions(["loadConfiguration"]),
+        priceOptionsCount(item) {
+            let count = 0;
+            if (!item) return count;
+            const iuts = item.item_unit_types;
+            if (!iuts || !Array.isArray(iuts)) return count;
+
+            iuts.forEach(iut => {
+                if (!iut || !Array.isArray(iut.prices)) return;
+                iut.prices.forEach(p => {
+                    if (p && !isNaN(Number(p.price)) && Number(p.price) > 0) {
+                        count++;
+                    }
+                });
+            });
+
+            return count;
+        },
         keyupEnterQuantity() {
             this.initFocus();
         },
@@ -1284,22 +1331,25 @@ export default {
             this.items[index].edit_unit_price = false;
         },
         setPriceItem(price, index) {
-            let value = 0;
-            switch (price.price_default) {
-                case 1:
-                    value = price.price1;
-                    break;
-                case 2:
-                    value = price.price2;
-                    break;
-                case 3:
-                    value = price.price3;
-                    break;
+            const item = this.items[index];
+            if (item && item.item_unit_types && Array.isArray(item.item_unit_types)) {
+                item.item_unit_types.forEach(iut => {
+                    if (iut && iut.prices && Array.isArray(iut.prices)) {
+                        iut.prices.forEach(p => {
+                            if (p && p.selected) {
+                                this.$set(p, 'selected', false);
+                            }
+                        });
+                    }
+                });
             }
 
-            this.items[index].sale_unit_price = value;
+            if (price) {
+                this.$set(price, 'selected', true);
+            }
+
+            this.items[index].sale_unit_price = price.price;
             this.items[index].unit_type_id = price.unit_type_id;
-            this.items[index].presentation = price;
             this.$message.success("Precio seleccionado");
         },
         clickWarehouseDetail(item) {

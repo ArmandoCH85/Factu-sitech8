@@ -3,6 +3,7 @@
 namespace Modules\Item\Imports;
 
 use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Warehouse;
 use Illuminate\Support\Collection;
@@ -26,13 +27,27 @@ class ItemListPriceImport implements ToCollection
             $registered = 0;
             unset($rows[0]);
 
-            foreach ($rows as $row)
+            $records = $rows;
+            $enable_list_product = Configuration::first()->enable_list_product;
+
+            if (!$enable_list_product) {
+                $records= $rows->unique(fn ($row) => $row[0]);
+            }
+
+
+            foreach ($records as $row)
             {
+                $factor = 1;
+                $internal_id = null;
+                $unit_type_id = null;
+                $description = null;
+
                 $internal_id = ($row[0])?:null; // Codigo interno
-                $unit_type_id = $row[1]; // Unidad 
-                $factor = $row[2]; // Factor
-                // dd($row->slice(3));
-                $prices = $row->slice(3)->values();
+                if ($enable_list_product) {
+                    $prices = $row->slice(4)->values();
+                } else {
+                    $prices = $row->slice(1)->values();
+                }
                 $item = null;
 
                 if($internal_id) {
@@ -43,9 +58,18 @@ class ItemListPriceImport implements ToCollection
                 if($item) {
                     $item_unit_type = ItemUnitType::where('item_id', $item->id)
                                                     ->first();
-                    if(!$item_unit_type){
+                    if(!$item_unit_type || $enable_list_product){
 
-                        $description = UnitType::find($unit_type_id)->description;
+                        if (!$enable_list_product) {
+                            $description = $item->unit_type->description;
+                            $unit_type_id = $item->unit_type_id; // Unidad 
+
+                        } else {
+                            $unit_type_id = $row[1]; // Unidad 
+                            $factor = $row[2]; // Factor
+                            $description = $row[3]; // Descripción
+                        }
+
                         $itemUnitType = $item->item_unit_types()->create([
                             'description' => $description,
                             'unit_type_id' => $unit_type_id,

@@ -2,7 +2,8 @@
 
     namespace Modules\Item\Http\Controllers;
 
-    use \Exception;
+use App\Models\Tenant\Configuration;
+use \Exception;
     use App\Models\Tenant\DocumentItem;
     use App\Models\Tenant\Document;
     use App\Models\Tenant\SaleNote;
@@ -66,13 +67,18 @@ use Maatwebsite\Excel\Facades\Excel as FacadesExcel;
 
                 public $heading = [
                     'Codigo interno',
-                    'Unidad',
-                    'Factor'
                 ];
 
                 public function headings(): array
                 {
                     $prices_label = PriceLabel::all();
+                    $enable_list_product = Configuration::first()->enable_list_product;
+
+                    if ($enable_list_product) {
+                        $this->heading[] = 'Unidad';
+                        $this->heading[] = 'Factor';
+                        $this->heading[] = 'Descripción';
+                    }
 
                     $prices_label->each(function($label) {
                         $this->heading[] = $label->label;

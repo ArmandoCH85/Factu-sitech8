@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * App\Models\Tenant\ItemUnitType
@@ -37,6 +38,14 @@ class ItemUnitType extends ModelTenant
         'price_default',
         'barcode'
     ];
+
+    protected static function booted()
+    {
+        static::created(function (self $itemUnitType) {
+            $id = $itemUnitType->item_id;
+            Cache::tags(['item_detail'])->forget("item_detail_{$id}");
+        });
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

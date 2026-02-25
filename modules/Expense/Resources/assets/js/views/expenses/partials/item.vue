@@ -3,7 +3,7 @@
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-sm-8">
                         <div class="form-group" :class="{'has-danger': errors.description}">
                             <label class="control-label">
                                 Descripción
@@ -12,7 +12,7 @@
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-sm-4">
                         <div class="form-group" :class="{'has-danger': errors.total}">
                             <label class="control-label">
                                 Total

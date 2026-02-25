@@ -6,15 +6,15 @@
         </div> -->
         <div class="tab-content tab-content-default row-new" v-if="loading_form">
             <div class="invoice p-0">
-                <header class="clearfix clearfix-default p-2">
-                    <div class="row">
-                        <div class="col-sm-2 text-center mt-3 mb-0">
+                <header class="clearfix clearfix-default py-2 px-0 px-md-2">
+                    <div class="row mx-1 my-1 mx-md-1 my-md-0">
+                        <div class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block">
                             <logo 
                                 url="/"
                                 :path_logo="getCurrentLogo"
                             ></logo>
                         </div>
-                        <div class="col-sm-10 text-start mt-3 mb-0">
+                        <div class="col-sm-5 text-start mt-3 mb-0 d-none d-md-block">
                             <address class="ib me-2" >
                                 <span class="font-weight-bold d-block">COTIZACIÓN</span>
                                 <!-- <span class="font-weight-bold d-block">COTC-XXX</span> -->
@@ -25,14 +25,22 @@
                                 {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
                             </address>
                         </div>
+                        <div class="row p-0 m-0 col-md-5">
+                            <div class="col-md-6 col-12 ms-auto">
+                                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+                                    <!--<label class="control-label">Fecha de emisión</label>-->
+                                    <label class="control-label">Fec. Emisión</label>
+                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
+                                </div>
+                            </div> 
+                        </div>                         
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit">
-                    <div class="form-body m-4"> 
-                        <div class="row mt-1"> 
-                            
-                            <div class="col-lg-10 col-md-10">
-
+                    <div class="form-body m-3 m-md-4"> 
+                        <div class="row mt-1">
+                            <div class="col-12">
                                 <table width="100%">
                                     <thead>
                                         <tr width="100%">
@@ -40,8 +48,8 @@
                                                 <!-- <a href="#" class="text-center font-weight-bold" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a> -->
                                             </th>
                                             <th width="30%" v-if="form.suppliers.length>0" class="pb-2">Correo electrónico</th>
-                                            <th width="15%"><a href="#" @click.prevent="clickAddSupplier" class="text-center font-weight-bold">[+ Agregar]</a></th>
-                                        </tr>
+                                            <th width="15%"></th>
+                                        </tr>                                        
                                     </thead>
                                     <tbody>
                                         <tr v-for="(row, index) in form.suppliers" :key="index" width="100%"> 
@@ -79,26 +87,22 @@
                                             </td> 
                                             <td width="15%"  class="series-table-actions text-center" v-if="index > 0"> 
                                                 <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                    <i class="fa fa-trash"></i>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                 </button>
                                             </td> 
                                             <br>
                                         </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <div @click.prevent="clickAddSupplier" class="col add-row-table mx-0">
+                                                    <svg data-v-d812ec56="" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"><path data-v-d812ec56="" stroke="none" d="M0 0h24v24H0z" fill="none"></path><path data-v-d812ec56="" d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path><path data-v-d812ec56="" d="M9 12h6"></path><path data-v-d812ec56="" d="M12 9v6"></path></svg>
+                                                    Agregar
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody> 
                                 </table> 
-                            
-
                             </div>
-
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                                    <!--<label class="control-label">Fecha de emisión</label>-->
-                                    <label class="control-label">Fec. Emisión</label>
-                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
-                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
-                                </div>
-                            </div>  
-                             
                         </div>
                         
                         <div class="row mt-3">
@@ -121,7 +125,9 @@
                                                 <td width="15%" class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td width="15%" class="text-end">{{row.quantity}}</td> 
                                                 <td width="15%" class="text-end">
-                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                                    </button>
                                                 </td>
                                             </tr>
                                             <!-- <tr><td colspan="8"></td></tr> -->
@@ -143,7 +149,7 @@
 
                     </div>
 
-                    <div class="form-actions footer-card-default text-end mt-4 px-4 py-3">
+                    <div class="form-actions footer-card-default text-end mt-4 px-2 px-md-3 py-3">
                         <el-button class="second-buton btn btn-default second-buton-default" @click.prevent="close()">Cancelar</el-button>
                         <el-button class="submit btn btn-primary btn-submit-default" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">{{button_text}}</el-button>
                     </div>

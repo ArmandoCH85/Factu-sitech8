@@ -99,18 +99,55 @@
                 @click.prevent="clickAnulate(row.id)"
               >Anular</el-button> -->
 
+              <el-dropdown
+                trigger="click"
+                @command="handleCommand($event, row)"
+              >
+                <el-button class="btn-dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                    <i class="fas fa-ellipsis-h" style="display: none;"></i>
+                </el-button>
+              
+                <template #dropdown>
+                  <el-dropdown-menu>
+                  
+                    <el-dropdown-item
+                      v-if="row.show_actions_row"
+                      command="edit"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
+                      Editar
+                    </el-dropdown-item>
+                  
+                    <el-dropdown-item
+                      v-if="row.show_actions_row"
+                      command="generate"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>
+                      Generar compra
+                    </el-dropdown-item>                                      
+                  
+                    <el-dropdown-item
+                      command="options"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-settings me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg>
+                      Opciones
+                    </el-dropdown-item>
 
-              <button type="button" v-if="row.show_actions_row" class="btn waves-effect waves-light btn-xs btn-custom m-1__2 me-1"
-                      @click.prevent="clickCreate(row.id)">Editar</button>
+                    <el-dropdown-item v-if="row.show_actions_row" divided></el-dropdown-item>
 
-              <a :href="`/purchases/create/${row.id}`" class="btn waves-effect waves-light btn-xs btn-success m-1__2 me-1"
-                      v-if="row.show_actions_row">Generar compra</a>
-
-              <button type="button" v-if="row.show_actions_row" class="btn waves-effect waves-light btn-xs btn-danger m-1__2 me-1"
-                      @click.prevent="clickAnulate(row.id)">Anular</button>
-
-              <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-1"
-                      @click.prevent="clickOptions(row.id)">Opciones</button>
+                    <el-dropdown-item
+                      v-if="row.show_actions_row"
+                      command="anulate"      
+                      class="option-delete text-danger"                
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-x me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M10 10l4 4m0 -4l-4 4"></path></svg>
+                      Anular
+                    </el-dropdown-item>
+                  
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </td>
           </tr>
         </data-table>
@@ -191,6 +228,25 @@ export default {
               this.recordId = recordId
               this.showDialogOptions = true
           },
+          handleCommand(command, row) {
+            switch (command) {
+              case 'edit':
+                this.clickCreate(row.id)
+                break
+            
+              case 'generate':
+                location.href = `/purchases/create/${row.id}`
+                break
+            
+              case 'anulate':
+                this.clickAnulate(row.id)
+                break
+            
+              case 'options':
+                this.clickOptions(row.id)
+                break
+            }
+          }
     }
 };
 </script>

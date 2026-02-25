@@ -9,7 +9,7 @@
               @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-sm-8">
                         <div id="custom-select"
                              :class="{'has-danger': errors.item_id}"
                              class="form-group">
@@ -92,7 +92,7 @@
                                    v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-sm-4">
                         <div :class="{'has-danger': errors.quantity}"
                              class="form-group">
                             <label class="control-label">Cantidad</label>

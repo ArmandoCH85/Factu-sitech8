@@ -8,17 +8,16 @@
                 <li class="active"><span> {{ title_form }} </span></li>
             </ol>
         </div>
-        <div class="card tab-content-default row-new mb-0 pt-2 pt-md-0">
+        <div class="tab-content card tab-content-default row-new mb-0 py-2 pt-md-0">
             <!-- <div class="card-header bg-info">
                 <h3 class="my-0">{{ title_form }}</h3>
             </div> -->
-            <div class="tab-content tab-content-default card-body">
-                <div class="invoice p-3">
+                <div class="invoice p-1 p-md-3">
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body">
     
-                        <div class="row">
-                            <div class="col-lg-4">
+                        <div class="row mx-0">
+                            <div class="col-lg-4 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                                     <label class="control-label">Tipo comprobante</label>
                                     <el-select v-model="form.document_type_id" @change="changeDocumentType">
@@ -29,7 +28,7 @@
                                            v-text="errors.document_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-3">
                                 <div class="form-group" :class="{'has-danger': errors.series}">
                                     <label class="control-label">Serie <span class="text-danger">*</span></label>
                                     <el-input v-model="form.series" :maxlength="4" @input="inputSeries"></el-input>
@@ -38,7 +37,7 @@
                                            v-text="errors.series[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-3">
                                 <div class="form-group" :class="{'has-danger': errors.number}">
                                     <label class="control-label">Número <span class="text-danger">*</span></label>
                                     <el-input v-model="form.number"></el-input>
@@ -49,7 +48,7 @@
                             </div>
     
     
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <label class="control-label">Fec Emisión</label>
                                     <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd"
@@ -59,7 +58,7 @@
                                 </div>
                             </div>
     
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                                     <label class="control-label">Fec. Vencimiento</label>
                                     <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd"
@@ -69,8 +68,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6">
+                        <div class="row mx-0">
+                            <div class="col-sm-6 col-12">
                                 <div class="form-group position-relative" :class="{'has-danger': errors.supplier_id}">
                                     <label class="control-label">
                                         Proveedor
@@ -108,7 +107,7 @@
                                            v-text="errors.supplier_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-sm-3 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -119,7 +118,7 @@
                                            v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-sm-3 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark"
@@ -134,7 +133,7 @@
                             </div>
     
     
-                            <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
+                            <div class="col-12 d-flex align-items-end mt-4">
                                 <div class="form-group">
                                     <button type="button" class="btn waves-effect waves-light btn-primary"
                                             @click.prevent="showDialogAddItem = true">+ Agregar Producto
@@ -142,7 +141,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-3" v-if="form.items.length > 0">
+                        <div class="row mt-3 mx-0" v-if="form.items.length > 0">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -175,7 +174,8 @@
                                             <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
                                             <td class="text-end">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        @click.prevent="clickRemoveItem(index)">x
+                                                        @click.prevent="clickRemoveItem(index)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                 </button>
                                             </td>
                                         </tr>
@@ -250,7 +250,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-actions d-flex justify-content-between mt-4">
+                    <div class="form-actions d-flex justify-content-between mt-4 px-1 px-md-2 py-2 py-md-1">
                         <el-button class="second-buton btn btn-default second-buton-default" @click.prevent="close()">Cancelar</el-button>
                         <el-button type="primary" native-type="submit" class="btn btn-primary btn-submit-default" :loading="loading_submit"
                                    v-if="form.items.length > 0 && !hide_button">Generar
@@ -258,7 +258,6 @@
                     </div>
                 </form>
                 </div>
-            </div>
     
             <fa-purchase-form-item :showDialog.sync="showDialogAddItem"
                                    :currency-type-id-active="form.currency_type_id"

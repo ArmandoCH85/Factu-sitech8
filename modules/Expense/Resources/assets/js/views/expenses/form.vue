@@ -8,16 +8,16 @@
                 <li class="active"><span> Nuevo Gasto </span></li>
             </ol>
         </div>
-        <div class="tab-content card tab-content-default row-new mb-0 pt-2 pt-md-0">
+        <div class="tab-content card tab-content-default row-new mb-0 py-2 pt-md-0">
             <!-- <div class="card-header bg-info">
                 <h3 class="my-0">Nuevo Gasto</h3>
             </div> -->
-            <div class="invoice p-3">
+            <div class="invoice p-1 p-md-3">
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body">
     
-                        <div class="row">
-                             <div class="col-lg-4">
+                        <div class="row mx-0">
+                             <div class="col-lg-4 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.expense_type_id}">
                                     <label class="control-label">Tipo comprobante</label>
                                     <el-select v-model="form.expense_type_id"  >
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
     
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-3">
                                 <div class="form-group" :class="{'has-danger': errors.number}">
                                     <label class="control-label">Número <span class="text-danger" v-if="form.expense_type_id != 4">*</span></label>
                                     <el-input v-model="form.number"></el-input>
@@ -35,7 +35,7 @@
                                     <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-3">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -46,14 +46,14 @@
                             </div>
     
     
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <label class="control-label">Fec Emisión</label>
                                     <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div>
-                             <div class="col-lg-2">
+                             <div class="col-lg-2 col-6">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
@@ -65,8 +65,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6">
+                        <div class="row mx-0">
+                            <div class="col-sm-6 col-12">
                                 <div class="form-group position-relative" :class="{'has-danger': errors.supplier_id}">
                                     <label class="control-label">
                                         Proveedor
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
     
-                            <div class="col-lg-4">
+                            <div class="col-sm-6 col-12">
                                 <div class="form-group" :class="{'has-danger': errors.expense_reason_id}">
                                     <label class="control-label">Motivo</label>
                                     <el-select v-model="form.expense_reason_id" filterable >
@@ -110,7 +110,7 @@
                             </div>
     
                         </div>
-                        <div class="row col-lg-8 mt-3">
+                        <div class="row col-lg-8 mt-3 mx-0">
     
                             <table>
                                 <thead>
@@ -150,7 +150,7 @@
                                         </td>
                                         <td class="series-table-actions text-center">
                                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                <i class="fa fa-trash"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                             </button>
                                         </td>
                                         <br>
@@ -159,14 +159,14 @@
                             </table>
     
                         </div>
-                        <div class="row">
-                            <div class="col-lg-2 col-md-6 mt-4">
+                        <div class="row mx-0">
+                            <div class="col-12 mt-4">
                                 <div class="form-group">
                                     <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar detalle</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-2" v-if="form.items.length > 0">
+                        <div class="row mt-2 mx-0" v-if="form.items.length > 0">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -184,7 +184,9 @@
                                                 <td>{{ row.description }}</td>
                                                 <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-end">
-                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -196,7 +198,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-actions text-end mt-4 footer-card-default">
+                    <div class="form-actions text-end mt-4 footer-card-default p-1">
                         <el-button class="second-buton btn btn-default second-buton-default" @click.prevent="close()">Cancelar</el-button>
                         <el-button type="primary" native-type="submit" class="btn btn-primary btn-submit-default" :loading="loading_submit" v-if="form.items.length > 0">{{ (id) ? 'Actualizar':'Generar'}}</el-button>
                     </div>

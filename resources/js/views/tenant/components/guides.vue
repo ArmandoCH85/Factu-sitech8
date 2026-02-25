@@ -61,10 +61,12 @@
                                     :show-file-list="false"
                                 >
                                     <el-button
+                                        class="btn btn-sm"
                                         slot="trigger"
                                         type="primary"
                                         @click="changeIndexFile(index)"
                                     >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /></svg>
                                         Seleccione un archivo
                                     </el-button>
 
@@ -72,46 +74,39 @@
                             </template>
                         </td>
                         <td align="right">
-                            <button class="btn waves-effect waves-light btn-xs btn-danger"
+                            <button class="btn waves-effect waves-light btn-sm btn-danger"
                                     type="button"
                                     @click.prevent="clickRemoveGuide(index)">
-                                <i class="fa fa-trash"></i>
+                                <svg data-v-d812ec56="" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path data-v-d812ec56="" stroke="none" d="M0 0h24v24H0z" fill="none"></path><path data-v-d812ec56="" d="M4 7l16 0"></path><path data-v-d812ec56="" d="M10 11l0 6"></path><path data-v-d812ec56="" d="M14 11l0 6"></path><path data-v-d812ec56="" d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path data-v-d812ec56="" d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>
                             </button>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="4">
-                            <label v-if="!loading"
-                                   class="control-label">
-                                <a class=""
-                                   href="#"
-                                   @click.prevent="clickAddGuide"><i class="fa fa-plus font-weight-bold text-info"></i>
-                                    <span style="color: #777777">
-                                        Agregar guía
-                                    </span>
-                                </a>
-
-                            </label>
+                            <div v-if="!loading" class="col add-row-table mx-0" @click.prevent="clickAddGuide">
+                                <svg data-v-d812ec56="" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"><path data-v-d812ec56="" stroke="none" d="M0 0h24v24H0z" fill="none"></path><path data-v-d812ec56="" d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path><path data-v-d812ec56="" d="M9 12h6"></path><path data-v-d812ec56="" d="M12 9v6"></path></svg>
+                                Agregar guía
+                            </div>
                         </td>
                     </tr>
                 </table>
             </div>
 
 
-            <div class="text-center">
+            <div class="form-actions text-end pt-2 mt-2">
                 <el-button
-                    v-if="form.guides.length > 0"
-                    :disabled="loading"
-                    type="primary"
-                    @click="saveGuides"
-                >Guardar Guia
-                </el-button
-                >
-                <el-button
+                    class="me-2"
                     :disabled="loading"
                     @click="onClose"
                 >Cerrar
                 </el-button>
+                <el-button
+                    v-if="form.guides.length > 0"
+                    :disabled="loading"
+                    type="primary"                    
+                    @click="saveGuides"
+                >Guardar Guia
+                </el-button>                
             </div>
 
         </el-dialog>

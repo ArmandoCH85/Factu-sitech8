@@ -6,33 +6,31 @@
         </div> -->
         <div class="tab-content tab-content-default row-new" v-if="loading_form">
             <div class="invoice p-0">
-                <header class="clearfix-default bg-transparent p-2">
-                    <div class="d-flex head-notes">
-                        <div class="d-flex">
-                            <div class="mt-3 mb-0">
-                                <logo
-                                    url="/"
-                                    :path_logo="getCurrentLogo"
-                                ></logo>
-                            </div>
-                            <div class="text-start mt-3 mb-0" style="margin-left: 10%;">
-                                <address class="ib me-2">
-                                    <span class="font-weight-bold d-block">ORDEN DE COMPRA</span>
-                                    <!-- <span class="font-weight-bold d-block">OC-XXX</span> -->
-                                    <span class="font-weight-bold">{{ company.name }}</span>
-                                    <br>
-                                    <div v-if="establishment.address != '-'">{{ establishment.address }},</div>
-                                    {{ establishment.district.description }}, {{ establishment.province.description }},
-                                    {{ establishment.department.description }} - {{ establishment.country.description }}
-                                    <br>
-                                    {{ establishment.email }} - <span
-                                    v-if="establishment.telephone != '-'">{{ establishment.telephone }}</span>
-                                </address>
-                            </div>
+                <header class="clearfix clearfix-default py-2 px-0 px-md-2">
+                    <div class="row mx-1 my-1 mx-md-1 my-md-0">
+                        <div class="col-sm-2 text-center mt-3 mb-0 d-none d-md-block">
+                            <logo
+                                url="/"
+                                :path_logo="getCurrentLogo"
+                            ></logo>
+                        </div>
+                        <div class="col-sm-5 text-start mt-3 mb-0 d-none d-md-block">
+                            <address class="ib me-2">
+                                <span class="font-weight-bold d-block">ORDEN DE COMPRA</span>
+                                <!-- <span class="font-weight-bold d-block">OC-XXX</span> -->
+                                <span class="font-weight-bold">{{ company.name }}</span>
+                                <br>
+                                <div v-if="establishment.address != '-'">{{ establishment.address }},</div>
+                                {{ establishment.district.description }}, {{ establishment.province.description }},
+                                {{ establishment.department.description }} - {{ establishment.country.description }}
+                                <br>
+                                {{ establishment.email }} - <span
+                                v-if="establishment.telephone != '-'">{{ establishment.telephone }}</span>
+                            </address>
                         </div>
 
-                        <div class="col-md-12  row align-items-center dates justify-content-end pe-2">
-                            <div class=" col-6 w-40 p-2 issue-date">
+                        <div class="row p-0 m-0 col-md-5">
+                            <div class=" col-6">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <label class="control-label">Fec Emisión</label>
                                     <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd"
@@ -42,7 +40,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-6 w-40 p-2 expiration-date">
+                            <div class="col-6">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                                     <label class="control-label">Fec. Vencimiento</label>
                                     <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd"
@@ -55,7 +53,7 @@
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit">
-                    <div class="form-body p-4">
+                    <div class="form-body p-3 p-md-4">
 
                         <div class="row">
                             <!-- <div class="col-lg-4">
@@ -85,7 +83,7 @@
                             </div> -->
 
 
-                            <div class="col-lg-3">
+                            <div class="col-lg-3 col-sm-6 col-12">
                                 <div class="form-group position-relative" :class="{'has-danger': errors.supplier_id}">
                                     <label class="control-label">
                                         Proveedor
@@ -132,7 +130,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-sm-3 col-4">
                                 <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                                     <label class="control-label">
                                         Forma de pago
@@ -147,7 +145,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-sm-3 col-4">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -159,7 +157,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-lg-2 col-sm-5 col-4">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark"
@@ -174,7 +172,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-3" style="margin-top:24px;">
+                            <div class="col-lg-3 col-sm-7 col-12" style="margin-top:24px;">
                                 <div class="form-group" :class="{'has-danger': errors.file}">
                                     <el-upload
                                         class="upload-demo-default"
@@ -249,12 +247,14 @@
                                             <td class="text-end">
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        @click.prevent="clickRemoveItem(index)">x
+                                                        @click.prevent="clickRemoveItem(index)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                                 </button>
-                                                <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                <button class="btn waves-effect waves-light btn-xs btn-info ms-1"
                                                     type="button"
                                                     @click="ediItem(row, index)">
-                                                <span style='font-size:10px;'>&#9998;</span></button>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
+                                                </button>
                                             </td>
                                         </tr>
                                         </tbody>

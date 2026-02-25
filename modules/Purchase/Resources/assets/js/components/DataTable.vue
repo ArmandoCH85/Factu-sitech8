@@ -49,7 +49,7 @@
             </div>
 
 
-            <div class="col-md-12">
+            <div class="col-md-12 position-relative">
                 <div class="scroll-shadow shadow-left" v-show="showLeftShadow"></div>
                 <div class="scroll-shadow shadow-right" v-show="showRightShadow"></div>
 

@@ -63,31 +63,36 @@
                         </td>
 
                         <td class="text-end">
-                            <button
-                                type="button"
-                                v-if="!row.has_purchase_orders"
-                                class="btn waves-effect waves-light btn-xs btn-success m-1__2 me-1"
-                                @click.prevent="clickGenerateOc(row.id)"
-                            >
-                                Generar OC
-                            </button>
+                            <el-dropdown trigger="click" @command="handleCommand($event, row)">
+                                <el-button class="btn-dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                    <i class="fas fa-ellipsis-h" style="display: none;"></i>
+                                </el-button>
 
-                            <button
-                                type="button"
-                                v-if="!row.has_purchase_orders"
-                                class="btn waves-effect waves-light btn-xs btn-custom m-1__2 me-1"
-                                @click.prevent="clickCreate(row.id)"
-                            >
-                                Editar
-                            </button>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item
+                                            v-if="!row.has_purchase_orders"
+                                            command="generate"
+                                        >
+                                            Generar OC
+                                        </el-dropdown-item>
 
-                            <button
-                                type="button"
-                                class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-1"
-                                @click.prevent="clickOptions(row.id)"
-                            >
-                                Opciones
-                            </button>
+                                        <el-dropdown-item
+                                            v-if="!row.has_purchase_orders"
+                                            command="edit"
+                                        >
+                                            Editar
+                                        </el-dropdown-item>
+
+                                        <el-dropdown-item v-if="!row.has_purchase_orders" divided></el-dropdown-item>
+
+                                        <el-dropdown-item command="options">
+                                            Opciones
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
                         </td>
                     </tr>
                 </data-table>
@@ -150,6 +155,20 @@ export default {
             this.recordId = recordId;
             this.showDialogOptions = true;
         }
+            ,
+            handleCommand(command, row) {
+                switch (command) {
+                    case 'generate':
+                        this.clickGenerateOc(row.id);
+                        break;
+                    case 'edit':
+                        if (row && row.id) window.location.href = `/${this.resource}/create/${row.id}`;
+                        break;
+                    case 'options':
+                        this.clickOptions(row.id);
+                        break;
+                }
+            }
     }
 };
 </script>

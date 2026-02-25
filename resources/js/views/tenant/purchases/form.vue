@@ -5,7 +5,7 @@
                 <svg  xmlns="http://www.w3.org/2000/svg" style="margin-top: -5px;"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>
             </a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span> Nueva Compra </span></li>
+                <li class="active"><span>{{ pageTitle }}</span></li>
             </ol>
         </div>
         <div class="card tab-content-default row-new mb-0 pt-2 pt-md-0 mt-0 mt-md-5">
@@ -869,6 +869,10 @@ export default {
             rowItem: null,
             rowIndex: -1,
             supplierSearchTerm: ''
+            ,
+            isEditing: false,
+            resourceId: null,
+            pageTitle: 'Nueva Compra'
         }
     },
     watch: {
@@ -925,6 +929,16 @@ export default {
         this.isGeneratePurchaseOrder()
         this.changeHasPayment()
         this.changeHasClient()
+        // detect edit by URL pattern /purchases/edit/{id}
+        try {
+            const m = window.location.pathname.match(/\/purchases\/create\/(\d+)/);
+            if (m && m[1]) {
+                this.isEditing = true;
+                this.resourceId = m[1];
+                this.pageTitle = 'Editar Compra';
+                await this.initRecord();
+            }
+        } catch (e) {}
     },
     created() {
         this.loadConfiguration()
@@ -1363,6 +1377,46 @@ export default {
         initGlobalIgv(){
             this.localHasGlobalIgv = this.config.checked_global_igv_to_purchase
             // this.changeHasGlobalIgv()
+        },
+        async initRecord() {
+            await this.$http.get(`/${this.resource}/record/${this.resourceId}`)
+                .then(response => {
+                    let dato = response.data.data.purchase
+                    this.form.id = dato.id
+                    this.form.document_type_id = dato.document_type_id
+                    this.form.series = dato.series
+                    this.form.number = dato.number
+                    this.form.date_of_due = dato.date_of_due
+                    this.form.date_of_issue = dato.date_of_issue
+                    this.form.supplier_id = dato.supplier_id
+                    this.aux_supplier_id = dato.supplier_id
+                    this.form.payment_method_type_id = dato.purchase_payments.payment_method_type_id
+                    this.form.currency_type_id = dato.currency_type_id
+                    this.form.exchange_rate_sale = dato.exchange_rate_sale
+                    this.form.items = dato.items
+                    this.form.payments = dato.purchase_payments
+                    this.form.purchase_payments_id = dato.purchase_payments.id
+                    this.form.purchase_order_id = dato.purchase_order_id
+                    this.form.customer_id = dato.customer_id
+                    this.form.establishment_id = dato.establishment_id
+
+                    if (this.form.customer_id) {
+                        this.searchRemotePersons(dato.customer_number)
+                    }
+
+                    this.form.has_client = (this.form.customer_id) ? true : false
+
+                    this.form.payment_condition_id = dato.payment_condition_id
+                    this.form.fee = dato.fee
+                    this.form.has_payment = (this.form.fee.length > 0 || this.form.payments.length > 0) ? true : false
+
+                    if (this.form.payment_condition_id == '02') this.readonly_date_of_due = true
+
+                    this.changeDocumentType()
+                    this.calculateTotal()
+                })
+
+            await this.getPercentageIgv();
         },
         resetForm() {
             this.initForm()

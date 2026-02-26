@@ -145,7 +145,11 @@
     </el-dialog>
 
 </template>
-
+<style scoped>
+.el-input-number .el-input__inner {
+    text-align: right;
+}
+</style>
 <script>
 
 import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
@@ -161,6 +165,7 @@ export default {
     ],
     data() {
         return {
+            precision: 0,
             loading: false,
             loading_search: false,
             loading_submit: false,
@@ -244,6 +249,7 @@ export default {
         },
         initForm() {
             this.errors = {}
+            this.precision = 0
             this.form = {
                 id: null,
                 item_id: null,
@@ -262,12 +268,7 @@ export default {
             }
         },
         ChangePrecision(){
-            if (this.form.series_enabled) {
-                /* Para series, debe ser entero*/
-                this.precision = 0;
-            }else{
-                this.precision = 4;
-            }
+            this.precision = 0;
         },
         async initTables() {
             await this.$http.get(`/${this.resource}/tables/transaction/${this.type}`)

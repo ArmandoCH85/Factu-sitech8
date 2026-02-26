@@ -80,10 +80,13 @@ use Maatwebsite\Excel\Facades\Excel as FacadesExcel;
                         $this->heading[] = 'Descripción';
                     }
 
-                    $prices_label->each(function($label) {
-                        $this->heading[] = $label->label;
-                    });
 
+                    foreach ($prices_label as $index => $label) {
+                        if ($enable_list_product && $index == 3) break;
+
+                        $this->heading[] = $label->label;
+
+                    }
                     return $this->heading;
 
                 }

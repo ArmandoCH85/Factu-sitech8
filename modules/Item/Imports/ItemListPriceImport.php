@@ -77,23 +77,20 @@ class ItemListPriceImport implements ToCollection
                             'price1' => 0,
                             'price2' => 0,
                             'price3' => 0,
-                            // 'price_default' => $price_default,
                         ]);
 
                         foreach ($prices as $index => $price) {
                             $priceLabel = PriceLabel::where('position', ($index + 1));
                             ItemUnitTypePrice::create([
                                 'item_unit_type_id' => $itemUnitType->id,
-                                'price' => $price,
+                                'price' => is_numeric($price) ? $price : 0,
                                 'price_label_id' => $priceLabel->first()->id
                             ]);
                         }
                     }
 
                     $registered += 1;
-
                 } 
-
             }
 
             $this->data = compact('total', 'registered');

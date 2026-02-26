@@ -39,6 +39,32 @@
                 </div>
                 </div>                
             </div>
+            <div class="card-body mt-4">
+                <h4>Gestionar colores de la app</h4>
+                <div class="col-md-12">
+                        <el-select v-model="form.theme_color"
+                                   filterable
+                                   learable
+                                   @change="submit"
+                                   popper-class="el-select-currency"
+                        >
+                            <el-option v-for="option in [
+                                {id: 'blue', description: 'Predeterminado'},
+                                {id: 'dark', description: 'Oscuro'},
+                                {id: 'red', description: 'Rojizo'},
+                            ]"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <!-- <el-button :loading="loading_submit"
+                                   class="btn btn-primary btn-submit-default me-3 mb-3 mt-2"
+                                   type="primary"
+                                   @click.prevent="submit">
+                            Guardar 
+                        </el-button> -->
+                </div>                
+            </div>
 
             <permission-form :showDialog.sync="showDialog"
                         :typeUser="typeUser"
@@ -60,6 +86,9 @@
                 resource: 'users',
                 recordId: null,
                 records: [],
+                form: {
+                    theme_color: null,
+                },
                 showLeftShadow: false,
                 showRightShadow: false,
             }
@@ -95,6 +124,10 @@
                     .then(response => {
                         this.records = response.data.data
                     })
+                this.$http.get(`/app-configurations/record`)
+                    .then(response => {
+                        this.form = response.data.data
+                    })
             },
             clickShowPermissions(recordId) {
 
@@ -107,8 +140,23 @@
                 {
                     this.$message.warning('El usuario principal tiene todos los permisos asignados, no puede modificarlos.')
                 }
-
             },
+            submit()
+            {
+                this.loading_submit = true;
+
+                this.$http.post('/app-configurations', this.form)
+                .then(response => {
+                    if (response.data.success) {
+                        this.loading_submit = false;
+                        this.$message.success('Configuración guardada correctamente');
+                    }
+                })
+                .catch(error => {
+                    this.loading_submit = false;
+                    this.$message.error('Error al guardar la configuración');
+                });
+            }
         }
     }
 </script>

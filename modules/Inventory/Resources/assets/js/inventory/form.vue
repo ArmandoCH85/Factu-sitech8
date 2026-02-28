@@ -49,7 +49,7 @@
                                 :min="0"
                                 :controls="false"
                                 :precision="precision"
-
+                                @focus="$event.target.select()"
                             ></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity"
                                    v-text="errors.quantity[0]"></small>
@@ -145,11 +145,6 @@
     </el-dialog>
 
 </template>
-<style scoped>
-.el-input-number .el-input__inner {
-    text-align: right;
-}
-</style>
 <script>
 
 import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
@@ -165,7 +160,6 @@ export default {
     ],
     data() {
         return {
-            precision: 0,
             loading: false,
             loading_search: false,
             loading_submit: false,

@@ -49,9 +49,15 @@
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
-                            <el-input v-model="form.quantity"></el-input>
+                            <el-input-number
+                                v-model="form.quantity"
+                                :min="0"
+                                :controls="false"
+                                :precision="precision"
+                                @focus="$event.target.select()"
+                            ></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity"
-                                   v-text="errors.quantity[0]"></small>
+                                   v-text="errors.quantity[0]" ></small>
 
                         </div>
                     </div>

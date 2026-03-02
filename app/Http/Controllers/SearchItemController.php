@@ -73,13 +73,18 @@
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
+            dd($item->get());
 
             // el filtro por almacén no debe depender de la búsqueda por código de barras o coincidencias
             // if ($search_by_barcode === false && $input != null) {
             //     self::SetWarehouseToUser($item);
             // }
 
-            self::SetWarehouseToUser($item);
+            if (!isset($request->not_set_warehouse)) { // fallback para no romper funcionalidad, valores que no tienen establecido esto no le afectará
+                self::SetWarehouseToUser($item);
+            }
+
+
 
             return $item->orderBy('description')->get();
         }
@@ -503,6 +508,16 @@
 
         }
 
+        public static function getItemsGeneral(Request $request)
+        {
+            self::validateRequest($request);
+            $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
+            $input = self::setInputByRequest($request);
+            $item = self::getAllItemBase($request, false, null);
+
+            return self::TransformToModal($item->orderBy('description')->get());
+        }
+
 
         /**
          * Retorna la coleccion de items par Documento y Boleta.
@@ -548,6 +563,8 @@
                 ]
             );
         }
+
+
 
         /**
          * @param Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed $items

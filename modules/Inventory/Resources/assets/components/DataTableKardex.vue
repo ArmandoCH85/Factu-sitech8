@@ -39,7 +39,7 @@
                             v-model="form.item_id"
                             filterable
                             remote
-                            placeholder="Please enter a keyword"
+                            placeholder="Ingresar nombre del producto"
                             :remote-method="searchRemoteItems"
                             :loading="loading">
                             <el-option
@@ -204,7 +204,7 @@ export default {
                     input: input,
                 };
                 await this.$http
-                    .get(`/documents/search-items/`, { params })
+                    .get(`/items/search-items-kardex`, { params })
                     .then(response => {
                         this.items = response.data.items;
                         if (this.items.length == 0) {

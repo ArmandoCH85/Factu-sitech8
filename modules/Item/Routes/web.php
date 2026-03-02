@@ -46,6 +46,8 @@ if($hostname) {
             Route::get('items/barcode/{item}', 'ItemController@generateBarcode');
             Route::get('items/editor-tag/tag', 'ItemController@generateTag');
 
+            Route::get('items/search-items-kardex', 'ItemController@searchItemsKardex');
+
 
             Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
             Route::get('items/import/download/item-price-lists', 'ItemController@excelImportItemPriceList');

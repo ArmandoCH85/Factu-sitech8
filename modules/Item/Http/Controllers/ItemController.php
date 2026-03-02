@@ -2,6 +2,7 @@
 
     namespace Modules\Item\Http\Controllers;
 
+use App\Http\Controllers\SearchItemController;
 use App\Models\Tenant\Configuration;
 use \Exception;
     use App\Models\Tenant\DocumentItem;
@@ -225,6 +226,15 @@ use Maatwebsite\Excel\Facades\Excel as FacadesExcel;
 
 
             return new ItemHistoryPurchasesCollection($purchases->orderBy('created_at', 'desc')->paginate(config('tenant.items_per_page_simple_d_table_params')));
+
+        }
+
+        public function searchItemsKardex(Request $request)
+        {
+
+            $items = SearchItemController::getItemsGeneral($request);
+
+            return compact('items');
 
         }
 

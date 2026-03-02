@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Modules\Account\Models\Account;
 use Modules\Digemid\Models\CatDigemid;
 use Modules\Inventory\Helpers\InventoryValuedKardex;
@@ -209,6 +210,32 @@ class Item extends ModelTenant
         'quantity_of_points' => 'float',
         'restrict_sale_cpe' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+
+        // Cualquier evento relacionado a este modelo eliminará la cache de los tags
+        //TODO faltaria revisar las actualizaciones masivas, como funciona laravel esas actualizaciones se tiene que realizar configuración extra
+        static::created(function ($item){
+            Cache::tags(['items_list'])->flush();
+            Cache::tags(['item_detail'])->flush();
+        });
+
+        static::updated(function ($item){
+            Cache::tags(['items_list'])->flush();
+            Cache::tags(['item_detail'])->flush();
+        });
+
+        static::deleted(function ($item){
+            Cache::tags(['items_list'])->flush();
+            Cache::tags(['item_detail'])->flush();
+        });
+
+        static::saved(function ($item){
+            Cache::tags(['items_list'])->flush();
+            Cache::tags(['item_detail'])->flush();
+        });
+    }
 
     /**
      * @return string

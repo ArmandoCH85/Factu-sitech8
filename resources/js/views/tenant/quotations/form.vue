@@ -2375,8 +2375,15 @@ export default {
                         row.affectation_igv_type_id
                     ) > -1
                 ) {
-                    total_igv += parseFloat(row.total_igv);
-                    total += parseFloat(row.total);
+                    if (row.total_igv_without_rounding) {
+                        total_igv += parseFloat(row.total_igv_without_rounding);
+                        total += parseFloat(row.total);
+                        
+                    } else {
+                        total_igv += parseFloat(row.total_igv);
+                        total += parseFloat(row.total);
+                    }
+
                 }
                 total_value += parseFloat(row.total_value);
 

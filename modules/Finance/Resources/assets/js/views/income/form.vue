@@ -374,10 +374,15 @@
                         }
                     })
                     .catch(error => {
-                        if (error.response && error.response.data && error.response.data.message) {
-                            this.$message.error(error.response.data.message)
+                        const mensaje = error.response?.data?.message || 'Ocurrió un error inesperado';
+                        // ✅ Si es error 400 o 422 (validación)
+                        if (error.response?.status === 400 || error.response?.status === 422) {
+                            this.$alert(mensaje, 'Advertencia', {
+                                confirmButtonText: 'Entendido',
+                                type: 'warning'
+                            });
                         } else {
-                            this.$message.warning('Ocurrió un error inesperado en el servidor.')
+                            this.$message.error(mensaje);
                         }
                     })
 

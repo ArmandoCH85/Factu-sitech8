@@ -121,7 +121,7 @@
                 if (!$cash || !isset($cash['cash_id'])) {
                     // Lanza una excepción con el mensaje y código de error
                     throw new HttpResponseException(response()->json([
-                        'message' => 'Debe abrir la caja primero.'
+                        'message' => 'La caja se encuentra cerrada. Debes abrirla antes de registrar un ingreso.'
                     ], 400));
                 }
 

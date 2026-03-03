@@ -81,7 +81,7 @@
 					: defaultImagePath;
 				
 				$(".dropdown-cart-products").append( `
-						<div class="product">
+						<div class="product cart-product-row">
 							<div class="product-details">
 							<h4 class="product-title">
 								<a href="$">${element.description}</a>

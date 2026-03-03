@@ -562,6 +562,16 @@ label{
 .btn {
     font-family: "Poppins",sans-serif;
 }
+.btn {
+    padding: 1.25rem 2rem;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    border-radius: 0;
+    min-width: 124px;
+    transition: all .3s;
+}
 @media screen and (min-width: 992px){
     .modal-dialog {
         max-width: 500px;
@@ -2732,4 +2742,24 @@ ul.contact-info li a:hover {
     color: rgba(255,255,255,0.2);
     font-size: 1.4rem;
     font-weight: 400;
+}
+nav.main-nav.flex-grow-1 .menu.restaurante li a img.category-logo{
+    max-width: 62px;
+    max-height: 62px;
+    object-fit: contain;
+}
+.cart-product-row .product-details{
+    min-width: 120px;
+}
+.cart-product-row .product-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.dropdown-menu.show{
+    max-height: max-content;
+}
+.dropdown-menu.show .dropdownmenu-wrapper{
+    box-shadow: 0 0 20px rgb(0 0 0 / 10%) !important;
 }

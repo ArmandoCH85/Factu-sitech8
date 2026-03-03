@@ -4,19 +4,27 @@
         height: 100%;
         margin-left: 30%;
     }
+    .page-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .page-wrapper > main.main {
+        flex: 1;
+    }
 
 </style>
 
 <div class="footer-middle">
     <div class="container">
         <div class="row">
-            <div class="col-lg-4">
+            <div class="col-md-4">
                 <div class="widget widget-info">
                     <h4 class="widget-title">Contáctanos</h4>
                     <ul class="contact-info">
                         <li>
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-phone"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /></svg>
-                            <a href="tel:+51944999965" target="blank" style="font-size: 25px;">{{$information->information_contact_phone}}</a>
+                            <a href="tel:{{$information->information_contact_phone}}" target="blank" style="font-size: 25px;">{{$information->information_contact_phone}}</a>
                         </li>
                         @if($information->information_contact_address)
                         <li>
@@ -61,7 +69,7 @@
             </div>
             <div class="col-md-4">
                 <div class="widget">
-                    <h4 class="widget-title text-end">Redes Sociales</h4>
+                    <h4 class="widget-title text-right">Redes Sociales</h4>
                     <div class="social-icons d-flex justify-content-end">
 
                         <!-- @if($information->link_facebook)
@@ -95,7 +103,7 @@
     </div>
 </div>
 
-<div class="container container-footer d-flex align-items-center justify-content-between">
+<div class="container container-footer d-flex align-items-center justify-content-between px-0">
     <p class="text-center copy-text mt-3 mb-3">&copy; Copyright {{ date('Y') }} {{ $company->name }}. Todos los derechos reservados</p>
     <div class="footer-bottom" style="padding-bottom: 2rem;">
         <!-- <p class="footer-copyright">Facturador Pro 4. &copy; {{ now()->year }}. Todos los Derechos Reservados</p> -->

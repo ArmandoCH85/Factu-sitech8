@@ -5,25 +5,30 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[0] = ($path[0] === '')?'ecommerce':$path[0];
 @endphp
-            <div class="container">
-                <div class="row">
-                    <nav class="main-nav flex-grow-1">
-                                <ul class="all-category my-0 pb-4">
-                                <li class="title-category">Nuestras Categorias</li>
-                                <li>
-                                    <a href="{{ route('tenant.ecommerce.index') }}" class="{{ $path[1] == '' ? 'bg-success text-light' : '' }}">Ver todos</a>
-                                </li>
-                                </ul>
-                        <div class="container">
-                            <ul id="scrollContainer" class="menu restaurante sf-arrows sf-js-enabled" style="touch-action: pan-y;">
-                            @foreach ($categories as $category)
-                <li class="menu-item ecommerce">
-                    <a href="{{ route('tenant.ecommerce.index', Str::slug($category->name, '-')) }}" 
-                    class="{{ $path[1] == $category->name ? 'bg-success text-light' : '' }}"><img src="{{ asset('storage/uploads/categories/'. $category->image) }}" alt="{{$category->name}}" draggable="false">
-                    {{ $category->name }}
-                    </a>
+<div class="container">
+    <div class="row">
+        <nav class="main-nav flex-grow-1">
+            <ul class="all-category my-0 pb-4 mx-0 px-0">
+                <li class="title-category">Nuestras Categorias</li>
+                <li>
+                    <a href="{{ route('tenant.ecommerce.index') }}" class="{{ $path[1] == '' ? 'bg-success text-light' : '' }}">Ver todos</a>
                 </li>
-            @endforeach
+            </ul>
+            <div class="container">
+                <ul id="scrollContainer" class="menu restaurante sf-arrows sf-js-enabled" style="touch-action: pan-y;">
+                @foreach ($categories as $category)
+                    <li class="menu-item ecommerce">
+                        <a href="{{ route('tenant.ecommerce.index', Str::slug($category->name, '-')) }}" 
+                        class="{{ $path[1] == $category->name ? 'bg-success text-light' : '' }}">
+                            @if($category->image && file_exists(public_path('storage/uploads/categories/'. $category->image)))
+                                <img class="category-logo" src="{{ asset('storage/uploads/categories/'. $category->image) }}" alt="{{$category->name}}" draggable="false">
+                            @else
+                                <img class="category-logo" src="{{ asset('logo/Image_not_available.png') }}" alt="{{$category->name}}" draggable="false">
+                            @endif  
+                            {{ $category->name }}
+                        </a>
+                    </li>
+                @endforeach
                 </ul>
             </div>
         </nav>

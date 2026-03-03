@@ -1,18 +1,18 @@
 @foreach ($dataPaginate as $item)
+    @php
+        $configuration = \App\Models\Tenant\Configuration::first();
+        $defaultImage = $configuration->product_default_image ?? 'imagen-no-disponible.jpg';
+        $defaultImagePath = $defaultImage === 'imagen-no-disponible.jpg'
+            ? asset('logo/imagen-no-disponible.jpg')
+            : asset('storage/defaults/' . $defaultImage);
+
+        $imagePath = $item->image !== 'imagen-no-disponible.jpg'
+            ? asset('storage/uploads/items/' . $item->image)
+            : $defaultImagePath;
+    @endphp
     <div>
         <div class="product product-style {{ stock($item, $configuration) ? 'productdisabled' : '' }}">
             <div class="position-relative">
-                @php
-                    $configuration = \App\Models\Tenant\Configuration::first();
-                    $defaultImage = $configuration->product_default_image ?? 'imagen-no-disponible.jpg';
-                    $defaultImagePath = $defaultImage === 'imagen-no-disponible.jpg'
-                        ? asset('logo/imagen-no-disponible.jpg')
-                        : asset('storage/defaults/' . $defaultImage);
-                            
-                    $imagePath = $item->image !== 'imagen-no-disponible.jpg'
-                        ? asset('storage/uploads/items/' . $item->image)
-                        : $defaultImagePath;
-                @endphp
                 <img src="{{ $imagePath }}" class="image-product" alt="{{ $item->description }}">
                 {{-- <a href="/restaurant/item/{{ $item->id }}" class="product-image product-image-list-restaurant">
                     <img src="{{ $imagePath }}" class="image" alt="{{ $item->description }}">

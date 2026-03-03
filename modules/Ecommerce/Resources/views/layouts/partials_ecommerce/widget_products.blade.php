@@ -1,4 +1,4 @@
-<div class="widget widget-featured">
+<div class="widget widget-featured mt-2">
             <h3 class="widget-title">Productos Destacados</h3>
 
             <div class="widget-body">

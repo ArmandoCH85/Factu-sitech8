@@ -1282,6 +1282,13 @@ export default {
             );
         },
         clickOpen() {
+            if (!this.tableData || this.tableData.length === 0) {
+                this.$alert('No se encontraron datos para exportar', 'Sin resultados', {
+                    confirmButtonText: 'Entendido',
+                    type: 'warning'
+                });
+                return false;
+            }
             window.open(`/${this.resource}/unpaidall`, "_blank");
         },
         changeCustomerUnpaid() {

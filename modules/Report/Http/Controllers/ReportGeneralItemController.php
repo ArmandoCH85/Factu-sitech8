@@ -37,7 +37,7 @@ class ReportGeneralItemController extends Controller
         $items = $this->getItems('items');
         $brands = $this->getBrands();
         $web_platforms = $this->getWebPlatforms();
-        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '80'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '80', 'GU75', 'NE76'])->get();
         $categories = $this->getCategories();
         $users = $this->getUsers();
 

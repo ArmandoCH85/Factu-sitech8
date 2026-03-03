@@ -65,6 +65,7 @@
                     <data-table
                         :defaultType="defaultType"
                         :applyConversionToPen="applyConversionToPen"
+                        :type="this.defaultType"
                         :resource="resource"
                     >
                         <tr slot="heading">

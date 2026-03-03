@@ -242,6 +242,7 @@
 
     export default {
         props: {
+            type: String,
             defaultType: String,
             resource: String,
             configuration: {},
@@ -318,6 +319,13 @@
                     this.brands = response.data.brands
                     this.categories = response.data.categories
                     this.users = response.data.users;
+
+                    if (this.type) {
+                        this.types = this.types.filter(t => t.id === this.type)
+                        this.changeDcoumentType()
+
+                    }
+
                 });
 
 
@@ -353,6 +361,12 @@
                 
                 this.showLeftShadow = scrollLeft > 1;
                 this.showRightShadow = scrollRight > 1;
+            },
+            changeDcoumentType() {
+                let not_include_purchase = ['07', '80'];
+                this.document_types = this.document_types.filter( it => !not_include_purchase.includes(it.id));
+                
+
             },
             toggleInformation(){
                 this.isVisible = !this.isVisible;

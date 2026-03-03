@@ -6923,6 +6923,20 @@ export default {
             };
         },
         async submit() {
+            // validar monto total y cliente_id para "Clientes varios"
+            const monto = parseFloat(this.form.total) || 0;
+            const clienteId = this.form.customer_id;
+            
+            console.log('Monto:', monto, 'Cliente ID:', clienteId);
+            
+            // Si monto > 700 y cliente_id = 1 (Clientes varios)
+            if (monto > 700 && clienteId === 1) {
+                this.$alert('Montos > S/ 700 no pueden usar "Clientes varios"', 'Cliente Requerido', {
+                    confirmButtonText: 'Entendido',
+                    type: 'error'
+                });
+                return false;
+            }
             //Validando las series seleccionadas
             let errorSeries = false;
             _.forEach(this.form.items, row => {

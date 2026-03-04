@@ -143,8 +143,25 @@ class RestaurantConfigurationController extends Controller
         ];
     }
 
+    /**
+     * Recrea las mesas manteniendo los labels existentes por ambiente.
+     * Si hay más mesas que antes, asigna labels numéricos nuevos.
+     * Si hay menos, solo se conservan los primeros labels existentes.
+     */
     private function generateMesas()
     {
+        // Obtener labels existentes por ambiente
+        $oldTables = RestaurantTable::all();
+        $labelsByEnv = [];
+        foreach ($oldTables as $table) {
+            $env = $table->environment;
+            if (!isset($labelsByEnv[$env])) {
+                $labelsByEnv[$env] = [];
+            }
+            $labelsByEnv[$env][] = $table->label;
+        }
+
+        // Eliminar todas las mesas y grupos
         RestaurantTable::query()->delete();
         RestaurantTableGroup::query()->delete();
         RestaurantItemOrderStatus::query()->delete();
@@ -152,13 +169,17 @@ class RestaurantConfigurationController extends Controller
         $activeEnvironments = RestaurantTableEnv::where('active', true)->get();
 
         foreach ($activeEnvironments as $environment) {
-            for ($i = 1; $i <= $environment->tables_quantity; $i++) {
+            $labels = isset($labelsByEnv[$environment->name]) ? $labelsByEnv[$environment->name] : [];
+            $total = (int)$environment->tables_quantity;
+            for ($i = 0; $i < $total; $i++) {
+                // Usar label existente si hay, si no, asignar uno nuevo numérico
+                $label = isset($labels[$i]) ? $labels[$i] : strval($i + 1);
                 RestaurantTable::create([
                     'status' => 'available',
                     'products' => [],
                     'total' => 0,
                     'personas' => 1,
-                    'label' => strval($i),
+                    'label' => $label,
                     'shape' => 'CUADRADO',
                     'environment' => $environment->name,
                 ]);
@@ -269,10 +290,8 @@ class RestaurantConfigurationController extends Controller
         $data['status'] = (count($data['products'])<1)?$data['status']:'notavailable';
 
         $isDeliveryOrTakeaway = ($table->environment === 'Delivery' || $table->environment === 'Para Llevar');
-        $idClosedFoced = $request->input('closed_forced', false);
 
-        if(($isDeliveryOrTakeaway && $table->order_status === 'delivered' || $isDeliveryOrTakeaway && $data['order_status'] === 'deleted') || $idClosedFoced) {
-        //if($isDeliveryOrTakeaway) {
+        if($isDeliveryOrTakeaway && $table->order_status === 'delivered' || $isDeliveryOrTakeaway && $data['order_status'] === 'deleted') {
             $table->delete();
 
             $itemsToDelete = RestaurantItemOrderStatus::where('table_id', $id);

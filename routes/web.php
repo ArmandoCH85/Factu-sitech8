@@ -991,6 +991,7 @@ if ($hostname) {
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
             Route::post('configurations/emails', 'System\ConfigurationController@emails');
             Route::post('configurations/qrapi', 'System\ConfigurationController@qrapi');
+            Route::post('configurations/google-maps', 'System\ConfigurationController@googleMaps');
 
             Route::get('configurations/update-tenant-discount-type-base', 'System\ConfigurationController@updateTenantDiscountTypeBase');
 

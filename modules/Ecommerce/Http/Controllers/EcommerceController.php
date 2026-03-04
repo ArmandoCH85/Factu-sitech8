@@ -27,6 +27,9 @@ use App\Models\Tenant\Promotion;
 use Modules\ApiPeruDev\Data\ServiceData;
 use App\Models\Tenant\Document;
 use Modules\Item\Models\Category;
+use App\Models\Tenant\Catalogs\Department;
+
+use App\Models\System\Configuration as SystemConfiguration; 
 
 
 class EcommerceController extends Controller
@@ -632,5 +635,52 @@ class EcommerceController extends Controller
         return (new ServiceData)->service($type, $number);
     }
 
+    public function getGoogleMaps()
+    {
+        $config = SystemConfiguration::first();
+        return $config ? $config->google_maps_api_key : null;
+    }
 
+    public function getGoogleMapsScript()
+    {
+        $apiKey = $this->getGoogleMaps();
+
+        if (empty($apiKey)) {
+            return response()->json(['error' => 'Google Maps API key is missing or invalid.'], 400);
+        }
+
+        $scriptUrl = "https://maps.googleapis.com/maps/api/js?key={$apiKey}&libraries=places";
+        return redirect($scriptUrl);
+    }
+
+    public function getLocationCascade()
+    {
+        $locations = [];
+        $departments = Department::where('active', true)->get();
+
+        foreach ($departments as $department) {
+            $children_provinces = [];
+            foreach ($department->provinces as $province) {
+                $children_districts = [];
+                foreach ($province->districts as $district) {
+                    $children_districts[] = [
+                        'value' => $district->id,
+                        'label' => $district->description
+                    ];
+                }
+                $children_provinces[] = [
+                    'value' => $province->id,
+                    'label' => $province->description,
+                    'children' => $children_districts
+                ];
+            }
+            $locations[] = [
+                'value' => $department->id,
+                'label' => $department->description,
+                'children' => $children_provinces
+            ];
+        }
+
+        return response()->json($locations);
+    }
 }

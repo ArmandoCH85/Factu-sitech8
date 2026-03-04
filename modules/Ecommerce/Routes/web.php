@@ -13,6 +13,7 @@
 Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])->prefix('ecommerce')->group(function() {
    // Route::get('/', 'EcommerceController@index');
 
+    
     Route::get('/', 'EcommerceController@index')->name('tenant.ecommerce.index');
     Route::get('/category/{category}', 'EcommerceController@category')->name('tenant.ecommerce.category');
 
@@ -35,8 +36,9 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     Route::post('rating_item', 'EcommerceController@ratingItem')->name('tenant_ecommerce_rating_item');
     Route::get('rating_item/{id}', 'EcommerceController@getRating');
     Route::get('color-ecommerce', 'ConfigurationController@getColorEcommerce');
-
-
+    Route::get('google-maps', 'EcommerceController@getGoogleMaps');
+    Route::get('google-maps-script', 'EcommerceController@getGoogleMapsScript')->name('google_maps_script');
+    Route::get('get-location-cascade', 'EcommerceController@getLocationCascade')->name('get_location_cascade');
 
     Route::post('culqi', 'CulqiController@payment')->name('tenant_ecommerce_culqui');
     Route::post('transaction_finally', 'EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');

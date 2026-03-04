@@ -425,6 +425,19 @@ class ConfigurationController extends Controller
 
     }
 
+    public function googleMaps(Request $request)
+    {
+        $record = Configuration::first();
+        $record->google_maps_api_key = $request->google_maps_api_key;  
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada',
+        ];
+
+    }
+
     public function cron(Request $request)
     {
         $record = Configuration::first();

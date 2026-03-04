@@ -1,4 +1,45 @@
 @extends('ecommerce::layouts.layout_ecommerce_cart.index')
+
+@push('styles')
+<style>
+    #addressModal .modal-dialog {
+        max-width: 800px;
+    }
+    
+    #map {
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+    }
+    
+    #addressModal .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    #addressModal .modal-title {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    #addressModal .form-group label {
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 8px;
+    }
+    
+    #addressModal .close {
+        font-size: 1.5rem;
+        font-weight: 700;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    
+    #addressModal .close:hover {
+        opacity: 1;
+    }
+</style>
+@endpush
+
 @section('content')
 
 @php
@@ -8,6 +49,7 @@
         ? asset('logo/imagen-no-disponible.jpg')
         : asset('storage/defaults/' . $defaultImage);
     $itemsBasePath = asset('storage/uploads/items');
+    $googleMapsApiKey = app(Modules\Ecommerce\Http\Controllers\EcommerceController::class)->getGoogleMaps();
 @endphp
 
 <div class="row" id="app" style="margin-top: 55px">
@@ -70,7 +112,7 @@
     </div><!-- End .col-lg-8 -->
 
     <div class="col-lg-4">
-    <div class="cart-summary">
+        <div class="cart-summary">
             <h3>Datos de contacto y envío</h3>
 
             <form autocomplete="off" action="#">
@@ -81,7 +123,7 @@
                 </div>
                 <div class="form-group" :class="{'text-danger': errors.address}">
                     <label for="email">Dirección:</label>
-                    <textarea v-model="form_contact.address" class="form-control" placeholder="Ingrese dirección de envío" rows="2" cols="10"></textarea>
+                    <textarea v-model="form_contact.address" @click="openAddressModal" readonly class="form-control" placeholder="Click para seleccionar dirección" rows="2" cols="10" style="cursor: pointer; background-color: #fff;"></textarea>
                     <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
                 </div>
             </form>
@@ -192,6 +234,80 @@
             </div><!-- End .checkout-methods -->
         </div><!-- End .cart-summary -->
     </div><!-- End .col-lg-4 -->
+
+    <!-- Modal de Dirección -->
+    <div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 800px;">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                    <h5 style="font-size: 1.25rem; margin: 0; font-weight: 500; color: #333;">Confirmar dirección</h5>
+                    <button type="button" @click="closeAddressModal()" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0; margin: 0; color: #000; opacity: 0.5;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div>
+                    @if(!empty($googleMapsApiKey))
+                        <div id="map" style="height: 400px; width: 100%; margin: 0px;"></div>
+                    @else
+                        <br>
+                    @endif
+                    <div style="padding: 15px 15px 15px 15px;">
+                        @if(empty($googleMapsApiKey))
+                            <div style="margin-bottom: 10px;">
+                                <div style="display: flex; gap: 10px;">
+                                    <div style="flex: 1;">
+                                        <label for="department" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555; width: 100%;">Departamento</label>
+                                        <select v-model="selectedDepartment" @change="updateProvinces" name="department" id="department" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background-color: #fff; width: 100%;">
+                                            <option value="">Seleccione departamento</option>
+                                            <option v-for="department in departments" :key="department.value" :value="department.value">
+                                                @{{ department.label }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label for="province" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555; width: 100%;">Provincia</label>
+                                        <select v-model="selectedProvince" @change="updateDistricts" name="province" id="province" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background-color: #fff; width: 100%;">
+                                            <option value="">Seleccione provincia</option>
+                                            <option v-for="province in provinces" :key="province.value" :value="province.value">
+                                                @{{ province.label }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label for="district" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555; width: 100%;">Distrito</label>
+                                        <select v-model="selectedDistrict" name="district" id="district" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background-color: #fff; width: 100%;">
+                                            <option value="">Seleccione distrito</option>
+                                            <option v-for="district in districts" :key="district.value" :value="district.value">
+                                                @{{ district.label }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Dirección</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input v-model="addressModal.address" type="text" placeholder="Ingrese su dirección completa" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; outline: none; background-color: #fff;">
+                                @if(!empty($googleMapsApiKey)) 
+                                    <button @click="searchAddressInMap(addressModal.address)" class="btn btn-primary" style="width: 100px;height: 38px; padding: 0 15px; font-size: 14px; margin: 0;">Buscar</button>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Referencias</label>
+                            <textarea v-model="addressModal.reference" placeholder="Ej: Al costado del parque, frente a la iglesia" rows="2" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; resize: none; outline: none; background-color: #fff;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 15px; border-top: 1px solid #dee2e6;">
+                    <button type="button" @click="confirmAddress()" style="background-color: #ff6600; color: white; border: none; padding: 12px 40px; font-size: 1rem; font-weight: 500; border-radius: 50px; cursor: pointer; width: 100%; text-transform: uppercase;">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div><!-- End .row -->
 
 <input type="hidden" id="total_amount" data-total="0.0">
@@ -213,6 +329,17 @@
                 address:   '',
                 telephone:   '',
             },
+            addressModal: {
+                address: '',
+                reference: '',
+                latitude: -12.046374,
+                longitude: -77.042793,
+                preventSearch: false
+            },
+            map: null,
+            marker: null,
+            geocoder: null,
+            addressSearchTimeout: null,
             payment_cash: {
                 amount: '',
                 clicked: false
@@ -249,7 +376,14 @@
             typeDocumentList: [],
             numberDocument: '',
             phone_whatsapp: {!! json_encode($configuration->phone_whatsapp ) !!},
-            all_identity_document_types : [{id: '6', name: 'RUC'}, {id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '1', name: 'DNI'}]
+            all_identity_document_types : [{id: '6', name: 'RUC'}, {id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '1', name: 'DNI'}],
+            addressSuggestions: [],
+            departments: [],
+            provinces: [],
+            districts: [],
+            selectedDepartment: '',
+            selectedProvince: '',
+            selectedDistrict: ''
         },
         computed: {
             maxLength: function () {
@@ -262,6 +396,12 @@
                 }
 
                 return 15
+            }
+        },
+        watch: {
+            'addressModal.address': function(newValue) {
+                // Eliminamos la lógica de búsqueda automática
+                console.log('Cambio detectado en la dirección, pero no se realizará búsqueda automática.');
             }
         },
         async mounted() {
@@ -294,6 +434,11 @@
           })
 
           this.calculateSummary()
+          
+          // Inicializar Google Maps cuando esté disponible
+          if (typeof google !== 'undefined') {
+              this.initMap()
+          }
         },
         created() {
             let array = localStorage.getItem('products_cart');
@@ -500,6 +645,152 @@
                 }
 
                 return totals
+            },
+            openAddressModal() {
+                $('#addressModal').modal('show')
+                // Inicializar o actualizar el mapa al abrir el modal
+                setTimeout(() => {
+                    if (!this.map) {
+                        this.initMap()
+                    } else {
+                        google.maps.event.trigger(this.map, 'resize')
+                        this.map.setCenter({lat: this.addressModal.latitude, lng: this.addressModal.longitude})
+                    }
+                }, 300)
+            },
+            closeAddressModal() {
+                // Asegurarse de que el modal se cierre correctamente
+                const modalElement = document.getElementById('addressModal');
+                if (modalElement) {
+                    $(modalElement).modal('hide');
+                } else {
+                    console.error('No se encontró el elemento del modal.');
+                }
+            },
+            confirmAddress() {
+                // Construir la dirección completa
+                let fullAddress = ''
+                if (this.addressModal.address) {
+                    fullAddress = this.addressModal.address
+                }
+                if (this.addressModal.reference) {
+                    fullAddress += ' - Ref: ' + this.addressModal.reference
+                }
+                
+                this.form_contact.address = fullAddress
+
+                // Asegurarse de que el modal se cierre después de confirmar
+                this.closeAddressModal()
+            },
+            initMap() {
+                // Inicializar el mapa con una ubicación predeterminada
+                const defaultLocation = { lat: -12.046374, lng: -77.042793 }; // Coordenadas de Lima, Perú
+
+                this.map = new google.maps.Map(document.getElementById('map'), {
+                    center: defaultLocation,
+                    zoom: 15
+                });
+
+                this.marker = new google.maps.Marker({
+                    position: defaultLocation,
+                    map: this.map,
+                    draggable: true
+                });
+
+                this.geocoder = new google.maps.Geocoder();
+
+                // Intentar obtener la ubicación actual del usuario
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+
+                            this.map.setCenter(userLocation);
+                            this.marker.setPosition(userLocation);
+                            this.addressModal.latitude = userLocation.lat;
+                            this.addressModal.longitude = userLocation.lng;
+
+                            console.log('Ubicación actual:', userLocation);
+                        },
+                        (error) => {
+                            console.error('Error obteniendo la ubicación actual:', error);
+                        }
+                    );
+                } else {
+                    console.warn('La geolocalización no está soportada por este navegador.');
+                }
+
+                // Agregar evento de clic al mapa para mover el marcador y actualizar la dirección
+                this.map.addListener('click', (event) => {
+                    const clickedLocation = {
+                        lat: event.latLng.lat(),
+                        lng: event.latLng.lng()
+                    };
+
+                    // Mover el marcador a la nueva ubicación
+                    this.marker.setPosition(clickedLocation);
+
+                    // Actualizar las coordenadas en el modelo
+                    this.addressModal.latitude = clickedLocation.lat;
+                    this.addressModal.longitude = clickedLocation.lng;
+
+                    // Evitar que el watcher active la búsqueda
+                    this.addressModal.preventSearch = true;
+
+                    // Obtener la dirección de las coordenadas actuales del marcador
+                    this.geocoder.geocode({ location: clickedLocation }, (results, status) => {
+                        if (status === google.maps.GeocoderStatus.OK && results[0]) {
+                            this.addressModal.address = results[0].formatted_address;
+                            console.log('Dirección obtenida del mapa:', this.addressModal.address);
+                        } else {
+                            console.error('No se pudo obtener la dirección para la ubicación seleccionada:', status);
+                        }
+
+                        // Permitir nuevamente la búsqueda desde el input
+                        setTimeout(() => {
+                            this.addressModal.preventSearch = false;
+                        }, 1000); // Agregar un pequeño retraso para evitar conflictos
+                    });
+                });
+            },
+            getAddressFromLatLng(latLng) {
+                if (!this.geocoder) return
+                
+                this.geocoder.geocode({'location': latLng}, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        // Obtener la dirección formateada completa
+                        this.addressModal.address = results[0].formatted_address
+                    }
+                })
+            },
+            searchAddressInMap(address) {
+
+                if (!this.geocoder || !this.map) {
+                    console.warn('Geocoder o Map no inicializados');
+                    return;
+                }
+                
+                console.log('Buscando dirección:', address);
+                this.geocoder.geocode({'address': address}, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        console.log('Dirección encontrada:', results[0].formatted_address);
+                        const location = results[0].geometry.location;
+                        this.addressModal.latitude = location.lat();
+                        this.addressModal.longitude = location.lng();
+                        
+                        // Actualizar el mapa
+                        this.map.setCenter(location);
+                        this.map.setZoom(16);
+                        if (this.marker) {
+                            this.marker.setPosition(location);
+                        }
+                    } else {
+                        console.warn('Dirección no encontrada. Estado:', status);
+                    }
+                })
             },
             async getItemsDocument() {
 
@@ -747,7 +1038,52 @@
 
                 window.open(`https://wa.me/51${this.phone_whatsapp}?text=Se ha generado un nuevo pedido con código nro. ${order_id}`, '_blank');
 
+            },
+            onAddressInput() {
+                console.log('Input detectado:', this.addressModal.address);
+                // Aquí puedes agregar cualquier otra lógica que necesites al escribir en el campo de dirección
+            },
+            closeAddressModal() {
+                // Asegurarse de que el modal se cierre correctamente
+                const modalElement = document.getElementById('addressModal');
+                if (modalElement) {
+                    $(modalElement).modal('hide');
+                } else {
+                    console.error('No se encontró el elemento del modal.');
+                }
+            },
+            selectAddressSuggestion(suggestion) {
+                // Usar el campo 'description' para mostrar una dirección más legible
+                this.addressModal.address = suggestion.description;
+                this.addressSuggestions = [];
+                console.log('Dirección seleccionada:', this.addressModal.address);
+
+                // Aquí puedes agregar lógica para actualizar el mapa según la dirección seleccionada
+            },
+            fetchLocations() {
+                axios.get('{{ route("get_location_cascade") }}')
+                    .then(response => {
+                        this.departments = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching locations:', error);
+                    });
+            },
+            updateProvinces() {
+                const department = this.departments.find(dep => dep.value === this.selectedDepartment);
+                this.provinces = department ? department.children : [];
+                this.selectedProvince = '';
+                this.districts = [];
+                this.selectedDistrict = '';
+            },
+            updateDistricts() {
+                const province = this.provinces.find(prov => prov.value === this.selectedProvince);
+                this.districts = province ? province.children : [];
+                this.selectedDistrict = '';
             }
+        },
+        mounted() {
+            this.fetchLocations();
         }
     })
 
@@ -901,5 +1237,7 @@
     }
 
 </script>
+
+<script src="{{ route('google_maps_script') }}"></script>
 
 @endpush

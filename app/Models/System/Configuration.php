@@ -36,6 +36,7 @@ class Configuration extends Model
         'mail_encryption',
         'qr_api_url',
         'qr_api_token',
+        'google_maps_api_key',
         'qr_api_msg',
         'active_cron',
         'hour_generate_payment_order',
@@ -161,7 +162,4 @@ class Configuration extends Model
                     Config::set('mail.encryption', $config->mail_encryption);
                 }
     }
-
-
-
 }

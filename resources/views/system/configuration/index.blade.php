@@ -20,6 +20,7 @@
 
             <system-login-other-configuration></system-login-other-configuration>
             <system-qrapi-configuration :configuration='@json($configuration)'></system-qrapi-configuration>
+            <system-google-maps-configuration :configuration='@json($configuration)'></system-google-maps-configuration>
             <system-cron-order-configuration :configuration='@json($configuration)'></system-cron-order-configuration>
         </div>
         <div class="col-lg-6 col-md-12">

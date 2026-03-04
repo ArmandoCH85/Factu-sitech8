@@ -7,7 +7,7 @@
                 <li><span class="text-muted">Avanzado</span></li>
             </ol>
         </div>
-        <div class="card card-dashboard border tab-content-default row-new">
+        <div class="card card-dashboard border tab-content-default row-new row-mx-0">
             <div class="card-body">
                 <template>
                     <div  v-if="canEdit">

@@ -22,7 +22,7 @@ class InventoryConfigurationController extends Controller
     
     public function record() {
 
-        $inventory_configuration = InventoryConfiguration::first();
+        $inventory_configuration = InventoryConfiguration::firstOrCreate([]);
         $record = new InventoryConfigurationResource($inventory_configuration);
         
         return $record;
@@ -32,9 +32,9 @@ class InventoryConfigurationController extends Controller
     public function store(InventoryConfigurationRequest $request) {
 
         $id = $request->input('id');
-        $inventory_configuration = InventoryConfiguration::find($id);
+        $inventory_configuration = $id ? InventoryConfiguration::findOrNew($id) : InventoryConfiguration::firstOrNew([]);
         $inventory_configuration->fill($request->all());
-        
+
         // migracion desarrollo sin terminar #1401
         // if($request->generate_internal_id == true) {
         //     $item = Item::first();

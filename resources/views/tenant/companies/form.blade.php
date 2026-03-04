@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="row">
+    <div class="row row-mx-0">
         <div class="col-lg-6 col-md-12 pt-2 pt-md-0">
             <tenant-companies-form></tenant-companies-form>
         </div>

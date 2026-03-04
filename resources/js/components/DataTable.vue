@@ -115,11 +115,11 @@
                 </div>
             </div>
             <div class="col-md-6 col-lg-6 col-xl-6">
-                <div class="row" v-if="fromRestaurant||fromEcommerce">
+                <div class="row mx-0" v-if="fromRestaurant||fromEcommerce">
                     <div class="col-lg-12 col-md-12 col-sm-12 pb-2 d-flex flex-wrap justify-content-end align-items-center">
-                        <div class="d-flex col-12 col-md-6 mb-2 mb-md-0 ps-0 pe-2" v-if="fromRestaurant||fromEcommerce">
+                        <div class="d-flex col-12 col-md-6 mb-2 mb-md-0 px-0" v-if="fromRestaurant||fromEcommerce">
                             <div class="my-auto w-100 text-end">
-                                <el-button  @click="methodVisibleAllProduct" type="primary" class="button-truncate position-relative btn-show-all-products" title="Mostrar todos los productos">
+                                <button  @click="methodVisibleAllProduct" class="btn btn-custom btn-sm" title="Mostrar todos los productos">
                                     <span class="d-inline d-lg-none">Mostrar todos</span>
                                     <span class="d-none d-lg-inline">Mostrar todos los productos</span>
                                     <el-tooltip
@@ -130,11 +130,11 @@
                                     >
                                         <i class="fa fa-info-circle ms-1"></i>
                                     </el-tooltip>
-                                </el-button>
+                                </button>
                             </div>
                         </div>
 
-                        <div class="d-flex col-12 col-md-6 px-0">
+                        <div class="d-flex col-12 col-md-6 ps-0 ps-md-2 pe-0">
                             <el-select
                                 class="pe-0"
                                 v-model="search.list_value"

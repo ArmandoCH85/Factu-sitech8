@@ -54,6 +54,17 @@
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
                         <th class="text-center">Imagen</th>
+                        <th class="text-center">
+                            Activo
+                            <el-tooltip
+                                class="item"
+                                content="Visible en Tienda"
+                                effect="dark"
+                                placement="top-start"
+                            >
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                        </th>
                         <th>
                             <a href="#" @click.prevent="sort('description')" style="color: inherit; text-decoration: none;">
                                 Nombre 
@@ -68,8 +79,6 @@
                         <th class="text-end">P.Unitario (Venta)</th>
                         <th class="text-end">Stock General</th>
                         <th class="text-center">Tags</th>
-
-                        <th class="text-center">Visible en Tienda</th>
                         <th class="text-end">Acciones</th>
                     </tr>
                     <tr></tr>
@@ -89,6 +98,13 @@
                             </a>
                             <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
                         </td>
+                        <td class="text-center">
+                            <el-checkbox
+                                size="medium"
+                                @change="visibleStore($event, row.id)"
+                                v-model="row.apply_store"
+                            ></el-checkbox>
+                        </td>
                         <td>{{ row.description }}</td>
                         <td class="text-end">{{ row.sale_unit_price }}</td>
                         <td
@@ -106,14 +122,7 @@
                                 :key="tag.id"
                                 >{{ tag.tag ? (tag.tag.name) : '' }}</el-tag
                             >
-                        </td>
-                        <td class="text-center">
-                            <el-checkbox
-                                size="medium"
-                                @change="visibleStore($event, row.id)"
-                                v-model="row.apply_store"
-                            ></el-checkbox>
-                        </td>
+                        </td>                        
                         <td class="text-end">
                             <template>
                                 <!-- v-if="typeUser === 'admin'" -->

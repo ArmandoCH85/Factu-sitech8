@@ -22102,6 +22102,10 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 .circle-child{
     border-radius: 50%;
 }
+.row-mx-0 .row{
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

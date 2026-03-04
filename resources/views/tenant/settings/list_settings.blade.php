@@ -22,7 +22,7 @@
     </ol>
 </div>
 
-<div class="row tab-content-default row-new bg-transparent border-0 px-2 px-md-0" style="background: transparent !important;">
+<div class="row tab-content-default row-new bg-transparent border-0 px-2 px-md-0 row-mx-0" style="background: transparent !important;">
     <div class="col-12 col-sm-6 col-md-4 mb-4">
         <div class="card card-dashboard card-reports">
             <div class="card-body">
@@ -173,11 +173,11 @@
                     <li>
                         <a href="{{route('tenant.company_accounts.create')}}">Avanzado - Contable</a>
                     </li>
-                    @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
+                    <!-- @if($user->type != 'integrator' && $vc_company->soap_type_id != '03')
                         <li>
                             <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
                         </li>
-                    @endif
+                    @endif -->
                      @if($user->type === 'admin')
                         <li>
                             <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>

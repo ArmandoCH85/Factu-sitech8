@@ -86,6 +86,7 @@ ul.nav-main li .nav-children li a:after {
 }
 .tab-content-default{
     border-radius: 8px;
+    padding: 0 !important;
 }
 span.badge.bg-secondary.text-white.bg-info {
     background: rgb(0 116 255 / 20%) !important;

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="page-header pr-0">
+        <div class="page-header pe-0">
             <h2><a href="#"><i class="fas fa-cogs"></i></a></h2>
             <ol class="breadcrumbs">
                 <li class="active"><span>Configuración</span></li>
@@ -9,16 +9,15 @@
             </ol>
         </div>
         <template>
-            <div >
                 <el-tabs v-model="activeName"
                          class="rounded"
                          type="border-card">
                     <el-tab-pane class="mb-3"
                                  name="first">
-                        <span slot="label">Pedidos</span>
+                        <span class="hola" slot="label">Pedidos</span>
 
-                        <div class="row">
-                            <div class="col-11 offset-1">
+                        <div class="row mx-0">
+                            <div class="col-12 text-muted">
                                 Al importar los pedidos, se ajustara por defecto los siguientes elementos
                             </div>
                             <!-- estableciieinto -->
@@ -201,7 +200,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 text-right mt-4">
+                            <div class="col-12 form-actions text-end mt-4">
                                 <el-button :loading="loading_submit"
 
                                            type="primary"
@@ -249,9 +248,6 @@
                     </el-tab-pane>
                     -->
                 </el-tabs>
-
-
-            </div>
         </template>
     </div>
 </template>
@@ -262,8 +258,10 @@
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
+.form-my-store .el-tabs__header.is-top{
+    padding: 15px;
+}
 </style>
-
 <script>
 
 import {mapActions, mapState} from "vuex";

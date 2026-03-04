@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="row">
+    <div class="row mx-0">
         <div class="col-12">
             <tenant-company-accounts></tenant-company-accounts>
         </div>

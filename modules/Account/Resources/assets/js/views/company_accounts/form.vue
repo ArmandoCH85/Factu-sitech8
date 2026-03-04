@@ -7,14 +7,14 @@
             </ol>
         </div>
 
-        <div class="card tab-content-default row-new mb-0">
+        <div class="card tab-content tab-content-default row-new mb-0">
             <!-- <div class="card-header bg-info">
                 <h3 class="my-0">Cuentas contables (Ventas)</h3>
             </div> -->
             <div class="card-body invoice p-3">
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body">
-                        <div class="row">
+                        <div class="row mx-0">
                             <div class="col-md-4 form-modern">
                                 <label class="control-label">Total Soles</label>
                                 <div class="form-group" :class="{'has-danger': errors.total_pen}">

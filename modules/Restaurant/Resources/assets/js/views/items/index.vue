@@ -64,6 +64,17 @@
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
                         <th class="text-center">Imagen</th>
+                        <th class="text-center">
+                            Activo
+                            <el-tooltip
+                                class="item"
+                                content="Visible en Restaurant"
+                                effect="dark"
+                                placement="top-start"
+                            >
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                        </th>
                         <th>
                             <a href="#" @click.prevent="sort('description')" style="color: inherit; text-decoration: none;">
                                 Nombre
@@ -77,8 +88,7 @@
                         </th>
                         <th class="text-end">P.Unitario (Venta)</th>
                         <th class="text-end">Stock General</th>
-                        <th class="text-start">Categoría</th>
-                        <th class="text-center">Visible en Restaurant</th>
+                        <th class="text-start">Categoría</th>                        
                         <th class="text-end">Acciones</th>
                     </tr>
                     <tr></tr>
@@ -96,6 +106,31 @@
                                     height="32px"
                                 />
                             </a>
+                        </td>
+                        <td class="text-center">
+                            <el-tooltip
+                                v-if="!row.has_supplies && row.unit_type_id === 'ZZ'"
+                                content="Este plato no tiene insumos"
+                                placement="top"
+                            >
+                                <span>
+                                    <el-checkbox
+                                        size="medium"
+                                        @change="visibleRestaurant($event, row.id)"
+                                        v-model="row.apply_restaurant"
+                                        :disabled="!row.has_supplies && row.unit_type_id === 'ZZ'"
+                                    ></el-checkbox>
+                                </span>
+                            </el-tooltip>
+
+                            <template v-else>
+                                <el-checkbox
+                                    size="medium"
+                                    @change="visibleRestaurant($event, row.id)"
+                                    v-model="row.apply_restaurant"
+                                    :disabled="!row.has_supplies && row.unit_type_id === 'ZZ'"
+                                ></el-checkbox>
+                            </template>
                         </td>
                         <td>{{ row.description }}</td>
                         <td class="text-end">{{ row.sale_unit_price }}</td>
@@ -123,32 +158,7 @@
                         </td>
                         <td class="text-start">
                             {{ row.category_description }}
-                        </td>
-                        <td class="text-center">
-                            <el-tooltip
-                                v-if="!row.has_supplies && row.unit_type_id === 'ZZ'"
-                                content="Este plato no tiene insumos"
-                                placement="top"
-                            >
-                                <span>
-                                    <el-checkbox
-                                        size="medium"
-                                        @change="visibleRestaurant($event, row.id)"
-                                        v-model="row.apply_restaurant"
-                                        :disabled="!row.has_supplies && row.unit_type_id === 'ZZ'"
-                                    ></el-checkbox>
-                                </span>
-                            </el-tooltip>
-
-                            <template v-else>
-                                <el-checkbox
-                                    size="medium"
-                                    @change="visibleRestaurant($event, row.id)"
-                                    v-model="row.apply_restaurant"
-                                    :disabled="!row.has_supplies && row.unit_type_id === 'ZZ'"
-                                ></el-checkbox>
-                            </template>
-                        </td>
+                        </td>                        
                         <td class="text-end">
                             <template>
                                 <!-- v-if="typeUser === 'admin'" -->

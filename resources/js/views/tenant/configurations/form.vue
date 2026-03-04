@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="row-mx-0">
         <div class="page-header pe-0">
             <h2><a href="#"><i class="fas fa-cogs"></i></a></h2>
             <ol class="breadcrumbs">
@@ -34,7 +34,7 @@
                             <!-- auto_send_dispatchs_to_sunat -->
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
-                                    <label class="control-labe">
+                                    <label class="control-label">
                                         Envío de guía de remisión automático
                                     </label>
                                     <div :class="{ 'has-danger': errors.auto_send_dispatchs_to_sunat }"
@@ -1554,10 +1554,8 @@
                             </div>
 
 
-                            <div class="col-3 mt-4">
+                            <div class="col-12 mt-4 d-flex gap-2">
                                 <tenant-options-form></tenant-options-form>
-                            </div>
-                            <div class="col-3 mt-4">
                                 <tenant-options-form-item></tenant-options-form-item>
                             </div>
                         </div>
@@ -2241,7 +2239,7 @@
                         </div>
                     </el-tab-pane>
 
-                    <el-tab-pane class="mb-3" name="twelve">
+                    <el-tab-pane class="mb-3" name="thirteen">
                         <span slot="label">Usuario</span>
                         <div class="row switch-configuration-container">
                             <div class="col-md-6 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
@@ -2307,6 +2305,68 @@
 
                     </el-tab-pane>
 
+                    <el-tab-pane v-if="typeUser != 'integrator' && soapTypeId != '03'" class="mb-3" name="twelve">
+                        <span slot="label">Inventario</span>
+                        <div class="row switch-configuration-container">
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Venta con restricción de stock
+                                    <el-tooltip class="item"
+                                                content="Valida el stock de los productos al finalizar la transacción"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.stock_control}">
+                                    <el-switch v-model="form.stock_control" @change="changeStockControl"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.stock_control" v-text="errors.stock_control[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Generar automáticamente codigo interno del producto</label>
+                                <div class="form-group" :class="{'has-danger': errors.generate_internal_id}">
+                                    <el-switch v-model="form.generate_internal_id" @change="submitInventoryConfig"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.generate_internal_id" v-text="errors.generate_internal_id[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Revisión de inventario
+                                    <el-tooltip class="item"
+                                                content="Revisión del inventario del sistema con el escaneado/registrado de forma manual - Disponible en módulo Inventario"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.inventory_review}">
+                                    <el-switch v-model="form.inventory_review" @change="submitInventoryConfig"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.inventory_review" v-text="errors.inventory_review[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4" v-if="form.stock_control">
+                                <label class="control-label">
+                                    Validar stock al agregar producto
+                                    <el-tooltip class="item"
+                                                content="Disponible en Nuevo CPE"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.validate_stock_add_item}">
+                                    <el-switch v-model="form.validate_stock_add_item" @change="submitInventoryConfig"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.validate_stock_add_item" v-text="errors.validate_stock_add_item[0]"></small>
+                                </div>
+                            </div>
+
+                        </div>
+                    </el-tab-pane>
+
                 </el-tabs>
                 <terms-condition :form="form" :showClose="false"
                     :showDialog.sync="showDialogTermsCondition"></terms-condition>
@@ -2356,6 +2416,7 @@ export default {
     props: [
         'typeUser',
         'configuration',
+        'soapTypeId',
     ],
     components: {
         TermsCondition,
@@ -2415,6 +2476,7 @@ export default {
 
             }
             // console.log(this.placeholder)
+            this.getInventoryConfig()
         });
 
         this.events()
@@ -2578,6 +2640,11 @@ export default {
                 price1_label: 'Precio 1',
                 price2_label: 'Precio 2',
                 price3_label: 'Precio 3',
+
+                stock_control: false,
+                generate_internal_id: false,
+                inventory_review: false,
+                validate_stock_add_item: false,
             };
         },
         UpdateFormPurchase(e) {
@@ -2587,6 +2654,43 @@ export default {
         },
         submitConfigPurchase() {
             this.submit()
+        },
+        async getInventoryConfig() {
+            await this.$http.get('/inventories/configuration/record').then(response => {
+                if (response.data && response.data.data) {
+                    const inv = response.data.data;
+                    this.$set(this.form, 'stock_control', inv.stock_control || false);
+                    this.$set(this.form, 'generate_internal_id', inv.generate_internal_id || false);
+                    this.$set(this.form, 'inventory_review', inv.inventory_review || false);
+                    this.$set(this.form, 'validate_stock_add_item', inv.validate_stock_add_item || false);
+                    this.$set(this.form, 'inventory_configuration_id', inv.id || null);
+                }
+            });
+        },
+        submitInventoryConfig() {
+            this.$http.post('/inventories/configuration', {
+                id: this.form.inventory_configuration_id || null,
+                stock_control: this.form.stock_control,
+                generate_internal_id: this.form.generate_internal_id,
+                inventory_review: this.form.inventory_review,
+                validate_stock_add_item: this.form.validate_stock_add_item,
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.getInventoryConfig();
+                } else {
+                    this.$message.error(response.data.message);
+                    this.getInventoryConfig();
+                }
+            }).catch(error => {
+                console.log(error);
+            });
+        },
+        changeStockControl() {
+            if (!this.form.stock_control) {
+                this.form.validate_stock_add_item = false
+            }
+            this.submitInventoryConfig()
         },
         changeDefaultDocumentType03() {
 

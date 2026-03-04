@@ -9,7 +9,7 @@
         <li class="active"><span> Configuración </span></li>
     </ol>
 </div>
-<div class="row tab-content-default row-new bg-transparent mt-1" style="background: transparent !important;">
+<div class="row tab-content-default row-new bg-transparent mt-1 row-mx-0" style="background: transparent !important;">
     <tenant-ecommerce-configuration-info></tenant-ecommerce-configuration-info>
     <tenant-ecommerce-configuration-culqi></tenant-ecommerce-configuration-culqi>
     <tenant-ecommerce-configuration-paypal></tenant-ecommerce-configuration-paypal>

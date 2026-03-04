@@ -1673,7 +1673,7 @@ a.ws-flotante {
 }
 .sidebar-example.sidebar-example-selected > div,
 .black-theme-selected {
-    border-color: var(--black-primary);
+    border-color: var(--black-primary) !important;
     position: relative;
 }
 .sidebar-example.sidebar-example-selected > div::after,
@@ -2628,8 +2628,12 @@ div.welcome-card .welcome-subtitle{
 .circle-child{
     background-color: color-mix(in srgb, var(--black-accent) 20%, #ffffff00);
 }
-/* ESTILOS MODO OSCURO */
-
+.row-mx-0,
+.row-mx-0 .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+/* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {
     background-color: var(--black-bg-dark) !important;
 }
@@ -3370,7 +3374,7 @@ html.dark .establishment-selector-container{
 }
 html.dark .sidebar-example.sidebar-example-selected > div,
 html.dark .black-theme-selected {
-    border-color: var(--black-highlight);
+    border-color: var(--black-highlight) !important;
 }
 html.dark .actions-card .card-header{
     border: none !important;

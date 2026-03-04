@@ -15,7 +15,6 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
 
     
     Route::get('/', 'EcommerceController@index')->name('tenant.ecommerce.index');
-    Route::get('/category/{category}', 'EcommerceController@category')->name('tenant.ecommerce.category');
 
     Route::get('item/{id}/{promotion_id?}', 'EcommerceController@item')->name('tenant.ecommerce.item');
 
@@ -78,6 +77,8 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
 
     });
 
+    // Ruta de categoría al final para no interferir con rutas específicas
+    Route::get('/{category}', 'EcommerceController@index')->name('tenant.ecommerce.category');
 
 });
 

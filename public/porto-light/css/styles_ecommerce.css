@@ -2763,3 +2763,7 @@ nav.main-nav.flex-grow-1 .menu.restaurante li a img.category-logo{
 .dropdown-menu.show .dropdownmenu-wrapper{
     box-shadow: 0 0 20px rgb(0 0 0 / 10%) !important;
 }
+li.selected-category {
+    border-bottom: 2px solid hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+    background-color: hsl(var(--primary-h), var(--primary-s), 91%) !important;
+}

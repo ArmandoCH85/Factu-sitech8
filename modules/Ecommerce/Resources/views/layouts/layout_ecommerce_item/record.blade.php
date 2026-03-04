@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/product.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:58 GMT -->
 
@@ -95,8 +95,6 @@
     <script src="{{ asset('porto-ecommerce/assets/js/main.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/rating.js') }}"></script>
-
-    @vite('resources/js/app.js')
 
     @stack('scripts')
 

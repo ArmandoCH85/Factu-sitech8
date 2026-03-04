@@ -243,23 +243,23 @@
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.internal_id}"
                                  class="form-group">
-                                <!-- migracion desarrollo sin terminar #1401 -->
-                                 <!-- <template v-if="inventory_configuration && inventory_configuration.generate_internal_id == 1">
+                                <template v-if="inventory_configuration && inventory_configuration.generate_internal_id">
                                     <label class="control-label">Código Interno
-                                    <el-tooltip class="item"
-                                                content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
-                                                effect="dark"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
+                                        <el-tooltip class="item"
+                                                    content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
                                     </label>
-                                    <el-input :disabled="true" v-model="form.internal_id"
-                                          dusk="internal_id"></el-input>
+                                    <el-input
+                                        v-model="form.internal_id"
+                                        dusk="internal_id"></el-input>
                                     <small v-if="errors.internal_id"
-                                       class="form-control-feedback"
-                                       v-text="errors.internal_id[0]"></small>
-                                </template> -->
-                                <!-- <template v-else> -->
+                                           class="form-control-feedback"
+                                           v-text="errors.internal_id[0]"></small>
+                                </template>
+                                <template v-else>
                                     <label class="control-label">Código Interno
                                         <el-tooltip class="item"
                                                     content="Código interno de la empresa para el control de sus productos"
@@ -269,11 +269,11 @@
                                         </el-tooltip>
                                     </label>
                                     <el-input v-model="form.internal_id"
-                                            dusk="internal_id"></el-input>
+                                              dusk="internal_id"></el-input>
                                     <small v-if="errors.internal_id"
-                                        class="form-control-feedback"
-                                        v-text="errors.internal_id[0]"></small>
-                                <!-- </template> -->
+                                           class="form-control-feedback"
+                                           v-text="errors.internal_id[0]"></small>
+                                </template>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -1375,7 +1375,8 @@ export default {
             attribute_types: [],
             activeName: 'first',
             fromPharmacy: false,
-            inventory_configuration: null
+            inventory_configuration: null,
+            next_internal_id: null
         }
     },
     async created() {
@@ -1416,6 +1417,10 @@ export default {
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.inventory_configuration = data.inventory_configuration;
+                this.next_internal_id = data.next_internal_id || null;
+                if (!this.recordId && this.inventory_configuration && this.inventory_configuration.generate_internal_id && !this.form.internal_id) {
+                    this.form.internal_id = this.next_internal_id;
+                }
                 this.filteredCategories = this.categories;
                 this.filteredBrands = this.brands;
             })
@@ -1764,6 +1769,9 @@ this.activeName =  'first'
                 if (this.external && this.input_item && typeof this.input_item === 'string') {
                     this.form.description = this.input_item;
                 }
+                if (this.inventory_configuration && this.inventory_configuration.generate_internal_id && this.next_internal_id) {
+                    this.form.internal_id = this.next_internal_id;
+                }
             }
 
          this.setDataToItemWarehousePrices();
@@ -1900,6 +1908,10 @@ this.activeName =  'first'
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
+                        if (!this.recordId && response.data.id && this.inventory_configuration && this.inventory_configuration.generate_internal_id) {
+                            const nextNum = parseInt(response.data.id) + 1;
+                            this.next_internal_id = String(nextNum).padStart(5, '0');
+                        }
                         if (this.external) {
                             this.$eventHub.$emit('reloadDataItems', response.data.id)
                         } else {

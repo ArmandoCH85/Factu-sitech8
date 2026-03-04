@@ -373,6 +373,7 @@ class ItemController extends Controller
         /** Informacion adicional */
         $configuration = $configuration->getCollectionData();
         $inventory_configuration = InventoryConfiguration::firstOrFail();
+        $next_internal_id = str_pad((Item::max('id') ?? 0) + 1, 5, '0', STR_PAD_LEFT);
         /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
@@ -401,7 +402,8 @@ class ItemController extends Controller
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
             'CatItemUnitsPerPackage',
-            'inventory_configuration'
+            'inventory_configuration',
+            'next_internal_id'
         );
     }
 

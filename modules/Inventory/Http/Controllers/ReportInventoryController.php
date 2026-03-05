@@ -145,7 +145,7 @@ class ReportInventoryController extends Controller
             $query->where('stock', '>', 0);
         }  
 
-        if ($warehouse_id != 0) {
+        if ($warehouse_id != 0 && $warehouse_id != 'all') {
             $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }
 

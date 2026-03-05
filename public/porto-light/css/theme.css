@@ -22094,8 +22094,8 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 .table-prices-popover tbody tr:last-child td {
   border-bottom: none !important;
 }
-.el-tag{
-    display: flex;
+.el-tag {
+    display: inline-flex;
     align-items: center;
 }
 .circle-container,

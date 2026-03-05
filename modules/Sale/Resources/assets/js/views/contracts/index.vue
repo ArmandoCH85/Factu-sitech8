@@ -44,7 +44,7 @@
                         <th class="text-end">Total</th>
                         <!-- <th class="text-center">PDF</th> -->
                         <th class="text-end">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <!-- <td>{{ index }}</td> -->
                         <td class="text-star">{{ row.date_of_issue }}</td>
@@ -78,34 +78,27 @@
                         </td> -->
 
                         <td class="text-end">
-                            <!--
-                            <button v-if="row.state_type_id != '11' && row.btn_generate && typeUser == 'admin'"  
-                                    type="button" 
-                                    class="btn btn-info btn-sm"
-                                    @click.prevent="clickOptions(row.id)">
-                                Generar comprobante
-                            </button>
-                            -->
-                        
-                            <a v-if="row.state_type_id != '11'" 
-                               :href="`/${resource}/create/${row.id}`" 
-                               type="button" 
-                               class="btn btn-info btn-sm me-2 mb-1">
-                                Editar
-                            </a>
-                        
-                            <button v-if="row.state_type_id != '11'" 
-                                    type="button" 
-                                    class="btn btn-danger btn-sm me-2 mb-1" 
-                                    @click.prevent="clickVoided(row.id)">
-                                Anular
-                            </button>
-                        
-                            <button type="button" 
-                                    class="btn btn-info btn-sm me-2 mb-1"
-                                    @click.prevent="clickOptionsPdf(row.id)">
-                                Opciones
-                            </button>
+                            <el-dropdown trigger="click" @command="(command) => handleRowAction(command, row)">
+                                <el-button class="btn-dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                    <i class="fas fa-ellipsis-h" style="display: none;"></i>
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item v-if="row.state_type_id != '11'" command="edit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
+                                        Editar
+                                    </el-dropdown-item>
+                                    <el-dropdown-item command="options">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-settings me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065" /><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /></svg>
+                                        Opciones
+                                    </el-dropdown-item>
+                                    <el-dropdown-item v-if="row.state_type_id != '11'" divided></el-dropdown-item>
+                                    <el-dropdown-item v-if="row.state_type_id != '11'" command="void" class="text-danger option-delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-x me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M10 10l4 4m0 -4l-4 4"></path></svg>
+                                        Anular
+                                    </el-dropdown-item>                                    
+                                </el-dropdown-menu>
+                            </el-dropdown>
                         </td>
 
                     </tr>
@@ -200,6 +193,21 @@
             clickOptionsPdf(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptionsPdf = true
+            },
+            handleRowAction(command, row) {
+                if (command === 'edit') {
+                    window.location.href = `/${this.resource}/create/${row.id}`
+                    return
+                }
+
+                if (command === 'void') {
+                    this.clickVoided(row.id)
+                    return
+                }
+
+                if (command === 'options') {
+                    this.clickOptionsPdf(row.id)
+                }
             },
             clickVoided(id)
             {

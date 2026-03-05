@@ -3416,3 +3416,7 @@ html.dark .contain-icon-establishment.active {
 html.dark .ck.ck-editor__main>.ck-editor__editable{
     background-color: var(--black-input-dark);
 }
+html.dark .pos-list-items>:not(caption)>*>*{
+    color: var(--black-light) !important;
+    background-color: transparent;
+}

@@ -107,7 +107,7 @@
                     }
                     ?>
                     </p>
-                    <p>{{ $record->name }}</p>
+                    <p>{!! $record->name !!}</p>
                 </div><!-- End .product-desc -->
 
 

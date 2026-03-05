@@ -1796,6 +1796,9 @@ html.dark .establishment-dropdown-header {
     border-color: var(--borders-dark) !important;
     color: var(--light-color) !important;
 }
+html.dark .ck.ck-editor__main>.ck-editor__editable{
+    background-color: var(--inputs-dark);
+}
 @media only screen and (min-width: 391px){
     .card-body-invoice div .row .filter-invoice{
         padding: 0 15px !important;

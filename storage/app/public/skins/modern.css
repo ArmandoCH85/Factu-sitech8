@@ -1434,6 +1434,9 @@ html.dark .establishment-dropdown-header {
     border-color: var(--md-border-dark) !important;
     color: #fff !important;
 }
+html.dark .ck.ck-editor__main>.ck-editor__editable{
+    background-color: var(--md-input-dark);
+}
 @media only screen and (max-width: 991px){
     .d-lg-block{
         display: none !important;

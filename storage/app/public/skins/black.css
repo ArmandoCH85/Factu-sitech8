@@ -3413,3 +3413,6 @@ html.dark .contain-icon-establishment:hover,
 html.dark .contain-icon-establishment.active {
     background: var(--black-content-dark) !important;
 }
+html.dark .ck.ck-editor__main>.ck-editor__editable{
+    background-color: var(--black-input-dark);
+}

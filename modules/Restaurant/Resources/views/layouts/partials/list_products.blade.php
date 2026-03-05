@@ -35,7 +35,7 @@
                     @if(isset($preferences['show_description']) && $preferences['show_description'] == 1)
                         @if ($item->name)
                             <p class="text-muted product-description">
-                                {{ $item->name }}
+                                {{ strip_tags($item->name) }}
                             </p>
                         @else
                             <p class="text-muted product-description" style="opacity: .5">

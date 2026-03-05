@@ -328,7 +328,9 @@
                         </td>
                         <td>{{ row.description }}</td>
                         <td v-if="columns.description.visible">
-                            {{ row.name }}
+                            <div class="limit-4-lines">
+                                {{ stripHtml(row.name) }}
+                            </div>
                         </td>
                         <td v-if="columns.model.visible">{{ row.model }}</td>
                         <td v-if="columns.brand.visible">{{ row.brand }}</td>
@@ -851,6 +853,10 @@ export default {
     methods: {
         handleRecordsChanged(records) {
             this.visibleRows = Array.isArray(records) ? records : [];
+        },
+        stripHtml(html) {
+            if (!html) return html
+            return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
         },
         toggleSelectAll(checked) {
             if (!this.visibleRows.length) return;

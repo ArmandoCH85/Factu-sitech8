@@ -119,7 +119,7 @@
                 }
                 ?>
                 </p>
-                    <p>{{ $record->name }}</p>
+                    <p>{!! $record->name !!}</p>
                 </div><!-- End .product-desc -->
 
                 <div>
@@ -196,7 +196,7 @@
             aria-labelledby="product-tab-desc">
             <div class="product-desc-content">
                 <p> {{ $record->description}} </p>
-                <p> {{ $record->name}} </p>
+                <p> {!! $record->name !!} </p>
             </div><!-- End .product-desc-content -->
         </div><!-- End .tab-pane -->
 

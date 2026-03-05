@@ -84,8 +84,9 @@
                             <div :class="{'has-danger': errors.name}"
                                  class="form-group">
                                 <label class="control-label">Descripción</label>
-                                <el-input v-model="form.name"
-                                          dusk="name"></el-input>
+                                <el-input :value="stripHtml(form.name)"
+                                          dusk="name"
+                                          @input="form.name = $event"></el-input>
                                 <small v-if="errors.name"
                                        class="form-control-feedback"
                                        v-text="errors.name[0]"></small>
@@ -1467,6 +1468,10 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        stripHtml(html) {
+            if (!html) return html
+            return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+        },
         /**
          * Toggle para mostrar/ocultar precios de una presentación
          */

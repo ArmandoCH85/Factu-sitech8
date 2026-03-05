@@ -2357,6 +2357,13 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .table-prices-popover tbody tr td{
     border-color: var(--light-color) !important;
 }
+.ck.ck-toolbar,
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+    border-color: var(--accent-color) !important;
+}
+.ck.ck-toolbar{
+    background-color: var(--light-color);
+}
 /* end */
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {
@@ -3552,5 +3559,12 @@ html.dark .establishment-dropdown-header {
     background-color: var(--contents-dark) !important;
     border-color: var(--borders-dark) !important;
     color: var(--light-color) !important;
+}
+html.dark .ck.ck-toolbar,
+html.dark .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+    border-color: var(--borders-dark) !important;
+}
+html.dark .ck.ck-reset_all *{
+    border-color: transparent !important;
 }
 /* end */

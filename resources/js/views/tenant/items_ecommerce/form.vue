@@ -642,6 +642,20 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-12">
+                                            <div style="min-height: 174px;" :class="{'has-danger': errors.name}"
+                                                class="form-group">
+                                                <label class="control-label">Descripción</label>
+                                                <ckeditor :editors="editors"
+                                                    type="classic"
+                                                    v-model="form.name"
+                                                    :config="editorConfig">
+                                                </ckeditor>
+                                                <small v-if="errors.name"
+                                                    class="form-control-feedback"
+                                                    v-text="errors.name[0]"></small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -727,6 +741,7 @@ import SuppliesTab from "../../../../../modules/Restaurant/Resources/assets/js/v
 import ModifiersTab from "../../../../../modules/Restaurant/Resources/assets/js/views/items/modifiers-tab.vue";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import VueCkeditor from 'vue-ckeditor5';
+import CKEditor from 'vue-ckeditor5';
 
 export default {
     props: ['showDialog', 'recordId', 'external', 'fromRestaurant'],
@@ -734,7 +749,8 @@ export default {
         FormImages,
         SuppliesTab,
         ModifiersTab,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        ckeditor: CKEditor.component
     },
 
     data() {
@@ -779,7 +795,18 @@ export default {
 
             },
             showDialogImages: false,
-            attribute_types: []
+            attribute_types: [],
+            editorConfig: {
+                toolbar: [
+                    'heading',
+                    '|',
+                    'bold', 'italic', 'link',
+                    'bulletedList', 'numberedList',
+                    '|',
+                    'blockQuote',
+                    'undo', 'redo'
+                ]
+            },
         }
     },
     created() {
@@ -964,7 +991,7 @@ export default {
                 item_code: null,
                 item_code_gs1: null,
                 description: null,
-                name: null,
+                name: '',
                 second_name: null,
                 unit_type_id: 'NIU',
                 currency_type_id: 'PEN',

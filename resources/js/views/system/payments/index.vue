@@ -103,7 +103,7 @@
                        </div>                       
                    </div>
                 </div>
-                <div class="col-md-12 mt-3 card-filters-client" v-if="filters.client_id">
+                <div class="col-md-12 mt-3 card-filters-client px-0" v-if="filters.client_id">
                    <header class="card-filters-header p-3" >
                        <div class="row">
                            <div class="col-md-12 text-center position-relative">

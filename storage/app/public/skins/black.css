@@ -509,8 +509,6 @@ label.control-label {
     font-weight: 500;
     color: var(--black-dark);
 }
-
-.text-info,
 .el-radio-button__inner:hover {
     color: var(--black-dark) !important;
 }
@@ -1266,7 +1264,9 @@ html.sidebar-white ul.nav-main li.nav-active:not(.nav-parent)>a {
 .text-danger, .el-dropdown-menu__item.text-danger {
     color: var(--danger) !important;
 }
-
+.text-info {
+    color: var(--info) !important;
+}
 .table th,
 .table td {
     padding: 0.5rem;
@@ -2633,6 +2633,58 @@ div.welcome-card .welcome-subtitle{
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+.btn-shad {
+    height: 32px;
+    width: 32px;
+    border-radius: 8px !important;
+    color: var(--black-dark) !important;
+    background-color: color-mix(in srgb, var(--black-dark) 5%, #00000000) !important;
+    border: 1px solid transparent !important;
+    padding: 0px !important;
+}
+.btn-shad:hover {
+    background-color: color-mix(in srgb, var(--black-dark) 12%, #00000000) !important;
+    color: var(--black-dark) !important;
+    border: 1px solid transparent !important;
+}
+.btn-shad:focus{
+    background-color: color-mix(in srgb, var(--black-dark) 5%, #00000000) !important;
+    border-color: color-mix(in srgb, var(--black-dark) 30%, #ffffff00) !important;
+    color: var(--black-dark) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--black-dark) 15%, #ffffff00) !important;
+}
+.btn-shad.btn-danger{
+    background-color: color-mix(in srgb, var(--danger) 5%, #00000000) !important;
+    border-color: transparent !important;
+    color: var(--danger) !important;
+}
+.btn-shad.btn-danger:hover{
+    background-color: color-mix(in srgb, var(--danger) 12%, #00000000) !important;
+    border-color: transparent !important;
+    color: var(--danger) !important;
+}
+.btn-shad.btn-danger:focus{
+    background-color: color-mix(in srgb, var(--danger) 5%, #00000000) !important;
+    border-color: color-mix(in srgb, var(--danger) 30%, #ffffff00) !important;
+    color: var(--danger) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 15%, #ffffff00) !important;
+}
+/* .btn-shad.btn-info{
+    background-color: color-mix(in srgb, var(--info) 5%, #00000000) !important;
+    border-color: transparent !important;
+    color: var(--info) !important;
+}
+.btn-shad.btn-info:hover{
+    background-color: color-mix(in srgb, var(--info) 12%, #00000000) !important;
+    border-color: transparent !important;
+    color: var(--info) !important;
+}
+.btn-shad.btn-info:focus{
+    background-color: color-mix(in srgb, var(--info) 5%, #00000000) !important;
+    border-color: color-mix(in srgb, var(--info) 30%, #ffffff00) !important;
+    color: var(--info) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--info) 15%, #ffffff00) !important;
+} */
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {
     background-color: var(--black-bg-dark) !important;

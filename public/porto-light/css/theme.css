@@ -22112,6 +22112,12 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+.btn.btn-shad {
+    border-radius: 8px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

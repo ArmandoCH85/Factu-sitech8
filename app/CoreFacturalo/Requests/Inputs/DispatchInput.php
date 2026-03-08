@@ -380,6 +380,7 @@ class DispatchInput
                         'lots' => $row['lots'] ?? null,
                         'unit_price' =>isset($row['unit_price'])?$row['unit_price']:null,
                         'total' =>isset($row['total'])?$row['total']:null,
+                        'weight' => isset($row['weight'])?$row['weight']:null,
                     ],
                     'quantity' => $row['quantity'],
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf'),

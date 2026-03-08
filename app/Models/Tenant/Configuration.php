@@ -337,7 +337,8 @@ use Illuminate\Support\Facades\Log;
             'enable_consigned',
             'price1_label',
             'price2_label',
-            'price3_label'
+            'price3_label',
+            'enable_weight_in_dispatches',
         ];
 
         protected $casts = [
@@ -485,7 +486,8 @@ use Illuminate\Support\Facades\Log;
             'available_cash_report_seller' => 'bool',
             'from_guest_register' => 'bool',
             'was_verified_guest_user' => 'bool',
-            'enable_consigned' => 'bool'
+            'enable_consigned' => 'bool',
+            'enable_weight_in_dispatches' => 'bool',
         ];
 
         protected $hidden = [
@@ -771,7 +773,8 @@ use Illuminate\Support\Facades\Log;
                 'enable_consigned' => $this->enable_consigned,
                 'price1_label' => $this->price1_label ?? 'Precio 1',
                 'price2_label' => $this->price2_label ?? 'Precio 2',
-                'price3_label' => $this->price3_label ?? 'Precio 3'
+                'price3_label' => $this->price3_label ?? 'Precio 3',
+                'enable_weight_in_dispatches' => $this->enable_weight_in_dispatches,
             ];
         }
 

@@ -657,6 +657,24 @@
                                         v-text="errors.enable_consigned[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Habilitar peso por producto en guias
+                                    <el-tooltip class="item"
+                                        content="Disponible para boleta, factura y nota de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="ri-information-line"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{ 'has-danger': errors.enable_weight_in_dispatches }" class="form-group">
+                                    <el-switch v-model="form.enable_weight_in_dispatches"
+                                        @change="submit"></el-switch>
+                                    <small v-if="errors.enable_weight_in_dispatches"
+                                        class="invalid-feedback"
+                                        v-text="errors.enable_weight_in_dispatches[0]"></small>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row mt-4">

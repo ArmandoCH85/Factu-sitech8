@@ -526,6 +526,9 @@ foreach($document->items as $row) {
             <th class="border-top-bottom text-center">F. Venc.</th>
         @endif
         <th class="border-top-bottom text-center" width="8%">Unidad</th>
+        @if ($configuration['enable_weight_in_dispatches'])
+            <th class="border-top-bottom text-center">Peso</th>
+        @endif
         <th class="border-top-bottom text-center" width="9%">Cantidad</th>
         <th class="border-top-bottom text-center"width="8%">Precio</th>
         <th class="border-top-bottom text-right"width="8%">Total</th>
@@ -538,6 +541,9 @@ foreach($document->items as $row) {
         <th class="border-top-bottom text-left">Serie</th>
         <th class="border-top-bottom text-left">Modelo</th>
         <th class="border-top-bottom text-center">Unidad</th>
+        @if ($configuration['enable_weight_in_dispatches'])
+            <th class="border-top-bottom text-center">Peso</th>
+        @endif
         <th class="border-top-bottom text-right">Cantidad</th>
     </tr>
     @endif
@@ -626,6 +632,9 @@ foreach($document->items as $row) {
                 </td>
             @endif
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
+            @if ($configuration['enable_weight_in_dispatches'])
+                <td class="text-center">{{ $row->item->weight }}</td>
+            @endif
             <td class="text-center">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
@@ -701,6 +710,9 @@ foreach($document->items as $row) {
             </td> --}}
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
+            @if ($configuration['enable_weight_in_dispatches'])
+                <td class="text-center">{{ $row->item->weight }}</td>
+            @endif
             <td class="text-right">
                 @if ($row->item->unit_type_id == 'NIU')
                     {{ number_format($row->quantity, 0) }}

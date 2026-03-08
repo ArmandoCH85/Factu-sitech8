@@ -523,6 +523,7 @@
                                                 <th class="font-weight-bold">Unidad</th>
                                                 <th class="font-weight-bold" style="min-width: 200px;">Descripción</th>
                                                 <th class="text-end font-weight-bold" style="min-width: 100px;">Cantidad</th>
+                                                <th v-if="config.enable_weight_in_dispatches" class="text-end font-weight-bold" style="min-width: 100px;">Peso</th>
                                                 <th style="min-width: 100px;"></th>
                                             </tr>
                                         </template>
@@ -558,6 +559,9 @@
                                                         href="#" @click.prevent="listLotGroupSelected(row.IdLoteSelected)">
                                                         [Lotes]
                                                     </a>
+                                                </td>
+                                                <td class="text-end" v-if="config.enable_weight_in_dispatches">
+                                                    {{ row.weight ? getFormatQuantity(row.weight) : '0' }}
                                                 </td>
                                                 <td class="text-end">
                                                     <button class="btn waves-effect waves-light btn-xs btn-danger"
@@ -832,7 +836,7 @@
             <delivery-address-form :showDialog.sync="showDialogDeliveryAddressForm" title="Nuevo punto de llegada"
                 :person-id="form.customer_id" @success="successDeliveryAddress"></delivery-address-form>
 
-            <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
+            <items :showWeightInput="config.enable_weight_in_dispatches && true" :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
 
             <dispatch-finish :recordId="recordId" :showClose="false" :send-sunat="send_sunat"
                 :showDialog.sync="showDialogFinish"></dispatch-finish>
@@ -1563,6 +1567,16 @@ export default {
                 this.form.series = null;
             }
         },
+        calculateGrossWeigth() {
+            if (this.config.enable_weight_in_dispatches) {
+                let total_weight = 0;
+                this.form.items.forEach(item => {
+                    total_weight += item.weight ? item.weight : 0;
+                });
+                this.form.total_weight = total_weight;
+
+            }
+        },
         addItem(form) {
             let it = form.item;
             let qty = form.quantity;
@@ -1607,7 +1621,9 @@ export default {
                 lots: it.lots || null,
                 unit_price: it.unit_price,
                 total: it.total,
+                weight: it.weight || 0
             });
+            this.calculateGrossWeigth()
         },
         keyupCustomer() {
             if (this.input_person.number) {

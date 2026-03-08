@@ -443,6 +443,7 @@ class Facturalo
         $optional_configuration = [
             'enabled_price_items_dispatch' => $this->configuration->enabled_price_items_dispatch,
             'is_preview' => false,
+            'enable_weight_in_dispatches' => $this->configuration->enable_weight_in_dispatches,
         ];
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf, $optional_configuration);

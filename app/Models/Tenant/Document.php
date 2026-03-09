@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
 use Modules\Item\Models\WebPlatform;
@@ -300,7 +301,29 @@ class Document extends ModelTenant
         static::creating(function (self $model) {
             self::adjustSellerIdField($model);
         });
+    }
 
+    protected static function booted()
+    {
+        static::created(function ($document){
+            Cache::tags(['document_list'])->flush();
+            Cache::tags(['document_detail'])->flush();
+        });
+
+        static::updated(function ($document){
+            Cache::tags(['document_list'])->flush();
+            Cache::tags(['document_detail'])->flush();
+        });
+
+        static::deleted(function ($document){
+            Cache::tags(['document_list'])->flush();
+            Cache::tags(['document_detail'])->flush();
+        });
+
+        static::saved(function ($document){
+            Cache::tags(['document_list'])->flush();
+            Cache::tags(['document_detail'])->flush();
+        });
     }
 
     public function getAdditionalDataAttribute($value)

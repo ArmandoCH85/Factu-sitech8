@@ -4217,11 +4217,6 @@ export default {
             if (this.form.currency_type_id === "USD") {
                 amount = 700 / this.form.exchange_rate_sale;
             }
-            console.log({
-                total: this.form.total,
-                amount,
-            });
-            
             return this.form.total < amount;
         },
     },

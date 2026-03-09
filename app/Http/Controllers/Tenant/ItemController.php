@@ -473,7 +473,7 @@ class ItemController extends Controller
             $file_name_old_array = explode('.', $file_name_old);
             $file_content = file_get_contents($temp_path);
             $datenow = date('YmdHis');
-            $file_name = $prefix_name.'-'.$datenow.'.'.$file_name_old_array[1];
+            $file_name = $prefix_name.'-'.$datenow.'.'. end($file_name_old_array);
 
             UploadFileHelper::checkIfValidFile($file_name, $temp_path, true);
 

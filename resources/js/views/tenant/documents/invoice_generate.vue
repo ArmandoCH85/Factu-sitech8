@@ -4212,6 +4212,18 @@ export default {
 
             return term
         },
+        amountRetentionValidate() {
+            let amount = 700;
+            if (this.form.currency_type_id === "USD") {
+                amount = 700 / this.form.exchange_rate_sale;
+            }
+            console.log({
+                total: this.form.total,
+                amount,
+            });
+            
+            return this.form.total < amount;
+        },
     },
     async created() {
         this.loadConfiguration();
@@ -4535,7 +4547,6 @@ export default {
                 const response = await this.$http.get('/price-labels/active');
                 const labels = response.data.data || [];
 
-                console.log(this.config);
                 
                 const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
                 this.price_options = [
@@ -6574,9 +6585,9 @@ export default {
             if (["1001", "1004"].includes(this.form.operation_type_id))
                 this.changeDetractionType();
 
-            if (this.form.has_retention) {
+            if (this.form.has_retention ) {
                 this.changeRetention();
-            }
+            } 
 
             this.setTotalDefaultPayment();
             this.setPendingAmount();
@@ -6927,8 +6938,6 @@ export default {
             const monto = parseFloat(this.form.total) || 0;
             const clienteId = this.form.customer_id;
             
-            console.log('Monto:', monto, 'Cliente ID:', clienteId);
-            
             // Si monto > 700 y cliente_id = 1 (Clientes varios)
             if (monto > 700 && clienteId === 1) {
                 this.$alert('Montos > S/ 700 no pueden usar "Clientes varios"', 'Cliente Requerido', {
@@ -6937,6 +6946,14 @@ export default {
                 });
                 return false;
             }
+
+            if (this.form.has_retention && this.amountRetentionValidate) {
+                this.$message.warning(
+                    "El comprobante no cumple con el monto mínimo para aplicar retención o el cliente no es sujeto de retención"
+                );
+                return false;    
+            }
+
             //Validando las series seleccionadas
             let errorSeries = false;
             _.forEach(this.form.items, row => {

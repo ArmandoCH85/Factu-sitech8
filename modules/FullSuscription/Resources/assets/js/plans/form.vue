@@ -3,7 +3,8 @@
         :title="titleDialog"
         :visible="showDialog"
         @close="close"
-        @open="create">
+        @open="create"
+        :close-on-click-modal="false">
         <form
             autocomplete="off"
             @submit.prevent="submit">
@@ -176,7 +177,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-xlg-push-6 col-6 text-end">
+                                <div class="col-12 col-6 text-end">
                                     <p v-if="fakeForm.total_exportation > 0"
                                        class="text-end">
                                         OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ fakeForm.total_exportation }}

@@ -2,7 +2,7 @@
     <div>
         <div class="row ">
 
-            <div class="col-md-12 col-lg-12 col-xl-12 py-0 px-3 filter-invoice">
+            <div class="col-md-12 col-lg-12 col-xl-12 py-0 filter-invoice">
 
                 <div class="d-flex col-12 p-0">
                     <div class="col-lg-9 col-md-8 col-sm-12 mb-2 p-0">

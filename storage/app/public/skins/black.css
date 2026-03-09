@@ -2685,6 +2685,12 @@ div.welcome-card .welcome-subtitle{
     color: var(--info) !important;
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--info) 15%, #ffffff00) !important;
 } */
+.btn-tooltips-products{
+    height: 30px !important;
+}
+.btn-tooltips-products button {
+    height: 100%;
+}
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {
     background-color: var(--black-bg-dark) !important;

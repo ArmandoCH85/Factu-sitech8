@@ -826,8 +826,6 @@ border: transparent !important;
   border-bottom-right-radius: 8px;
 }
 .tooltips-container {
-  width: 45px;
-  height: 55px;
   display: flex;
   justify-content: center;
   align-items: center;

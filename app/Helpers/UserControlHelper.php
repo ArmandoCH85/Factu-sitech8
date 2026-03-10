@@ -50,7 +50,9 @@ class UserControlHelper
     {
         $exceed_limit_users = $this->exceedLimitUsers();
 
-        if($exceed_limit_users['success']) $this->throwException($exceed_limit_users['message']);
+        return $exceed_limit_users;
+
+        // if($exceed_limit_users['success']) $this->throwException($exceed_limit_users['message']);
     }
 
     

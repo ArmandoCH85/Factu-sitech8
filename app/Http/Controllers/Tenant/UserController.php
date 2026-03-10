@@ -112,6 +112,10 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
+        
+        $response = (new UserControlHelper)->checkLimitUsers();
+        if($response['success']) return $this->generalResponse(false, $response['message']);
+
         $id = $request->input('id');
 
         if (!$id) { //VALIDAR EMAIL DISPONIBLE

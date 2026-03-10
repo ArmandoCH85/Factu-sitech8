@@ -1346,6 +1346,16 @@ html.sidebar-light .establishment-selector-container{
     color: var(--dark-color) !important;
     border-color: var(--accent-color) !important;
 }
+.image-container-fluid{
+    border-radius: 4px;
+    border-color: var(--accent-color);
+}
+.img-thumbnail{
+    border-radius: 4px;
+}
+.image-container-fluid:hover{
+    border-color: color-mix(in srgb, var(--accent-color) 90%, #000000);
+}
 @media only screen and (min-width: 767px) {
     html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
         height: calc(100% - 130px) !important;
@@ -1798,6 +1808,12 @@ html.dark .establishment-dropdown-header {
 }
 html.dark .ck.ck-editor__main>.ck-editor__editable{
     background-color: var(--inputs-dark);
+}
+html.dark .image-container-fluid{
+    border-color: var(--borders-dark);
+}
+html.dark .image-container-fluid:hover{
+    border-color: color-mix(in srgb, var(--borders-dark) 90%, #ffffff);
 }
 @media only screen and (min-width: 391px){
     .card-body-invoice div .row .filter-invoice{

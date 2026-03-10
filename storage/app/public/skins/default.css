@@ -2364,6 +2364,16 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .ck.ck-toolbar{
     background-color: var(--light-color);
 }
+.image-container-fluid{
+    border-radius: 8px;
+    border-color: var(--accent-color);
+}
+.img-thumbnail{
+    border-radius: 8px;
+}
+.image-container-fluid:hover{
+    border-color: color-mix(in srgb, var(--accent-color) 90%, #000000);
+}
 /* end */
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {
@@ -3566,5 +3576,11 @@ html.dark .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
 }
 html.dark .ck.ck-reset_all *{
     border-color: transparent !important;
+}
+html.dark .image-container-fluid{
+    border-color: var(--borders-dark);
+}
+html.dark .image-container-fluid:hover{
+    border-color: color-mix(in srgb, var(--borders-dark) 90%, #ffffff);
 }
 /* end */

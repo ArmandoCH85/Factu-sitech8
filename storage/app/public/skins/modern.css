@@ -1060,6 +1060,16 @@ html.sidebar-light .establishment-selector-container{
 .circle-child{
     background-color: color-mix(in srgb, #808a9c 20%, #ffffff00);
 }
+.image-container-fluid{
+    border-radius: 4px;
+    border-color: #EAEEF7;
+}
+.img-thumbnail{
+    border-radius: 4px;
+}
+.image-container-fluid:hover{
+    border-color: color-mix(in srgb, #EAEEF7 90%, #000000);
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);
@@ -1436,6 +1446,12 @@ html.dark .establishment-dropdown-header {
 }
 html.dark .ck.ck-editor__main>.ck-editor__editable{
     background-color: var(--md-input-dark);
+}
+html.dark .image-container-fluid{
+    border-color: var(--md-border-dark);
+}
+html.dark .image-container-fluid:hover{
+    border-color: color-mix(in srgb, var(--md-border-dark) 90%, #ffffff);
 }
 @media only screen and (max-width: 991px){
     .d-lg-block{

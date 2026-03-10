@@ -22118,6 +22118,13 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
     align-items: center;
     justify-content: center;
 }
+.image-container-fluid{
+    border: 2px dashed #e0e0e0;
+    border-radius: 6px;
+}
+.img-thumbnail{
+    border: none !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

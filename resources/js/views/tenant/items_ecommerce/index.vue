@@ -55,7 +55,7 @@
                         <th>Unidad</th>
                         <th class="text-center">Imagen</th>
                         <th class="text-center">
-                            Activo
+                            Publicado
                             <el-tooltip
                                 class="item"
                                 content="Visible en Tienda"

@@ -68,6 +68,7 @@ class RestaurantConfigurationController extends Controller
                 'shape' => $row->shape,
                 'environment' => $row->environment,
                 'waiter' => $row->waiter,
+                'comentarios' => $row->comentarios,
                 'open' => false,
                 'close' => false,
                 'group_id' => $row->group_id,

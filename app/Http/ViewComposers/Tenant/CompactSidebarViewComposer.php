@@ -28,19 +28,36 @@ class CompactSidebarViewComposer
             'quantity_month_remember_change_password' => $configuration->quantity_month_remember_change_password,
         ];
 
-        $version = Cache::rememberForever('app_version', function () {
-            $version = new Process(['git', 'describe', '--tags', '--abbrev=0']);
-            $version->run();
+        $version = Cache::get('app_version');
 
-            if ($version->isSuccessful()) {
-                return trim($version->getOutput());
+        if (empty($version)) {
+            $process = new Process([$this->resolveGitBinary(), 'describe', '--tags', '--abbrev=0'], base_path());
+            $process->run();
+
+            if ($process->isSuccessful()) {
+                $version = trim($process->getOutput());
+                Cache::forever('app_version', $version);
             }
+        }
 
-            return null;
-        });
-
-       $view->vc_version = $version; 
+       $view->vc_version = $version;
 
 
+    }
+
+    private function resolveGitBinary(): string
+    {
+        $windowsGitPaths = [
+            'C:\\Program Files\\Git\\cmd\\git.exe',
+            'C:\\Program Files\\Git\\mingw64\\bin\\git.exe',
+        ];
+
+        foreach ($windowsGitPaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return 'git';
     }
 }

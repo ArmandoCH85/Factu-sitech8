@@ -1671,7 +1671,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
         <div class="more-config more-config-mobile">
             <div class="nano-content nano-content-config pt-0">
                 <ul class="nav nav-main">
-                    <li>
+                    <li class="mb-0">
                         <a class="nav-link">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
@@ -1684,6 +1684,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                             <span>Configuración y más</span>
                         </a>
                     </li>
+                    <span class="w-100 text-center text-muted">{{ $vc_version ?? 'Pro 8' }}</span>
                 </ul>
             </div>
 
@@ -2006,14 +2007,14 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
 
 <style>
     html.no-overflowscrolling .nano {
-        height: calc(100% - 50px);
+        height: calc(100% -66px);
     }
     @media only screen and (min-width: 767px) {
         html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
-            height: calc(100% - 130px);
+            height: calc(100% - 146px);
         }
         html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
-            height: calc(100% - 184px);
+            height: calc(100% - 200px);
         }
     }
     .more-config {

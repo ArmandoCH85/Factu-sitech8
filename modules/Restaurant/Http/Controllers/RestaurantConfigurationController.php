@@ -288,6 +288,12 @@ class RestaurantConfigurationController extends Controller
         $table = RestaurantTable::findOrFail($id);
         //$data = $request->all();
         $data = $request->except(['group_id', 'is_main_table']); // Proteger campos de grupo
+        if(isset($data['products']) && is_array($data['products'])) {
+            $data['products'] = array_map(function($product) {
+                return $product; // Preserva todo incluyendo 'name' editado
+            }, $data['products']);
+        }
+    
         $data['status'] = (count($data['products'])<1)?$data['status']:'notavailable';
 
         $isDeliveryOrTakeaway = ($table->environment === 'Delivery' || $table->environment === 'Para Llevar');

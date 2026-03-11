@@ -34,3 +34,5 @@ git tag -a v8.{y}.{x} -m "Release v8.{y}.{x} {Descripción sobre la nueva releas
 git push origin main
 git push origin v8.{y}.{x}
 ```
+
+Esto se realizaría cada mes donde se crearia un nuevo tag con su comentario adicional sobre las nuevas característica, tiene que seguir la estructura de los commits para diferenciar los bugs con las features

@@ -71,6 +71,7 @@ use Illuminate\Support\Facades\Cache;
 use Modules\Item\Http\Controllers\EditorTagController;
 use Modules\Item\Models\TagTemplate;
 use App\Models\Tenant\ItemUnitTypePrice;
+use App\Models\Tenant\PriceLabel;
 
 class ItemController extends Controller
 {
@@ -1750,6 +1751,7 @@ class ItemController extends Controller
             $CatItemMoldProperty = CatItemMoldProperty::all();
             $CatItemProductFamily= CatItemProductFamily::all();
         }
+        $price_labels = PriceLabel::select('position','label')->active()->get();
 
 
         /** Informacion adicional */
@@ -1773,6 +1775,7 @@ class ItemController extends Controller
             'CatItemStatus',
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
+            'price_labels',
             'CatItemUnitsPerPackage');
     }
 

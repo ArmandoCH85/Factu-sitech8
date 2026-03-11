@@ -600,6 +600,7 @@
             ></items-export-extra>
             <warehouses-detail
                 :item_unit_types="item_unit_types"
+                :price_labels="price_labels"
                 :config="config"
                 :showDialog.sync="showWarehousesDetail"
                 :warehouses="warehousesDetail"
@@ -712,6 +713,7 @@ export default {
             recordId: null,
             recordItem: {},
             warehousesDetail: [],
+            price_labels: {},
             columns: {
                 description: {
                     title: "Descripción",
@@ -768,7 +770,6 @@ export default {
         this.loadColumnVisibility();
         this.$store.commit("setConfiguration", this.configuration);
         this.loadConfiguration();
-        console.log(this.config);
 
         if (this.config.is_pharmacy !== true) {
             delete this.columns.sanitary;
@@ -1137,6 +1138,9 @@ export default {
         getItems() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 let data = response.data;
+                
+                this.price_labels = data.price_labels;
+
                 if (this.config.show_extra_info_to_item) {
                     this.$store.commit("setColors", data.colors);
                     this.$store.commit("setCatItemSize", data.CatItemSize);

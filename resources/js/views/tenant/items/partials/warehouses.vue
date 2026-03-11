@@ -43,10 +43,10 @@
                                         <th>Unidad</th>
                                         <th>Description</th>
                                         <th>Factor</th>
-                                        <th>{{ config.price1_label }}</th>
-                                        <th>{{ config.price2_label }}</th>
-                                        <th>{{ config.price3_label }}</th>
-                                        <th>P.Defecto</th>
+
+                                        <template v-for="pl in price_labels">
+                                            <th>{{ pl.label }}</th>
+                                        </template>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -57,10 +57,9 @@
                                         <th>{{ row.unit_type_id }}</th>
                                         <th>{{ row.description }}</th>
                                         <th>{{ row.quantity_unit }}</th>
-                                        <th>{{ row.price1 }}</th>
-                                        <th>{{ row.price2 }}</th>
-                                        <th>{{ row.price3 }}</th>
-                                        <th>Precio {{ row.price_default }}</th>
+                                            <th v-for="price in row.prices">
+                                                {{ price.price }}
+                                            </th>
                                     </tr>
                                 </tbody>
                             </table>
@@ -79,7 +78,7 @@
 
 <script>
 export default {
-    props: ["showDialog", "warehouses", "item_unit_types", 'config'],
+    props: ["showDialog", "warehouses", "item_unit_types", 'config', 'price_labels'],
     data() {
         return {
             showImportDialog: false,
@@ -93,6 +92,7 @@ export default {
     },
     methods: {
         close() {
+            console.log(this.price_labels);
             this.$emit("update:showDialog", false);
         }
     }

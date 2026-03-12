@@ -1037,12 +1037,18 @@ html.sidebar-light .establishment-selector-container{
 }
 /* end */
 @media only screen and (min-width: 767px) {
+    html.no-overflowscrolling .nano {
+        height: calc(100% - 66px) !important;
+    }
     html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
-        height: calc(100% - 128px) !important;
+        height: calc(100% - 150px) !important;
     }
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-        height: calc(100% - 104px) !important;
+        height: calc(100% - 116px) !important;
+    }
+    html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
+        height: calc(100% - 204px) !important;
     }
     html.sidebar-left-collapsed .sidebar-left .nano:hover {
         width: 300px;

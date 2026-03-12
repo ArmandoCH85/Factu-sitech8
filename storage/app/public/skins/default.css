@@ -1930,15 +1930,18 @@ html.sidebar-light:not(.dark) .style-switcher {
     background: #ffffff;
 }
 @media only screen and (min-width: 767px) {
+    html.no-overflowscrolling .nano {
+    height: calc(100% - 66px) !important;
+}
     html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
-        height: calc(100% - 142px) !important;
+        height: calc(100% - 164px) !important;
     }
     html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
-        height: calc(100% - 210px) !important;
+        height: calc(100% - 232px) !important;
     }
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-        height: calc(100% - 105px) !important;
+        height: calc(100% - 116px) !important;
     }
 }
 .contain-icon-establishment{

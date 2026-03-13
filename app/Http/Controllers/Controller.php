@@ -469,13 +469,6 @@ $string = var_export($header,true);
                 'execution_time_ms' => $executionTime,
             ], $logContext);
 
-            // Log según resultado
-            if ($isCacheMiss) {
-                Log::info("❌ CACHE MISS - Ejecutando query SQL", $logData);
-            } else {
-                Log::info("✅ CACHE HIT - Retornado desde Redis", $logData);
-            }
-
             return $result;
         }
 

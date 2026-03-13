@@ -6,110 +6,27 @@
         <h3 class="my-0">Logo</h3>
       </div>
       <div class="card-body">
-        <form autocomplete="off" @submit.prevent="submit">
-          <div class="form-body">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group" :class="{'has-danger': errors.token_public_culqui}">
-                  <label class="control-label">Logo</label>
-                  <el-input v-model="form.logo_store" :readonly="true">
-                    <el-upload
-                      slot="append"
-                      :headers="headers"
-                      :data="{'type': 'logo_store'}"
-                      action="/ecommerce/uploads"
-                      :show-file-list="false"
-                      :on-success="successUpload"
-                      :on-error="errorUpload"
-                    >
-                      <el-button type="primary" icon="el-icon-upload"></el-button>
-                    </el-upload>
-                  </el-input>
-                  <div class="sub-title text-danger">
-                    <small>Se recomienda resoluciones 700x300</small>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div class="d-flex align-items-start gap-3">
+          <div class="flex-shrink-0 text-info">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>
           </div>
-          <div class="form-actions text-end float-end pt-2">
-            <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+          <div>
+            <p class="mb-1 fw-semibold">El logo se gestiona desde la configuración de empresa</p>
+            <p class="mb-3 text-muted" style="font-size: 0.875rem;">
+              Para subir o cambiar el logo, ve a
+              <strong>Configuración y más &rsaquo; Configuraciones globales &rsaquo; Empresa</strong>.
+              Desde allí podrás cargar el logo en modo claro y modo oscuro.
+            </p>
+            <a href="/companies/create" class="el-button--primary btn btn-sm w-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-external-link"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>
+              Ir a configuración de empresa
+            </a>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 
-
-
-<script>
-export default {
-  data() {
-    return {
-      headers: headers_token,
-      loading_submit: false,
-      resource: "ecommerce",
-      errors: {},
-      form: {}
-    };
-  },
-  async created() {
-    await this.initForm();
-
-    await this.$http.get(`/${this.resource}/record`).then(response => {
-      if (response.data !== "") {
-        let data = response.data.data;
-        this.form.id = data.id;
-        this.form.logo_store = data.logo;
-      }
-    });
-  },
-  methods: {
-    successUpload(response, file, fileList) {
-      if (response.success) {
-        this.$message.success(response.message);
-        this.form[response.type] = response.name;
-      } else {
-        this.$message({ message: "Error al subir el archivo", type: "error" });
-      }
-    },
-    initForm() {
-      this.errors = {};
-      this.form = {
-        id: null,
-        logo_store: null
-      };
-    },
-    submit() {
-      this.loading_submit = true;
-      this.$http
-        .post(`/${this.resource}/configuration_culqui`, this.form)
-        .then(response => {
-          if (response.data.success) {
-            this.$message.success(response.data.message);
-          } else {
-            this.$message.error(response.data.message);
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 422) {
-            this.errors = error.response.data;
-          } else {
-            console.log(error);
-          }
-        })
-        .then(() => {
-          this.loading_submit = false;
-        });
-    },
-    submit_paypal() {},
-    errorUpload(error)
-    {
-        this.$message({message: 'Error al subir el archivo', type: 'error'})
-    }
-  }
-};
-</script>
 

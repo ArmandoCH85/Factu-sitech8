@@ -1357,12 +1357,18 @@ html.sidebar-light .establishment-selector-container{
     border-color: color-mix(in srgb, var(--accent-color) 90%, #000000);
 }
 @media only screen and (min-width: 767px) {
+    html.no-overflowscrolling .nano {
+    height: calc(100% - 66px) !important;
+}
     html.no-overflowscrolling .sidebar-left.show-branch-selector .nano{
-        height: calc(100% - 130px) !important;
+        height: calc(100% - 150px) !important;
+    }
+    html.no-overflowscrolling .sidebar-left.show-both-selectors .nano {
+        height: calc(100% - 204px) !important;
     }
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-        height: calc(100% - 104px) !important;
+        height: calc(100% - 116px) !important;
     }
 }
 /* modo oscuro */

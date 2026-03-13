@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers\Tenant;
 
 use App\Models\Tenant\Configuration;
 use App\Models\System\User;
-use Illuminate\Support\Facades\Cache;
 use Symfony\Component\Process\Process;
 
 class CompactSidebarViewComposer
@@ -28,19 +27,12 @@ class CompactSidebarViewComposer
             'quantity_month_remember_change_password' => $configuration->quantity_month_remember_change_password,
         ];
 
-        $version = Cache::get('app_version');
+        $process = new Process([$this->resolveGitBinary(), 'describe', '--tags', '--abbrev=0'], base_path());
+        $process->run();
 
-        if (empty($version)) {
-            $process = new Process([$this->resolveGitBinary(), 'describe', '--tags', '--abbrev=0'], base_path());
-            $process->run();
+        $version = $process->isSuccessful() ? trim($process->getOutput()) : null;
 
-            if ($process->isSuccessful()) {
-                $version = trim($process->getOutput());
-                Cache::forever('app_version', $version);
-            }
-        }
-
-       $view->vc_version = $version;
+        $view->vc_version = $version;
 
 
     }

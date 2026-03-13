@@ -2007,7 +2007,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
 
 <style>
     html.no-overflowscrolling .nano {
-        height: calc(100% -66px);
+        height: calc(100% - 62px);
     }
     @media only screen and (min-width: 767px) {
         html.no-overflowscrolling .sidebar-left.show-branch-selector .nano {
@@ -2032,7 +2032,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
         min-width: 230px;
         border: 1px solid #e0e6f8;
         box-shadow: 0 0 16px 0px rgb(0 36 96 / 12%);
-        bottom: 105px;
+        bottom: 116px;
         left: 15px;
         border-radius: 8px;
         padding: 15px;

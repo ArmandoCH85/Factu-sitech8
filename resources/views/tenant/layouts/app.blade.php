@@ -35,7 +35,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $vc_company->title_web }}</title>
+    <title>{{ $vc_company->title_web ?: $vc_company->trade_name }}</title>
     <meta name="googlebot" content="noindex">
     <meta name="robots" content="noindex">
 
@@ -153,7 +153,7 @@
 
 <body class="pr-0"
     data-tenant="true"
-    data-company-title="{{ $vc_company->title_web }}">
+    data-company-title="{{ $vc_company->title_web ?: $vc_company->trade_name }}">
     <section class="body">
         <!-- start: header -->
         {{-- @include('tenant.layouts.partials.header') --}}

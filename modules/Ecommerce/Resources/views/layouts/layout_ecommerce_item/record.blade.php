@@ -4,11 +4,14 @@
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/product.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:58 GMT -->
 
 <head>
+    @php($pageCompany = $company ?? $vc_company ?? null)
+    @php($pageTitle = data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name'))
+    @php($productTitle = data_get($record ?? null, 'description') ?: data_get($record ?? null, 'name'))
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Ecommerce</title>
+    <title>{{ $pageTitle ? ($productTitle ? $pageTitle.' - '.$productTitle : $pageTitle) : ($productTitle ?: 'Ecommerce') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="keywords" content="Ecommerce, Tienda virtual" />
     <meta name="description" content="Sistema para venta de productos">

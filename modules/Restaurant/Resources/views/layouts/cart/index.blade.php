@@ -3,12 +3,13 @@
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/cart.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:40:04 GMT -->
 <head>
+    @php($pageCompany = $company ?? $vc_company ?? null)
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Pedidos</title>
+    <title>{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') ?: 'Restaurante' }}</title>
 
     <meta name="keywords" content="Pedidos, Menu, Restaurante" />
     <meta name="description" content="Sistema de pedidos de menu de restaurante">

@@ -22141,7 +22141,7 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 @media (min-width: 767px) {
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-branch-selector .nano,
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
-        height: calc(100% - 90px);
+        height: calc(100% - 106px);
     }
 }
 @media (max-width: 766px) {

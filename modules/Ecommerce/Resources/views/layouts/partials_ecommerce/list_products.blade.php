@@ -14,7 +14,7 @@
         <div class="product product-style {{ stock($item, $configuration) ? 'productdisabled' : '' }}">
             <figure class="product-image-container product-image-container-ecommerce">
                             
-                <a href="/ecommerce/item/{{ $item->id }}" class="product-image product-image-list">
+                <a href="/ecommerce/item/{{ $item->id }}-{{ \Illuminate\Support\Str::slug($item->description) }}" class="product-image product-image-list">
                     <img src="{{ $imagePath }}" class="image" alt="{{ $item->description }}">
                 </a>
                 <a href="{{route('item_partial', ['id' => $item->id])}}" class="btn-quickview">Vista Rápida</a>
@@ -34,7 +34,7 @@
                 </div>
                 <div class="product-information">
                     <h2 class="product-title-ecommerce">
-                        <a href="/ecommerce/item/{{ $item->id }}">{{ $item->description }}</a>
+                        <a href="/ecommerce/item/{{ $item->id }}-{{ \Illuminate\Support\Str::slug($item->description) }}">{{ $item->description }}</a>
                     </h2>
 
                     @if(isset($preferences['show_description']) && $preferences['show_description'] == 1)

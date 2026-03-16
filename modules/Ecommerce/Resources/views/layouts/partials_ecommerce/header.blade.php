@@ -165,7 +165,7 @@ div.cart-dropdown {
                      <div class="header-menu">
                          <ul v-if="results.length > 0">
                             <li v-for="result in results">
-                                <a :href="'/ecommerce/item/' + result.id" class="d-flex">
+                                <a :href="'/ecommerce/item/' + result.slug" class="d-flex">
                                     <div class="flex-grow-1"><img style="max-width: 80px" :src="result.image_url_small" alt="England flag">
                                     <span class="search_title" style="font-size: 1.0em;"> @{{ result.description }} </span>
                                     </div>

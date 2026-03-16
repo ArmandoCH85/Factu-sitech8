@@ -110,8 +110,9 @@ class EcommerceController extends Controller
         return "{$item->description} - {$promotion->name}";
     }
 
-    public function item($id, $promotion_id = null)
+    public function item($slug, $promotion_id = null)
     {
+        $id = (int) $slug;
         $row = Item::find($id);
         $exchange_rate_sale = $this->getExchangeRateSale();
         $sale_unit_price = ($row->has_igv) ? $row->sale_unit_price : $row->sale_unit_price*1.18;

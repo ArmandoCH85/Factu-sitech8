@@ -14,7 +14,7 @@
 // Rutas públicas (no deben forzar login principal)
 Route::prefix('restaurant')->middleware(['locked.tenant'])->group(function() {
     Route::get('item_partial/{id}', 'RestaurantController@partialItem')->name('restaurant.item_partial');
-    Route::get('item/{id}/{promotion_id?}', 'RestaurantController@item')->name('restaurant.item');
+    Route::get('item/{slug}/{promotion_id?}', 'RestaurantController@item')->name('restaurant.item');
     Route::get('cart', 'RestaurantController@detailCart')->name('restaurant.detail.cart');
     Route::post('payment_cash', 'RestaurantController@paymentCash')->name('restaurant.payment.cash')->middleware('auth:ecommerce');
 });

@@ -16,7 +16,7 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     
     Route::get('/', 'EcommerceController@index')->name('tenant.ecommerce.index');
 
-    Route::get('item/{id}/{promotion_id?}', 'EcommerceController@item')->name('tenant.ecommerce.item');
+    Route::get('item/{slug}/{promotion_id?}', 'EcommerceController@item')->name('tenant.ecommerce.item');
 
     Route::get('items', 'EcommerceController@items')->name('tenant.ecommerce.item.index');
     Route::get('item_partial/{id}', 'EcommerceController@partialItem')->name('item_partial');

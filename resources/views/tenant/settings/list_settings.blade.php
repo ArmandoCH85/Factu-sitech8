@@ -28,7 +28,7 @@
             <div class="card-body">
                 <h6 class="card-title">General</h6>
                 <ul class="card-report-links">
-                        @if($user->type != 'integrator')
+                    @if($user->type != 'integrator')
                     <li>
                         <a href="{{ url('list-banks') }}">Listado de bancos</a>
                     </li>
@@ -44,6 +44,11 @@
                     <li>
                         <a href="{{url('list-platforms')}}">Plataformas</a>
                     </li>
+                    @if(in_array('production_app', $vc_modules) && $configuration->isShowExtraInfoToItem())
+                        <li>
+                            <a href="{{route('extra_info_items.index')}}">Datos extra de items</a>
+                        </li>
+                    @endif
                     @endif
                 </ul>
             </div>

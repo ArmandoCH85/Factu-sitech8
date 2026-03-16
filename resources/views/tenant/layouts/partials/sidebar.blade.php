@@ -662,11 +662,11 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                                             valorizado</a>
                                                     </li>
                                                 @endif
-                                                @if(in_array('production_app', $vc_modules) && $configuration->isShowExtraInfoToItem())
+                                                <!-- @if(in_array('production_app', $vc_modules) && $configuration->isShowExtraInfoToItem())
                                                     <li class="{{($firstLevel === 'extra_info_items') ? 'nav-active' : ''}}">
                                                         <a class="nav-link" href="{{route('extra_info_items.index')}}">Datos extra de items</a>
                                                     </li>
-                                                @endif
+                                                @endif -->
                                                 @if($inventory_configuration->inventory_review)
                                                     <li class="{{ ($firstLevel === 'inventory-review') ? 'nav-active' : '' }}">
                                                         <a class="nav-link" href="{{route('tenant.inventory-review.index')}}">Revisión de

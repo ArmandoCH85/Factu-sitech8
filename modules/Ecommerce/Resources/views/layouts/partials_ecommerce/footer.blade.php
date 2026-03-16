@@ -210,16 +210,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="ruc">Tipo de Documento:</label>
-                                    <div class="document-selector-container">
-                                        <select class="form-select select-ruc-dni" id="selectDocument">
-                                            <option value="dni" selected>DNI (8 dígitos)</option>
-                                            <option value="ruc">RUC (11 dígitos)</option>
+                                    <div class="unified-input-group position-relative">
+                                        <select class="select-part" id="selectDocument">
+                                            <option value="dni" selected>DNI</option>
+                                            <option value="ruc">RUC</option>
                                         </select>
-                                    </div>
-                                    <div class="document-input-container">
-                                        <input type="number" oninput="inputDocument()" required autocomplete="off" maxlength="11" class="form-control" id="ruc_reg"
-                                            placeholder="Ingrese su número de documento" name="ruc">
-                                        <span id="counter" class="text-center">0/8</span>
+                                        <input type="number" oninput="inputDocument()" required autocomplete="off" maxlength="11" class="input-part" id="ruc_reg" placeholder="Ingrese su número de documento" name="ruc">  
+                                        <span id="counter" class="text-center counter-part">0/8</span>
                                     </div>                                    
                                 </div>
                                 <div class="form-group">
@@ -276,11 +273,11 @@ function setDocumentsCounter() {
         counter.classList.remove('warning', 'success', 'error');
         if (select.value === 'dni') {
             ruc_reg.setAttribute('maxlength', '8');
-            ruc_reg.setAttribute('placeholder', 'Ingrese su DNI (8 dígitos)');
+            ruc_reg.setAttribute('placeholder', 'Ingrese su DNI');
             counter.textContent = '0/8';
         } else if (select.value === 'ruc') {
             ruc_reg.setAttribute('maxlength', '11');
-            ruc_reg.setAttribute('placeholder', 'Ingrese su RUC (11 dígitos)');
+            ruc_reg.setAttribute('placeholder', 'Ingrese su RUC');
             counter.textContent = '0/11';
         }
     }

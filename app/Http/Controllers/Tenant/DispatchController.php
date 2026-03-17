@@ -208,12 +208,14 @@ class DispatchController extends Controller
             $presentation = !empty($item->item->presentation) ? $item->item->presentation->description : '';
             $unit_type = !empty($item->item->presentation) ? $item->item->presentation->unit_type_id : $item->item->unit_type_id;
             $IdLoteSelected = !empty($item->item->IdLoteSelected) ? $item->item->IdLoteSelected : null;
+            $weight = $item->item->weight ?? 0;
             $items[] = [
                 'item_id' => $item->item_id,
                 'item' => $item,
                 'quantity' => $item->quantity,
                 'description' => $description.' '.$presentation,
                 'unit_type_id' => $unit_type,
+                'weight' => $weight,
                 'name_product_pdf' => $name_product_pdf,
                 'IdLoteSelected' => $IdLoteSelected,
             ];

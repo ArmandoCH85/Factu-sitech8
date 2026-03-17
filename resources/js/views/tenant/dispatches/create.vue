@@ -560,8 +560,14 @@
                                                         [Lotes]
                                                     </a>
                                                 </td>
-                                                <td class="text-end" v-if="config.enable_weight_in_dispatches">
-                                                    {{ row.weight ? getFormatQuantity(row.weight) : '0' }}
+                                                <td class="text-end" v-if="config.enable_weight_in_dispatches && parentId">
+                                                    <el-input-number v-if="parentId" style="width: 170px;" v-model="row.weight" :max="99999999"
+                                                                        :min="min_qty" :precision="3" :step="1"
+                                                                        placeholder="Cantidad"
+                                                                        ></el-input-number>
+                                                </td>
+                                                <td class="text-end" v-else-if="config.enable_weight_in_dispatches">
+                                                    {{ getFormatWeight(row.weight) }}
                                                 </td>
                                                 <td class="text-end">
                                                     <button class="btn waves-effect waves-light btn-xs btn-danger"
@@ -1292,6 +1298,9 @@ export default {
         },
         getFormatQuantity(quantity) {
             return _.round(quantity, 4)
+        },
+        getFormatWeight(quantity) {
+            return _.round(quantity, 2)
         },
         canCreateProduct() {
             if (this.config.typeUser === 'admin') {

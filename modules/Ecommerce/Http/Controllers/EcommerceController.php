@@ -35,11 +35,27 @@ use App\Models\System\Configuration as SystemConfiguration;
 class EcommerceController extends Controller
 {
     /**
+     * Descripción general reutilizable para meta tags y otros lugares
+     */
+    public static function getEcommerceDescription($company = null)
+    {
+        // Buscar el nombre comercial en varios campos posibles
+        $trade_name = data_get($company, 'trade_name')
+            ?: 'Tu tienda online';
+        return "Compra online en {$trade_name}. Encuentra una amplia variedad de productos de calidad, ofertas exclusivas y precios competitivos, con envíos rápidos y una experiencia de compra segura y confiable.";
+    }
+    /**
      * Display a listing of the resource.
      * @return Response
      */
     public function __construct(){
-        return view()->share('records', Item::where('apply_store', 1)->orderBy('id', 'DESC')->take(2)->get());
+        // Compartir variable records
+        view()->share('records', Item::where('apply_store', 1)->orderBy('id', 'DESC')->take(2)->get());
+
+        // Compartir descripción ecommerce globalmente usando el modelo Company
+        $companyModel = \App\Models\Tenant\Company::first();
+        $ecommerceDescription = self::getEcommerceDescription($companyModel);
+        view()->share('ecommerceDescription', $ecommerceDescription);
     }
 
     // public function index()
@@ -61,6 +77,9 @@ class EcommerceController extends Controller
         $preferences = $configEcommerce && $configEcommerce->preferences 
             ? (is_string($configEcommerce->preferences) ? json_decode($configEcommerce->preferences, true) : $configEcommerce->preferences)
             : ['show_description' => 1, 'show_stock' => 0, 'only_available_products' => 0];
+
+        // Obtener el modelo Company para meta tags y descripción
+        $company = \App\Models\Tenant\Company::first();
         
         // Query base
         $query = Item::where([['apply_store', 1], ['internal_id', '!=', null]]);
@@ -85,11 +104,16 @@ class EcommerceController extends Controller
             ->limit(4)
             ->get();
 
+        // Obtener la descripción general para meta tags
+        $ecommerceDescription = self::getEcommerceDescription($company);
+
         return view('ecommerce::index', [
             'dataPaginate' => $dataPaginate,
             'configuration' => $configuration->stock_control,
             'spots' => $spots,
-            'preferences' => $preferences
+            'preferences' => $preferences,
+            'ecommerceDescription' => $ecommerceDescription,
+            'company' => $company
         ])->with('categories', $categories);
     }
     

@@ -11,9 +11,46 @@
 
     <title>{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') ?: 'eCommerce' }}</title>
 
-    <meta name="keywords" content="HTML5 Template" />
-    <meta name="description" content="Porto - Bootstrap eCommerce Template">
+    <meta name="keywords" content="eCommerce, {{ data_get($pageCompany, 'trade_name') }}" />
+    <meta name="description" content="{{ $ecommerceDescription ?? 'eCommerce' }}" />
     <meta name="author" content="SW-THEMES">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') }}" />
+    <meta property="og:description" content="{{ $ecommerceDescription ?? 'eCommerce' }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    @php($headerLogo = data_get($company ?? null, 'logo') ?: data_get($information ?? null, 'logo'))
+    <meta property="og:image" content="{{ $headerLogo ? asset('storage/uploads/logos/'.$headerLogo) : asset('logo/tulogo.png') }}" />
+    <meta property="og:site_name" content="{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') }}" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') }}" />
+    <meta name="twitter:description" content="{{ $ecommerceDescription ?? 'eCommerce' }}" />
+    <meta name="twitter:image" content="{{ $headerLogo ? asset('storage/uploads/logos/'.$headerLogo) : asset('logo/tulogo.png') }}" />
+
+    <!-- Schema.org JSON-LD (ItemList para listado de productos) -->
+    @if(isset($products) && count($products))
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Listado de productos",
+        "itemListElement": [
+            @foreach($products as $index => $product)
+            {
+                "@type": "Product",
+                "position": {{ $index + 1 }},
+                "name": "{{ addslashes($product->name) }}",
+                "image": "{{ $product->image_url ?? ($headerLogo ? asset('storage/uploads/logos/'.$headerLogo) : asset('logo/tulogo.png')) }}",
+                "url": "{{ route('ecommerce.product.show', $product->slug) }}"
+            }@if(!$loop->last),@endif
+            @endforeach
+        ]
+    }
+    </script>
+    @endif
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.ico') }}">

@@ -52,6 +52,8 @@ if($current_hostname) {
                 Route::post('update', 'OrderNoteController@update');
                 Route::get('record/{quotation}', 'OrderNoteController@record');
                 Route::get('voided/{id}', 'OrderNoteController@voided');
+                Route::get('filter', 'OrderNoteController@filter');
+                Route::get('state-type/{state_type_id}/{id}', 'OrderNoteController@updateStateType');
                 Route::get('item/tables', 'OrderNoteController@item_tables');
                 Route::get('option/tables', 'OrderNoteController@option_tables');
                 Route::get('search/customers', 'OrderNoteController@searchCustomers');

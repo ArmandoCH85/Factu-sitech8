@@ -88,7 +88,25 @@
                         <td class="text-start">{{ row.date_of_issue }}</td>
                         <td v-if="columns.sale.visible">{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small>{{ row.customer_number }}</small></td>
-                        <td>{{ row.state_type_description }}</td>
+                        <td>
+                            <template v-if="row.state_type_id == '11'">
+                                {{ row.state_type_description }}
+                            </template>
+                            <template v-else>
+                                <el-select
+                                    v-model="row.state_type_id"
+                                    @change="changeStateType(row)"
+                                    style="width:120px !important"
+                                >
+                                    <el-option
+                                        v-for="option in state_types"
+                                        :key="option.id"
+                                        :value="option.id"
+                                        :label="option.description"
+                                    ></el-option>
+                                </el-select>
+                            </template>
+                        </td>
                         <td>{{ row.number_full }}</td>
                         <td v-if="columns.quotation.visible">{{ row.quotation_number_full }}</td>
                         <td>{{ row.purchase_order_number_full }}</td>
@@ -200,8 +218,7 @@ export default {
             resource: 'sale-opportunities',
             recordId: null,
             showDialogOptions: false,
-            // items: [],
-
+            state_types: [],
             columns: {
                 total_exportation: { title: 'T.Exportación', visible: false },
                 total_unaffected: { title: 'T.Inafecto', visible: false },
@@ -228,6 +245,18 @@ export default {
 
         money(row) {
             return row.currency_type_id === 'PEN' ? 'S/' : '$'
+        },
+
+        async changeStateType(row) {
+            await this.updateStateType(
+                `/${this.resource}/state-type/${row.state_type_id}/${row.id}`
+            ).then(() => this.$eventHub.$emit("reloadData"));
+        },
+
+        filter() {
+            this.$http.get(`/${this.resource}/filter`).then(response => {
+                this.state_types = response.data.state_types;
+            });
         },
 
         saveColumnVisibility() {

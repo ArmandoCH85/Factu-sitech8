@@ -519,6 +519,69 @@
         }
 
         /**
+         * Scope para filtrar pedidos por entregar (state_type_id = 01)
+         *
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
+        public function scopeWhereToDeliverState(Builder $query, $params)
+        {
+            $query
+                ->where('state_type_id', '01')
+                ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']]);
+            if ($params['person_id']) {
+                $query->where('customer_id', $params['person_id']);
+            } else {
+                $query->where('user_id', $params['seller_id']);
+            }
+            return $query;
+        }
+
+        /**
+         * Scope para filtrar pedidos entregados (state_type_id = 05)
+         *
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
+        public function scopeWhereDeliveredState(Builder $query, $params)
+        {
+            $query
+                ->where('state_type_id', '05')
+                ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']]);
+            if ($params['person_id']) {
+                $query->where('customer_id', $params['person_id']);
+            } else {
+                $query->where('user_id', $params['seller_id']);
+            }
+            return $query;
+        }
+
+        /**
+         * Scope para filtrar pedidos anulados (state_type_id = 11)
+         *
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
+        public function scopeWhereVoidedState(Builder $query, $params)
+        {
+            $query
+                ->where('state_type_id', '11')
+                ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']]);
+            if ($params['person_id']) {
+                $query->where('customer_id', $params['person_id']);
+            } else {
+                $query->where('user_id', $params['seller_id']);
+            }
+            return $query;
+        }
+
+        /**
          * Establece el status anulado (11) para el pedido
          * Recorre los items, si estos tienen lotes serán habilitados nuevamente
          *

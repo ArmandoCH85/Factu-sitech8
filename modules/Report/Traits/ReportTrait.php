@@ -540,7 +540,9 @@ trait ReportTrait
         return [
             ['id' => 'all_states', 'description' => 'Todos'],
             ['id' => 'pending', 'description' => 'Pendiente'],
-            ['id' => 'processed', 'description' => 'Procesado'],
+            ['id' => 'to_deliver', 'description' => 'Por entregar'],
+            ['id' => 'delivered', 'description' => 'Entregado'],
+            ['id' => 'voided', 'description' => 'Anulado'],
         ];
 
     }

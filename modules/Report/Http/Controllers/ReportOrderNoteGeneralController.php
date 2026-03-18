@@ -74,8 +74,16 @@ class ReportOrderNoteGeneralController extends Controller
                 $data = $model::wherePendingState($request);
                 break;
 
-            case 'processed':
-                $data = $model::whereProcessedState($request);
+            case 'to_deliver':
+                $data = $model::whereToDeliverState($request);
+                break;
+    
+            case 'delivered':
+                $data = $model::whereDeliveredState($request);
+                break;
+    
+            case 'voided':
+                $data = $model::whereVoidedState($request);
                 break;
 
             default: 

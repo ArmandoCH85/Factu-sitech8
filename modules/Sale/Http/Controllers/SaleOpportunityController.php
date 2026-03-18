@@ -145,6 +145,24 @@ class SaleOpportunityController extends Controller
         return compact('customers', 'establishments','currency_types','company');
     }
 
+    public function filter()
+    {
+        $state_types = \App\Models\Tenant\StateType::whereIn('id', ['01', '05', '09', '11'])->get();
+
+        return compact('state_types');
+    }
+
+    public function updateStateType($state_type_id, $id)
+    {
+        $record = SaleOpportunity::find($id);
+        $record->state_type_id = $state_type_id;
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => 'Estado actualizado correctamente'
+        ];
+    }
 
     public function option_tables()
     {

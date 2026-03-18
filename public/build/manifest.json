@@ -54,7 +54,7 @@
     "src": "public/images/labeling_machines_img/golabel.png"
   },
   "resources/js/app.css": {
-    "file": "assets/app-e8b9d65a.css",
+    "file": "assets/app-8ab55ec6.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
@@ -70,9 +70,9 @@
       "assets/Zebra-32a3c31c.svg"
     ],
     "css": [
-      "assets/app-e8b9d65a.css"
+      "assets/app-8ab55ec6.css"
     ],
-    "file": "assets/app-41bd5b8f.js",
+    "file": "assets/app-d57faf58.js",
     "imports": [
       "_vue-clipboard-e112703f.js"
     ],

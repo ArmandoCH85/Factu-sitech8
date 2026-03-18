@@ -180,11 +180,23 @@
                             ></small>
                         </td>
                         <td>
-                            <StateType
-                                :key="'state_type_' + row.id"
-                                :id="row.state_type_id"
-                                :description="row.state_type_description"
-                            />
+                            <template v-if="row.state_type_id == '11'">
+                                {{ row.state_type_description }}
+                            </template>
+                            <template v-else>
+                                <el-select
+                                    v-model="row.state_type_id"
+                                    @change="changeStateType(row)"
+                                    style="width:120px !important"
+                                >
+                                    <el-option
+                                        v-for="option in state_types"
+                                        :key="option.id"
+                                        :value="option.id"
+                                        :label="option.description"
+                                    ></el-option>
+                                </el-select>
+                            </template>
                         </td>
                         <td>{{ row.identifier }}</td>
                         <td>
@@ -427,6 +439,7 @@ export default {
             showMiTiendaPeDialog: false,
             showDialogOptions: false,
             showDialogOptionsPdf: false,
+            state_types: [],
             columns: {
                 total_exportation: {
                     title: "T.Exportación",
@@ -491,6 +504,16 @@ export default {
         formatDate(date) {
             if (!date) return null;
             return moment(date).format("DD-MM-YYYY");
+        },
+        async changeStateType(row) {
+            await this.updateStateType(
+                `/${this.resource}/state-type/${row.state_type_id}/${row.id}`
+            ).then(() => this.$eventHub.$emit("reloadData"));
+        },
+        filter() {
+            this.$http.get(`/${this.resource}/filter`).then(response => {
+                this.state_types = response.data.state_types;
+            });
         },
         saveColumnVisibility() {
             localStorage.setItem(

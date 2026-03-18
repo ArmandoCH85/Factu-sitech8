@@ -527,7 +527,7 @@ export default {
             switch (command) {
                 case "edit":
                     if (row.state_type_id != "11")
-                        window.location.href = `/${this.resource}/create/${row.id}`;
+                        window.location.href = `/${this.resource}/edit/${row.id}`;
                     break;
                 case "anulate":
                     if (row.state_type_id != "11") this.clickAnulate(row.id);

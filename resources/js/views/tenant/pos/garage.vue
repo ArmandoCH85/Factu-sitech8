@@ -738,14 +738,15 @@
                                         <td>
                                             <p class="item-description">
                                                 {{ item.item.description }}
-                                            {{
-                                                item.item.presentation.hasOwnProperty(
-                                                    "description"
-                                                )
-                                                    ? item.item.presentation
-                                                          .description
-                                                    : ""
-                                            }}
+                                                <template v-if="item.item.presentation &&
+                                                    item.item.presentation.hasOwnProperty(
+                                                        'description'
+                                                    )
+                                                " >
+                                                {{ item.item.presentation
+                                                            .description
+                                                }}
+                                                </template>
                                             </p>
                                             <small>
                                                 {{ nameSets(item.item_id) }}
@@ -1734,7 +1735,6 @@ export default {
             // console.log(item.unit_type_id)
             // console.log(exist_item)
             // console.log(item)
-            
             let presentation = item.presentation
 
             let exist_item =  false 
@@ -1812,6 +1812,9 @@ export default {
                     this.percentage_igv
                 );
 
+                console.log(this.row);
+                
+
                 this.row["unit_type_id"] = item.unit_type_id;
 
                 this.form.items[pos] = this.row;
@@ -1863,7 +1866,7 @@ export default {
                     exchangeRateSale,
                     this.percentage_igv
                 );
-                //console.log(this.row)
+                console.log(this.row)
 
                 // this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
 

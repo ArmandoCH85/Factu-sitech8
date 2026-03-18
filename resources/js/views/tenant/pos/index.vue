@@ -763,14 +763,15 @@
                                     <td class="">
                                         <p class="item-description">
                                             {{ item.item.description }} 
-                                            {{
+                                            <template v-if="item.presentation &&
                                                 item.presentation.hasOwnProperty(
-                                                    "description"
+                                                    'description'
                                                 )
-                                                    ? item.item.presentation
+                                             " >
+                                             {{ item.item.presentation
                                                           .description
-                                                    : ""
-                                            }}
+                                              }}
+                                            </template>
                                         </p>
                                         <small>{{ item.unit_type_id }}</small
                                         ><br />

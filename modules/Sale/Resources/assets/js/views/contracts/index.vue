@@ -64,13 +64,13 @@
                         <td>{{ row.number_full }} </td>
                         <td>{{ row.quotation_number_full }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
-                        <td class="text-end"  v-if="columns.total_exportation.visible" >{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_exportation }}</td>
-                        <td class="text-end" v-if="columns.total_free.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_free }}</td>
-                        <td class="text-end" v-if="columns.total_unaffected.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_unaffected }}</td>
-                        <td class="text-end" v-if="columns.total_exonerated.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_exonerated }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_taxed }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_igv }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total }}</td>
+                        <td class="text-end"  v-if="columns.total_exportation.visible" >{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exportation) }}</td>
+                        <td class="text-end" v-if="columns.total_free.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_free) }}</td>
+                        <td class="text-end" v-if="columns.total_unaffected.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_unaffected) }}</td>
+                        <td class="text-end" v-if="columns.total_exonerated.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exonerated) }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
                         <!-- <td class="text-end">
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
@@ -155,14 +155,33 @@
                         title: 'F.Entrega',
                         visible: false
                     }
-                }
+                },
+                decimal_quantity: 2
             }
         },
         async created() {
             this.loadColumnVisibility();
-            await this.filter()
+            await this.filter();
+            this.loadDecimalQuantity();
         },
         methods: {
+            loadDecimalQuantity() {
+                // Obtener la configuración general para los decimales
+                this.$http ? this.$http.get('/configurations/record').then(response => {
+                    if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                        this.decimal_quantity = response.data.data.decimal_quantity;
+                    }
+                }) :
+                (window.axios && window.axios.get('/configurations/record').then(response => {
+                    if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                        this.decimal_quantity = response.data.data.decimal_quantity;
+                    }
+                }));
+            },
+            formatDecimal(value) {
+                if (value === undefined || value === null || isNaN(value)) return '';
+                return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+            },
             saveColumnVisibility() {
                 localStorage.setItem('columnVisibilityContracts', JSON.stringify(this.columns));
             },

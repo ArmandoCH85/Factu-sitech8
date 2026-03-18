@@ -261,32 +261,32 @@
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_exportation }}
+                            {{ formatDecimal(row.total_exportation) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_unaffected }}
+                            {{ formatDecimal(row.total_unaffected) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_exonerated }}
+                            {{ formatDecimal(row.total_exonerated) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_taxed.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_taxed }}
+                            {{ formatDecimal(row.total_taxed) }}
                         </td>
                         <td class="text-end" v-if="columns.total_igv.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_igv }}
+                            {{ formatDecimal(row.total_igv) }}
                         </td>
                         <td class="text-end">
                             <label
@@ -431,6 +431,7 @@ export default {
         if (this.config.mi_tienda_pe === true) {
             this.getMiTiendaDataData();
         }
+        this.loadDecimalQuantity();
     },
     data() {
         return {
@@ -482,7 +483,8 @@ export default {
                     visible: false
                 }
             },
-            state_type_accepted: ["01", "03", "05", "07", "13"]
+            state_type_accepted: ["01", "03", "05", "07", "13"],
+            decimal_quantity: 2,
         };
     },
     computed: {
@@ -501,6 +503,23 @@ export default {
         }
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuración general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         formatDate(date) {
             if (!date) return null;
             return moment(date).format("DD-MM-YYYY");

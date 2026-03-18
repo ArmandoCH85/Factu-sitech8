@@ -77,9 +77,9 @@
                             {{ formatDate(row.date_of_issue) }}
                         </td>
                         <td class="text-center">{{ row.serial_number }}</td>
-                        <td class="text-center">{{ row.cost }}</td>
-                        <td class="text-center">{{ row.total }}</td>
-                        <td class="text-center">{{ row.sum_total }}</td>
+                        <td class="text-center">{{ formatDecimal(row.cost) }}</td>
+                        <td class="text-center">{{ formatDecimal(row.total) }}</td>
+                        <td class="text-center">{{ formatDecimal(row.sum_total) }}</td>
                         <td class="text-center">
                             {{ row.number_document_sale_note }}
                         </td>
@@ -95,7 +95,7 @@
                             </button>
                         </td>
 
-                        <td class="text-center">{{ row.balance }}</td>
+                        <td class="text-center">{{ formatDecimal(row.balance) }}</td>
 
                         <td class="text-center">
                             <button
@@ -214,7 +214,8 @@ export default {
             showDialogOptions: false,
             resource: "technical-services",
             recordId: null,
-            showDialogPayments: false
+            showDialogPayments: false,
+            decimal_quantity: 2
         };
     },
     created() {
@@ -223,8 +224,26 @@ export default {
         this.loadCurrencyTypes();
         this.loadExchangeRate();
         this.title = "Servicios de soporte técnico";
+        this.loadDecimalQuantity();
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuración general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         formatDate(date) {
             if (!date) return null;
             return moment(date).format("DD-MM-YYYY");

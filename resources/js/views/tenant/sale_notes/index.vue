@@ -237,28 +237,28 @@
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_exportation }}
+                            {{ formatDecimal(row.total_exportation) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_free.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_free }}
+                            {{ formatDecimal(row.total_free) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_unaffected }}
+                            {{ formatDecimal(row.total_unaffected) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_exonerated }}
+                            {{ formatDecimal(row.total_exonerated) }}
                         </td>
 
                         <td
@@ -266,27 +266,27 @@
                             v-if="columns.total_taxed.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_taxed }}
+                            {{ formatDecimal(row.total_taxed) }}
                         </td>
                         <td class="text-end" v-if="columns.total_igv.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_igv }}
+                            {{ formatDecimal(row.total_igv) }}
                         </td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
 
                         <td
                             class="text-center"
                             v-if="columns.total_paid.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_paid }}
+                            {{ formatDecimal(row.total_paid) }}
                         </td>
                         <td
                             class="text-center"
                             v-if="columns.total_pending_paid.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_pending_paid }}
+                            {{ formatDecimal(row.total_pending_paid) }}
                         </td>
                         <td>
                             <template v-for="(document, i) in row.documents">
@@ -711,7 +711,8 @@ export default {
                     title: "Estado de despacho",
                     visible: false
                 }
-            }
+            },
+            decimal_quantity: 2,
             // showDialogDeleteRelationInvoice: false,
             // dataDeleteRelation: {
             //     documents: {},
@@ -723,6 +724,7 @@ export default {
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
         this.getColumnsToShow();
+        this.loadDecimalQuantity();
     },
     filters: {
         period(name) {
@@ -742,6 +744,23 @@ export default {
         }
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuración general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         formatDate(date) {
             if (!date) return null;
             return moment(date).format("DD-MM-YYYY");

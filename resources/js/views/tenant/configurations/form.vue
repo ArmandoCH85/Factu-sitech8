@@ -675,6 +675,15 @@
                                         v-text="errors.enable_weight_in_dispatches[0]"></small>
                                 </div>
                             </div>
+                            <div v-if="typeUser != 'integrator'" class="col-md-4 mt-4">
+                                <label class="control-label">Cantidad de decimales para los precios <span class="text-primary">(aplica a todo el sistema)</span></label>
+                                <div :class="{ 'has-danger': errors.decimal_quantity }" class="form-group">
+                                    <el-input-number v-model="form.decimal_quantity" :max="10" :min="2"
+                                        @change="submit"></el-input-number>
+                                    <small v-if="errors.decimal_quantity" class="form-control-feedback"
+                                        v-text="errors.decimal_quantity[0]"></small>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row mt-4">
@@ -1687,16 +1696,7 @@
                                             v-text="errors.pos_cost_price[0]"></small>
                                     </div>
                                 </div>
-                            </div>
-                            <div v-if="typeUser != 'integrator'" class="col-md-4 mt-4">
-                                <label class="control-label">Cantidad decimales POS</label>
-                                <div :class="{ 'has-danger': errors.decimal_quantity }" class="form-group">
-                                    <el-input-number v-model="form.decimal_quantity" :max="10" :min="2"
-                                        @change="submit"></el-input-number>
-                                    <small v-if="errors.decimal_quantity" class="form-control-feedback"
-                                        v-text="errors.decimal_quantity[0]"></small>
-                                </div>
-                            </div>
+                            </div>                            
                             <!-- impresion automatica en pos -->
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">

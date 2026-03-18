@@ -490,7 +490,7 @@
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_exportation }}
+                            {{ formatDecimal(row.total_exportation) }}
                         </td>
 
                         <td
@@ -498,7 +498,7 @@
                             v-if="columns.total_free.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_free }}
+                            {{ formatDecimal(row.total_free) }}
                         </td>
 
                         <td
@@ -506,31 +506,31 @@
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_unaffected }}
+                            {{ formatDecimal(row.total_unaffected) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_exonerated }}
+                            {{ formatDecimal(row.total_exonerated) }}
                         </td>
                         <td
                             class="text-end"
                             v-if="columns.total_charge.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_charge }}
+                            {{ formatDecimal(row.total_charge) }}
                         </td>
                         <td class="text-end">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_taxed }}</td>
+                            {{ formatDecimal(row.total_taxed) }}</td>
                         <td class="text-end">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total_igv }}</td>
+                            {{ formatDecimal(row.total_igv) }}</td>
                         <td class="text-end" v-if="columns.total.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.total }}
+                            {{ formatDecimal(row.total) }}
                         </td>
 
                         <td
@@ -542,7 +542,7 @@
                             }"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ row.balance }}
+                            {{ formatDecimal(row.balance) }}
                         </td>
                         <td v-if="columns.purchase_order.visible">
                             {{ row.purchase_order }}
@@ -1049,15 +1049,34 @@ export default {
                     title: "Fecha de pago",
                     visible: false
                 }
-            }
+            },
+            decimal_quantity: 2,
         };
     },
     created() {
         this.$store.commit("setConfiguration", this.configuration);
         this.loadConfiguration();
         this.getColumnsToShow();
+        this.loadDecimalQuantity();
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuración general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         formatDate(date) {
             if (!date) return null;
             return moment(date).format("DD-MM-YYYY");

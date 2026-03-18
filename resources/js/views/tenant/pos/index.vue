@@ -762,7 +762,15 @@
                                 >
                                     <td class="">
                                         <p class="item-description">
-                                            {{ item.item.description }}
+                                            {{ item.item.description }} 
+                                            {{
+                                                item.presentation.hasOwnProperty(
+                                                    "description"
+                                                )
+                                                    ? item.item.presentation
+                                                          .description
+                                                    : ""
+                                            }}
                                         </p>
                                         <small>{{ item.unit_type_id }}</small
                                         ><br />
@@ -1689,6 +1697,7 @@ export default {
 
             this.items[index].sale_unit_price = price.price;
             this.items[index].unit_type_id = price.unit_type_id;
+            this.items[index].presentation = price
             this.$message.success("Precio seleccionado");
         },
         clickWarehouseDetail(item) {
@@ -2960,7 +2969,6 @@ export default {
         },
         ChangeSelectedPrice() {
             // recorrer items
-            console.log("recorrer items");
             
             this.items.forEach(row => {
                     if(row.item_unit_types && row.item_unit_types.length > 0) {

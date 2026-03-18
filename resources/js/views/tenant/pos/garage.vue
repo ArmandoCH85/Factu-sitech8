@@ -738,6 +738,14 @@
                                         <td>
                                             <p class="item-description">
                                                 {{ item.item.description }}
+                                            {{
+                                                item.item.presentation.hasOwnProperty(
+                                                    "description"
+                                                )
+                                                    ? item.item.presentation
+                                                          .description
+                                                    : ""
+                                            }}
                                             </p>
                                             <small>
                                                 {{ nameSets(item.item_id) }}
@@ -1350,6 +1358,8 @@ export default {
 
             this.items[index].sale_unit_price = price.price;
             this.items[index].unit_type_id = price.unit_type_id;
+            this.items[index].presentation = price
+            
             this.$message.success("Precio seleccionado");
         },
         clickWarehouseDetail(item) {
@@ -1724,12 +1734,24 @@ export default {
             // console.log(item.unit_type_id)
             // console.log(exist_item)
             // console.log(item)
+            
+            let presentation = item.presentation
 
-            let exist_item = _.find(this.form.items, {
-                item_id: item.item_id,
-                unit_type_id: item.unit_type_id
-            });
-
+            let exist_item =  false 
+            if (presentation === undefined) {
+                exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    unit_type_id: item.unit_type_id
+                });
+            } 
+            else {
+                // Se evalua si existe presentation de item
+                exist_item = _.find(this.form.items, {
+                    item_id: item.item_id,
+                    presentation: presentation,
+                    unit_type_id: item.unit_type_id
+                });
+            }
             // console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);

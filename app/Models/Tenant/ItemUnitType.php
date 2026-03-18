@@ -45,6 +45,18 @@ class ItemUnitType extends ModelTenant
             $id = $itemUnitType->item_id;
             Cache::tags(['item_detail'])->forget("item_detail_{$id}");
         });
+        static::updated(function (self $itemUnitType){
+            $id = $itemUnitType->item_id;
+            Cache::tags(['item_detail'])->forget("item_detail_{$id}");
+        });
+        static::deleted(function (self $itemUnitType){
+            $id = $itemUnitType->item_id;
+            Cache::tags(['item_detail'])->forget("item_detail_{$id}");
+        });
+        static::saved(function (self $itemUnitType){
+            $id = $itemUnitType->item_id;
+            Cache::tags(['item_detail'])->forget("item_detail_{$id}");
+        });
     }
 
     /**

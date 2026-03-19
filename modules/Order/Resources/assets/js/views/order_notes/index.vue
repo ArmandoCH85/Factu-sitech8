@@ -300,7 +300,7 @@
                                 v-text="calculatePayments(row.sale_notes)"
                             ></label>
                         </td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
                         <td class="text-end">
                             <button
                                 type="button"

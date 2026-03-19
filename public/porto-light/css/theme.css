@@ -21794,6 +21794,16 @@ html.dark .el-message .el-icon-warning{
     max-height: 100%;
     display: block; 
 }
+section.auth__form-right .auth__form.login-container{
+    border-radius: 8px !important;
+    min-width: 350px;
+    width: 35%;
+}
+@media (max-width: 800px) {
+    section.auth__form-right .auth__form.login-container {
+        width: 90%;
+    }
+}
 /* end */
 .el-tooltip__popper.is-dark {
     max-width: 250px;

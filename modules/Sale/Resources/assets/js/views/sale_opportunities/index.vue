@@ -240,6 +240,7 @@ export default {
 
     created() {
         this.loadColumnVisibility()
+        this.filter();
     },
     mounted() {
         // Obtener la configuración general para los decimales

@@ -428,6 +428,7 @@ export default {
         this.loadColumnVisibility();
         this.$store.commit("setConfiguration", this.configuration);
         this.loadConfiguration();
+        this.filter();
         if (this.config.mi_tienda_pe === true) {
             this.getMiTiendaDataData();
         }

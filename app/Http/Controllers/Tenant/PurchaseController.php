@@ -618,7 +618,7 @@ use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
             $purchase = DB::connection('tenant')->transaction(function () use ($request) {
 
-                $doc = Purchase::firstOrNew(['id' => $request['id']]);
+                $doc = Purchase::findOrFail($request['id']);
                 $doc->fill($request->all());
                 $doc->supplier = PersonInput::set($request['supplier_id']);
                 $doc->group_id = ($request->document_type_id === '01') ? '01' : '02';

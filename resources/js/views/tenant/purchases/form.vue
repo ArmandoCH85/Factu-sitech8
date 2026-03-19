@@ -720,7 +720,7 @@
                             class="btn btn-primary btn-submit-default"
                             type="primary"
                         >
-                            Generar
+                            {{ isEditing ? 'Actualizar' : 'Generar' }}
                         </el-button>
                     </div>
                 </form>
@@ -1663,44 +1663,40 @@ export default {
 
             this.loading_submit = true
             // await this.changePaymentMethodType(false)
-            await this.$http.post(`/${this.resource}`, this.form)
-                .then(response => {
+            const request = this.isEditing
+            ? this.$http.post(`/${this.resource}/update`, this.form)
+            : this.$http.post(`/${this.resource}`, this.form)
 
-                    if (response.data.success) {
-
-                        if (this.purchase_order_id) {
-
-                            this.$message({
-                                showClose: true,
-                                message: `Compra registrada : ${response.data.data.number_full}`,
-                                duration: 2 * 3000,
-                                type: "success"
-                            });
-
-                            this.close()
-
-                        } else {
-
-                            this.resetForm()
-                            this.purchaseNewId = response.data.data.id
-                            this.showDialogOptions = true
-
-                        }
-
+        await request
+            .then(response => {
+                if (response.data.success) {
+                    if (this.purchase_order_id) {
+                        this.$message({
+                            showClose: true,
+                            message: `Compra registrada : ${response.data.data.number_full}`,
+                            duration: 2 * 3000,
+                            type: "success"
+                        });
+                        this.close()
                     } else {
-                        this.$message.error(response.data.message)
+                        this.resetForm()
+                        this.purchaseNewId = response.data.data.id
+                        this.showDialogOptions = true
                     }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data
-                    } else {
-                        this.$message.error(error.response.data.message)
-                    }
-                })
-                .then(() => {
-                    this.loading_submit = false
-                })
+                } else {
+                    this.$message.error(response.data.message)
+                }
+            })
+            .catch(error => {
+                if (error.response.status === 422) {
+                    this.errors = error.response.data
+                } else {
+                    this.$message.error(error.response.data.message)
+                }
+            })
+            .then(() => {
+                this.loading_submit = false
+            })
         },
         close() {
             location.href = '/purchases'

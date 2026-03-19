@@ -66,8 +66,8 @@
                         <!-- <th>#</th> -->
                         <th class="text-start">Fecha Emisión</th>
                         <th class="text-center" v-if="columns.delivery_date.visible">T. Entrega</th>
-                        <th>Registrado por</th>
-                        <th>Vendedor</th>
+                        <th v-if="columns.registered_by && columns.registered_by.visible">Registrado por</th>
+                        <th v-if="columns.seller && columns.seller.visible">Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
                         <th>Cotización</th>
@@ -125,8 +125,8 @@
                         >
                             {{ row.delivery_date }}
                         </td>
-                        <td>{{ row.user_name }}</td>
-                        <td>{{ row.seller_name }}</td>
+                        <td v-if="columns.registered_by && columns.registered_by.visible">{{ row.user_name }}</td>
+                        <td v-if="columns.seller && columns.seller.visible">{{ row.seller_name }}</td>
                         <td>
                             {{ row.customer_name }}<br /><small
                                 v-text="row.customer_number"
@@ -255,36 +255,36 @@
                         </td>
 
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_exportation) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_free.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_free) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_unaffected) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_exonerated) }}
                         </td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
                         <td class="text-end">
                             <button
                                 type="button"
@@ -491,7 +491,9 @@ export default {
                 documents: { title: "Comprobantes", visible: false },
                 sale_notes: { title: "Notas de venta", visible: false },
                 sale_opportunity: { title: "Oportunidad Venta", visible: false },
-                currency_type_id: { title: "Moneda", visible: false }
+                currency_type_id: { title: "Moneda", visible: false },
+                registered_by: { title: "Registrado por", visible: false },
+                seller: { title: "Vendedor", visible: false }
             },
             decimal_quantity: 2
         };

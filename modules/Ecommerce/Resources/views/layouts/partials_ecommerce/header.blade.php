@@ -184,10 +184,6 @@ div.cart-dropdown {
                  <button class="mobile-menu-toggler" type="button">
                      <i class="icon-menu"></i>
                  </button>
-                 <div class="header-contact">
-                     <span> Atención al</span>
-                     <i class="fab fa-whatsapp"></i> <a href="#"><strong>{{$information->information_contact_phone}}</strong></a>
-                 </div><!-- End .header-contact -->
                 @include('ecommerce::layouts.partials_ecommerce.cart_dropdown')
                 @include('ecommerce::partials.headers.session')
 

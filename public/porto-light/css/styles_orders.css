@@ -2489,3 +2489,6 @@ ul.contact-info li a:hover {
 .cart-icon-ecommerce{
     display: none;
 }
+.cart-count-ecommerce{
+    display: none;
+}

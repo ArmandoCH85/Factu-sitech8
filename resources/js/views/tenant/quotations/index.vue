@@ -521,8 +521,14 @@ export default {
             }));
         },
         formatDecimal(value) {
-            if (value === undefined || value === null || isNaN(value)) return '';
-            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+            if (value === undefined || value === null || value === '') return '';
+            let cleanValue = value;
+            if (typeof cleanValue === 'string') {
+                cleanValue = cleanValue.replace(/,/g, '').trim();
+            }
+            if (isNaN(Number(cleanValue))) return '';
+            const num = Number(cleanValue);
+            return num.toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
         },
         formatDate(date) {
             if (!date) return null;

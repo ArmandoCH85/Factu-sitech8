@@ -81,7 +81,7 @@
                         <td>@{{ row.currency_type_symbol }} @{{ row.sale_unit_price }}</td>
                         <td>
                             <input class="vertical-quantity form-control input_quantity" :data-product="row.id"
-                                type="text">
+                                type="text" v-model.number="row.cantidad">
                         </td>
                         <td>S/ @{{ row.sub_total }}</td>
                         <td>
@@ -448,8 +448,8 @@
             if (array) {
                 this.records = array.map(function (item) {
                     let obj = item
-                    obj.cantidad = 1
-                    obj.sub_total = parseFloat(item.sale_unit_price).toFixed(2)
+                    obj.cantidad = item.quantity ? parseInt(item.quantity) : 1
+                    obj.sub_total = (parseFloat(item.sale_unit_price) * obj.cantidad).toFixed(2)
                     obj.exchange_rate_sale = ''
                     return obj
                 })

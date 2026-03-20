@@ -2487,8 +2487,11 @@ ul.contact-info li a:hover {
     max-height: max-content;
 }
 .cart-icon-ecommerce{
-    display: none;
+    display: none !important;
 }
 .cart-count-ecommerce{
-    display: none;
+    display: none !important;
+}
+.user-name-ecommerce{
+    display: none !important;
 }

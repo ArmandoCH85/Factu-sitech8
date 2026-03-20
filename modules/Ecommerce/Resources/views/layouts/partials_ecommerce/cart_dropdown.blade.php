@@ -12,7 +12,7 @@
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart cart-icon-ecommerce"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
 
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag bag-icon-restaurant"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z"></path><path d="M9 11v-5a3 3 0 0 1 6 0v5"></path></svg>
-        <span class="cart-count">0</span>
+		<span class="cart-count" style="display:none;">0</span>
     </a>
     <div class="dropdown-menu px-4 ml-4">
         <div class="dropdownmenu-wrapper">
@@ -58,61 +58,72 @@
 		array = JSON.parse(array);
 		let total = 0;
 		array.forEach(element => {
-			total += parseFloat(element.sale_unit_price)
+			let qty = parseInt(element.quantity) || 1;
+			let price = parseFloat(element.sale_unit_price) || 0;
+			total += price * qty;
 		});
 
 		$(".cart-total-price").empty();
 		$(".cart-total-price").append(total.toFixed(2));
-
 	}
 
 	function populate()
 	{
 		$(".dropdown-cart-products").empty();
-			$(".cart-count").empty();
-			let count = 0;
-			//get data local syrogare prodicts
-			let array = localStorage.getItem('products_cart');
-			array = JSON.parse(array)
-			count = array.length;
+		$(".cart-count").empty();
+		let count = 0;
+		let totalItems = 0;
+		let array = localStorage.getItem('products_cart');
+		array = JSON.parse(array)
+		count = array.length;
 
-			const defaultImagePath = '{{ $defaultImagePath }}';
-				
-			array.forEach(element => {
-				const imagePath = (element.image_small && element.image_small !== 'imagen-no-disponible.jpg') 
-					? `/storage/uploads/items/${element.image_small}` 
-					: defaultImagePath;
-				
-				$(".dropdown-cart-products").append( `
-						<div class="product cart-product-row">
-							<div class="product-details">
-							<h4 class="product-title">
-								<a href="$">${element.description}</a>
-							</h4>
-							<span class="cart-product-info">
-								<span class="cart-product-qty">1</span> x ${element.sale_unit_price}
-							</span>
-							</div>
-							<figure class="product-image-container">
-								<a href="#" class="product-image">
-									<img alt="${element.description}" src="${imagePath}" />
-								</a>
-								<a href="#" onclick="remove(${element.id})" class="btn-remove" title="Remove Product">
-									<i class="icon-cancel"></i>
-								</a>
-							</figure>
-						</div>` 
-					);
-			});
-			
-			$(".cart-count").append(count);
+		const defaultImagePath = '{{ $defaultImagePath }}';
+        
+		array.forEach(element => {
+			let qty = parseInt(element.quantity) || 1;
+			totalItems += qty;
+			const imagePath = (element.image_small && element.image_small !== 'imagen-no-disponible.jpg') 
+				? `/storage/uploads/items/${element.image_small}` 
+				: defaultImagePath;
+			$(".dropdown-cart-products").append( `
+					<div class="product cart-product-row">
+						<div class="product-details">
+						<h4 class="product-title">
+							<a href="$">${element.description}</a>
+						</h4>
+						<span class="cart-product-info">
+							<span class="cart-product-qty">${qty}</span> x ${element.sale_unit_price}
+						</span>
+						</div>
+						<figure class="product-image-container">
+							<a href="#" class="product-image">
+								<img alt="${element.description}" src="${imagePath}" />
+							</a>
+							<a href="#" onclick="remove(${element.id})" class="btn-remove" title="Remove Product">
+								<i class="icon-cancel"></i>
+							</a>
+						</figure>
+					</div>` 
+				);
+		});
+
+		if(count > 0){
+		    $(".cart-count").append(count).show();
+		}else{
+		    $(".cart-count").hide();
+		}
 	}
 
 	
 	$(function(){
-    'use strict';
+		'use strict';
 		populate();
 		calculatetotal();
-    });
+
+		window.addEventListener('productAddedToCart', function() {
+			populate();
+			calculatetotal();
+		});
+	});
 </script>
 @endpush

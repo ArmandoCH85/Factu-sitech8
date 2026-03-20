@@ -14,6 +14,11 @@
     /* --border-color: rgb(255, 225, 195); */
     /* --background-color-pastel: rgb(255, 225, 195); */
     --bg-opacity: 0.5;
+    --danger: #ff0066;
+    --success: #00c666;
+    --warning: #ff8400;
+    --primary: #007bff;
+    --info: #1dadff; 
 }
 h1,
 .h1,
@@ -128,7 +133,7 @@ ul.menu.sf-arrows.sf-js-enabled li a {
 }
 
 .header-dropdown .search_input {
-    border-radius: 6px !important;
+    border-radius: 20px !important;
     height: 42px;
     padding: 1.2rem;
     border-color: #f4f6fa;
@@ -965,11 +970,11 @@ ul.menu.sf-arrows.sf-js-enabled li a {
 }
 
 .header-dropdown .search_input {
-    border-radius: 6px !important;
+    border-radius: 20px !important;
     height: 42px;
     padding: 1.2rem;
     border-color: hsl(var(--primary-h), var(--primary-s), 88%);
-    background: hsl(var(--primary-h), var(--primary-s), 92%)!important;
+    background: #fff !important;
     color: var(--title-color);
 }
 
@@ -1373,7 +1378,8 @@ input#ruc_reg:focus {
     border-color: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
 }
 
-label {
+label,
+.btn-search-icon {
     color: var(--title-color);
 }
 .modal button.btn.btn-primary,
@@ -1982,9 +1988,6 @@ nav.main-nav.flex-grow-1 .menu.restaurante li a {
 }
 .cart-dropdown .header-contact svg{
     color: var(--title-color) !important;
-    width: 24px;
-    height: 24px;
-    margin: 0 !important;
 }
 .header-contact .login-link {
     margin-left: 5px;
@@ -2774,7 +2777,8 @@ nav.main-nav.flex-grow-1 .menu.restaurante li a img.category-logo{
     max-height: 62px;
     object-fit: contain;
 }
-.cart-product-row .product-details{
+.cart-product-row .product-details,
+.cart-dropdown .product .product-details{
     min-width: 120px;
 }
 .cart-product-row .product-title {
@@ -2851,6 +2855,126 @@ input::-webkit-inner-spin-button {
 .bag-icon-restaurant{
     display: none;
 }
-.cart-icon-ecommerce{
-
+.btn-success,
+.el-button--success {
+    background-color: var(--success) !important;
+    border-color: var(--success) !important;
+    color: #fff !important;
+}
+.btn-success:hover,
+.el-button--success:hover {
+    background-color: color-mix(in srgb, var(--success) 80%, #000 20%) !important;
+    border-color: var(--success) !important;
+    color: #fff !important;
+}
+.btn-danger,
+.el-button--danger {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
+    color: #fff !important;
+}
+.btn-danger:hover,
+.el-button--danger:hover {
+    background-color: color-mix(in srgb, var(--danger) 80%, #000 20%) !important;
+    border-color: var(--danger) !important;
+    color: #fff !important;
+}
+.btn-warning,
+.el-button--warning {
+    background-color: var(--warning) !important;
+    border-color: var(--warning) !important;
+    color: #fff !important;
+}
+.btn-warning:hover,
+.el-button--warning:hover {
+    background-color: color-mix(in srgb, var(--warning) 80%, #000 20%) !important;
+    border-color: var(--warning) !important;
+    color: #fff !important;
+}
+.btn-info,
+.el-button--info {
+    background-color: var(--info) !important;
+    border-color: var(--info) !important;
+    color: #fff !important;
+}
+.btn-info:hover,
+.el-button--info:hover {
+    background-color: color-mix(in srgb, var(--info) 80%, #000 20%) !important;
+    border-color: var(--info) !important;
+    color: #fff !important;
+}
+.btn-search-icon{
+    cursor: pointer;
+}
+.img-product-results{
+    border-radius: 8px;
+}
+.results-container .btn-add-cart{
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+.results-container ul li{
+    border-bottom: 1px solid #f1f2f4;
+}
+.results-container ul li a:hover{
+    background-color: #fff;
+    color: var(--title-color);
+}
+.header-search-wrapper .header-menu  .suggestions-list{
+    max-height: 425px;
+    overflow-y: auto;
+    position: relative;
+}
+.suggestions-list .quantity-container{
+    height: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px;
+    border: 1px solid #f1f2f4;
+    background-color: #fff;
+    width: 130px;
+}
+.suggestions-list .quantity-container .input-quantity{
+    width: 60px;
+    height: 100% !important;
+    border: none;
+    outline: none;
+    pointer-events: none;
+}
+.suggestions-list .quantity-container button{
+    width: 35px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 1px;
+    height: 25px;
+    width: 25px;
+    min-height: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px;
+}
+.suggestions-list .quantity-container button:hover{
+    background-color: hsl(var(--primary-h), var(--primary-s), 96%);
+}
+.user-name-ecommerce .text-name{
+    color: color-mix(in srgb, var(--title-color) 85%, #ffffff) !important;
+    font-weight: normal;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+.icon-user-restaurant,
+.d-none-ecommerce{
+    display: none !important;
+}
+.dropdown-toggle-ecommerce{
+    padding-right: 0 !important;
+    padding-left: 0 !important;
 }

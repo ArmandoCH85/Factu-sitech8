@@ -21795,9 +21795,11 @@ html.dark .el-message .el-icon-warning{
     display: block; 
 }
 section.auth__form-right .auth__form.login-container{
-    border-radius: 8px !important;
+    border-radius: 20px !important;
     min-width: 350px;
     width: 35%;
+    box-shadow: 0 0 30px rgb(135 135 135 / 10%) !important;
+    background-color: #fff;
 }
 @media (max-width: 800px) {
     section.auth__form-right .auth__form.login-container {

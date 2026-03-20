@@ -65,28 +65,21 @@
                     <tr slot="heading">
                         <!-- <th>#</th> -->
                         <th class="text-start">Fecha Emisión</th>
-                        <th
-                            class="text-center"
-                            v-if="columns.delivery_date.visible"
-                        >
-                            T. Entrega
-                        </th>
-                        <th>Registrado por</th>
-                        <th>Vendedor</th>
+                        <th class="text-center" v-if="columns.delivery_date.visible">T. Entrega</th>
+                        <th v-if="columns.registered_by && columns.registered_by.visible">Registrado por</th>
+                        <th v-if="columns.seller && columns.seller.visible">Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
                         <th>Cotización</th>
-                        <th>Comprobantes</th>
-                        <th>Notas de venta</th>
+                        <th v-if="columns.documents && columns.documents.visible">Comprobantes</th>
+                        <th v-if="columns.sale_notes && columns.sale_notes.visible">Notas de venta</th>
                         <th v-if="columns.order_note.visible">Pedido</th>
-                        <th>Oportunidad Venta</th>
-                        <th v-if="columns.referential_information.visible">
-                            Inf.Referencial
-                        </th>
+                        <th v-if="columns.sale_opportunity && columns.sale_opportunity.visible">Oportunidad Venta</th>
+                        <th v-if="columns.referential_information.visible">Inf.Referencial</th>
                         <th v-if="columns.contract.visible">Contrato</th>
                         <!-- <th>Estado</th> -->
                         <th v-if="columns.exchange_rate_sale.visible">T.C.</th>
-                        <th class="text-center">Moneda</th>
+                        <th class="text-center" v-if="columns.currency_type_id && columns.currency_type_id.visible">Moneda</th>
                         <th class="text-center"></th>
                         <th
                             class="text-end"
@@ -132,8 +125,8 @@
                         >
                             {{ row.delivery_date }}
                         </td>
-                        <td>{{ row.user_name }}</td>
-                        <td>{{ row.seller_name }}</td>
+                        <td v-if="columns.registered_by && columns.registered_by.visible">{{ row.user_name }}</td>
+                        <td v-if="columns.seller && columns.seller.visible">{{ row.seller_name }}</td>
                         <td>
                             {{ row.customer_name }}<br /><small
                                 v-text="row.customer_number"
@@ -159,30 +152,21 @@
                             </template>
                         </td>
                         <td>{{ row.identifier }}</td>
-                        <td>
+                        <td v-if="columns.documents && columns.documents.visible">
                             <template v-for="(document, i) in row.documents">
                                 <template v-if="document.is_voided_or_rejected">
                                     <label :key="i" class="d-block text-danger">
                                         {{ document.number_full }}
-                                        <!-- {{ document.number_full }} ({{document.state_type_description}}) -->
                                     </label>
                                 </template>
                                 <template v-else>
-                                    <label
-                                        :key="i"
-                                        v-text="document.number_full"
-                                        class="d-block"
-                                    ></label>
+                                    <label :key="i" v-text="document.number_full" class="d-block"></label>
                                 </template>
                             </template>
                         </td>
-                        <td>
+                        <td v-if="columns.sale_notes && columns.sale_notes.visible">
                             <template v-for="(sale_note, i) in row.sale_notes">
-                                <label
-                                    :key="i"
-                                    v-text="sale_note.number_full"
-                                    class="d-block"
-                                ></label>
+                                <label :key="i" v-text="sale_note.number_full" class="d-block"></label>
                             </template>
                         </td>
                         <td v-if="columns.order_note.visible">
@@ -198,8 +182,7 @@
                                 </label>
                             </template>
                         </td>
-                        <td>
-
+                        <td v-if="columns.sale_opportunity && columns.sale_opportunity.visible">
                             <el-popover
                                 placement="right"
                                 v-if="row.sale_opportunity"
@@ -211,31 +194,20 @@
                                         <tr>
                                             <td><strong>O. Venta: </strong></td>
                                             <td>
-                                                <strong>{{
-                                                    row.sale_opportunity_number_full
-                                                }}</strong>
+                                                <strong>{{ row.sale_opportunity_number_full }}</strong>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><strong>Detalle: </strong></td>
                                             <td>
-                                                <strong>{{
-                                                    row.sale_opportunity.detail
-                                                }}</strong>
+                                                <strong>{{ row.sale_opportunity.detail }}</strong>
                                             </td>
                                         </tr>
                                         <tr class="mt-4 mb-4">
-                                            <td>
-                                                <strong>F. Emisión:</strong>
-                                            </td>
-                                            <td>
-                                                <strong>{{
-                                                    row.date_of_issue
-                                                }}</strong>
-                                            </td>
+                                            <td><strong>F. Emisión:</strong></td>
+                                            <td><strong>{{ row.date_of_issue }}</strong></td>
                                         </tr>
                                     </table>
-
                                     <div class="table-responsive mt-4">
                                         <table class="table">
                                             <thead>
@@ -247,17 +219,9 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr
-                                                    v-for="(row, index) in row
-                                                        .sale_opportunity.items"
-                                                    :key="index"
-                                                >
+                                                <tr v-for="(row, index) in row.sale_opportunity.items" :key="index">
                                                     <td>{{ index + 1 }}</td>
-                                                    <td>
-                                                        {{
-                                                            row.item.description
-                                                        }}
-                                                    </td>
+                                                    <td>{{ row.item.description }}</td>
                                                     <td>{{ row.quantity }}</td>
                                                     <td>{{ row.total }}</td>
                                                 </tr>
@@ -265,9 +229,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <el-button slot="reference"
-                                    ><i class="fa fa-eye"></i
-                                ></el-button>
+                                <el-button slot="reference"><i class="fa fa-eye"></i></el-button>
                             </el-popover>
                         </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
@@ -280,7 +242,7 @@
                         <td v-if="columns.exchange_rate_sale.visible">
                             {{ row.exchange_rate_sale }}
                         </td>
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type_id && columns.currency_type_id.visible">{{ row.currency_type_id }}</td>
 
                         <td class="text-end">
                             <button
@@ -293,36 +255,36 @@
                         </td>
 
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_exportation) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_free.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_free) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_unaffected) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_exonerated) }}
                         </td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
                         <td class="text-end">
                             <button
                                 type="button"
@@ -517,42 +479,21 @@ export default {
             showDialogOptionsPdf: false,
             state_types: [],
             columns: {
-                total_exportation: {
-                    title: "T.Exportación",
-                    visible: false
-                },
-                total_unaffected: {
-                    title: "T.Inafecto",
-                    visible: false
-                },
-                total_exonerated: {
-                    title: "T.Exonerado",
-                    visible: false
-                },
-                total_free: {
-                    title: "T.Gratuito",
-                    visible: false
-                },
-                contract: {
-                    title: "Contrato",
-                    visible: false
-                },
-                delivery_date: {
-                    title: "T.Entrega",
-                    visible: false
-                },
-                referential_information: {
-                    title: "Inf.Referencial",
-                    visible: false
-                },
-                order_note: {
-                    title: "Pedidos",
-                    visible: false
-                },
-                exchange_rate_sale: {
-                    title: "Tipo de cambio",
-                    visible: false
-                }
+                total_exportation: { title: "T.Exportación", visible: false },
+                total_unaffected: { title: "T.Inafecto", visible: false },
+                total_exonerated: { title: "T.Exonerado", visible: false },
+                total_free: { title: "T.Gratuito", visible: false },
+                contract: { title: "Contrato", visible: false },
+                delivery_date: { title: "T.Entrega", visible: false },
+                referential_information: { title: "Inf.Referencial", visible: false },
+                order_note: { title: "Pedidos", visible: false },
+                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
+                documents: { title: "Comprobantes", visible: false },
+                sale_notes: { title: "Notas de venta", visible: false },
+                sale_opportunity: { title: "Oportunidad Venta", visible: false },
+                currency_type_id: { title: "Moneda", visible: false },
+                registered_by: { title: "Registrado por", visible: false },
+                seller: { title: "Vendedor", visible: false }
             },
             decimal_quantity: 2
         };
@@ -580,8 +521,14 @@ export default {
             }));
         },
         formatDecimal(value) {
-            if (value === undefined || value === null || isNaN(value)) return '';
-            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+            if (value === undefined || value === null || value === '') return '';
+            let cleanValue = value;
+            if (typeof cleanValue === 'string') {
+                cleanValue = cleanValue.replace(/,/g, '').trim();
+            }
+            if (isNaN(Number(cleanValue))) return '';
+            const num = Number(cleanValue);
+            return num.toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
         },
         formatDate(date) {
             if (!date) return null;

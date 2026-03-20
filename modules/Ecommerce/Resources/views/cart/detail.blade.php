@@ -439,6 +439,8 @@
           if (typeof google !== 'undefined') {
               this.initMap()
           }
+
+          this.fetchLocations();
         },
         created() {
             let array = localStorage.getItem('products_cart');
@@ -452,7 +454,7 @@
                     return obj
                 })
             }
-            // console.log(this.records)
+            console.log("this.records", this.records);
             this.initForm();
 
         },
@@ -1082,9 +1084,6 @@
                 this.selectedDistrict = '';
             }
         },
-        mounted() {
-            this.fetchLocations();
-        }
     })
 
 </script>

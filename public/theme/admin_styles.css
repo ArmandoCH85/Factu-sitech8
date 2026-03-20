@@ -1263,6 +1263,30 @@ div.sub-title.text-muted{
     line-height: 1;
     word-break: keep-all;
 }
+.el-message--success {
+    background-color: color-mix(in srgb, var(--success) 70%, #ffffff) !important;
+    border-color: var(--success) !important;
+}
+.el-message--success .el-message__content,
+.el-message .el-icon-success{
+    color: #fff !important;
+}
+.el-message--error {
+    background-color: color-mix(in srgb, var(--danger) 70%, #ffffff) !important;
+    border-color: var(--danger) !important;
+}
+.el-message--error .el-message__content,
+.el-message .el-icon-error{
+    color: #fff !important;
+}
+.el-message--warning {
+    background-color: color-mix(in srgb, var(--warning) 70%, #ffffff) !important;
+    border-color: var(--warning) !important;
+}
+.el-message--warning .el-message__content,
+.el-message .el-icon-warning{
+    color: #fff !important;
+}
 @media only screen and (min-width: 768px) {
     html.sidebar-left-big-icons .sidebar-left {
         width: 215px;

@@ -41,7 +41,7 @@
         <hr v-if="showWelcomePanel">
 
         <div class="card mb-0 row-new bg-transparent dashboard-cards mt-0">            
-            <div class="row" v-show="showFilters">
+            <div class="row px-2" v-show="showFilters">
                 <div class="col-12">
                     <section class="card card-dashboard">
                         <div class="card-body pt-2 pb-0">

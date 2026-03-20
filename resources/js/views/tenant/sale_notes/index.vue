@@ -233,28 +233,28 @@
                             {{ formatDate(row.due_date) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_exportation.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_exportation) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_free.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_free) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_unaffected.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_unaffected) }}
                         </td>
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_exonerated.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
@@ -262,27 +262,27 @@
                         </td>
 
                         <td
-                            class="text-end"
+                            class="text-end text-nowrap"
                             v-if="columns.total_taxed.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_taxed) }}
                         </td>
-                        <td class="text-end" v-if="columns.total_igv.visible">
+                        <td class="text-end text-nowrap" v-if="columns.total_igv.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_igv) }}
                         </td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
 
                         <td
-                            class="text-center"
+                            class="text-center text-nowrap"
                             v-if="columns.total_paid.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_paid) }}
                         </td>
                         <td
-                            class="text-center"
+                            class="text-center text-nowrap"
                             v-if="columns.total_pending_paid.visible"
                         >
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
@@ -758,8 +758,14 @@ export default {
             }));
         },
         formatDecimal(value) {
-            if (value === undefined || value === null || isNaN(value)) return '';
-            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+            if (value === undefined || value === null || value === '') return '';
+            let cleanValue = value;
+            if (typeof cleanValue === 'string') {
+                cleanValue = cleanValue.replace(/,/g, '').trim();
+            }
+            if (isNaN(Number(cleanValue))) return '';
+            const num = Number(cleanValue);
+            return num.toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
         },
         formatDate(date) {
             if (!date) return null;

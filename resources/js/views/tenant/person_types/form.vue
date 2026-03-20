@@ -10,6 +10,21 @@
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div> 
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.description}">
+                            <label class="control-label">Seleccionar Precio: <span class="text-danger">*</span></label>
+                                    <el-select v-model="form.price_label_id"
+                                            placeholder="Precio por cliente"
+                                            popper-class="el-select-currency"
+                                    >
+                                        <el-option v-for="option in price_labels"
+                                                :key="option.id"
+                                                :label="option.label"
+                                                :value="option.id"></el-option>
+                                    </el-select>
+                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                        </div>
+                    </div> 
                 </div>  
             </div>
             <div class="form-actions text-end mt-4">
@@ -30,6 +45,7 @@
                 titleDialog: null,
                 loading_submit: false,
                 resource: 'person-types',
+                price_labels: [],
                 errors: {},
                 form: {}, 
             }
@@ -43,6 +59,7 @@
                 this.form = {
                     id: null,
                     description: null, 
+                    price_label_id: null,
                 }
             },
             create() { 
@@ -54,6 +71,11 @@
                             this.form = response.data
                         })
                 }
+
+                this.$http.get("/price-labels")
+                    .then(response => {
+                        this.price_labels = response.data.data
+                    })
             }, 
             submit() {
                 this.loading_submit = true

@@ -300,7 +300,11 @@
                                 <label
                                     class="control-label font-weight-bold"
                                 >
-                                    Cliente
+                                    <el-badge type="success" :value="getCustomer.person_type" class="item">
+                                        <span>
+                                            Cliente
+                                        </span>
+                                    </el-badge>
                                     <!-- <a
                                         href="#"
                                         @click.prevent="
@@ -349,7 +353,12 @@
                                         </div>
                                     </template>
                                 </el-select>
-                                <span class="btn-add-new btn-add-new-invoice" @click.prevent="showDialogNewPerson = true" title="Agregar nuevo cliente">
+                                <template v-if="form.customer_id">
+                                    <span class="btn-add-new btn-add-new-invoice" style="right: 40px;" @click.prevent="showDialogNewPerson = true; editPerson = true" title="Editar cliente">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+                                    </span>
+                                </template>
+                                <span class="btn-add-new btn-add-new-invoice" @click.prevent="showDialogNewPerson = true; editPerson = false" title="Agregar nuevo cliente">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                                 </span>
                                 <small
@@ -3657,7 +3666,7 @@
             :isUpdateDocument="isUpdateDocument"
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
             ref="form_add_item"
-            :selectedOptionPrice="selected_option_price"
+            :selectedOptionPrice.sync="selected_option_price"
             @add="addRow"
         ></document-form-item>
 
@@ -3665,6 +3674,7 @@
             :document_type_id="form.document_type_id"
             :external="true"
             :input_person="personFormInput"
+            :recordId="editPerson ? form.customer_id : null"
             :showDialog.sync="showDialogNewPerson"
             type="customers"
         ></person-form>
@@ -4020,6 +4030,7 @@ export default {
             resource: "documents",
             showDialogAddItem: false,
             showDialogNewPerson: false,
+            editPerson: false,
             showDialogOptions: false,
             loading_submit: false,
             loading_form: false,
@@ -4219,6 +4230,11 @@ export default {
             }
             return this.form.total < amount;
         },
+        getCustomer(){
+            return _.find(this.customers, {
+                id: this.form.customer_id
+            }) ?? {};
+        }
     },
     async created() {
         this.loadConfiguration();
@@ -7243,6 +7259,11 @@ export default {
                 this.form.seller_id = seller.id;
             }
 
+            if (customer.price_label_id) {
+                this.selected_option_price = `price_label_${customer.price_label_id}`;
+            } else {
+                this.selected_option_price = 1;
+            }
             // retencion para clientes con ruc
 
             this.validateCustomerRetention(customer.identity_document_type_id);

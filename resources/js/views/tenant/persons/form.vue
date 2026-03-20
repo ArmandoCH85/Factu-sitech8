@@ -1035,8 +1035,8 @@ export default {
                                 phone: null,
                             }
                         }
-                        this.filterProvinces()
-                        this.filterDistricts()
+                        // this.filterProvinces()
+                        // this.filterDistricts()
                     }).then(() => {
                     this.updateEmail()
 

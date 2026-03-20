@@ -119,7 +119,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                         @endforeach
                     </select>
                 </div>
-            @endif            
+            @endif
 
             @if($showMultiUser)
                 <div class="sidebar-multi-user-selector-container" id="sidebar-multi-user-selector-container" style="display: {{ $showInSidebar ? 'block' : 'none' }};">
@@ -173,7 +173,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                             </div>
                         </div>
                     @endif
-                </div>                
+                </div>
             </div>
         </div>
     @endif
@@ -1366,12 +1366,6 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                             </a>
                             <ul class="nav nav-children">
                                 <li
-                                    class="{{ ($firstLevel === 'full_suscription' && $secondLevel === 'client') ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ route('tenant.fullsuscription.client.index') }}">
-                                        Clientes
-                                    </a>
-                                </li>
-                                <li
                                     class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ route('tenant.fullsuscription.plans.index') }}">
                                         Planes
@@ -1553,7 +1547,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                         </li>
                     @endif
 
-                    {{-- Produccion 
+                    {{-- Produccion
                     @if(in_array('production_app', $vc_modules))
 
                                         <li class=" nav-parent {{ (
@@ -1785,7 +1779,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
         const payload = {
             establishment_id: establishmentId
         };
-        
+
         const selector = document.getElementById('sidebar-establishment-selector');
         if (selector) {
             selector.disabled = true;
@@ -1805,19 +1799,19 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                 const mainWrapper = document.getElementById('main-wrapper');
                 if (mainWrapper && mainWrapper.__vue__) {
                     const vueInstance = mainWrapper.__vue__;
-                    
+
                     if (vueInstance.$message) {
                         vueInstance.$message({
                             type: 'success',
                             message: data.message
                         });
                     }
-                    
+
                     if (vueInstance.$eventHub) {
                         vueInstance.$eventHub.$emit('establishmentChanged', establishmentId);
                     }
                 }
-                
+
                 if (selector) {
                     selector.disabled = false;
                 }
@@ -1825,7 +1819,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
         })
         .catch(error => {
             console.error('Error al cambiar establecimiento:', error);
-            
+
             const mainWrapper = document.getElementById('main-wrapper');
             if (mainWrapper && mainWrapper.__vue__ && mainWrapper.__vue__.$message) {
                 mainWrapper.__vue__.$message({
@@ -1833,7 +1827,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                     message: 'Error al cambiar establecimiento'
                 });
             }
-            
+
             if (selector) {
                 selector.disabled = false;
             }
@@ -1872,9 +1866,9 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
         // Dropdown de establecimiento
         const establishmentIcon = document.getElementById('establishment-icon-trigger');
         const establishmentDropdown = document.getElementById('establishment-dropdown');
-        
+
         if (establishmentIcon && establishmentDropdown) {
-            
+
             establishmentIcon.addEventListener('click', function(e) {
                 e.stopPropagation();
                 establishmentDropdown.classList.toggle('show');
@@ -1882,7 +1876,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
 
             });
 
-            
+
             document.addEventListener('click', function(e) {
                 if (!establishmentIcon.contains(e.target) && !establishmentDropdown.contains(e.target)) {
                     establishmentDropdown.classList.remove('show');
@@ -1890,7 +1884,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                 }
             });
 
-            
+
             establishmentDropdown.addEventListener('click', function(e) {
                 e.stopPropagation();
             });
@@ -1916,7 +1910,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
             }
 
             if (typeof showInSidebarEvent !== 'undefined') {
-                
+
                 if (selectorContainer) {
                     selectorContainer.style.display = showInSidebarEvent ? 'block' : 'none';
                 }
@@ -2204,7 +2198,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
         width: 12px;
         height: 12px;
         margin-right: 5px
-    }        
+    }
     tenant-multi-users-change-client.sidebar-multi-user-selector {
         display: block;
         position: relative;

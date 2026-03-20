@@ -59,6 +59,7 @@
                             Route::post('/tables', 'PlansFullSuscriptionController@Tables');
                             Route::post('/record', 'PlansFullSuscriptionController@Record');
 
+                            Route::post('/{id}/status', 'PlansFullSuscriptionController@updateStatus');
                             Route::delete('/{id}', 'PlansFullSuscriptionController@destroy');
 
                         });

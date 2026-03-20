@@ -109,6 +109,8 @@ use App\Http\Controllers\Tenant\SaleNoteController;
             'apply_concurrency' => 'bool',
             'enabled_concurrency' => 'bool',
             'start_date' => 'date',
+            'trial_start_date' => 'date',
+            'trial_days' => 'int',
             'automatic_date_of_issue' => 'date',
             'exchange_rate_sale' => 'float',
             'total_prepayment' => 'float',
@@ -142,6 +144,8 @@ use App\Http\Controllers\Tenant\SaleNoteController;
             'editable',
             'deletable',
             'start_date',
+            'trial_start_date',
+            'trial_days',
             'quantity_period',
             'parent_customer_id',
             'customer_id',
@@ -291,7 +295,7 @@ use App\Http\Controllers\Tenant\SaleNoteController;
                     "total_taxes" => $plan->total_taxes ?? 0,
                     "total_value" => $plan->total_value ?? 0,
                     "subtotal" => $plan->total ?? 0,
-                    "total" => $plan->total ?? 0, 
+                    "total" => $plan->total ?? 0,
                     "operation_type_id" => null,
 
 
@@ -406,12 +410,117 @@ use App\Http\Controllers\Tenant\SaleNoteController;
         {
             $data = $this->toArray();
             $data['plan'] = $this->suscription_plan->getCollectionData();
+            $data['end_date']      = $this->calculateEndDate();
+            $data['status']        = $this->calculateStatus();
+            $data['next_due_date'] = $this->getNextDueDate();
 
             if ($withDocuments == true) {
                 $data['sales_note'] = $this->getSalesNote();
-                $data['invoices'] = $this->getInvoice();
+                $data['invoices']   = $this->getInvoice();
             }
             return $data;
+        }
+
+        /**
+         * Calcula la fecha del último cobro basándose en start_date, quantity_period y cat_period.
+         * Retorna null si el plan es ilimitado o faltan datos.
+         */
+        public function calculateEndDate(): ?string
+        {
+            if (!$this->start_date || !$this->quantity_period) return null;
+
+            $plan = $this->suscription_plan;
+            if ($plan && $plan->unlimited) return null;
+
+            $catPeriod = $this->cat_period ?? CatPeriod::find($this->cat_period_id);
+            if (!$catPeriod) return null;
+
+            $qty     = max(0, (int)$this->quantity_period - 1);
+            $endDate = $this->addPeriodToDate(Carbon::parse($this->start_date->format('Y-m-d')), $catPeriod->period, $qty);
+
+            return $endDate->format('Y-m-d');
+        }
+
+        /**
+         * Añade qty períodos a una fecha Carbon según el código de período de CatPeriod.
+         */
+        private function addPeriodToDate(Carbon $date, string $period, int $qty): Carbon
+        {
+            return match ($period) {
+                'Y' => $date->addYears($qty),
+                'D' => $date->addDays($qty),
+                'W' => $date->addWeeks($qty),
+                'Q' => $date->addDays($qty * 15),   // quincenal: 15 días por cobro
+                'B' => $date->addMonths($qty * 2),  // bimestral
+                'T' => $date->addMonths($qty * 3),  // trimestral
+                'S' => $date->addMonths($qty * 6),  // semestral
+                default => $date->addMonths($qty),  // mensual y fallback
+            };
+        }
+
+        /**
+         * Calcula el estado de la suscripción: en_prueba, activa, pendiente_pago, vencida.
+         */
+        public function calculateStatus(): string
+        {
+            $today = Carbon::today();
+
+            // Período de prueba: entre trial_start_date (inclusive) y start_date (exclusive)
+            if ($this->trial_start_date && $this->trial_days && $this->start_date) {
+                $trialStart  = Carbon::parse($this->trial_start_date->format('Y-m-d'));
+                $firstCharge = Carbon::parse($this->start_date->format('Y-m-d'));
+                if ($today->greaterThanOrEqualTo($trialStart) && $today->lessThan($firstCharge)) {
+                    return 'en_prueba';
+                }
+            }
+
+            // Plan ilimitado: nunca vence
+            $plan = $this->suscription_plan;
+            if ($plan && $plan->unlimited) {
+                return $this->hasPendingPayment() ? 'pendiente_pago' : 'activa';
+            }
+
+            $endDateStr = $this->calculateEndDate();
+            if ($endDateStr) {
+                $endDate = Carbon::parse($endDateStr);
+                if ($today->isAfter($endDate)) {
+                    return 'vencida';
+                }
+            }
+
+            return $this->hasPendingPayment() ? 'pendiente_pago' : 'activa';
+        }
+
+        /**
+         * Verifica si existe alguna nota de venta asociada no cancelada con fecha vencida.
+         */
+        private function hasPendingPayment(): bool
+        {
+            if (empty($this->sale_notes)) return false;
+            $ids = array_filter(array_map('intval', explode(',', $this->sale_notes)));
+            if (empty($ids)) return false;
+
+            return SaleNote::whereIn('id', $ids)
+                ->where('total_canceled', false)
+                ->where('due_date', '<', Carbon::today()->toDateString())
+                ->exists();
+        }
+
+        /**
+         * Retorna la fecha de vencimiento de la próxima nota de venta pendiente.
+         */
+        public function getNextDueDate(): ?string
+        {
+            if (empty($this->sale_notes)) return null;
+            $ids = array_filter(array_map('intval', explode(',', $this->sale_notes)));
+            if (empty($ids)) return null;
+
+            $note = SaleNote::whereIn('id', $ids)
+                ->where('total_canceled', false)
+                ->orderBy('due_date')
+                ->first();
+
+            return ($note && $note->due_date) ? $note->due_date->format('Y-m-d') : null;
         }
 
         public function getSalesNote()

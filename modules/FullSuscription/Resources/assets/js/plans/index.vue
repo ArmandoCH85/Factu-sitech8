@@ -24,60 +24,73 @@
             </div>
         </div>
         <div class="card tab-content-default row-new mb-0">
-            <!-- <div class="card-header bg-info">
-                <h3 class="my-0">
-                    Listado de planes
-                </h3>
-            </div> -->
             <div class="card-body">
-                <data-table>
+                <data-table :periods="periods">
                     <tr slot="heading">
-                        <!-- <th>
-                            #
-                        </th> -->
-                        <th class="text-start">
-                            Periodo
-                        </th>
-                        <th class="text-end">
-                            Cant. Veces
-                        </th>
                         <th class="text-start">
                             Nombre
                         </th>
                         <th class="text-start">
-                            Descripción
+                            Estado
                         </th>
-                        <!--
-
-                         <th class="text-center">
-                             Total
-                         </th>
-                          -->
+                        <th class="text-start">
+                            Frecuencia
+                        </th>
+                        <th class="text-end">
+                            Cant. Cobros
+                        </th>
+                        <th class="text-end">
+                            Periodo de Prueba
+                        </th>
+                        <th class="text-end">
+                            Productos/Servicios
+                        </th>
+                        <th class="text-end">
+                            Total
+                        </th>
+                        <th class="text-end">
+                            Suscriptores
+                        </th>
                         <th class="text-end">
                             Acciones
                         </th>
                     </tr>
                     <tr slot-scope="{ index, row }">
-                        <!-- <td>
-                            {{ index }}
-                        </td> -->
-                        <td class="text-start">
-                            {{ row.period }}
-                        </td>
-                        <td class="text-end">
-                            {{ row.quantity_period }}
-                        </td>
                         <td class="text-start">
                             {{ row.name }}
                         </td>
                         <td class="text-start">
-                            {{ row.description }}
+                            <el-switch
+                                v-model="row.status"
+                                active-color="#13ce66"
+                                inactive-color="#ff4949"
+                                @change="toggleStatus(row)"
+                            ></el-switch>
                         </td>
-                        <!--
-                            <td class="text-right">
-                                {{ row.total }}
-                            </td>
-                        -->
+                        <td class="text-start">
+                            <el-tag type="info">{{ row.period }}</el-tag>
+                        </td>
+                        <td class="text-end">
+                            <el-tag v-if="row.unlimited">Ilimitado</el-tag>
+                            <el-tag v-else type="info">{{ row.quantity_period }}</el-tag>
+                        </td>
+                        <td class="text-end">
+                            <template v-if="row.trial_days > 0">
+                                <el-tag type="warning">{{ row.trial_days }} días</el-tag>
+                            </template>
+                            <template v-else>
+                                <el-tag type="info">Sin periodo de prueba</el-tag>
+                            </template>
+                        </td>
+                        <td class="text-end">
+                            {{ row.items.length }}
+                        </td>
+                        <td class="text-end font-weight-bold">
+                            {{ row.currency.symbol }} {{ row.total }}
+                        </td>
+                        <td class="text-end">
+                            {{ row.subscribers }}
+                        </td>
                         <td class="text-end">
                             <button
                                 class="btn btn-xs btn-info btn-shad me-1"
@@ -161,7 +174,7 @@ export default {
     created() {
         this.loadConfiguration()
 
-        this.$store.commit('setItemSearchExtraParameters', {'only_service': 1});
+        this.$store.commit('setItemSearchExtraParameters', {'only_service': 0});
 
         this.$store.commit('setConfiguration', this.configuration)
         this.$store.commit('setResource', 'plans')
@@ -171,11 +184,8 @@ export default {
         })
         this.searchExchangeRateByDate(this.date).then(response => {
             this.$store.commit('setExchangeRate', response)
-            // this.form.exchange_rate_sale = this.exchange_rate
-
         });
         this.getCommonData();
-
     },
     methods: {
         ...mapActions([
@@ -191,7 +201,6 @@ export default {
                     this.$store.commit('setPaymentMethodTypes', response.data.payments_credit)
                 })
         },
-
 
         sendReload() {
             this.$eventHub.$emit('reloadData')
@@ -212,7 +221,18 @@ export default {
             this.destroy(`/full_suscription/${this.resource}/${id}`).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
-        }
-    }
-}
+        },
+        toggleStatus(row) {
+            // Enviar estado al servidor
+            this.$http.post(`/full_suscription/${this.resource}/${row.id}/status`, {status: row.status})
+                .then((response) => {
+                    this.$message.success('Estado actualizado correctamente');
+                })
+                .catch((error) => {
+                    row.status = !row.status;
+                    this.$message.error('Error al actualizar el estado');
+                })
+        },
+    },
+};
 </script>

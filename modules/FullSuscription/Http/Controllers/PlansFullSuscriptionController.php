@@ -35,12 +35,38 @@
         public function Records(Request $request)
         {
             $records = SuscriptionPlan::query();
-            if ($request->has('column') && !empty($request->column)) {
-                $records->where($request->column, 'like', "%{$request->value}%");
+
+            // Búsqueda por nombre o descripción
+            if ($request->filled('q')) {
+                $q = $request->q;
+                $records->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%");
+                });
             }
+
+            // Filtro por frecuencia (período)
+            if ($request->filled('frequency') && $request->frequency !== 'all') {
+                $records->where('cat_period_id', $request->frequency);
+            }
+
+            // Filtro por estado
+            if ($request->filled('status') && $request->status !== 'all') {
+                $records->where('status', (bool)($request->status));
+            }
+
+            // Filtro por período de prueba
+            if ($request->filled('trial') && $request->trial !== 'all') {
+                if ($request->trial === 'with') {
+                    $records->whereNotNull('trial_days')->where('trial_days', '>', 0);
+                } else {
+                    $records->whereNull('trial_days')->orWhere('trial_days', '<=', 0);
+                }
+            }
+
             /** @var Builder $records */
             $records->orderBy('name');
-            // ->where('type', $type)
+
             return new SuscriptionPlansCollection($records->paginate(config('tenant.items_per_page')));
         }
 
@@ -68,6 +94,23 @@
                 'message' => 'Plan eliminado con éxito'
             ];
 
+        }
+
+        /**
+         * Actualiza el estado `status` de un plan.
+         */
+        public function updateStatus(Request $request, $id)
+        {
+            $plan = SuscriptionPlan::findOrFail($id);
+            if ($request->has('status')) {
+                $plan->status = (bool)$request->status;
+                $plan->save();
+            }
+
+            return [
+                'success' => true,
+                'status' => (bool)$plan->status
+            ];
         }
 
         /**

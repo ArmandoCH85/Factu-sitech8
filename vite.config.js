@@ -9,7 +9,7 @@ export default defineConfig({
     host: '127.0.0.1',
     port: 5173,
     cors: true,
-    origin: 'http://1.facturaloperu-pro7.oo',
+    origin: process.env.APP_URL,
     strictPort: true,
   },
   plugins: [

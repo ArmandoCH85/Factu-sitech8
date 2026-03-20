@@ -5,7 +5,6 @@
     use App\Http\Controllers\SearchCustomerController;
     use Carbon\Carbon;
     use Illuminate\Contracts\View\Factory;
-    use Illuminate\Database\Query\Builder;
     use Illuminate\Foundation\Application;
     use Illuminate\Http\Request;
     use Illuminate\Http\Response;
@@ -37,14 +36,74 @@
 
         public function Records(Request $request)
         {
-            $records = UserRelSuscriptionPlan::query();
-            if ($request->has('column') && !empty($request->column)) {
-                $records->where($request->column, 'like', "%{$request->value}%");
+            $query = UserRelSuscriptionPlan::with(['suscription_plan', 'cat_period']);
+
+            // Filtro por plan
+            if ($request->filled('plan_id')) {
+                $query->where('suscription_plan_id', (int) $request->plan_id);
             }
-            /** @var Builder $records */
-            // $records->orderBy('name');
-            // ->where('type', $type)
-            return new UserRelSuscriptionPlansCollection($records->paginate(config('tenant.items_per_page')));
+
+            // Filtro por texto: busca en name, number y description dentro del JSON parent_customer
+            if ($request->filled('q')) {
+                $q = $request->q;
+                $query->where(function ($sub) use ($q) {
+                    $sub->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(parent_customer, '$.name')) LIKE ?",        ["%{$q}%"])
+                        ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(parent_customer, '$.number')) LIKE ?",      ["%{$q}%"])
+                        ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(parent_customer, '$.description')) LIKE ?", ["%{$q}%"]);
+                });
+            }
+
+            // Filtros que requieren cálculo en PHP: status y vencimiento
+            $needsPhpFilter = $request->filled('status') || $request->filled('vencimiento');
+
+            if ($needsPhpFilter) {
+                $records = $query->get();
+
+                // Filtrar por estado calculado
+                if ($request->filled('status')) {
+                    $status = $request->status;
+                    $records = $records->filter(fn ($r) => $r->calculateStatus() === $status);
+                }
+
+                // Filtrar por fecha de vencimiento calculada
+                if ($request->filled('vencimiento')) {
+                    $today      = Carbon::today();
+                    $vencimiento = $request->vencimiento;
+                    $records = $records->filter(function ($r) use ($vencimiento, $today) {
+                        $endDate = $r->calculateEndDate();
+                        if ($endDate === null) {
+                            // Plan ilimitado: no aparece en filtros de fecha de vencimiento
+                            return false;
+                        }
+                        $end = Carbon::parse($endDate);
+                        return match ($vencimiento) {
+                            'vence_hoy'   => $end->isSameDay($today),
+                            'proximos_7'  => $end->between($today, $today->copy()->addDays(7)),
+                            'proximos_30' => $end->between($today, $today->copy()->addDays(30)),
+                            'ya_vencidos' => $end->lt($today),
+                            default       => true,
+                        };
+                    });
+                }
+
+                // Paginación manual sobre la colección filtrada
+                $perPage = (int) config('tenant.items_per_page', 20);
+                $page    = max(1, (int) ($request->page ?? 1));
+                $total   = $records->count();
+                $items   = $records->values()->forPage($page, $perPage);
+
+                $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $items,
+                    $total,
+                    $perPage,
+                    $page,
+                    ['path' => $request->url()]
+                );
+
+                return new UserRelSuscriptionPlansCollection($paginator);
+            }
+
+            return new UserRelSuscriptionPlansCollection($query->paginate(config('tenant.items_per_page')));
         }
 
         public function Tables()

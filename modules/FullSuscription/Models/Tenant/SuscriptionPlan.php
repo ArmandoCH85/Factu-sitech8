@@ -94,7 +94,10 @@
             'total_other_taxes' => 'float',
             'total_taxes' => 'float',
             'total_value' => 'float',
-            'total' => 'float'
+            'total' => 'float',
+            'unlimited' => 'bool',
+            'trial_days' => 'int',
+            'status' => 'bool'
         ];
 
         protected $fillable = [
@@ -130,7 +133,10 @@
             'legends',
             'terms_condition',
             'description',
-            'total'
+            'total',
+            'unlimited',
+            'trial_days',
+            'status'
         ];
 
 
@@ -432,10 +438,8 @@
          */
         public function getCollectionData()
         {
-
-
             $currencyType = $this->currency_type;
-            if (empty($this->currency_type_id)) $currencyType = CurrencyType::find('PEN');
+            if (!$currencyType) $currencyType = CurrencyType::find('PEN');
 
             $items = $this->items->transform(function ($item) use ($currencyType) {
                 return $item->getCollectionData($currencyType);
@@ -447,9 +451,10 @@
                 'items' => $items,
                 'description' => $this->description,
                 'period' => $this->cat_period->name,
-                'currency_type' => $currencyType,
+                'currency' => $currencyType,
                 'periods' => $this->cat_period->period,
-
+                'unlimited' => (bool)$this->unlimited,
+                'subscribers' => count(UserRelSuscriptionPlan::where('suscription_plan_id', $this->id)->get()),
             ];
             $data['hasSuscription'] = (bool)count(UserRelSuscriptionPlan::where('suscription_plan_id', $this->id)->get()) > 0;
             $data = array_merge($data, $this->toArray());

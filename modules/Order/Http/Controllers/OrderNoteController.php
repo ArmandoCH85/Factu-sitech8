@@ -100,7 +100,8 @@
             return [
                 'date_of_issue' => 'Fecha de emisión',
                 'delivery_date' => 'Fecha de entrega',
-                'user_name' => 'Vendedor'
+                'user_name' => 'Vendedor',
+                'customer' => 'Cliente',
             ];
         }
 
@@ -122,6 +123,12 @@
                 $records = OrderNote::whereHas('user', function ($query) use ($request) {
                     $query->where('name', 'like', "%{$request->value}%");
                 })
+                    ->whereTypeUser()
+                    ->latest();
+
+            } elseif ($request->column == 'customer') {
+
+                $records = OrderNote::whereRaw("LOWER(JSON_UNQUOTE(JSON_EXTRACT(customer, '$.name'))) LIKE ?", ['%' . strtolower($request->value) . '%'])
                     ->whereTypeUser()
                     ->latest();
 

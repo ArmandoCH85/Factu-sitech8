@@ -995,6 +995,16 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
         </tbody>
     </table>
     <table class="full-width">
+        @php
+            $personType = $document->person->person_type;
+        @endphp
+        @if ($personType->enabled_description_person_type)
+            <tr width="65%" >
+                <td>
+                    <strong>{{ $personType->description }}</strong> : {{ $personType->description_person_type }}
+                </td>
+            </tr>
+        @endif
         <tr>
             <td width="65%" style="text-align: top; vertical-align: top;">
                 @foreach(array_reverse( (array) $document->legends) as $row)

@@ -5,14 +5,23 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group" :class="{'has-danger': errors.description}">
-                            <label class="control-label">Descripción <span class="text-danger">*</span></label>
+                            <label class="control-label">Nombre <span class="text-danger">*</span></label>
                             <el-input v-model="form.description" dusk="description"></el-input>
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div> 
                     <div class="col-md-6">
+                            <div class="col-md-12">
+                                <label class="control-label">Habilitar descripción del cliente</label>
+                                <div class="form-group" :class="{'has-danger': errors.is_client}">
+                                    <el-switch v-model="form.enabled_description_person_type" active-text="Si" inactive-text="No"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.is_client" v-text="errors.is_client[0]"></small>
+                                </div>
+                            </div> 
+                    </div> 
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.description}">
-                            <label class="control-label">Seleccionar Precio: <span class="text-danger">*</span></label>
+                            <label class="control-label">Seleccionar Precio: </label>
                                     <el-select v-model="form.price_label_id"
                                             placeholder="Precio por cliente"
                                             popper-class="el-select-currency"
@@ -25,6 +34,15 @@
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div> 
+                    <div class="col-md-12" v-if="form.enabled_description_person_type">
+                        <div class="form-group" :class="{'has-danger': errors.description}">
+                            <label class="control-label">Descripción: <span class="text-danger">*</span></label>
+                                <el-input
+                                    type="textarea"
+                                    v-model="form.description_person_type"></el-input>
+                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                        </div>
+                    </div>
                 </div>  
             </div>
             <div class="form-actions text-end mt-4">

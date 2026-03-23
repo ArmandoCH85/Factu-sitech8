@@ -16,8 +16,14 @@ class PersonType extends ModelTenant
 {
     protected $fillable = [
         'description',
-        'price_label_id'
+        'price_label_id',
+        'enabled_description_person_type',
+        'description_person_type'
 
+    ];
+
+    protected $casts = [
+        'enabled_description_person_type' => 'boolean'
     ];
 
     /**

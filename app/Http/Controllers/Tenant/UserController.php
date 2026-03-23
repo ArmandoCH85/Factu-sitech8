@@ -112,11 +112,16 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
-        
-        $response = (new UserControlHelper)->checkLimitUsers();
-        if($response['success']) return $this->generalResponse(false, $response['message']);
-
         $id = $request->input('id');
+
+        if ($id) {
+            $response = (new UserControlHelper)->exceedLimitUsersForUpdate();
+        }
+        else {
+            $response = (new UserControlHelper)->exceedLimitUsers();
+        }
+        
+        if($response['success']) return $this->generalResponse(false, $response['message']);
 
         if (!$id) { //VALIDAR EMAIL DISPONIBLE
             $verify = User::where('email', $request->input('email'))->first();
@@ -300,7 +305,8 @@ class UserController extends Controller
 
             if($user->active)
             {
-                (new UserControlHelper)->checkLimitUsers();
+                $response = (new UserControlHelper)->checkLimitUsers();
+                if($response['success']) return $this->generalResponse(false, $response['message']);
                 $active_message = 'habilitado';
                 $user->name = trim(str_replace(User::TEXT_INACTIVE_USER , '' , $user->name));
             }

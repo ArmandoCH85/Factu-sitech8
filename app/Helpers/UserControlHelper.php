@@ -39,6 +39,32 @@ class UserControlHelper
         return $this->getResponse(false);
     }
 
+    /**
+     * 
+     * Limite usuarios
+     *
+     * @return array
+     */
+    public function exceedLimitUsersForUpdate()
+    {
+        if($this->getConfigurationColumn('locked_users'))
+        {
+            $plan = $this->getClientPlan(['id', 'limit_users']);
+
+            if(!$plan->isUnlimitedUsers())
+            {
+                $quantity = User::getQuantityActive();
+
+                if($quantity > $plan->limit_users)
+                {
+                    return $this->getResponse(true, 'Ha superado el límite permitido para crear/activar usuarios.');
+                }
+            }
+        }
+
+        return $this->getResponse(false);
+    }
+
     
     /**
      * 

@@ -998,7 +998,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
         @php
             $personType = $document->person->person_type;
         @endphp
-        @if ($personType->enabled_description_person_type)
+        @if ( $personType && $personType->enabled_description_person_type)
             <tr width="65%" >
                 <td>
                     <strong>{{ $personType->description }}</strong> : {{ $personType->description_person_type }}

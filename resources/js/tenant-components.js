@@ -374,6 +374,10 @@ import TenatnEditorTag from '../../modules/Item/Resources/assets/js/views/editor
 import EmptyState from './components/EmptyState.vue'
 import TenantItemAffectations from './views/tenant/item_affectations/index.vue';
 import TenantcustomFieldsIndex from '@viewsModuleCustomField/custom_fields/index.vue';
+import CheckoutIzipay from './components/checkouts/izipay.vue'
+import CheckoutCulqi from './components/checkouts/culqi.vue'
+import CheckoutTenant from './components/checkouts/CheckoutTenant.vue'
+import CheckoutAdmin from './components/checkouts/CheckoutAdmin.vue'
 
 //componente agregado para issue #93 añadir icono cuando no hay datos
 Vue.component('empty-state', EmptyState);
@@ -755,3 +759,10 @@ Vue.component('tenant-system-activity-logs-transactions-index', TenantSystemActi
 Vue.component('tenant-remember-change-password', TenantRememberChangePassword)
 Vue.component('tenant-report-pending-account-commissions-index', TenantReportPendingAccountCommissionsIndex)
 Vue.component('tenant-item-editor-tag', TenatnEditorTag)
+
+//Checkout
+
+Vue.component('tenant-checkout-culqi', CheckoutCulqi)
+Vue.component('tenant-checkout-izipay', CheckoutIzipay)
+Vue.component('checkout-admin', CheckoutAdmin)
+Vue.component('checkout-tenant', CheckoutTenant)

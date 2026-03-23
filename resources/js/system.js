@@ -12,6 +12,9 @@ import locale from 'element-ui/lib/locale'
 
 import '../sass/element-ui.scss';
 import 'element-ui/lib/theme-chalk/index.css';
+import CheckoutIzipay from './components/checkouts/izipay.vue'
+import CheckoutCulqi from './components/checkouts/culqi.vue'
+import CheckoutAdmin from './components/checkouts/CheckoutAdmin.vue'
 
 
 // components
@@ -30,6 +33,7 @@ import SystemMassiveInvoiceIndex from './views/system/massive_invoice/index.vue'
 import SystemUpdateIndex from './views/system/update/index.vue';
 import SystemBackupIndex from './views/system/backup/index.vue';
 import SystemConfigurationCulqui from './views/system/configuration/culqi.vue';
+import SystemConfigurationIzipay from './views/system/configuration/izipay.vue';
 import SystemConfigurationApkUrl from './views/system/configuration/apk-url.vue';
 import SystemConfigurationTokenRucDni from './views/system/configuration/token_ruc_dni.vue';
 import SystemConfigurationPhpInfo from './views/system/configuration/php_info.vue';
@@ -85,6 +89,7 @@ Vue.component('system-massive-invoice-index', SystemMassiveInvoiceIndex);
 Vue.component('system-update', SystemUpdateIndex);
 Vue.component('system-backup', SystemBackupIndex);
 Vue.component('system-configuration-culqi', SystemConfigurationCulqui);
+Vue.component('system-configuration-izipay', SystemConfigurationIzipay);
 Vue.component('system-configuration-apk-url', SystemConfigurationApkUrl);
 Vue.component('system-configuration-token', SystemConfigurationTokenRucDni);
 Vue.component('system-php-configuration', SystemConfigurationPhpInfo);
@@ -113,6 +118,9 @@ Vue.component('system-guest-register-register', SystemGuestRegister);
 Vue.component('system-guest-register-disabled', SystemGuestRegisterDisabled );
 Vue.component('x-input-service-guest', XImportServiceGuest);
 
+Vue.component('system-checkout-culqi', CheckoutCulqi)
+Vue.component('system-checkout-izipay', CheckoutIzipay)
+Vue.component('checkout-admin', CheckoutAdmin)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

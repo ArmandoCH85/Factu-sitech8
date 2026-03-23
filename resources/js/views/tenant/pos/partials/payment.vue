@@ -198,7 +198,6 @@
                         <p class="font-weight-semibold text-sm text-secondary mb-0">{{ currencyTypeActive.symbol }} {{form.total}}</p>
                     </div>
                 </div>
-
                 </template>
                 <div class="row m-0 p-0 d-flex align-items-center">
                     <div class="col-lg-12">

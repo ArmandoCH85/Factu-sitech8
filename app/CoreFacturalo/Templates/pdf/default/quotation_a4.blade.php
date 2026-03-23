@@ -275,11 +275,10 @@
         return !empty(optional($row->relation_item)->date_of_due);
     });
     $total_weight = 0;
-    $show_weight_attribute = $document->items->some(function($row) use(&$total_weight) {
+    $show_weight_attribute = $document->items->some(function($row) {
         $at = (array)$row->attributes;
         if (isset($row->attributes) && count(($at)) > 0) {
             $attributes = (array)(($at)[0]);
-            $total_weight += ($attributes['value'] ?? 0) * $row->quantity;
             return collect($attributes)->where('attribute_type_id', '5031');
         }
         return false;
@@ -328,6 +327,11 @@
         <tr>
             @php
                 $internal_id = optional($row->item)->internal_id;
+                $at = (array)$row->attributes;
+                if (isset($row->attributes) && count(($at)) > 0) {
+                    $attributes = (array)(($at)[0]);
+                    $total_weight += ($attributes['value'] ?? 0) * $row->quantity;
+                }
             @endphp
             <td class="text-center align-top">{{ $internal_id }}</td>
             <td class="text-center align-top">

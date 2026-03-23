@@ -330,7 +330,7 @@
                 $at = (array)$row->attributes;
                 if (isset($row->attributes) && count(($at)) > 0) {
                     $attributes = (array)(($at)[0]);
-                    $total_weight += ($attributes['value'] ?? 0) * $row->quantity;
+                    $total_weight += (float)($attributes['value'] ?? 0) * (float)$row->quantity;
                 }
             @endphp
             <td class="text-center align-top">{{ $internal_id }}</td>

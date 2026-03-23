@@ -274,6 +274,17 @@
     $show_due = $document->items->contains(function ($row) {
         return !empty(optional($row->relation_item)->date_of_due);
     });
+    $total_weight = 0;
+    $show_weight_attribute = $document->items->some(function($row) use(&$total_weight) {
+        $at = (array)$row->attributes;
+        if (isset($row->attributes) && count(($at)) > 0) {
+            $attributes = (array)(($at)[0]);
+            $total_weight += ($attributes['value'] ?? 0) * $row->quantity;
+            return collect($attributes)->where('attribute_type_id', '5031');
+        }
+        return false;
+    });
+
 @endphp
 
 <table class="full-width mt-10 mb-10">
@@ -471,6 +482,13 @@
         </tr>
     </tbody>
 </table>
+@if ($show_weight_attribute)
+    <table class="full-width">
+        <tr>
+            <td colspan="{{ $colspan_total }}" class="text-left font-bold">Peso estimado: {{ number_format($total_weight, 2) }} Kg</td>
+        </tr>
+    </table>
+@endif
 <table class="full-width">
     @if(isset($configurationInPdf) && $configurationInPdf->show_bank_accounts_in_pdf)
         <tr>

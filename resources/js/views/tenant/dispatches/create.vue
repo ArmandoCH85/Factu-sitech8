@@ -1195,7 +1195,7 @@ export default {
                 transshipment_indicator: false,
                 port_code: null,
                 unit_type_id: 'KGM',
-                total_weight: 1,
+                total_weight: 0,
                 packages_number: 0,
                 container_number: null,
                 dispatcher_id: null,
@@ -1576,25 +1576,22 @@ export default {
                 this.form.series = null;
             }
         },
-        calculateGrossWeigth() {
-            if (this.config.enable_weight_in_dispatches) {
-                let total_weight = 0;
-                this.form.items.forEach(item => {
-                    total_weight += item.weight ? item.weight : 0;
-                });
-                this.form.total_weight = total_weight;
-
-            }
-        },
         addItem(form) {
             let it = form.item;
             let qty = form.quantity;
+            let total_weight = 0
+
+            if (it.attributes && it.attributes.length > 0 ) {
+                it.attributes.forEach(attr => {
+                    if (attr.attribute_type_id === '5031') {
+                        total_weight += parseFloat(attr.value) * qty
+                    }
+                }); 
+            }
+            
+            this.form.total_weight += total_weight
             let exist = this.form.items.find((item) => item.id == it.id);
             let attributes = null
-            if (it.attributes) {
-                attributes = it.attributes
-                this.incrementValueAttr(form)
-            }
             if (exist) {
                 exist.quantity = (it.lots_enabled || it.series_enabled)? form.quantity : exist.quantity + form.quantity;
 
@@ -1632,7 +1629,11 @@ export default {
                 total: it.total,
                 weight: it.weight || 0
             });
-            this.calculateGrossWeigth()
+
+            if (this.config.enable_weight_in_dispatches) {
+                this.form.total_weight += (it.weight ? it.weight  : 0);
+            }
+
         },
         keyupCustomer() {
             if (this.input_person.number) {

@@ -1820,7 +1820,7 @@ export default {
 
                     // Buscar el precio en el array prices por id
                     if (price_label_id && first_list.prices && Array.isArray(first_list.prices)) {
-                        const foundPrice = first_list.prices.find(p => p.id === price_label_id);
+                        const foundPrice = first_list.prices.find(p => p.price_label_id === price_label_id);
 
                         if (foundPrice && foundPrice.price) {
                             this.form.unit_price_value = foundPrice.price;

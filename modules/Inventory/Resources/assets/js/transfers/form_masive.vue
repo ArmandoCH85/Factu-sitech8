@@ -482,13 +482,18 @@ export default {
             /* if (!this.form_add.item_id) {
               return;
             }*/
+           console.log(this.form_add);
+           console.log(Number(this.form_add.stock));
+           console.log(Number(this.form_add.quantity));
+           
+           
 
-            if (parseFloat(this.form_add.stock) < 1) {
-                return this.$message.error("El stock debe ser mayor o igual a 1");
+            if (Number(this.form_add.stock) == 0) {
+                return this.$message.error("El stock debe ser mayor a 0");
             }
 
-            if (this.form_add.quantity > 0 ) {
-                return this.$message.error("La cantidad debe ser mayor o igual a 1");
+            if (Number(this.form_add.quantity) == 0) {
+                return this.$message.error("La cantidad debe ser mayor a 0");
             }
 
             if (parseFloat(this.form_add.stock) < this.form_add.quantity) {

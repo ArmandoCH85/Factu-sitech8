@@ -22137,6 +22137,9 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 .img-thumbnail{
     border: none !important;
 }
+.ck-editor__editable {
+    max-height: 250px !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

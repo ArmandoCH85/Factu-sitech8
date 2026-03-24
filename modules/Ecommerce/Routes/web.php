@@ -43,6 +43,14 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     Route::post('transaction_finally', 'EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
     Route::post('payment_cash', 'EcommerceController@paymentCash')->name('tenant_ecommerce_payment_cash');
 
+
+    // Página de términos y condiciones
+    Route::get('terms_conditions', 'EcommerceController@termsConditions')->name('tenant_ecommerce_terms_conditions');
+    // Página de política de privacidad
+    Route::get('privacy_policy', 'EcommerceController@privacyPolicy')->name('tenant_ecommerce_privacy_policy');
+    // Página de sobre nosotros
+    Route::get('about_us', 'EcommerceController@aboutUs')->name('tenant_ecommerce_about_us');
+
     Route::get('configuration', 'ConfigurationController@index')->middleware('redirect.module')->name('tenant_ecommerce_configuration');
     Route::post('configuration', 'ConfigurationController@store_configuration');
     Route::post('configuration_culqui', 'ConfigurationController@store_configuration_culqui');
@@ -53,11 +61,9 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     Route::post('saveDataUser', 'EcommerceController@saveDataUser')->name('tenant_ecommerce_user_data');
     Route::post('configuration_links', 'ConfigurationController@store_configuration_links');
 
-
     Route::get('record', 'ConfigurationController@record');
 
     Route::post('uploads', 'ConfigurationController@uploadFile');
-    
 
     //Item Sets
     Route::prefix('item-sets')->group(function() {

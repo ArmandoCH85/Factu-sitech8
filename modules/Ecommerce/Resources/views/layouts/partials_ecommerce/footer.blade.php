@@ -48,10 +48,19 @@
                 <div class="widget">
                     <h4 class="widget-title text-center">Enlaces de interés</h4>
                     <div class="row d-flex align-items-center justify-content-center">
-                        <div class="col-sm-6 col-md-5 text-center">
-                            <ul class="links">
+                        <div class="col-sm-8 text-center">
+                            <ul class="links w-100">
                                 <li><a href="{{ route("tenant.ecommerce.index") }}">Inicio</a></li>
                                 <li><a href="{{ route('tenant_detail_cart') }}">Ver Carrito</a></li>
+                                @if(!empty($information->about_us))
+                                    <li><a href="{{ route('tenant_ecommerce_about_us') }}">Sobre Nosotros</a></li>
+                                @endif
+                                @if(!empty($information->terms_conditions))
+                                    <li><a href="{{ route('tenant_ecommerce_terms_conditions') }}">Términos y Condiciones</a></li>
+                                @endif
+                                @if(!empty($information->privacy_policy))
+                                    <li><a href="{{ route('tenant_ecommerce_privacy_policy') }}">Política de Privacidad</a></li>
+                                @endif
                                 @guest
                                 <li><a href="{{route('tenant_ecommerce_login')}}" class="login-link">Login</a></li>
                                 @else

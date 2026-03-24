@@ -70,6 +70,11 @@
 
     <!-- Element UI CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .category-dropdown{
+            display: none;
+        }
+    </style>
     
 </head>
 <body>

@@ -168,8 +168,8 @@ class EcommerceController extends Controller
             'attributes' => $row->attributes ? $row->attributes : [],
             'promotion_id' => $promotion_id,
         ];
-
-        return view('ecommerce::items.record', compact('record'));
+        $categories = \Modules\Item\Models\Category::get();
+        return view('ecommerce::items.record', compact('record', 'categories'));
     }
 
     public function items()
@@ -195,25 +195,26 @@ class EcommerceController extends Controller
     public function detailCart()
     {
         $configuration = ConfigurationEcommerce::first();
-        return view('ecommerce::cart.detail', compact(['configuration']));
+        $categories = \Modules\Item\Models\Category::get();
+        return view('ecommerce::cart.detail', compact('configuration', 'categories'));
     }
 
     public function orderList()
     {
         if (auth('ecommerce')->user()) {
             $configuration = ConfigurationEcommerce::first();
-            return view('ecommerce::document_list.order', compact('configuration'));
+            $categories = \Modules\Item\Models\Category::get();
+            return view('ecommerce::document_list.order', compact('configuration', 'categories'));
         } else {
             return redirect('ecommerce');
         }
-
     }
 
     public function documentList()
     {
-        // dd(auth('ecommerce')->user());
         if (auth('ecommerce')->user()) {
-            return view('ecommerce::document_list.document');
+            $categories = \Modules\Item\Models\Category::get();
+            return view('ecommerce::document_list.document', compact('categories'));
         } else {
             return redirect('ecommerce');
         }
@@ -707,5 +708,41 @@ class EcommerceController extends Controller
         }
 
         return response()->json($locations);
+    }
+
+    public function termsConditions()
+    {
+        if (auth('ecommerce')->user()) {
+            $config = \App\Models\Tenant\ConfigurationEcommerce::first();
+            $terms_conditions = $config ? $config->terms_conditions : null;
+            $categories = \Modules\Item\Models\Category::get();
+            return view('ecommerce::pages_fields.terms_conditions', compact('terms_conditions', 'categories'));
+        } else {
+            return redirect('ecommerce');
+        }
+    }
+
+    public function privacyPolicy()
+    {
+        if (auth('ecommerce')->user()) {
+            $config = \App\Models\Tenant\ConfigurationEcommerce::first();
+            $privacy_policy = $config ? $config->privacy_policy : null;
+            $categories = \Modules\Item\Models\Category::get();
+            return view('ecommerce::pages_fields.privacy_policy', compact('privacy_policy', 'categories'));
+        } else {
+            return redirect('ecommerce');
+        }
+    }
+
+    public function aboutUs()
+    {
+        if (auth('ecommerce')->user()) {
+            $config = \App\Models\Tenant\ConfigurationEcommerce::first();
+            $about_us = $config ? $config->about_us : null;
+            $categories = \Modules\Item\Models\Category::get();
+            return view('ecommerce::pages_fields.about_us', compact('about_us', 'categories'));
+        } else {
+            return redirect('ecommerce');
+        }
     }
 }

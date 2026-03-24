@@ -35,6 +35,18 @@ class ConfigurationController extends Controller
         $id = $request->input('id');
         $configuration = ConfigurationEcommerce::find($id);
         $configuration->fill($request->all());
+
+        // Guardar campos de páginas personalizadas si existen en el request
+        if ($request->has('terms_conditions')) {
+            $configuration->terms_conditions = $request->input('terms_conditions');
+        }
+        if ($request->has('privacy_policy')) {
+            $configuration->privacy_policy = $request->input('privacy_policy');
+        }
+        if ($request->has('about_us')) {
+            $configuration->about_us = $request->input('about_us');
+        }
+
         $configuration->save();
 
         return [

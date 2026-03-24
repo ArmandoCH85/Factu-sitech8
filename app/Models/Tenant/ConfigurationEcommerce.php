@@ -30,7 +30,10 @@ class ConfigurationEcommerce extends ModelTenant
         'customised_link_two',
         'customised_link_three',
         'color_ecommerce',
-        'preferences'
+        'preferences',
+        'terms_conditions',
+        'privacy_policy',
+        'about_us',
     ];
 
     protected $casts = [

@@ -39,7 +39,10 @@ class ConfigurationEcommerceResource extends JsonResource
             'customised_link_two' => $this->customised_link_two,
             'customised_link_three' => $this->customised_link_three,
             'color_ecommerce' => $this->color_ecommerce,
-            'preferences' => $this->preferences
+            'preferences' => $this->preferences,
+            'terms_conditions' => $this->terms_conditions,
+            'privacy_policy' => $this->privacy_policy,
+            'about_us' => $this->about_us,
         ];
     }
 }

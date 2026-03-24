@@ -176,7 +176,7 @@ import TenantIncentivesIndex from '../../modules/Item/Resources/assets/js/views/
 import TenantItemLotsIndex from '../../modules/Item/Resources/assets/js/views/item-lots/index.vue'
 
 import TenantEcommerceConfigurationInfo from '../../modules/Ecommerce/Resources/assets/js/views/configuration/index.vue'
-import TenantEcommerceConfigurationCulqi from '../../modules/Ecommerce/Resources/assets/js/views/configuration_culqi/index.vue'
+import TenantEcommerceConfigurationCulqi from '../../modules/Ecommerce/Resources/assets/js/views/payment_gateways/index.vue'
 import TenantEcommerceConfigurationPaypal from '../../modules/Ecommerce/Resources/assets/js/views/configuration_paypal/index.vue'
 import TenantEcommerceConfigurationLogo from '../../modules/Ecommerce/Resources/assets/js/views/configuration_logo/index.vue'
 import TenantEcommerceConfigurationSocial from '../../modules/Ecommerce/Resources/assets/js/views/configuration_social/index.vue'

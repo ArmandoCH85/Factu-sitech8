@@ -1,109 +1,254 @@
 <template>
-  <div class="col-lg-6 col-md-12 pt-2 pt-md-0">
-    <div class="card card-config">
-      <div class="card-header bg-info">
-        <h3 class="my-0">Informacion de Contacto</h3>
-      </div>
-      <div class="card-body">
-        <form autocomplete="off" @submit.prevent="submit">
-          <div class="form-body">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group" :class="{'has-danger': errors.information_contact_email}">
-                  <label class="control-label">Email</label>
-                  <el-input v-model="form.information_contact_email"></el-input>
-                  <small
-                    class="form-control-feedback"
-                    v-if="errors.information_contact_email"
-                    v-text="errors.information_contact_email[0]"
-                  ></small>
+  <div class="col-12 pt-2 pt-md-0">
+    <el-tabs type="border-card" tab-position="left">
+      <el-tab-pane label="Información">
+        <div>
+          <form autocomplete="off" @submit.prevent="submit">
+            <div class="form-body">
+              <div class="row">                
+                <div class="col-md-6">
+                  <div class="form-group" :class="{'has-danger': errors.information_contact_email}">
+                    <label class="control-label">Email</label>
+                    <el-input v-model="form.information_contact_email"></el-input>
+                    <small
+                      class="form-control-feedback"
+                      v-if="errors.information_contact_email"
+                      v-text="errors.information_contact_email[0]"
+                    ></small>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group" :class="{'has-danger': errors.information_contact_name}">
-                  <label class="control-label">
-                    Nombre
-                    <span class="text-danger">*</span>
-                  </label>
-                  <el-input v-model="form.information_contact_name"></el-input>
-                  <small
-                    class="form-control-feedback"
-                    v-if="errors.information_contact_name"
-                    v-text="errors.information_contact_name[0]"
-                  ></small>
+                <div class="col-md-6">
+                  <div class="form-group" :class="{'has-danger': errors.information_contact_name}">
+                    <label class="control-label">
+                      Nombre
+                      <span class="text-danger">*</span>
+                    </label>
+                    <el-input v-model="form.information_contact_name"></el-input>
+                    <small
+                      class="form-control-feedback"
+                      v-if="errors.information_contact_name"
+                      v-text="errors.information_contact_name[0]"
+                    ></small>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group" :class="{'has-danger': errors.information_contact_phone}">
-                  <label class="control-label">
-                    Teléfono
-                    <span class="text-danger">*</span>
-                  </label>
-                  <el-input v-model="form.information_contact_phone"></el-input>
-                  <small
-                    class="form-control-feedback"
-                    v-if="errors.information_contact_phone"
-                    v-text="errors.information_contact_phone[0]"
-                  ></small>
+                <div class="col-md-6">
+                  <div class="form-group" :class="{'has-danger': errors.information_contact_phone}">
+                    <label class="control-label">
+                      Teléfono
+                      <span class="text-danger">*</span>
+                    </label>
+                    <el-input v-model="form.information_contact_phone"></el-input>
+                    <small
+                      class="form-control-feedback"
+                      v-if="errors.information_contact_phone"
+                      v-text="errors.information_contact_phone[0]"
+                    ></small>
+                  </div>
                 </div>
-              </div>
-               <div class="col-md-6">
-                <div class="form-group" :class="{'has-danger': errors.information_contact_address}">
-                  <label class="control-label">
-                    Dirección
-                    <span class="text-danger">*</span>
-                  </label>
-                  <el-input v-model="form.information_contact_address"></el-input>
-                  <small
-                    class="form-control-feedback"
-                    v-if="errors.information_contact_address"
-                    v-text="errors.information_contact_address[0]"
-                  ></small>
+                <div class="col-md-6">
+                  <div class="form-group" :class="{'has-danger': errors.information_contact_address}">
+                    <label class="control-label">
+                      Dirección
+                      <span class="text-danger">*</span>
+                    </label>
+                    <el-input v-model="form.information_contact_address"></el-input>
+                    <small
+                      class="form-control-feedback"
+                      v-if="errors.information_contact_address"
+                      v-text="errors.information_contact_address[0]"
+                    ></small>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group" :class="{'has-danger': errors.phone_whatsapp}">
-                  <label class="control-label">
-                    Whatsapp
-                  </label>
-                  <el-input v-model="form.phone_whatsapp"></el-input>
-                  <small
-                    class="form-control-feedback"
-                    v-if="errors.phone_whatsapp"
-                    v-text="errors.phone_whatsapp[0]"
-                  ></small>
+                <div class="col-md-6">
+                  <div class="form-group" :class="{'has-danger': errors.phone_whatsapp}">
+                    <label class="control-label">
+                      Whatsapp
+                    </label>
+                    <el-input v-model="form.phone_whatsapp"></el-input>
+                    <small
+                      class="form-control-feedback"
+                      v-if="errors.phone_whatsapp"
+                      v-text="errors.phone_whatsapp[0]"
+                    ></small>
+                  </div>
                 </div>
-              </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="control-label">
+                      Logo
+                    </label>
+                    <div class="d-flex align-items-start gap-3">
+                      <div>
+                        <p class="mb-3 text-muted" style="font-size: 0.875rem;">
+                          Para subir o cambiar el logo, ve a
+                          <strong>Configuración y más &rsaquo; Configuraciones globales &rsaquo; Empresa</strong>.
+                          Desde allí podrás cargar el logo en modo claro y modo oscuro.
+                        </p>
+                        <a href="/companies/create" class="el-button--primary btn btn-sm w-100">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-external-link"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>
+                          Ir a configuración de empresa
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group form-modern" :class="{'has-danger': errors.script_paypal}">
+                    <label class="control-label">
+                      Color Principal de la Tienda
+                    </label>
+                    <el-color-picker class="col-12 px-0" size="medium"  v-model="form.color_ecommerce"></el-color-picker>
+                  </div>
+                  <div class="col-12">
+                    <label class="control-label">Preferencias del Banner Principal</label>
+                    <div class="form-group form-modern mb-3">
+                      <el-switch v-model="form.full_width_banner" :active-value="1" :inactive-value="0"></el-switch>
+                      <label class="ms-2 mb-0">Activar ancho completo del banner</label>
+                      <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Las imágenes del carrusel ocuparán el 100% del ancho de la pantalla. 
+                        Aseguresé que sus imágenes tenga la proporción 5:2
+                      </small>
+                    </div>                
+                  </div> 
+                </div>
+                <div class="col-md-6">
+                  <label class="control-label">Preferencias de Visualización</label>
+                  <div class="form-group form-modern mb-3">
+                    <el-switch v-model="form.show_description" :active-value="1" :inactive-value="0"></el-switch>
+                    <label class="ms-2 mb-0">Mostrar descripción del producto</label>
+                    <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Muestra el nombre adicional o descripción corta debajo del título del producto</small>
+                  </div>
+                  <div class="form-group form-modern mb-3">
+                    <el-switch v-model="form.show_stock" :active-value="1" :inactive-value="0"></el-switch>
+                    <label class="ms-2 mb-0">Mostrar stock disponible</label>
+                    <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Muestra la cantidad disponible en inventario de cada producto</small>
+                  </div>
+                  <div class="form-group form-modern mb-3">
+                    <el-switch v-model="form.only_available_products" :active-value="1" :inactive-value="0"></el-switch>
+                    <label class="ms-2 mb-0">Ocultar productos sin stock</label>                  
+                    <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Los productos agotados no aparecerán en el catálogo de la tienda</small>
+                  </div>
+                </div> 
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="control-label">Términos y Condiciones</label>
+                      <vue-ckeditor
+                        :editors="editors"
+                        type="classic"
+                        :config="editorConfig"
+                        v-model="form.terms_conditions"
+                      />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="control-label">Política de Privacidad</label>
+                      <vue-ckeditor
+                        :editors="editors"
+                        type="classic"
+                        :config="editorConfig"
+                        v-model="form.privacy_policy"
+                      />
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                      <label class="control-label">Sobre Nosotros</label>
+                      <vue-ckeditor
+                        :editors="editors"
+                        type="classic"
+                        :config="editorConfig"
+                        v-model="form.about_us"
+                      />
+                  </div>
+                </div>
+              </div>              
             </div>
-          </div>
-          <div class="form-actions text-end float-end pt-2">
-            <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
-          </div>
-        </form>
-      </div>
-    </div>
+            <div class="form-actions text-end float-end pt-2">
+              <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+            </div>
+          </form>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="Enlaces">
+        <ConfigurationLinks />
+      </el-tab-pane>
+      <el-tab-pane label="Pasarelas de pago">
+        <PaymentGateways />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
-
 <script>
+import ConfigurationLinks from '../configuration_links/index.vue';
+import PaymentGateways from '../payment_gateways/index.vue';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CKEditor from 'vue-ckeditor5';
 export default {
+  components: {
+    ConfigurationLinks,
+    PaymentGateways,
+    'vue-ckeditor': CKEditor.component
+  },
   data() {
     return {
       loading_submit: false,
-      // headers: headers_token,
       resource: "ecommerce",
       errors: {},
       form: {},
       soap_sends: [],
-      soap_types: []
+      soap_types: [],
+      editors: {
+          classic: ClassicEditor
+      },
+      editorConfig: {
+          toolbar: [
+              'heading',
+              '|',
+              'bold', 'italic', 'link',
+              'bulletedList', 'numberedList',
+              '|',
+              'blockQuote',
+              'undo', 'redo'
+          ]
+      },
     };
   },
   async created() {
-    await this.initForm();
-
     await this.$http.get(`/${this.resource}/record`).then(response => {
       if (response.data !== "") {
-        this.form = response.data.data;
+        let data = response.data.data;
+
+        // Cargar preferencias si existen
+        let preferences = { show_description: 1, show_stock: 0, only_available_products: 0, full_width_banner: 0 };
+        if (data.preferences) {
+          const prefs = typeof data.preferences === 'string' 
+            ? JSON.parse(data.preferences) 
+            : data.preferences;
+          preferences = prefs;
+        }
+
+        // Inicializar form con todos los datos de una vez
+        this.form = {
+          // campos originales
+          id: data.id,
+          information_contact_email: data.information_contact_email || "",
+          information_contact_name: data.information_contact_name || null,
+          information_contact_phone: data.information_contact_phone || null,
+          information_contact_address: data.information_contact_address || null,
+          phone_whatsapp: data.phone_whatsapp || null,
+          // campos de color y preferencias
+          color_ecommerce: data.color_ecommerce,
+          show_description: parseInt(preferences.show_description) || 0,
+          show_stock: parseInt(preferences.show_stock) || 0,
+          only_available_products: parseInt(preferences.only_available_products) || 0,
+          full_width_banner: parseInt(preferences.full_width_banner) || 0,
+          // campos de páginas personalizadas
+          terms_conditions: data.terms_conditions || '',
+          privacy_policy: data.privacy_policy || '',
+          about_us: data.about_us || ''
+        };
+      } else {
+        this.initForm();
       }
     });
   },
@@ -115,13 +260,36 @@ export default {
         information_contact_email: "",
         information_contact_name: null,
         information_contact_phone: null,
+        information_contact_address: null,
         phone_whatsapp: null,
+        color_ecommerce: null,
+        show_description: 1,
+        show_stock: 0,
+        only_available_products: 0,
+        full_width_banner: 0,
+        terms_conditions: '',
+        privacy_policy: '',
+        about_us: ''
       };
     },
     submit() {
       this.loading_submit = true;
+      // Copiar el form y empaquetar los switches en 'preferences'
+      const payload = { ...this.form };
+      payload.preferences = {
+        show_description: this.form.show_description,
+        show_stock: this.form.show_stock,
+        only_available_products: this.form.only_available_products,
+        full_width_banner: this.form.full_width_banner
+      };
+      // Eliminar los switches planos para evitar duplicidad
+      delete payload.show_description;
+      delete payload.show_stock;
+      delete payload.only_available_products;
+      delete payload.full_width_banner;
+
       this.$http
-        .post(`/${this.resource}/configuration`, this.form)
+        .post(`/${this.resource}/configuration`, payload)
         .then(response => {
           if (response.data.success) {
             this.$message.success(response.data.message);
@@ -140,7 +308,6 @@ export default {
           this.loading_submit = false;
         });
     }
-
   }
 };
 </script>

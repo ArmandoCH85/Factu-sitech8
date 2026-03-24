@@ -1849,6 +1849,7 @@ export default {
 
             this.form.origin = _.find(this.origin_addresses, { 'id': this.form.origin_address_id });
             this.form.delivery = _.find(this.delivery_addresses, { 'id': this.form.delivery_address_id });
+            this.form.total_weight = _.round(this.form.total_weight, 2) > 0 ? _.round(this.form.total_weight, 2) : 1;
             // this.form.origin = this.origin;
 
             // if (this.form.origin.location_id.length !== 3 || this.form.delivery.location_id.length !== 3) {

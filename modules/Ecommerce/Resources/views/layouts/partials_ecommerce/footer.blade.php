@@ -113,8 +113,14 @@
 </div>
 
 @if($information->phone_whatsapp)
+    <div class="ws-tooltip" id="wsTooltip">
+        <span id="wsTooltipText">¿En qué podemos ayudarte?</span>
+    </div>
+
     @if(strlen($information->phone_whatsapp) > 0)
-    <a class='ws-flotante' href='https://wa.me/{{$information->phone_whatsapp}}' target="BLANK" style="background-image: url('{{asset('logo/ws.png')}}'); background-size: 70px; background-repeat: no-repeat;" ></a>
+    <a class='ws-flotante-ecommerce d-flex align-items-center justify-content-center' href='https://wa.me/{{$information->phone_whatsapp}}' target="BLANK" style="color: #fff !important;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-whatsapp"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" /><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" /></svg>
+    </a>
     @endif
 @endif
 
@@ -490,6 +496,38 @@ fetch('/ecommerce/color-ecommerce')
             });
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const mensajes = [
+            "¿En qué podemos ayudarte?",
+            "¡Escríbenos por WhatsApp!",
+            "¿Tienes alguna duda?",
+            "Te respondemos al instante 😉",
+            "Habla con nosotros 📲",
+            "Estamos para ayudarte"
+        ];
+
+        const tooltip = document.getElementById("wsTooltip");
+        const texto = document.getElementById("wsTooltipText");
+
+        function mostrarMensaje() {
+            const random = mensajes[Math.floor(Math.random() * mensajes.length)];
+            texto.innerText = random;
+
+            tooltip.classList.add("show");
+
+            setTimeout(() => {
+                tooltip.classList.remove("show");
+            }, 4000);
+        }
+
+        // aparece cada cierto tiempo
+        setInterval(mostrarMensaje, 10000);
+
+        // primera vez
+        setTimeout(mostrarMensaje, 2000);
+    });
 
 </script>
 @endpush

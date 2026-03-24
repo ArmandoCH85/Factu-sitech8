@@ -51,42 +51,47 @@
     $itemsBasePath = asset('storage/uploads/items');
     $googleMapsApiKey = app(Modules\Ecommerce\Http\Controllers\EcommerceController::class)->getGoogleMaps();
 @endphp
-
-<div class="row" id="app" style="margin-top: 55px">
-    <div class="col-lg-8">
-        <div class="cart-table-container">
-
-            <table class="table table-cart">
-                <thead>
-                    <tr>
-                        <th class="product-col">Producto</th>
-                        <th class="price-col">Precio</th>
-                        <th class="qty-col">Cantidad</th>
-                        <th>Subtotal</th>
-                        <th></th>
-                    </tr>
-                </thead>
+<h1 class="my-4" style="font-weight: 900;">TU CARRITO</h1>
+<div class="row" id="app">
+    <div class="col-md-8 mb-3">
+        <div class="table-cart-container">
+            <table class="table-cart w-100">
                 <tbody>
                     <tr v-for="(row, index) in records" class="product-row">
                         <td class="product-col">
-                            <figure class="product-image-container">
+                            <figure class="product-image-container m-0">
                                 <a href="#" class="product-image">
                                     <img class="image-product" :src="(row.image && row.image !== 'imagen-no-disponible.jpg') ? '{{ $itemsBasePath }}' + '/' + row.image : '{{ $defaultImagePath }}'" :alt="row.description || 'Producto sin imagen'">
                                 </a>
-                            </figure>
-                            <h2 class="product-title">
-                                <a href="#">@{{ row.description }}</a>
-                            </h2>
+                            </figure>                            
                         </td>
-                        <td>@{{ row.currency_type_symbol }} @{{ row.sale_unit_price }}</td>
-                        <td>
-                            <input class="vertical-quantity form-control input_quantity" :data-product="row.id"
-                                type="text" v-model.number="row.cantidad">
+                        <td class="text-left w-100">
+                            <div class="d-flex flex-column justify-content-between align-items-start h-100 py-3">
+                                <h2 class="product-title m-0">
+                                    <a href="#">@{{ row.description }}</a>
+                                </h2>
+                                <span class="price">
+                                    @{{ row.currency_type_symbol }} @{{ row.sale_unit_price }}
+                                </span>
+                            </div>
                         </td>
-                        <td>S/ @{{ row.sub_total }}</td>
-                        <td>
-                            <button type="button" @click="deleteItem(row.id, index)"
-                                class="btn btn-outline-danger btn-sm"><i class="icon-cancel"></i></button>
+                        <!-- <td>S/ @{{ row.sub_total }}</td> -->
+                        <td class="text-right">
+                            <div class="d-flex flex-column justify-content-between align-items-end h-100 py-3">
+                                <button type="button" @click="deleteItem(row.id, index)"
+                                class="btn btn-sm btn-clean-product">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                            </button>
+                            <div class="quantity-container d-flex align-items-center">
+                                <button @click.stop.prevent="decrementQuantity(row)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-minus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /></svg>
+                                </button>
+                                <input class="input-quantity text-center" style="font-size: 14px;" :data-product="row.id" type="number" v-model.number="row.cantidad">
+                                <button @click.stop.prevent="incrementQuantity(row)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                                </button>                                    
+                            </div>
+                            </div>                            
                         </td>
                     </tr>
 
@@ -94,14 +99,14 @@
 
                 <tfoot>
                     <tr>
-                        <td colspan="4" class="clearfix">
+                        <td colspan="3" class="clearfix py-2">
                             <div class="float-left">
-                                <a href="/ecommerce" class="btn btn-outline-secondary">Continuar Comprando</a>
+                                <a href="/ecommerce" class="btn btn-outline-secondary py-2 px-3">Continuar Comprando</a>
                             </div><!-- End .float-left -->
 
                             <div class="float-right">
                                 <a href="#" @click="clearShoppingCart"
-                                    class="btn btn-outline-secondary btn-clear-cart">Limpiar Carrito</a>
+                                    class="btn btn-outline-secondary btn-clear-cart py-2 px-3">Limpiar Carrito</a>
                                 <!--<a href="#" class="btn btn-outline-secondary btn-update-cart">Update Shopping Cart</a> -->
                             </div><!-- End .float-right -->
                         </td>
@@ -111,61 +116,7 @@
         </div><!-- End .cart-table-container -->        
     </div><!-- End .col-lg-8 -->
 
-    <div class="col-lg-4">
-        <div class="cart-summary">
-            <h3>Datos de contacto y envío</h3>
-
-            <form autocomplete="off" action="#">
-                <div class="form-group" :class="{'text-danger': errors.telefono}">
-                    <label for="email">Teléfono:</label>
-                    <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono">
-                    <small class="form-control-feedback" v-if="errors.telefono" v-text="errors.telefono[0]"></small>
-                </div>
-                <div class="form-group" :class="{'text-danger': errors.address}">
-                    <label for="email">Dirección:</label>
-                    <textarea v-model="form_contact.address" @click="openAddressModal" readonly class="form-control" placeholder="Click para seleccionar dirección" rows="2" cols="10" style="cursor: pointer; background-color: #fff;"></textarea>
-                    <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
-                </div>
-            </form>
-        </div>
-
-        <div class="cart-summary">
-            <h3>Tipo de comprobante</h3>
-
-            <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento}">
-                <label>Comprobante:</label>
-                {{-- <select v-model="formIdentity.identity_document_type_id" class="form-control" @change="optionDocument">
-                    <option value="" disabled>Tipo de comprobante</option>
-                    <option value="1">Boleta</option>
-                    <option value="6">Factura</option>
-                    <option value="80">Nota de venta</option>
-                </select> --}}
-                
-                <select v-model="form_document.codigo_tipo_documento" class="form-control" @change="optionDocument">
-                    <option value="" disabled>Tipo de comprobante</option>
-                    <option value="01">Factura</option>
-                    <option value="03">Boleta</option>
-                    <option value="80">Nota de venta</option>
-                </select>
-
-                <small class="form-control-feedback" v-if="errors.codigo_tipo_documento">El campo Comprobante es obligatorio.</small>
-            </div>
-            <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento_identidad}">
-                <label>Tipo de documento:</label>
-                <select v-model="typeDocuments" class="form-control">
-                    <option value="" disabled>Tipo de documento</option>
-                    <option v-for="item in typeDocumentList" :value="item.id" :label="item.name">@{{ item.name }}</option>
-                </select>
-                <small class="form-control-feedback" v-if="errors.codigo_tipo_documento_identidad" v-text="errors.codigo_tipo_documento_identidad[0]"></small>
-            </div>
-            <div class="form-group" :class="{'text-danger': errors.numero_documento}">
-                <label>Número de documento:</label>
-                <input v-model="numberDocument" :maxlength="maxLength" type="text" class="form-control">
-                <small class="form-control-feedback" v-if="errors.numero_documento" v-text="errors.numero_documento[0]"></small>
-            </div>
-
-        </div><!-- End .col-lg-4 -->
-
+    <div class="col-md-4">
         <div class="cart-summary">
             <h3>Resumen</h3>
             <table class="table table-totals">
@@ -232,8 +183,66 @@
                 @endauth
 
             </div><!-- End .checkout-methods -->
-        </div><!-- End .cart-summary -->
+        </div><!-- End .cart-summary -->                
     </div><!-- End .col-lg-4 -->
+    <div class="col-12 row mx-0">
+        <div class="col-sm-6 pl-0">
+            <div class="cart-summary">
+                <h3>Datos de contacto y envío</h3>
+
+                <form autocomplete="off" action="#">
+                    <div class="form-group" :class="{'text-danger': errors.telefono}">
+                        <label for="email">Teléfono:</label>
+                        <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono" style="max-width: 100%;">
+                        <small class="form-control-feedback" v-if="errors.telefono" v-text="errors.telefono[0]"></small>
+                    </div>
+                    <div class="form-group" :class="{'text-danger': errors.address}">
+                        <label for="email">Dirección:</label>
+                        <textarea v-model="form_contact.address" @click="openAddressModal" readonly class="form-control" placeholder="Click para seleccionar dirección" rows="2" cols="10" style="cursor: pointer; background-color: #fff;"></textarea>
+                        <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-sm-6 pr-0">
+            <div class="cart-summary">
+                <h3>Tipo de comprobante</h3>
+
+                <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento}">
+                    <label>Comprobante:</label>
+                    {{-- <select v-model="formIdentity.identity_document_type_id" class="form-control" @change="optionDocument">
+                        <option value="" disabled>Tipo de comprobante</option>
+                        <option value="1">Boleta</option>
+                        <option value="6">Factura</option>
+                        <option value="80">Nota de venta</option>
+                    </select> --}}
+
+                    <select v-model="form_document.codigo_tipo_documento" class="form-control" @change="optionDocument" style="max-width: 100%;">
+                        <option value="" disabled>Tipo de comprobante</option>
+                        <option value="01">Factura</option>
+                        <option value="03">Boleta</option>
+                        <option value="80">Nota de venta</option>
+                    </select>
+
+                    <small class="form-control-feedback" v-if="errors.codigo_tipo_documento">El campo Comprobante es obligatorio.</small>
+                </div>
+                <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento_identidad}">
+                    <label>Tipo de documento:</label>
+                    <select v-model="typeDocuments" class="form-control" style="max-width: 100%;">
+                        <option value="" disabled>Tipo de documento</option>
+                        <option v-for="item in typeDocumentList" :value="item.id" :label="item.name">@{{ item.name }}</option>
+                    </select>
+                    <small class="form-control-feedback" v-if="errors.codigo_tipo_documento_identidad" v-text="errors.codigo_tipo_documento_identidad[0]"></small>
+                </div>
+                <div class="form-group" :class="{'text-danger': errors.numero_documento}">
+                    <label>Número de documento:</label>
+                    <input v-model="numberDocument" :maxlength="maxLength" type="text" class="form-control" style="max-width: 100%;">
+                    <small class="form-control-feedback" v-if="errors.numero_documento" v-text="errors.numero_documento[0]"></small>
+                </div>
+            </div><!-- End .col-lg-4 -->
+        </div>
+    </div>
 
     <!-- Modal de Dirección -->
     <div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
@@ -459,6 +468,37 @@
 
         },
         methods: {
+            incrementQuantity(row) {
+                if (typeof row.cantidad !== 'number' || isNaN(row.cantidad)) {
+                    row.cantidad = 1;
+                } else {
+                    row.cantidad++;
+                }
+                this.updateRowSubtotal(row);
+                this.calculateSummary();
+                this.saveCartToLocalStorage();
+            },
+            decrementQuantity(row) {
+                if (typeof row.cantidad !== 'number' || isNaN(row.cantidad) || row.cantidad <= 1) {
+                    row.cantidad = 1;
+                } else {
+                    row.cantidad--;
+                }
+                this.updateRowSubtotal(row);
+                this.calculateSummary();
+                this.saveCartToLocalStorage();
+            },
+            updateRowSubtotal(row) {
+                let exchange_rate_sale = this.exchange_rate_sale;
+                if(row.currency_type_id === 'USD') {
+                    row.sub_total = ((parseFloat(row.sale_unit_price) * row.cantidad) * exchange_rate_sale).toFixed(2);
+                } else {
+                    row.sub_total = (parseFloat(row.sale_unit_price) * row.cantidad).toFixed(2);
+                }
+            },
+            saveCartToLocalStorage() {
+                localStorage.setItem('products_cart', JSON.stringify(this.records));
+            },
             async changeExchangeRate(exchange_rate_date){
                 var response = await axios.get(`/exchange_rate/ecommence/${exchange_rate_date}`)
                 this.exchange_rate_sale = parseFloat(response.data.sale)

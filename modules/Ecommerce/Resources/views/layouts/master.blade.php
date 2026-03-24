@@ -71,6 +71,16 @@
 </head>
 
 <body data-company-title="{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') }}">
+
+    <?php
+        $configurationModel = \App\Models\Tenant\Configuration::first();
+        $ecommerceConfiguration = \App\Models\Tenant\ConfigurationEcommerce::first();
+        $phoneWhatsapp = $ecommerceConfiguration->phone_whatsapp ?? $configurationModel->phone_whatsapp ?? null;
+        $showWhatsapp = ($configurationModel && ($configurationModel->enable_whatsapp ?? false)) && !empty($phoneWhatsapp);
+        $waPhone = $phoneWhatsapp ? preg_replace('/\D+/', '', $phoneWhatsapp) : '';
+        $waText = rawurlencode('Hola, tengo una consulta desde la tienda online');
+        $waLink = $waPhone ? "https://wa.me/{$waPhone}?text={$waText}" : '';
+    ?>
     <div class="page-wrapper">
 
         @include('ecommerce::layouts.partials_ecommerce.header')
@@ -126,7 +136,6 @@
     <script src="{{ asset('porto-ecommerce/assets/js/cart.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/main.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
-    
     @stack('scripts')
 </body>
 

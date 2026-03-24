@@ -270,6 +270,42 @@ div.cart-dropdown {
                 </a>
             </div>
 
+            <div class="category-dropdown" id="category-dropdown">
+                <button type="button" class="category-dropdown-toggle" id="category-toggle">
+                    <span class="category-toggle-left">                        
+                        <span>Categorías</span>
+                    </span>
+
+                    <svg class="category-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M6 9l6 6l6 -6" />
+                    </svg>
+                </button>
+
+                <div class="category-menu" id="category-menu">
+                    <div class="category-menu-grid">
+                        @foreach ($categories as $category)
+                        <a href="{{ route('tenant.ecommerce.category', \Illuminate\Support\Str::slug($category->name, '-')) }}" class="category-item">
+                            <div class="category-item-icon">
+                                @if($category->image && file_exists(public_path('storage/uploads/categories/'. $category->image)))
+                                    <img src="{{ asset('storage/uploads/categories/'. $category->image) }}" 
+                                         alt="{{ $category->name }}" 
+                                         style="width:40px; height:40px; object-fit:cover; border-radius:8px;">
+                                @else
+                                    <img src="{{ asset('logo/Image_not_available.png') }}" 
+                                         alt="{{ $category->name }}" 
+                                         style="width:40px; height:40px; object-fit:cover; border-radius:8px;">
+                                @endif
+                            </div>
+                            <div class="category-item-content">
+                                <span class="category-item-title">{{ $category->name }}</span>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
             <div id="header_bar" class="header-center header-dropdowns">
 
                 <!-- Botón lupa -->
@@ -343,6 +379,33 @@ div.cart-dropdown {
         if (typeof Vue !== 'undefined') return cb();
         setTimeout(function(){ waitForVue(cb); }, 100);
     }
+
+    (function() {
+        var categoryDropdown = document.getElementById('category-dropdown');
+        var categoryToggle = document.getElementById('category-toggle');
+
+        if (categoryDropdown && categoryToggle) {
+            categoryToggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 991) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    categoryDropdown.classList.toggle('active');
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!categoryDropdown.contains(e.target)) {
+                    categoryDropdown.classList.remove('active');
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    categoryDropdown.classList.remove('active');
+                }
+            });
+        }
+    })();
 
     waitForVue(function() {
 

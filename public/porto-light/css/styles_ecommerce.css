@@ -933,18 +933,16 @@ ul.menu.sf-arrows.sf-js-enabled li a {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
-    background-color: var(--title-color) !important;
-    font-size: 12px;
+    position: unset;
+    background-color: #fff !important;
+    color: var(--title-color) !important;
+    font-size: 16px;
     padding: 1px 4px;
-    margin: 0;
+    margin: 2px 0 0 0;
     font-weight: normal !important;
     width: auto;
     height: auto;
     min-width: 0;
-    top: -7px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .dropdown,
@@ -3206,6 +3204,9 @@ input::-webkit-inner-spin-button {
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 4px;
+}
+.custom-links a{
+    color: var(--title-color);
 }
 @media (min-width: 992px) {
     .category-dropdown:hover .category-menu {

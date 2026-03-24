@@ -128,8 +128,8 @@
                     <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Los productos agotados no aparecerán en el catálogo de la tienda</small>
                   </div>
                 </div> 
-                <div class="col-md-6">
-                  <div class="form-group">
+                <div class="col-12">
+                  <div class="form-group editor-resizable">
                       <label class="control-label">Términos y Condiciones</label>
                       <vue-ckeditor
                         :editors="editors"
@@ -137,10 +137,11 @@
                         :config="editorConfig"
                         v-model="form.terms_conditions"
                       />
+                      <div class="resize-handle" @mousedown="startResize"></div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="form-group">
+                <div class="col-12">
+                  <div class="form-group editor-resizable">
                       <label class="control-label">Política de Privacidad</label>
                       <vue-ckeditor
                         :editors="editors"
@@ -148,10 +149,11 @@
                         :config="editorConfig"
                         v-model="form.privacy_policy"
                       />
+                      <div class="resize-handle" @mousedown="startResize"></div>
                   </div>
                 </div>
                 <div class="col-12">
-                  <div class="form-group">
+                  <div class="form-group editor-resizable">
                       <label class="control-label">Sobre Nosotros</label>
                       <vue-ckeditor
                         :editors="editors"
@@ -159,6 +161,7 @@
                         :config="editorConfig"
                         v-model="form.about_us"
                       />
+                      <div class="resize-handle" @mousedown="startResize"></div>
                   </div>
                 </div>
               </div>              
@@ -178,6 +181,20 @@
     </el-tabs>
   </div>
 </template>
+<style>
+.editor-resizable {
+    position: relative;
+}
+.resize-handle {
+    height: 10px;
+    cursor: ns-resize;
+    background: #eee;
+}
+.editor-resizable .ck-editor__editable {
+    min-height: 150px;
+    height: 200px;
+}
+</style>
 <script>
 import ConfigurationLinks from '../configuration_links/index.vue';
 import PaymentGateways from '../payment_gateways/index.vue';
@@ -211,6 +228,7 @@ export default {
               'undo', 'redo'
           ]
       },
+      isResizing: false,
     };
   },
   async created() {
@@ -253,6 +271,25 @@ export default {
     });
   },
   methods: {
+    startResize(e) {
+      this.isResizing = true
+
+      const editor = e.target.previousElementSibling.querySelector('.ck-editor__editable')
+
+      const onMouseMove = (event) => {
+        if (!this.isResizing) return
+        editor.style.height = event.clientY - editor.getBoundingClientRect().top + 'px'
+      }
+
+      const onMouseUp = () => {
+        this.isResizing = false
+        document.removeEventListener('mousemove', onMouseMove)
+        document.removeEventListener('mouseup', onMouseUp)
+      }
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+    },
     initForm() {
       this.errors = {};
       this.form = {

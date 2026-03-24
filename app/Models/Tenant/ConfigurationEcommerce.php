@@ -39,5 +39,20 @@ class ConfigurationEcommerce extends ModelTenant
     protected $casts = [
         'preferences' => 'array'
     ];
+    /**
+     * Devuelve los enlaces personalizados para el header
+     */
+    public static function getCustomLinks()
+    {
+        $config = self::first();
+        return [
+            'title_one' => $config->title_one_customised_link ?? null,
+            'link_one' => $config->customised_link_one ?? null,
+            'title_two' => $config->title_two_customised_link ?? null,
+            'link_two' => $config->customised_link_two ?? null,
+            'title_three' => $config->title_three_customised_link ?? null,
+            'link_three' => $config->customised_link_three ?? null,
+        ];
+    }
 
 }

@@ -107,13 +107,16 @@ class EcommerceController extends Controller
         // Obtener la descripción general para meta tags
         $ecommerceDescription = self::getEcommerceDescription($company);
 
+        $customLinks = \App\Models\Tenant\ConfigurationEcommerce::getCustomLinks();
+
         return view('ecommerce::index', [
             'dataPaginate' => $dataPaginate,
             'configuration' => $configuration->stock_control,
             'spots' => $spots,
             'preferences' => $preferences,
             'ecommerceDescription' => $ecommerceDescription,
-            'company' => $company
+            'company' => $company,
+            'customLinks' => $customLinks
         ])->with('categories', $categories);
     }
     

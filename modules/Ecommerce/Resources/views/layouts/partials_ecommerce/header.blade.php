@@ -216,7 +216,7 @@ div.cart-dropdown {
             <div class="suggestions-list">
                 <li class="mt-2 py-2" v-for="result in results">
                     <div class="row mx-0">
-                        <a :href="'/ecommerce/item/' + result.slug" class="d-flex col-7 px-0" @click.prevent="suggestionClick(result)">
+                        <a :href="'/ecommerce/item/' + result.slug" class="d-flex col-7 px-0" @click="suggestionClick(result)">
                             <img style="max-width: 80px" class="img-product-results" :src="result.image_url_small" alt="">
                             <span class="search_title d-flex align-items-end ml-3" style="font-size: 1.0em;"> @{{ result.description }} </span>
                         </a>
@@ -304,6 +304,17 @@ div.cart-dropdown {
                         @endforeach
                     </div>
                 </div>
+            </div>
+            <div class="customlinks">
+                @if(!empty($customLinks['title_one']) && !empty($customLinks['link_one']))
+                    <a href="{{ $customLinks['link_one'] }}" class="ml-3" style="font-weight: 500;" target="_blank">{{ $customLinks['title_one'] }}</a>
+                @endif
+                @if(!empty($customLinks['title_two']) && !empty($customLinks['link_two']))
+                    <a href="{{ $customLinks['link_two'] }}" class="ml-3" style="font-weight: 500;" target="_blank">{{ $customLinks['title_two'] }}</a>
+                @endif
+                @if(!empty($customLinks['title_three']) && !empty($customLinks['link_three']))
+                    <a href="{{ $customLinks['link_three'] }}" class="ml-3" style="font-weight: 500;" target="_blank">{{ $customLinks['title_three'] }}</a>
+                @endif
             </div>
 
             <div id="header_bar" class="header-center header-dropdowns">

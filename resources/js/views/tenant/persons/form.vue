@@ -520,20 +520,23 @@
                         </div>
                         <div v-for="(row, index) in form.addresses"
                              class="row m-t-10">
-                            <div class="col-md-12">
+                            <div class="col-md-12 text-md-left">
                                 <label v-if="index === 0"
                                        class="control-label">
                                     Dirección principal
                                 </label>
-                                <label v-else
-                                       class="control-label">
-                                    Dirección secundaria # {{ index }}
+                                <div v-else
+                                       class="d-flex justify-content-between align-items-center w-100 mb-2">
+                                    <label class="control-label mb-0">
+                                        Dirección secundaria # {{ index }}
+                                    </label>
                                     <el-button class="btn-default-danger"
                                                icon="el-icon-minus"
+                                               type="danger"
                                                size="mini"
                                                @click.prevent="clickRemoveAddress(index)">Eliminar dirección
                                     </el-button>
-                                </label>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <div :class="{'has-danger': errors.country_id}"
@@ -614,7 +617,7 @@
                                     <el-input v-model="row.email"></el-input>
                                     <small v-if="errors.email"
                                            class="form-control-feedback"
-                                           v-text="errors.email[0]"></small>
+                                           v-text="errors.email[0]"></small>,
                                 </div>
                             </div>
                             <div v-if="config.enable_consigned" class="col-md-6 center-el-checkbox">
@@ -1337,3 +1340,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.btn-custom, .btn-primary, .btn-danger {
+    color: #fff !important;
+}
+</style>

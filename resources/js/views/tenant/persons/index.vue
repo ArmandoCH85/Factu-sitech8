@@ -573,3 +573,9 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.btn-custom, .btn-primary, .btn-danger {
+    color: #fff !important;
+}
+</style>

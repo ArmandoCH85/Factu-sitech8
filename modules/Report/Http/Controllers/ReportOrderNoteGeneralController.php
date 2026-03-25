@@ -65,34 +65,27 @@ class ReportOrderNoteGeneralController extends Controller
 
     private function dataOrderNotes($request, $model)
     {
-
         $order_state_type_id = $request['order_state_type_id'];
 
         switch ($order_state_type_id) {
-
-            case 'pending':
-                $data = $model::wherePendingState($request);
-                break;
-
-            case 'to_deliver':
+            case '01':
                 $data = $model::whereToDeliverState($request);
                 break;
-    
-            case 'delivered':
+            case '05':
                 $data = $model::whereDeliveredState($request);
                 break;
-    
-            case 'voided':
+            case '09':
+                $data = $model::whereRejectedState($request);
+                break;
+            case '11':
                 $data = $model::whereVoidedState($request);
                 break;
-
-            default: 
+            default:
                 $data = $model::whereDefaultState($request);
                 break;
         }
 
         return $data->whereTypeUser()->latest();
-
     }
 
 

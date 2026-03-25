@@ -4,15 +4,16 @@
 
 use App\Models\System\Configuration as SystemConfiguration;
 use App\Models\Tenant\Catalogs\CurrencyType;
-    use Auth;
-    use Carbon\Carbon;
-    use Illuminate\Config\Repository;
-    use Illuminate\Database\Eloquent\Builder;
-    use Illuminate\Foundation\Application;
-    use Illuminate\Support\Facades\Config;
-    use Modules\Inventory\Models\Warehouse;
-    use Modules\LevelAccess\Models\ModuleLevel;
-    use App\Models\Tenant\Skin;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use Auth;
+use Carbon\Carbon;
+use Illuminate\Config\Repository;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Config;
+use Modules\Inventory\Models\Warehouse;
+use Modules\LevelAccess\Models\ModuleLevel;
+use App\Models\Tenant\Skin;
 use Illuminate\Support\Facades\Log;
 
     /**
@@ -494,6 +495,14 @@ use Illuminate\Support\Facades\Log;
             'smtp_password',
 
         ];
+
+        /**
+         * Relation to the catalog of charge/discount types for the global discount.
+         */
+        public function globalDiscountType()
+        {
+            return $this->belongsTo(ChargeDiscountType::class, 'global_discount_type_id', 'id');
+        }
 
         public static function boot()
         {
@@ -2618,7 +2627,7 @@ use Illuminate\Support\Facades\Log;
         {
             return $query->select('available_cash_report_seller')->first();
         }
-        
+
         /**
          * @return Configuration
          */

@@ -293,7 +293,7 @@ class RestaurantConfigurationController extends Controller
                 return $product; // Preserva todo incluyendo 'name' editado
             }, $data['products']);
         }
-    
+
         $data['status'] = (count($data['products'])<1)?$data['status']:'notavailable';
 
         $isDeliveryOrTakeaway = ($table->environment === 'Delivery' || $table->environment === 'Para Llevar');

@@ -61,7 +61,7 @@
                     </li>
                 </ul>
             </nav>
-
+            {{-- 
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'accounting')?'nav-active':'' }}">
@@ -72,7 +72,7 @@
                     </li>
                 </ul>
             </nav>
-            
+            --}}
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'auto-update')?'nav-active':'' }}">

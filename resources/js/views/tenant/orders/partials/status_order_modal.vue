@@ -63,6 +63,8 @@
                                 type="warning" 
                                 size="mini"
                                 @click="startEdit(status)"
+                                :disabled="isCritical(status.id)"
+                                :class="{ 'is-disabled-custom': isCritical(status.id) }"
                             >
                                 <i class="fa fa-edit"></i>
                             </el-button>
@@ -70,6 +72,8 @@
                                 type="danger" 
                                 size="mini"
                                 @click="destroy(status.id)"
+                                :disabled="isCritical(status.id)"
+                                :class="{ 'is-disabled-custom': isCritical(status.id) }"
                             >
                                 <i class="fa fa-trash"></i>
                             </el-button>
@@ -80,7 +84,13 @@
         </table>
     </el-dialog>
 </template>
-
+<style scoped>
+.is-disabled-custom {
+    background-color: #c0c4cc !important;
+    border-color: #c0c4cc !important;
+    color: #fff !important;
+}
+</style>
 <script>
 export default {
     props: {
@@ -104,6 +114,9 @@ export default {
         }
     },
     methods: {
+        isCritical(id) {
+            return [2, 3].includes(id)  // IDs de Pago verificado y Despachado
+        },
         getRecords() {
             this.$http.get('/statusOrder/records').then(response => {
                 this.statuses = response.data

@@ -397,6 +397,11 @@ class Facturalo
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
+        // Usa el logo del establecimiento cuando no esté configurado el logo de la empresa, para que los PDFs de las facturas siempre muestren el logo de la sucursal.
+        if (empty($this->company->logo) && $this->document && $this->document->establishment && !empty($this->document->establishment->logo)) {
+            $this->company->logo = $this->document->establishment->logo;
+        }
+
         $height_logo = HelperFacturalo::logo_heigth($this->document->establishment_id, $this->company);
         $heightQr = 95;
         if(in_array($this->document->document_type_id, ['09', '31'])) {
@@ -443,7 +448,6 @@ class Facturalo
         $optional_configuration = [
             'enabled_price_items_dispatch' => $this->configuration->enabled_price_items_dispatch,
             'is_preview' => false,
-            'enable_weight_in_dispatches' => $this->configuration->enable_weight_in_dispatches,
         ];
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf, $optional_configuration);

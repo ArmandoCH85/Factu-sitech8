@@ -70,6 +70,10 @@ class EstablishmentController extends Controller
             $has_igv_31556 = ($request->input('has_igv_31556') === 'true');
             $addresses = ($request->input('addresses'))??[];
             $establishment = Establishment::firstOrNew(['id' => $id]);
+
+            // fix: mantener logo por defecto en nuevas sucursales (#47)
+            $data = $request->all();
+
             if ($request->hasFile('file') && $request->file('file')->isValid()) {
                 $request->validate(['file' => 'mimes:jpeg,png,jpg|max:1024']);
                 $file = $request->file('file');
@@ -80,9 +84,21 @@ class EstablishmentController extends Controller
 
                 $file->storeAs('public/uploads/logos', $filename);
                 $path = 'storage/uploads/logos/' . $filename;
-                $request->merge(['logo' => $path]);
+                $data['logo'] = $path;
+            } else {
+                // No se sobrescribi el logo actual si no se sube uno nuevo.
+                unset($data['logo']);
             }
-            $establishment->fill($request->all());
+
+            // Si es sucursal nueva, por defecto tomara el logo de la sucursal principal
+            if (!$id) {
+                $defaultLogo = optional(auth()->user()->establishment)->logo;
+                if (empty($data['logo']) && !empty($defaultLogo)) {
+                    $data['logo'] = $defaultLogo;
+                }
+            }
+
+            $establishment->fill($data);
             $establishment->has_igv_31556 = $has_igv_31556;
             $establishment->email = $request->email;
             $establishment->save();

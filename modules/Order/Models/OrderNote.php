@@ -582,6 +582,27 @@
         }
 
         /**
+         * Scope para filtrar pedidos rechazados (state_type_id = 09)
+         *
+         * @param Builder $query
+         * @param         $params
+         *
+         * @return Builder
+         */
+        public function scopeWhereRejectedState(Builder $query, $params)
+        {
+            $query
+                ->where('state_type_id', '09')
+                ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']]);
+            if ($params['person_id']) {
+                $query->where('customer_id', $params['person_id']);
+            } else {
+                $query->where('user_id', $params['seller_id']);
+            }
+            return $query;
+        }
+
+        /**
          * Establece el status anulado (11) para el pedido
          * Recorre los items, si estos tienen lotes serán habilitados nuevamente
          *

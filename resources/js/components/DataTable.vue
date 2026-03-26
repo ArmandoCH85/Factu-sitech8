@@ -93,6 +93,25 @@
                             </el-select>
                         </div>
                     </div>
+                    <div v-if="showStockFilter" class="col-lg-3 col-md-3 col-sm-12 pb-2 d-flex">
+                        <div class="d-flex align-items-center me-2 text-nowrap">
+                            Stock:
+                        </div>
+                        <el-select
+                          v-model="stock_filter"
+                          size="small"
+                          @change="handleStockChange"
+                          placeholder="Seleccionar"
+                          style="width: 100%"
+                        >
+                          <el-option label="Todos" value="all"></el-option>
+                          <el-option label="Stock > 0" value="positive"></el-option>
+                          <el-option label="Stock < 0" value="negative"></el-option>
+                          <el-option label="Stock = 0" value="zero"></el-option>
+                          <el-option label="0 < Stock <= Stock min" value="min_alert"></el-option>
+                          <el-option label="Stock > Stock min" value="safe"></el-option>
+                        </el-select>
+                    </div>
                     <div v-if="showWarehouseFilter" class="col-lg-3 col-md-3 col-sm-12 pb-2 d-flex ms-auto">
                         <div class="d-flex align-items-center me-2 text-nowrap">
                             Almacén:
@@ -292,6 +311,7 @@ export default {
                 value: null,
                 list_value: 'all',
             },
+            stock_filter: 'all',
             columns: [],
             records: [],
             pagination: {},
@@ -321,6 +341,9 @@ export default {
             return this.search.list_value === 'with_supplies';
         },
         showWarehouseFilter() {
+            return this.resource === 'inventory' && window.location.pathname === '/inventory';
+        },
+        showStockFilter() {
             return this.resource === 'inventory' && window.location.pathname === '/inventory';
         }
     },
@@ -412,6 +435,9 @@ export default {
         handleWarehouseChange() {
             this.getRecords();
         },
+        handleStockChange() {
+            this.getRecords();
+        },
         checkScrollShadows() {
             const el = this.$refs.scrollContainer;
             if (!el) return;
@@ -467,6 +493,7 @@ export default {
                 sort_direction: this.currentSort.direction,
                 show_disabled: this.showDisabledValue,
                 warehouse_id: this.warehouse_id,
+                stock_filter: this.stock_filter,
                 ...this.search
             });
         },

@@ -536,15 +536,16 @@ trait ReportTrait
      * @return \string[][]
      */
     public function getOrderStateTypes(){
+        $states = StateType::whereIn('id', ['01', '05', '09', '11'])->get()->map(function($state) {
+            return [
+                'id' => $state->id,
+                'description' => $state->description,
+            ];
+        })->toArray();
 
-        return [
-            ['id' => 'all_states', 'description' => 'Todos'],
-            ['id' => 'pending', 'description' => 'Pendiente'],
-            ['id' => 'to_deliver', 'description' => 'Por entregar'],
-            ['id' => 'delivered', 'description' => 'Entregado'],
-            ['id' => 'voided', 'description' => 'Anulado'],
-        ];
+        array_unshift($states, ['id' => 'all_states', 'description' => 'Todos']);
 
+        return $states;
     }
 
     /**

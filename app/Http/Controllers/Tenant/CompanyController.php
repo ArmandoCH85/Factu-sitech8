@@ -124,17 +124,84 @@ class CompanyController extends Controller
 
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
 
-                $stream = fopen($file->getPathname(), 'r');
-                Storage::put('public/uploads/logos/'.$name, $stream);
-                if (is_resource($stream)) fclose($stream);
+                $absolutePath = $file->getPathname();
+                $mime = mime_content_type($absolutePath) ?: '';
+                $isSvg = str_contains($mime, 'svg') || strtolower($ext) === 'svg';
+
+                if ($isSvg) {
+                    // SVG: se guarda tal cual (sin compresión).
+                    $stream = fopen($file->getPathname(), 'r');
+                    Storage::put('public/uploads/logos/' . $name, $stream);
+                    if (is_resource($stream)) fclose($stream);
+                } else {
+                    // Optimizar raster para que el base64 del PDF no infle el documento.
+                    $maxWidth = 300;
+                    $targetBytes = 100 * 1024; // ~100KB
+
+                    $optimized = UploadFileHelper::optimizeRasterImageToTargetJpg(
+                        $absolutePath,
+                        $maxWidth,
+                        $targetBytes,
+                        60,
+                        10
+                    );
+
+                    if (!$optimized) {
+                        // Fallback: compresión más agresiva si el optimizador falla.
+                        $image = \Intervention\Image\ImageManagerStatic::make($absolutePath);
+                        $image->resize($maxWidth, null, function ($constraint) {
+                            $constraint->aspectRatio();
+                            $constraint->upsize();
+                        });
+                        $quality = 25;
+                        $optimizedBytes = (string) $image->encode('jpg', $quality);
+                    } else {
+                        $optimizedBytes = (string) $optimized['bytes'];
+                    }
+
+                    $name = $type . '_' . $company->number . '.jpg';
+                    Storage::put('public/uploads/logos/' . $name, $optimizedBytes);
+                }
             }
 
             if (($type === 'logo_dark')) {
                 $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
-                $stream = fopen($file->getPathname(), 'r');
-                Storage::put('public/uploads/logos/'.$name, $stream);
-                if (is_resource($stream)) fclose($stream);
+                $absolutePath = $file->getPathname();
+                $mime = mime_content_type($absolutePath) ?: '';
+                $isSvg = str_contains($mime, 'svg') || strtolower($ext) === 'svg';
+
+                if ($isSvg) {
+                    $stream = fopen($file->getPathname(), 'r');
+                    Storage::put('public/uploads/logos/' . $name, $stream);
+                    if (is_resource($stream)) fclose($stream);
+                } else {
+                    $maxWidth = 300;
+                    $targetBytes = 100 * 1024; // ~100KB
+
+                    $optimized = UploadFileHelper::optimizeRasterImageToTargetJpg(
+                        $absolutePath,
+                        $maxWidth,
+                        $targetBytes,
+                        60,
+                        10
+                    );
+
+                    if (!$optimized) {
+                        $image = \Intervention\Image\ImageManagerStatic::make($absolutePath);
+                        $image->resize($maxWidth, null, function ($constraint) {
+                            $constraint->aspectRatio();
+                            $constraint->upsize();
+                        });
+                        $quality = 25;
+                        $optimizedBytes = (string) $image->encode('jpg', $quality);
+                    } else {
+                        $optimizedBytes = (string) $optimized['bytes'];
+                    }
+
+                    $name = $type . '_' . $company->number . '.jpg';
+                    Storage::put('public/uploads/logos/' . $name, $optimizedBytes);
+                }
             }
 
             // if (($type === 'logo_store')) {

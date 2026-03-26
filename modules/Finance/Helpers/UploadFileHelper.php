@@ -282,6 +282,60 @@ class UploadFileHelper
         }
     }
 
+     /**
+     * Optimiza imagen (raster) para que el resultado JPG pese ~targetBytes.
+     * Se usa principalmente para logos que luego se incrustan como base64 en PDFs.
+     *
+     * @param string $absolutePath Ruta absoluta al archivo original
+     * @param int $maxWidth Máximo ancho final (mantiene proporción)
+     * @param int $targetBytes Objetivo en bytes del JPG codificado
+     * @param int $qualityStart Calidad inicial JPG
+     * @param int $qualityMin Calidad mínima JPG
+     * @return array|null ['bytes' => string, 'quality' => int] o null si falla
+     */
+    public static function optimizeRasterImageToTargetJpg(
+        string $absolutePath,
+        int $maxWidth,
+        int $targetBytes,
+        int $qualityStart = 80,
+        int $qualityMin = 20
+    ): ?array {
+        try {
+            $image = Image::make($absolutePath);
+
+            // Limitar tamaño físico para que el base64 del PDF no se dispare.
+            $image->resize($maxWidth, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+
+            $bestBytes = '';
+            $bestQuality = $qualityStart;
+
+            // Ajustar calidad en pasos para acercarnos al target (sin adivinar).
+            for ($q = $qualityStart; $q >= $qualityMin; $q -= 5) {
+                $encoded = (string) $image->encode('jpg', $q);
+                if (strlen($encoded) > 0) {
+                    $bestBytes = $encoded;
+                    $bestQuality = $q;
+                }
+
+                if (strlen($encoded) <= $targetBytes) {
+                    break;
+                }
+            }
+
+            if ($bestBytes === '') return null;
+
+            return [
+                'bytes' => $bestBytes,
+                'quality' => $bestQuality,
+            ];
+        } catch (Exception $e) {
+            self::writeErrorLog($e, 'optimizeRasterImageToTargetJpg');
+            return null;
+        }
+    }
     
     /**
      *

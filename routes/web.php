@@ -78,6 +78,10 @@ if ($hostname) {
 
             //Status Orders
             Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
+            Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
+            Route::post('statusOrder/store', 'Tenant\StatusOrdersController@store');
+            Route::put('statusOrder/update/{id}', 'Tenant\StatusOrdersController@update');
+            Route::delete('statusOrder/destroy/{id}', 'Tenant\StatusOrdersController@destroy');
 
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create')->middleware('redirect.level');

@@ -28,6 +28,7 @@
     use Illuminate\Support\Facades\Cache;
     use App\Helpers\GuestRegisterHelper;
 use App\Models\System\PlanPeriod;
+use App\Models\System\User as SystemUser;
 
     class ClientController extends Controller
     {
@@ -434,7 +435,6 @@ use App\Models\System\PlanPeriod;
                 return [
                     'line' => $line,
                     'total_documents' => 0,
-                    'error' => 'Error al cargar los datos del gráfico'
                 ];
             }
         }
@@ -1232,6 +1232,10 @@ use App\Models\System\PlanPeriod;
 
         public function confirmLimitReseller(Request $request)
         {
+            if ($this->resellerSystemAdminLacksPlansModule()) {
+                return $this->generalResponse(true, 'Sin evaluación de cupo de suscripción');
+            }
+
             $limiteClientes = (int) config('app.limite_reseller' , 999);
             $totalClientes = Client::count();
 
@@ -1240,5 +1244,17 @@ use App\Models\System\PlanPeriod;
             }
 
             return $this->generalResponse(true, 'Aun puede registrar más clientes');
+        }
+
+        /**
+         * Sin permiso "plans" no se conoce el contexto del cupo de la suscripción; no aplicar aviso de límite.
+         */
+        protected function resellerSystemAdminLacksPlansModule(): bool
+        {
+            $user = auth('admin')->user();
+
+            return $user instanceof SystemUser
+                && $user->reseller_id !== null
+                && ! $user->canAccessSystemModule('plans');
         }
     }

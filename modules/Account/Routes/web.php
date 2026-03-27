@@ -54,7 +54,7 @@ else {
 
     Route::domain($app_url)->group(function () {
 
-        Route::middleware('auth:admin')->group(function() {
+        Route::middleware(['auth:admin', 'reseller.system.admin'])->group(function() {
 
             Route::prefix('accounting')->group(function () {
 

@@ -999,12 +999,7 @@ export default {
                 this.dataChartLine.labels = line.labels;
                 this.dataChartLine.datasets[0].data = line.data;
                 this.total_documents = response.data.total_documents || 0;
-                
-                // Mostrar advertencia si hubo errores en el servidor
-                if (response.data.error) {
-                    this.$message.warning(response.data.error);
-                }
-                
+
                 this.$nextTick(() => {
                     this.chartDataLoaded = true;
                 });
@@ -1017,15 +1012,6 @@ export default {
             }
         } catch (error) {
             console.error('Error loading chart data:', error);
-            
-            // Mostrar mensaje de error al usuario
-            if (error.response && error.response.status === 500) {
-                this.$message.error('Error al cargar los datos del gráfico. Por favor, contacte al administrador.');
-            } else {
-                this.$message.error('No se pudieron cargar los datos del gráfico.');
-            }
-            
-            // Inicializar con datos vacíos para que el gráfico se muestre
             this.dataChartLine.labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic'];
             this.dataChartLine.datasets[0].data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             this.total_documents = 0;
@@ -1132,7 +1118,7 @@ export default {
             })
             .catch(error => {
                 console.error('Error al verificar el límite:', error);
-                this.checkLimitUsers = false;
+                this.checkLimitUsers = true;
             });
         },
         saveColumnVisibility() {

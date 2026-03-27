@@ -53,6 +53,8 @@ class TemplateColumnsConfig extends ModelTenant
                     'precio_unitario' => true,
                     'descuento' => true,
                     'total' => true,
+                    'tipo_persona' => false,
+                    'peso_total' => false,
                 ]
             ]
         );

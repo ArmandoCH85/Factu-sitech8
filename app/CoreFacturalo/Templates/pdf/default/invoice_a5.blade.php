@@ -671,6 +671,16 @@ foreach ($document->items as $row) {
     </tbody>
 </table>
 <table class="full-width">
+    @php
+        $personType = $document->person?->person_type;
+    @endphp
+    @if ( $personType && $personType->enabled_description_person_type)
+        <tr width="65%" >
+            <td>
+                <strong>{{ $personType->description }}</strong> : {{ $personType->description_person_type }}
+            </td>
+        </tr>
+    @endif
     <tr>
         <td class="align-top">
             <table class="full-width">

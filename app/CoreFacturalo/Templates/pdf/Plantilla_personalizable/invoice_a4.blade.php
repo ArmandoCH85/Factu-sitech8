@@ -57,6 +57,8 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
     'precio_unitario' => true,
     'descuento' => true,
     'total' => true,
+    'tipo_persona' => false,
+    'peso_total' => false,
 ];
 
 @endphp
@@ -1024,6 +1026,16 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
         </tbody>
     </table>
     <table class="full-width">
+        @php
+            $personType = $document->person?->person_type;
+        @endphp
+        @if ( $personType?->enabled_description_person_type && ($showColumns['tipo_persona'] ?? false))
+            <tr width="65%" >
+                <td>
+                    <strong>{{ $personType->description }}</strong> : {{ $personType->description_person_type }}
+                </td>
+            </tr>
+        @endif
         <tr>
             <td width="65%" style="text-align: top; vertical-align: top;">
                 @foreach(array_reverse( (array) $document->legends) as $row)
@@ -1214,7 +1226,7 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
             </td>
         </tr>
     </table>
-    @endif
+    @endif    
 </body>
 
 </html>

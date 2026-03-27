@@ -17,6 +17,15 @@
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
     $configurationInPdf= App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationInPdf();
 
+    $total_weight = 0;
+    $show_weight_attribute = $document->items->some(function($row) {
+        $at = (array)$row->attributes;
+        if (isset($row->attributes) && count(($at)) > 0) {
+            $attributes = (array)(($at)[0]);
+            return collect($attributes)->where('attribute_type_id', '5031');
+        }
+    });
+
     // Obtener configuración de columnas para Plantilla_personalizable
     $columnsConfig = \App\Models\Tenant\TemplateColumnsConfig::where('establishment_id', $document->establishment_id)
         ->where('template_name', 'Plantilla_personalizable')
@@ -35,6 +44,8 @@
         'precio_unitario' => true,
         'descuento' => true,
         'total' => true,
+        'tipo_persona' => false,
+        'peso_total' => false,
     ];
 @endphp
 <html>
@@ -336,6 +347,11 @@
         <tr>
             @php
                 $internal_id = optional($row->item)->internal_id;
+                $at = (array)$row->attributes;
+                if (isset($row->attributes) && count(($at)) > 0) {
+                    $attributes = (array)(($at)[0]);
+                    $total_weight += (float)($attributes['value'] ?? 0) * (float)$row->quantity;
+                }
             @endphp
             @if($showColumns['codigo']) <td class="text-center align-top">{{ $internal_id }}</td> @endif
             @if($showColumns['cantidad']) <td class="text-center align-top">
@@ -495,6 +511,13 @@
         </tr>
     </tbody>
 </table>
+@if ($show_weight_attribute && ($showColumns['peso_total'] ?? false))
+    <table class="full-width">
+        <tr>
+            <td colspan="{{ $colspan_total }}" class="text-left font-bold">Peso estimado: {{ number_format($total_weight, 2) }} Kg</td>
+        </tr>
+    </table>
+@endif
 <table class="full-width">
     @if(isset($configurationInPdf) && $configurationInPdf->show_bank_accounts_in_pdf)
         <tr>

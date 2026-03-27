@@ -715,37 +715,25 @@ class EcommerceController extends Controller
 
     public function termsConditions()
     {
-        if (auth('ecommerce')->user()) {
-            $config = \App\Models\Tenant\ConfigurationEcommerce::first();
-            $terms_conditions = $config ? $config->terms_conditions : null;
-            $categories = \Modules\Item\Models\Category::get();
-            return view('ecommerce::pages_fields.terms_conditions', compact('terms_conditions', 'categories'));
-        } else {
-            return redirect('ecommerce');
-        }
+        $config = \App\Models\Tenant\ConfigurationEcommerce::first();
+        $terms_conditions = $config ? $config->terms_conditions : null;
+        $categories = \Modules\Item\Models\Category::get();
+        return view('ecommerce::pages_fields.terms_conditions', compact('terms_conditions', 'categories'));
     }
 
     public function privacyPolicy()
     {
-        if (auth('ecommerce')->user()) {
-            $config = \App\Models\Tenant\ConfigurationEcommerce::first();
-            $privacy_policy = $config ? $config->privacy_policy : null;
-            $categories = \Modules\Item\Models\Category::get();
-            return view('ecommerce::pages_fields.privacy_policy', compact('privacy_policy', 'categories'));
-        } else {
-            return redirect('ecommerce');
-        }
+        $config = \App\Models\Tenant\ConfigurationEcommerce::first();
+        $privacy_policy = $config ? $config->privacy_policy : null;
+        $categories = \Modules\Item\Models\Category::get();
+        return view('ecommerce::pages_fields.privacy_policy', compact('privacy_policy', 'categories'));
     }
 
     public function aboutUs()
     {
-        if (auth('ecommerce')->user()) {
-            $config = \App\Models\Tenant\ConfigurationEcommerce::first();
-            $about_us = $config ? $config->about_us : null;
-            $categories = \Modules\Item\Models\Category::get();
-            return view('ecommerce::pages_fields.about_us', compact('about_us', 'categories'));
-        } else {
-            return redirect('ecommerce');
-        }
+        $config = \App\Models\Tenant\ConfigurationEcommerce::first();
+        $about_us = $config ? $config->about_us : null;
+        $categories = \Modules\Item\Models\Category::get();
+        return view('ecommerce::pages_fields.about_us', compact('about_us', 'categories'));
     }
 }

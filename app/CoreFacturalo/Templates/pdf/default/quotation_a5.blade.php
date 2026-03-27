@@ -9,6 +9,15 @@
 
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
     $configurationInPdf= App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationInPdf();
+
+    $total_weight = 0;
+    $show_weight_attribute = $document->items->some(function($row) {
+        $at = (array)$row->attributes;
+        if (isset($row->attributes) && count(($at)) > 0) {
+            $attributes = (array)(($at)[0]);
+            return collect($attributes)->where('attribute_type_id', '5031');
+        }
+    });
 @endphp
 <html>
 <head>
@@ -299,6 +308,11 @@
     @foreach($document->items as $row)
         @php
             $brand =  \App\CoreFacturalo\Helpers\Template\TemplateHelper::getBrandFormItem($row);;
+            $at = (array)$row->attributes;
+            if (isset($row->attributes) && count(($at)) > 0) {
+                $attributes = (array)(($at)[0]);
+                $total_weight += (float)($attributes['value'] ?? 0) * (float)$row->quantity;
+            }
 
         @endphp
         <tr>
@@ -425,6 +439,13 @@
         </tr>
     </tbody>
 </table>
+@if ($show_weight_attribute)
+    <table class="full-width">
+        <tr>
+            <td colspan="{{ $colspan_total }}" class="text-left font-bold">Peso estimado: {{ number_format($total_weight, 2) }} Kg</td>
+        </tr>
+    </table>
+@endif
 <table class="full-width">
     @if(isset($configurationInPdf) && $configurationInPdf->show_bank_accounts_in_pdf)
         <tr>

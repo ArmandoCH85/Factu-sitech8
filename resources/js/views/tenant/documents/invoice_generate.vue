@@ -6951,7 +6951,7 @@ export default {
             
             // Si monto > 700 y cliente_id = 1 (Clientes varios)
             if (monto > 700 && clienteId === 1) {
-                this.$alert('Montos > S/ 700 no pueden usar "Clientes varios"', 'Cliente Requerido', {
+                this.$alert('Ventas mayores a S/ 700 requieren un cliente con DNI registrado.', 'Cliente Requerido', {
                     confirmButtonText: 'Entendido',
                     type: 'error'
                 });

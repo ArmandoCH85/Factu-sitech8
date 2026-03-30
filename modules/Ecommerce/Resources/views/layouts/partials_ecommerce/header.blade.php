@@ -94,7 +94,6 @@ div.cart-dropdown {
 }
 
 .search_input:focus {
-    border: 1px solid var(--background-color) !important;
     background-color: transparent !important;
 }
 
@@ -107,12 +106,12 @@ div.cart-dropdown {
 }
 
 .header-dropdown-inside {
-    position: relative; 
+    position: relative;
 }
 
 .header-dropdown-inside .search-icon {
     position: absolute;
-    left: 10px; 
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     width: 18px;
@@ -121,7 +120,7 @@ div.cart-dropdown {
 }
 
 .header-dropdown-inside .search_input {
-    padding-left: 40px !important; 
+    padding-left: 40px !important;
     padding-right: 40px !important;
     width: 100%;
 }
@@ -148,7 +147,6 @@ div.cart-dropdown {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
     z-index: 14;
 }
 #search-overlay.active {
@@ -206,11 +204,11 @@ div.cart-dropdown {
             @focus="isFocused = true"
             @blur="isFocused = false"
         />
-        <img src="{{ asset('images/circle-xmark.svg') }}" alt="Clear" class="clear-icon" @click="clearInput">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-x clear-icon" @click="clearInput"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
     </div>
 
     {{-- Mostrar si hay resultados y el input está activo o tiene texto --}}
-    <div class="header-menu results-container" v-show="results.length > 0 && (isFocused || value.length > 0)">        
+    <div class="header-menu results-container" v-show="results.length > 0 && (isFocused || value.length > 0)">
         <ul class="p-4">
             <span class="">Productos sugeridos</span>
             <div class="suggestions-list">
@@ -236,7 +234,7 @@ div.cart-dropdown {
                                     <input type="number" class="input-quantity mx-2" v-model.number="cartQuantities[result.id]" min="1" style="width: 50px; text-align: center;" @change="updateQuantity(result)">
                                     <button @click.stop.prevent="incrementQuantity(result)">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                                    </button>                                    
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -272,7 +270,7 @@ div.cart-dropdown {
 
             <div class="category-dropdown" id="category-dropdown">
                 <button type="button" class="category-dropdown-toggle" id="category-toggle">
-                    <span class="category-toggle-left">                        
+                    <span class="category-toggle-left">
                         <span>Categorías</span>
                     </span>
 
@@ -288,12 +286,12 @@ div.cart-dropdown {
                         <a href="{{ route('tenant.ecommerce.category', \Illuminate\Support\Str::slug($category->name, '-')) }}" class="category-item">
                             <div class="category-item-icon">
                                 @if($category->image && file_exists(public_path('storage/uploads/categories/'. $category->image)))
-                                    <img src="{{ asset('storage/uploads/categories/'. $category->image) }}" 
-                                         alt="{{ $category->name }}" 
+                                    <img src="{{ asset('storage/uploads/categories/'. $category->image) }}"
+                                         alt="{{ $category->name }}"
                                          style="width:40px; height:40px; object-fit:cover; border-radius:8px;">
                                 @else
-                                    <img src="{{ asset('logo/Image_not_available.png') }}" 
-                                         alt="{{ $category->name }}" 
+                                    <img src="{{ asset('logo/Image_not_available.png') }}"
+                                         alt="{{ $category->name }}"
                                          style="width:40px; height:40px; object-fit:cover; border-radius:8px;">
                                 @endif
                             </div>
@@ -321,14 +319,14 @@ div.cart-dropdown {
 
                 <!-- Botón lupa -->
                 <div class="mr-3 btn-search-icon" id="btn-search-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/>
                         <path d="M21 21l-6 -6"/>
                     </svg>
                 </div>
 
-                <!-- Wrapper del buscador (posición absoluta centrada) -->                
+                <!-- Wrapper del buscador (posición absoluta centrada) -->
 
             </div>
 
@@ -472,13 +470,13 @@ div.cart-dropdown {
                             if (item.image_url_small) {
                                 imageSmall = item.image_url_small.split(/[\\/]/).pop();
                             }
-                    
+
                             let priceClean = item.sale_unit_price;
                             if (typeof priceClean === 'string') {
                                 priceClean = priceClean.replace(/[^\d.,-]/g, '').replace(',', '.');
                             }
                             priceClean = parseFloat(priceClean) || 0;
-                    
+
                             array.push({
                                 id: item.id,
                                 description: item.description,
@@ -494,7 +492,7 @@ div.cart-dropdown {
                                 internal_id: item.internal_id || '',
                                 quantity: 1
                             });
-                    
+
                             localStorage.setItem('products_cart', JSON.stringify(array));
                             this.cartQuantities = Object.assign({}, this.cartQuantities, { [item.id]: 1 });
                             window.dispatchEvent(new Event('productAddedToCart'));

@@ -42,18 +42,18 @@
                                 Sin descripción disponible.
                             </p>
                         @endif
-                    @endif                                      
+                    @endif
                 </div>
 
                 <div class="product-price-restaurante mt-auto">
-                    
+
                     @if(isset($preferences['show_stock']) && $preferences['show_stock'] == 1)
                         @if ($item->stock > 0)
                             <h3 class="product-stock font-weight-bold">Disponible: <span>{{ number_format($item ->stock, 0) }}</span></h3>
                         @else
                             <h3 class="product-stock text-danger font-weight-bold">Sin stock</h3>
                         @endif
-                    @endif  
+                    @endif
 
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="price-box-restaurant">
@@ -110,7 +110,7 @@
     }
     .productdisabled
     {
-        pointer-events: none;
+        /* pointer-events: none; */
         /* opacity: 0.7; */
     }
     .add-cart::before{

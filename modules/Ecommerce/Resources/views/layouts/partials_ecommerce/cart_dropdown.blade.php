@@ -9,7 +9,7 @@
 <div class="dropdown cart-dropdown">
     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
 
-		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart cart-icon-ecommerce"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M15 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
+		<svg clip-rule="evenodd" fill-rule="evenodd" height="24" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 512 512" width="24" xmlns="http://www.w3.org/2000/svg" id="fi_4893746"><path d="m211.892 383.468c24.344 0 44.108 19.764 44.108 44.108s-19.764 44.108-44.108 44.108-44.108-19.764-44.108-44.108 19.764-44.108 44.108-44.108zm176.22 0c24.344 0 44.108 19.764 44.108 44.108s-19.764 44.108-44.108 44.108-44.108-19.764-44.108-44.108 19.764-44.108 44.108-44.108zm-288.464-273.226s63.534 222.705 63.534 222.705c6.591 23.103 27.703 39.034 51.727 39.034h157.478c33.502 0 61.98-24.47 67.023-57.59 4.821-31.664 11.838-77.75 17.065-112.081 2.869-18.84-2.626-37.994-15.046-52.449-12.42-14.454-30.529-22.769-49.586-22.769h-235.394l-8.72-30.567c-7.633-26.757-32.085-45.209-59.91-45.209-23.033 0-51.825 0-51.825 0-13.798 0-25 11.202-25 25s11.202 25 25 25h51.825c5.494 0 10.321 3.643 11.829 8.926zm71.066 66.85h221.129c4.482 0 8.741 1.956 11.663 5.355 2.921 3.4 4.213 7.905 3.539 12.337 0 0-17.066 112.081-17.066 112.081-1.323 8.693-8.798 15.116-17.592 15.116h-157.478c-1.693 0-3.181-1.122-3.645-2.751 0 0-40.55-142.138-40.55-142.138z"></path></svg>
 
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag bag-icon-restaurant"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z"></path><path d="M9 11v-5a3 3 0 0 1 6 0v5"></path></svg>
 		<span class="cart-count" style="display:none;">0</span>
@@ -41,7 +41,7 @@
 
 	function remove(id)
 	{
-		
+
 		let array = localStorage.getItem('products_cart');
 		array = JSON.parse(array);
 		let indexFound = array.findIndex( x=> x.id == id)
@@ -49,7 +49,7 @@
 		localStorage.setItem('products_cart', JSON.stringify( array ) );
 		populate();
 		calculatetotal();
-	
+
 	}
 
 	function calculatetotal()
@@ -78,12 +78,12 @@
 		count = array.length;
 
 		const defaultImagePath = '{{ $defaultImagePath }}';
-        
+
 		array.forEach(element => {
 			let qty = parseInt(element.quantity) || 1;
 			totalItems += qty;
-			const imagePath = (element.image_small && element.image_small !== 'imagen-no-disponible.jpg') 
-				? `/storage/uploads/items/${element.image_small}` 
+			const imagePath = (element.image_small && element.image_small !== 'imagen-no-disponible.jpg')
+				? `/storage/uploads/items/${element.image_small}`
 				: defaultImagePath;
 			$(".dropdown-cart-products").append( `
 					<div class="product cart-product-row">
@@ -103,7 +103,7 @@
 								<i class="icon-cancel"></i>
 							</a>
 						</figure>
-					</div>` 
+					</div>`
 				);
 		});
 
@@ -114,7 +114,7 @@
 		}
 	}
 
-	
+
 	$(function(){
 		'use strict';
 		populate();

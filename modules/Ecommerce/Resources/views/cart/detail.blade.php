@@ -297,10 +297,49 @@
                         <div style="margin-bottom: 10px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Dirección</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <input v-model="addressModal.address" type="text" placeholder="Ingrese su dirección completa" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; outline: none; background-color: #fff;">
-                                @if(!empty($googleMapsApiKey)) 
-                                    <button @click="searchAddressInMap(addressModal.address)" class="btn btn-primary" style="width: 100px;height: 38px; padding: 0 15px; font-size: 14px; margin: 0;">Buscar</button>
-                                @endif
+                                <div style="position: relative; width: 100%;">
+                                    <input 
+                                        v-model="addressModal.address" 
+                                        @input="onAddressInputChange"
+                                        @keydown.down.prevent="moveSuggestion(1)"
+                                        @keydown.up.prevent="moveSuggestion(-1)"
+                                        @keydown.enter.prevent="selectHighlighted"
+                                        @keydown.esc="clearSuggestions"
+                                        id="addressAutocompleteInput"
+                                        type="text" 
+                                        placeholder="Ingrese su dirección completa" 
+                                        autocomplete="off"
+                                        style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; outline: none; background-color: #fff;">
+                                    
+                                    <ul v-if="addressSuggestions.length > 0" 
+                                        style="position: absolute; top: 100%; left: 0; right: 0; 
+                                            background: #fff; 
+                                            border: 1px solid #ced4da; 
+                                            border-top: none; 
+                                            border-radius: 0 0 4px 4px; 
+                                            list-style: none; 
+                                            margin: 0; padding: 0; 
+                                            z-index: 9999; 
+                                            max-height: 156px;
+                                            overflow-y: auto;
+                                            box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+                                    >
+                                        <li v-for="(suggestion, i) in addressSuggestions"
+                                            :key="i"
+                                            @mousedown.prevent="selectSuggestionFromList(suggestion)"
+                                            :style="{
+                                                padding: '10px 14px',
+                                                cursor: 'pointer',
+                                                fontSize: '13px',
+                                                borderBottom: '1px solid #f0f0f0',
+                                                backgroundColor: highlightedIndex === i ? '#f0f4ff' : '#fff',
+                                                color: '#333'
+                                            }">
+                                            <span style="font-weight: 500;">@{{ suggestion.mainText }}</span>
+                                            <span style="color: #888; font-size: 12px; display: block;">@{{ suggestion.secondaryText }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         
@@ -392,7 +431,10 @@
             districts: [],
             selectedDepartment: '',
             selectedProvince: '',
-            selectedDistrict: ''
+            selectedDistrict: '',
+            highlightedIndex: -1,
+            addressSuggestions: [],
+            addressSearchTimeout: null,
         },
         computed: {
             maxLength: function () {
@@ -410,7 +452,7 @@
         watch: {
             'addressModal.address': function(newValue) {
                 // Eliminamos la lógica de búsqueda automática
-                console.log('Cambio detectado en la dirección, pero no se realizará búsqueda automática.');
+                //console.log('Cambio detectado en la dirección, pero no se realizará búsqueda automática.');
             }
         },
         async mounted() {
@@ -463,11 +505,229 @@
                     return obj
                 })
             }
-            console.log("this.records", this.records);
+            //console.log("this.records", this.records);
             this.initForm();
 
         },
         methods: {
+            extractAndSetUbigeoFromComponents(components) {
+                if (!components) return;
+
+                let department = '';
+                let province   = '';
+                let district   = '';
+
+                components.forEach(component => {
+                    const types    = component.types || [];
+                    const longName = (component.long_name || '').toUpperCase();
+
+                    if (types.includes('administrative_area_level_1')) {
+                        // Google devuelve "Provincia de Lima" o "Departamento de Cusco" — limpiar
+                        department = longName
+                            .replace('PROVINCIA DE ', '')
+                            .replace('DEPARTAMENTO DE ', '')
+                            .replace(' REGION', '')
+                            .trim();
+                    }
+                    if (types.includes('administrative_area_level_2')) {
+                        province = longName
+                            .replace('PROVINCIA DE ', '')
+                            .trim();
+                    }
+                    if (types.includes('locality') || 
+                        types.includes('sublocality_level_1') || 
+                        types.includes('administrative_area_level_3')) {
+                        if (!district) {
+                            district = longName
+                                .replace('DISTRITO DE ', '')
+                                .trim();
+                        }
+                    }
+                });
+                /*
+                console.log('📍 Ubigeo extraído:');
+                console.log('   Departamento :', department);
+                console.log('   Provincia    :', province);
+                console.log('   Distrito     :', district);
+                */
+                this.setDepartmentByName(department);
+                this.setProvinceByName(province);
+                this.setDistrictByName(district);
+            },
+            initAutocomplete() {
+                // Nueva API - no necesita instanciar nada globalmente
+                console.log('Autocomplete listo con nueva API de Google Places');
+            },
+
+            async onAddressInputChange() {
+                const query = this.addressModal.address;
+                if (!query || query.length < 3) {
+                    this.addressSuggestions = [];
+                    return;
+                }
+
+                clearTimeout(this.addressSearchTimeout);
+                this.addressSearchTimeout = setTimeout(async () => {
+                    try {
+                        const { AutocompleteSuggestion } = await google.maps.importLibrary("places");
+
+                        const request = {
+                            input: query,
+                            includedRegionCodes: ['pe'],
+                            language: 'es'
+                        };
+
+                        const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
+
+                        this.addressSuggestions = suggestions.map(s => {
+                            const pred = s.placePrediction;
+                            return {
+                                placeId: pred.placeId,
+                                mainText: pred.mainText?.toString() || pred.text?.toString() || '',
+                                secondaryText: pred.secondaryText?.toString() || '',
+                                fullText: pred.text?.toString() || ''
+                            };
+                        });
+
+                        this.highlightedIndex = -1;
+                    } catch (error) {
+                        console.error('Error obteniendo sugerencias:', error);
+                        this.addressSuggestions = [];
+                    }
+                }, 300);
+            },
+
+            async selectSuggestionFromList(suggestion) {
+                this.addressModal.address = suggestion.fullText;
+                this.addressSuggestions = [];
+                this.highlightedIndex = -1;
+
+                try {
+                    const { Place } = await google.maps.importLibrary("places");
+
+                    const place = new Place({
+                        id: suggestion.placeId,
+                        requestedLanguage: 'es'
+                    });
+
+                    await place.fetchFields({
+                        fields: ['displayName', 'formattedAddress', 'location', 'addressComponents']
+                    });
+
+                    const loc = place.location;
+                    this.addressModal.latitude = loc.lat();
+                    this.addressModal.longitude = loc.lng();
+
+                    if (this.map && this.marker) {
+                        this.map.setCenter(loc);
+                        this.map.setZoom(17);
+                        this.marker.setPosition(loc);
+                    }
+
+                    this.addressModal.address = place.formattedAddress || suggestion.fullText;
+
+                    // Convertir formato nuevo al formato clásico para reutilizar el mismo método
+                    const normalizedComponents = (place.addressComponents || []).map(c => ({
+                        long_name: c.longText || c.long_name || '',
+                        types: c.types || []
+                    }));
+
+                    this.extractAndSetUbigeoFromComponents(normalizedComponents);
+
+                    console.log('📍 Sugerencia seleccionada:');
+                    console.log('   Dirección    :', this.addressModal.address);
+                    console.log('   Latitud      :', this.addressModal.latitude);
+                    console.log('   Longitud     :', this.addressModal.longitude);
+                    console.log('   Referencia   :', this.addressModal.reference);
+
+                } catch (error) {
+                    console.error('Error obteniendo detalles del lugar:', error);
+                }
+            },
+
+            extractAndSetUbigeo(addressComponents) {
+                if (!addressComponents) return;
+
+                let department = '';
+                let province  = '';
+                let district  = '';
+
+                addressComponents.forEach(component => {
+                    const types = component.types || [];
+                    const longName = (component.longText || component.long_name || '').toUpperCase();
+
+                    if (types.includes('administrative_area_level_1')) {
+                        department = longName;
+                    }
+                    if (types.includes('administrative_area_level_2')) {
+                        province = longName;
+                    }
+                    if (types.includes('locality') || types.includes('sublocality_level_1') || types.includes('administrative_area_level_3')) {
+                        if (!district) district = longName;
+                    }
+                });
+
+                // Guardar en los selects ocultos (busca por label en mayúsculas)
+                this.setDepartmentByName(department);
+                this.setProvinceByName(province);
+                this.setDistrictByName(district);
+
+                console.log('📍 Ubicación seleccionada:');
+                console.log('   Departamento:', department);
+                console.log('   Provincia   :', province);
+                console.log('   Distrito    :', district);
+                console.log('   Latitud     :', this.addressModal.latitude);
+                console.log('   Longitud    :', this.addressModal.longitude);
+                console.log('   Dirección   :', this.addressModal.address);
+            },
+
+            setDepartmentByName(name) {
+                if (!name) return;
+                const found = this.departments.find(d => d.label.toUpperCase() === name);
+                if (found) {
+                    this.selectedDepartment = found.value;
+                    this.updateProvinces();
+                }
+            },
+
+            setProvinceByName(name) {
+                if (!name) return;
+                this.$nextTick(() => {
+                    const found = this.provinces.find(p => p.label.toUpperCase() === name);
+                    if (found) {
+                        this.selectedProvince = found.value;
+                        this.updateDistricts();
+                    }
+                });
+            },
+
+            setDistrictByName(name) {
+                if (!name) return;
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        const found = this.districts.find(d => d.label.toUpperCase() === name);
+                        if (found) {
+                            this.selectedDistrict = found.value;
+                        }
+                    }, 100);
+                });
+            },
+
+            moveSuggestion(dir) {
+                if (!this.addressSuggestions.length) return;
+                this.highlightedIndex = Math.max(0, Math.min(this.addressSuggestions.length - 1, this.highlightedIndex + dir));
+            },
+
+            selectHighlighted() {
+                if (this.highlightedIndex >= 0 && this.addressSuggestions[this.highlightedIndex]) {
+                    this.selectSuggestionFromList(this.addressSuggestions[this.highlightedIndex]);
+                }
+            },
+
+            clearSuggestions() {
+                this.addressSuggestions = [];
+                this.highlightedIndex = -1;
+            },
             incrementQuantity(row) {
                 if (typeof row.cantidad !== 'number' || isNaN(row.cantidad)) {
                     row.cantidad = 1;
@@ -755,7 +1015,7 @@
                             this.addressModal.latitude = userLocation.lat;
                             this.addressModal.longitude = userLocation.lng;
 
-                            console.log('Ubicación actual:', userLocation);
+                            //console.log('Ubicación actual:', userLocation);
                         },
                         (error) => {
                             console.error('Error obteniendo la ubicación actual:', error);
@@ -766,35 +1026,36 @@
                 }
 
                 // Agregar evento de clic al mapa para mover el marcador y actualizar la dirección
-                this.map.addListener('click', (event) => {
+               this.map.addListener('click', (event) => {
                     const clickedLocation = {
                         lat: event.latLng.lat(),
                         lng: event.latLng.lng()
                     };
 
-                    // Mover el marcador a la nueva ubicación
                     this.marker.setPosition(clickedLocation);
-
-                    // Actualizar las coordenadas en el modelo
                     this.addressModal.latitude = clickedLocation.lat;
                     this.addressModal.longitude = clickedLocation.lng;
-
-                    // Evitar que el watcher active la búsqueda
                     this.addressModal.preventSearch = true;
 
-                    // Obtener la dirección de las coordenadas actuales del marcador
                     this.geocoder.geocode({ location: clickedLocation }, (results, status) => {
                         if (status === google.maps.GeocoderStatus.OK && results[0]) {
                             this.addressModal.address = results[0].formatted_address;
-                            console.log('Dirección obtenida del mapa:', this.addressModal.address);
-                        } else {
-                            console.error('No se pudo obtener la dirección para la ubicación seleccionada:', status);
+
+                            // Extraer ubigeo de los addressComponents del geocoder
+                            this.extractAndSetUbigeoFromComponents(results[0].address_components);
+
+                            /*
+                            console.log('📍 Click en mapa:');
+                            console.log('   Dirección    :', this.addressModal.address);
+                            console.log('   Latitud      :', this.addressModal.latitude);
+                            console.log('   Longitud     :', this.addressModal.longitude);
+                            console.log('   Referencia   :', this.addressModal.reference);
+                            */
                         }
 
-                        // Permitir nuevamente la búsqueda desde el input
                         setTimeout(() => {
                             this.addressModal.preventSearch = false;
-                        }, 1000); // Agregar un pequeño retraso para evitar conflictos
+                        }, 1000);
                     });
                 });
             },

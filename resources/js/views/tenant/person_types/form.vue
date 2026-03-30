@@ -11,18 +11,25 @@
                         </div>
                     </div> 
                     <div class="col-md-6">
-                            <div class="col-md-12">
-                                <label class="control-label">Habilitar descripción del cliente</label>
-                                <div class="form-group" :class="{'has-danger': errors.is_client}">
-                                    <el-switch v-model="form.enabled_description_person_type" active-text="Si" inactive-text="No"></el-switch>
+                            <div class="form-group d-flex align-items-center mb-0 mt-3">
+                                <label class="control-label m-0">Habilitar descripción del cliente</label>
+                                <div class="ms-2" :class="{'has-danger': errors.is_client}">
+                                    <el-switch v-model="form.enabled_description_person_type"></el-switch>
                                     <small class="form-control-feedback" v-if="errors.is_client" v-text="errors.is_client[0]"></small>
                                 </div>
-                            </div> 
+                            </div>
+                            <div class="form-group" :class="{'has-danger': errors.description}" v-if="form.enabled_description_person_type">
+                                <label class="control-label">Descripción: <span class="text-danger">*</span></label>
+                                    <el-input
+                                        type="textarea"
+                                        v-model="form.description_person_type"></el-input>
+                                <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                            </div>
                     </div> 
                     <div class="col-md-6">
-                        <div class="form-group d-flex align-items-center mb-0">
-                            <label class="control-label">Habilitar precio</label>
-                            <div class="mt-2 ms-2">
+                        <div class="form-group d-flex align-items-center mb-0 mt-3">
+                            <label class="control-label m-0">Habilitar precio</label>
+                            <div class="ms-2">
                                 <el-switch v-model="form.enabled_price" @change="onTogglePrice"></el-switch>
                             </div>
                         </div>
@@ -37,15 +44,6 @@
                                                 :label="option.label"
                                                 :value="option.id"></el-option>
                                     </el-select>
-                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-12" v-if="form.enabled_description_person_type">
-                        <div class="form-group" :class="{'has-danger': errors.description}">
-                            <label class="control-label">Descripción: <span class="text-danger">*</span></label>
-                                <el-input
-                                    type="textarea"
-                                    v-model="form.description_person_type"></el-input>
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div>

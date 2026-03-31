@@ -536,7 +536,7 @@ trait ReportTrait
      * @return \string[][]
      */
     public function getOrderStateTypes(){
-        $states = StateType::whereIn('id', ['01', '05', '09', '11'])->get()->map(function($state) {
+        $states = StateType::whereIn('id', ['01', '03', '05', '07', '09', '13'])->get()->map(function($state) {
             return [
                 'id' => $state->id,
                 'description' => $state->description,

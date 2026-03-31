@@ -779,7 +779,7 @@ import {mapActions, mapState} from "vuex";
 import InputLotGroup from '@components/secondary/InputLotGroup.vue'
 
 export default {
-    props: ['purchase_order_id'],
+    props: ['purchase_order_id', 'purchase_id'],
     components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm, InputLotGroup, AddSupplyModal},
     mixins: [functions, exchangeRate, fnPaymentsFee, operationsForDiscounts],
     computed: {
@@ -929,16 +929,13 @@ export default {
         this.isGeneratePurchaseOrder()
         this.changeHasPayment()
         this.changeHasClient()
-        // detect edit by URL pattern /purchases/edit/{id}
-        try {
-            const m = window.location.pathname.match(/\/purchases\/create\/(\d+)/);
-            if (m && m[1]) {
-                this.isEditing = true;
-                this.resourceId = m[1];
-                this.pageTitle = 'Editar Compra';
-                await this.initRecord();
-            }
-        } catch (e) {}
+        
+        if (this.purchase_id) {
+            this.isEditing = true;
+            this.resourceId = m[1];
+            this.pageTitle = 'Editar Compra';
+            await this.initRecord();
+        }
     },
     created() {
         this.loadConfiguration()

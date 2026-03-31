@@ -837,7 +837,7 @@
 
         public function filter()
         {
-            $state_types = \App\Models\Tenant\StateType::whereIn('id', ['01', '05', '09', '11'])->get();
+            $state_types = \App\Models\Tenant\StateType::whereIn('id', ['01', '03', '05', '07', '09', '13'])->get();
 
             return compact('state_types');
         }

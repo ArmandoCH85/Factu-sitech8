@@ -567,6 +567,7 @@ function hexToHSL(hex) {
 }
 
 // Fetch a Laravel
+/*
 fetch('/ecommerce/color-ecommerce')
   .then(response => response.json())
   .then(data => {
@@ -582,7 +583,7 @@ fetch('/ecommerce/color-ecommerce')
 
   })
   .catch(error => console.error('Error obteniendo el color:', error));
-
+*/
 </script>
 
 
@@ -727,7 +728,7 @@ fetch('/ecommerce/color-ecommerce')
 
         const tooltip = document.getElementById("wsTooltip");
         const texto = document.getElementById("wsTooltipText");
-
+        /*
         function mostrarMensaje() {
             const random = mensajes[Math.floor(Math.random() * mensajes.length)];
             texto.innerText = random;
@@ -738,9 +739,9 @@ fetch('/ecommerce/color-ecommerce')
                 tooltip.classList.remove("show");
             }, 4000);
         }
-
+        */
         // aparece cada cierto tiempo
-        setInterval(mostrarMensaje, 10000);
+        // setInterval(mostrarMensaje, 10000);
 
         // primera vez
         setTimeout(mostrarMensaje, 2000);

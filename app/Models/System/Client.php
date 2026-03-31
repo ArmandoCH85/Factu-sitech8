@@ -6,6 +6,7 @@ use App\Mail\PaymentOrderEmail;
 use Carbon\Carbon;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Traits\UsesSystemConnection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client as HttpClient;
@@ -70,6 +71,7 @@ class Client extends Model
     protected $with = ['hostname','plan'];
 
     protected $fillable = [
+        'created_by_user_id',
         'hostname_id',
         'number',
         'name',
@@ -100,6 +102,18 @@ class Client extends Model
         'client_name',
         'contact_email',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('reseller_subadmin_owns_clients', function (Builder $builder) {
+            $user = auth('admin')->user();
+
+            // Solo subadministradores reseller (tienen reseller_id) deben ver únicamente sus propios clientes.
+            if ($user instanceof \App\Models\System\User && $user->reseller_id !== null) {
+                $builder->where('created_by_user_id', (int) $user->id);
+            }
+        });
+    }
 
 
     protected $casts = [

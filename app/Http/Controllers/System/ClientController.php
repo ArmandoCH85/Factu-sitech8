@@ -710,6 +710,7 @@ use App\Models\System\User as SystemUser;
 
                 \Log::info('Creando cliente...');
                 $client = Client::query()->create([
+                    'created_by_user_id' => auth('admin')->check() ? auth('admin')->id() : null,
                     'hostname_id' => $hostname->id,
                     'token' => $token,
                     'email' => strtolower($request->input('email')),
@@ -1077,7 +1078,7 @@ use App\Models\System\User as SystemUser;
          */
         public function destroy($id, $input_validate)
         {
-            $client = Client::find($id);
+            $client = Client::findOrFail($id);
 
             $check_input_validate_delete = $this->checkInputValidateDelete($client, $input_validate);
             if(!$check_input_validate_delete['success']) return $check_input_validate_delete;
@@ -1103,7 +1104,7 @@ use App\Models\System\User as SystemUser;
 
         public function password($id)
         {
-            $client = Client::find($id);
+            $client = Client::findOrFail($id);
             $website = Website::find($client->hostname->website_id);
             $tenancy = app(Environment::class);
             $tenancy->tenant($website);
@@ -1216,9 +1217,10 @@ use App\Models\System\User as SystemUser;
         {
             $query = $request->input('query');
 
-            $clients = Client::where('name', 'like', "%{$query}%")
-                        ->orWhere('number', 'like', "%{$query}%")
-                        ->get();
+            $clients = Client::where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('number', 'like', "%{$query}%");
+            })->get();
 
             $clients = $clients->transform(function($row) {
                 return [

@@ -13,7 +13,7 @@
 Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])->prefix('ecommerce')->group(function() {
    // Route::get('/', 'EcommerceController@index');
 
-    
+
     Route::get('/', 'EcommerceController@index')->name('tenant.ecommerce.index');
 
     Route::get('item/{slug}/{promotion_id?}', 'EcommerceController@item')->name('tenant.ecommerce.item');
@@ -24,7 +24,7 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     Route::get('document_list', 'EcommerceController@documentList')->name('tenant_document_list');
     Route::get('documents', 'EcommerceController@documents')->name('tenant_document');
     Route::get('orders', 'EcommerceController@orders')->name('tenant_orders');
-    
+
     Route::get('order_list', 'EcommerceController@orderList')->name('tenant_order_list');
     Route::get('pay_cart', 'EcommerceController@pay')->name('tenant_pay_cart');
     Route::get('login', 'EcommerceController@showLogin')->name('tenant_ecommerce_login');
@@ -42,6 +42,8 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     Route::post('culqi', 'CulqiController@payment')->name('tenant_ecommerce_culqui');
     Route::post('transaction_finally', 'EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
     Route::post('payment_cash', 'EcommerceController@paymentCash')->name('tenant_ecommerce_payment_cash');
+    Route::post('validate-coupon', 'EcommerceController@validateCoupon')->name('tenant_ecommerce_validate_coupon');
+    Route::post('apply-coupon', 'EcommerceController@applyCoupon')->name('tenant_ecommerce_apply_coupon');
 
 
     // Página de términos y condiciones
@@ -66,6 +68,17 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     Route::post('uploads', 'ConfigurationController@uploadFile');
 
     //Item Sets
+    // Cupones de descuento
+    Route::prefix('discount-coupons')->group(function () {
+        Route::get('/', 'DiscountCouponController@index')->name('tenant.ecommerce.discount_coupons.index')->middleware('redirect.level');
+        Route::get('/tables', 'DiscountCouponController@tables');
+        Route::post('/records', 'DiscountCouponController@records');
+        Route::get('/record', 'DiscountCouponController@record');
+        Route::post('/', 'DiscountCouponController@store');
+        Route::post('/{id}/status', 'DiscountCouponController@updateStatus');
+        Route::delete('/{id}', 'DiscountCouponController@destroy');
+    });
+
     Route::prefix('item-sets')->group(function() {
 
         Route::get('', 'ItemSetController@index')->name('tenant.ecommerce.item_sets.index')->middleware('redirect.level');

@@ -28,8 +28,10 @@ use Modules\ApiPeruDev\Data\ServiceData;
 use App\Models\Tenant\Document;
 use Modules\Item\Models\Category;
 use App\Models\Tenant\Catalogs\Department;
+use Modules\Ecommerce\Models\Tenant\DiscountCoupon;
+use Modules\Ecommerce\Models\Tenant\DiscountCouponUsage;
 
-use App\Models\System\Configuration as SystemConfiguration; 
+use App\Models\System\Configuration as SystemConfiguration;
 
 
 class EcommerceController extends Controller
@@ -71,31 +73,31 @@ class EcommerceController extends Controller
         }
 
         $category = Category::where('name', $name)->first();
-        
+
         // Obtener preferencias de configuración
         $configEcommerce = ConfigurationEcommerce::first();
-        $preferences = $configEcommerce && $configEcommerce->preferences 
+        $preferences = $configEcommerce && $configEcommerce->preferences
             ? (is_string($configEcommerce->preferences) ? json_decode($configEcommerce->preferences, true) : $configEcommerce->preferences)
             : ['show_description' => 1, 'show_stock' => 0, 'only_available_products' => 0];
 
         // Obtener el modelo Company para meta tags y descripción
         $company = \App\Models\Tenant\Company::first();
-        
+
         // Query base
         $query = Item::where([['apply_store', 1], ['internal_id', '!=', null]]);
-        
+
         // Filtrar solo productos disponibles si está activado
         if (isset($preferences['only_available_products']) && $preferences['only_available_products'] == 1) {
             $query->where('stock', '>', 0);
         }
-        
+
         $dataPaginate = $query->orderBy('created_at', 'DESC')
             ->category($category ? $category->id : null)
             ->paginate(8);
-            
+
         $configuration = InventoryConfiguration::first();
         $categories = Category::get();
-        
+
         // Obtener los anuncios publicitarios (spots) activos
         $spots = Promotion::where('apply_restaurant', 0)
             ->where('type', 'spots')
@@ -119,7 +121,7 @@ class EcommerceController extends Controller
             'customLinks' => $customLinks
         ])->with('categories', $categories);
     }
-    
+
     // public function category(Request $request)
     // {
     //   $dataPaginate = Item::select('i.*')
@@ -199,7 +201,12 @@ class EcommerceController extends Controller
     {
         $configuration = ConfigurationEcommerce::first();
         $categories = \Modules\Item\Models\Category::get();
-        return view('ecommerce::cart.detail', compact('configuration', 'categories'));
+
+        // Obtener el tipo de descuento global configurado (02 afecta la base, 03 no afecta)
+        $systemConfig = Configuration::with('globalDiscountType')->first();
+        $global_discount_type = $systemConfig->globalDiscountType;
+
+        return view('ecommerce::cart.detail', compact('configuration', 'categories', 'global_discount_type'));
     }
 
     public function orderList()
@@ -227,13 +234,13 @@ class EcommerceController extends Controller
     {
         if (auth('ecommerce')->user()) {
             $user = auth('ecommerce')->user();
-            
+
             // Inicializar la consulta base
             $records = Order::where(function($query) use ($user) {
                 $query->where('customer', 'LIKE', '%' . $user->email . '%')
                       ->orWhereJsonContains('customer->correo_electronico', $user->email);
             });
-            
+
             // Aplicar filtro de estado si se proporciona
             if ($request->state_order_id) {
                 $state_allowed = $request->state_order_id && $request->state_order_id != 'all' ? [$request->state_order_id] : [1, 2, 3, 4];
@@ -246,10 +253,10 @@ class EcommerceController extends Controller
                 $date_of_end = $request->date_of_endd ?? date('Y-m-d');
                 $records = $records->whereBetween('created_at', [$date_of_start, $date_of_end]);
             }
-            
+
             // Obtener los resultados paginados
             $records = $records->paginate(config('tenant.items_per_page', 10));
-            
+
             // Transformar los datos manteniendo la estructura de paginación
             $records->getCollection()->transform(function ($row) {
                 return $row->getCollectionData();
@@ -264,20 +271,20 @@ class EcommerceController extends Controller
         }
     }
 
-    public function documents(Request $request) 
+    public function documents(Request $request)
     {
         if (auth('ecommerce')->user()) {
             $user = auth('ecommerce')->user();
 
-            
+
             // Buscar órdenes del usuario
             $orders = Order::where(function($query) use ($user) {
                         $query->where('customer', 'LIKE', '%' . $user->email . '%')
                               ->orWhereJsonContains('customer->correo_electronico', $user->email);
                     })->get();
-            
+
             $arrays_external_id = $orders->pluck('document_external_id')->filter()->toArray();
-            
+
             if (empty($arrays_external_id)) {
                 return response()->json([
                     'data' => [],
@@ -306,7 +313,7 @@ class EcommerceController extends Controller
 
             $documents = $documents->orderBy('date_of_issue', 'desc')
                         ->paginate(config('tenant.items_per_page'));
-            
+
             // Transformar los datos manteniendo la estructura de paginación
             $documents->getCollection()->transform(function ($dc) {
                 return [
@@ -367,18 +374,18 @@ class EcommerceController extends Controller
     public function logout()
     {
         Auth::guard('ecommerce')->logout();
-        
+
         $referer = request()->headers->get('referer');
-        
+
         if ($referer && (str_contains($referer, '/pedidos') || str_contains($referer, 'pedidos/'))) {
             return redirect('/pedidos');
         }
-        
+
         // Detectar si viene de restaurant y redirigir apropiadamente
         if ($referer && str_contains($referer, '/restaurant')) {
             return redirect('restaurant/list/items');
         }
-        
+
         return redirect('ecommerce');
     }
 
@@ -431,11 +438,11 @@ class EcommerceController extends Controller
                     $districtId = $dataDocument['data']['location_id'][2] ?? null;
                 }
             }
-            
+
             if(!($dataDocument["success"]) && $type==='dni'){
                 $identity_document_type_id = 0;
             }
-            
+
             $person = new Person();
             $person->type = 'customers';
             $person->identity_document_type_id = $identity_document_type_id;
@@ -450,7 +457,7 @@ class EcommerceController extends Controller
             $person->establishment_code = '0000';
             $person->email = $request->email;
             $person->password = bcrypt($request->pswd);
-            
+
             $person->save();
 
             $credentials = [ 'email' => $person->email, 'password' => $request->pswd ];
@@ -495,9 +502,126 @@ class EcommerceController extends Controller
 
     }
 
+    /**
+     * Valida uno o varios códigos de cupón y retorna el mejor aplicable
+     */
+    public function validateCoupon(Request $request)
+    {
+        $codes = [];
+        if ($request->codes && is_array($request->codes)) {
+            $codes = $request->codes;
+        } elseif ($request->code) {
+            $codes = [$request->code];
+        }
+
+        if (empty($codes)) {
+            return response()->json(['success' => false, 'message' => 'cupon no existe'], 404);
+        }
+
+        $order_total = (float) ($request->order_total ?? 0);
+        $user = auth('ecommerce')->user();
+        $person_id = $user?->id;
+
+        $found = false;
+        $validCoupons = [];
+
+        foreach ($codes as $code) {
+            $coupon = DiscountCoupon::where('code', $code)->first();
+            if (!$coupon) continue;
+            $found = true;
+
+            if (!$coupon->active) continue;
+            if ($coupon->is_expired) continue;
+
+            if (!$coupon->canBeUsedBy($person_id, $order_total)) continue;
+
+            $discount = $coupon->calculateDiscountAmount($order_total);
+            $validCoupons[] = [
+                'coupon' => $coupon,
+                'discount' => $discount
+            ];
+        }
+
+        if (empty($validCoupons)) {
+            if (!$found) {
+                return response()->json(['success' => false, 'message' => 'cupon no existe'], 404);
+            }
+            // Al menos uno existía pero ninguno es válido
+            return response()->json(['success' => false, 'message' => 'cupon no valido'], 422);
+        }
+
+        // Escoger el de mayor descuento
+        usort($validCoupons, function ($a, $b) {
+            return $b['discount'] <=> $a['discount'];
+        });
+
+        $best = $validCoupons[0];
+        $coupon = $best['coupon'];
+        $discount = $best['discount'];
+        $new_total = max(0, round($order_total - $discount, 2));
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $coupon->id,
+                'code' => $coupon->code,
+                'discount' => $discount,
+                'new_total' => $new_total,
+                'free_shipping' => (bool) $coupon->free_shipping
+            ]
+        ]);
+    }
+
+    /**
+     * Aplica el cupón a una orden existente y registra el uso
+     */
+    public function applyCoupon(Request $request)
+    {
+        $order = Order::find($request->order_id);
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Orden no encontrada'], 404);
+        }
+
+        $user = auth('ecommerce')->user();
+        $person_id = $user?->id;
+
+        $coupon = null;
+        if ($request->discount_coupon_id) {
+            $coupon = DiscountCoupon::find($request->discount_coupon_id);
+        } elseif ($request->discount_coupon_code) {
+            $coupon = DiscountCoupon::where('code', $request->discount_coupon_code)->first();
+        }
+
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'cupon no existe'], 404);
+        }
+
+        if (!$coupon->canBeUsedBy($person_id, $order->total)) {
+            return response()->json(['success' => false, 'message' => 'cupon no valido'], 422);
+        }
+
+        $discount = $coupon->calculateDiscountAmount($order->total);
+
+        // Actualizar la orden (un solo cupón por venta)
+        $order->total_discount = $discount;
+        $order->discount_coupon_code = $coupon->code;
+        $order->discount_coupon_id = $coupon->id;
+        $order->total = round(max(0, $order->total - $discount), 2);
+        $order->save();
+
+        // Registrar uso
+        DiscountCouponUsage::create([
+            'discount_coupon_id' => $coupon->id,
+            'person_id' => $person_id,
+            'order_id' => $order->id
+        ]);
+
+        return response()->json(['success' => true, 'order' => $order]);
+    }
+
     public function paymentCash(Request $request)
     {
-        
+
         $validator = Validator::make($request->customer, [
             'telefono' => 'required|numeric',
             'direccion' => 'required',
@@ -512,7 +636,7 @@ class EcommerceController extends Controller
             try {
                 $type = ($request->purchase["datos_del_cliente_o_receptor"]["codigo_tipo_documento_identidad"]=='6')?'ruc':'dni';
                 $document_number = $request->purchase["datos_del_cliente_o_receptor"]["numero_documento"];
-                
+
                 $dataDocument = $this->searchDocument($type,$document_number);
                 if ($dataDocument["success"]) {
                     $clientData = [ "apellidos_y_nombres_o_razon_social" => $dataDocument["data"]["name"] ];
@@ -541,6 +665,62 @@ class EcommerceController extends Controller
                 'status_order_id' => 1,
                 'purchase' => $request->purchase
               ]);
+
+            // Si se envía cupón en la petición, aplicarlo inmediatamente
+            try {
+                if ($request->discount_coupon_code || $request->discount_coupon_id) {
+                    $coupon = null;
+                    if ($request->discount_coupon_id) {
+                        $coupon = DiscountCoupon::find($request->discount_coupon_id);
+                    } elseif ($request->discount_coupon_code) {
+                        $coupon = DiscountCoupon::where('code', $request->discount_coupon_code)->first();
+                    }
+
+                    if ($coupon) {
+                        // Si el frontend ya envió el monto de descuento (`total_discount`),
+                        // usar ese valor en lugar de recalcularlo sobre el total ya descontado
+                        // (evita aplicar el cupón dos veces).
+                        if ($request->total_discount && $request->total_discount > 0) {
+                            $discount = round((float) $request->total_discount, 2);
+                            // reconstruir total original (antes del descuento) para validaciones
+                            $original_total = round($order->total + $discount, 2);
+
+                            if ($coupon->canBeUsedBy($user?->id, $original_total)) {
+                                $order->total_discount = $discount;
+                                $order->discount_coupon_code = $coupon->code;
+                                $order->discount_coupon_id = $coupon->id;
+                                // el total ya viene con descuento desde el frontend; mantenerlo
+                                $order->total = round(max(0, $original_total - $discount), 2);
+                                $order->save();
+
+                                DiscountCouponUsage::create([
+                                    'discount_coupon_id' => $coupon->id,
+                                    'person_id' => $user?->id,
+                                    'order_id' => $order->id
+                                ]);
+                            }
+                        } else {
+                            // Si frontend no envió el monto, calcularlo en servidor usando el total actual
+                            if ($coupon->canBeUsedBy($user?->id, $order->total)) {
+                                $discount = $coupon->calculateDiscountAmount($order->total);
+                                $order->total_discount = $discount;
+                                $order->discount_coupon_code = $coupon->code;
+                                $order->discount_coupon_id = $coupon->id;
+                                $order->total = round(max(0, $order->total - $discount), 2);
+                                $order->save();
+
+                                DiscountCouponUsage::create([
+                                    'discount_coupon_id' => $coupon->id,
+                                    'person_id' => $user?->id,
+                                    'order_id' => $order->id
+                                ]);
+                            }
+                        }
+                    }
+                }
+            } catch(\Exception $e) {
+                // No interrumpir el proceso por errores de cupón
+            }
 
             $customer_email = $user->email;
             $document = new stdClass;

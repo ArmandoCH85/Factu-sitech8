@@ -30,7 +30,7 @@
                 </li>
             </ol>
             <div class="right-wrapper pull-right">
-                <button 
+                <button
                     class="btn btn-custom btn-sm mt-2 me-4"
                     @click="showStatusModal = true"
                     title="Gestionar estados"

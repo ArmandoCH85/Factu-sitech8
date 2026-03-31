@@ -5,35 +5,35 @@
     #addressModal .modal-dialog {
         max-width: 800px;
     }
-    
+
     #map {
         border-radius: 8px;
         border: 2px solid #e0e0e0;
     }
-    
+
     #addressModal .modal-header {
         background-color: #f8f9fa;
         border-bottom: 2px solid #dee2e6;
     }
-    
+
     #addressModal .modal-title {
         font-weight: 600;
         color: #333;
     }
-    
+
     #addressModal .form-group label {
         font-weight: 500;
         color: #555;
         margin-bottom: 8px;
     }
-    
+
     #addressModal .close {
         font-size: 1.5rem;
         font-weight: 700;
         opacity: 0.7;
         transition: opacity 0.2s;
     }
-    
+
     #addressModal .close:hover {
         opacity: 1;
     }
@@ -50,6 +50,7 @@
         : asset('storage/defaults/' . $defaultImage);
     $itemsBasePath = asset('storage/uploads/items');
     $googleMapsApiKey = app(Modules\Ecommerce\Http\Controllers\EcommerceController::class)->getGoogleMaps();
+    $globalDiscountTypeId = $global_discount_type_id ?? null;
 @endphp
 <h1 class="my-4" style="font-weight: 900;">TU CARRITO</h1>
 <div class="row" id="app">
@@ -63,7 +64,7 @@
                                 <a href="#" class="product-image">
                                     <img class="image-product" :src="(row.image && row.image !== 'imagen-no-disponible.jpg') ? '{{ $itemsBasePath }}' + '/' + row.image : '{{ $defaultImagePath }}'" :alt="row.description || 'Producto sin imagen'">
                                 </a>
-                            </figure>                            
+                            </figure>
                         </td>
                         <td class="text-left w-100">
                             <div class="d-flex flex-column justify-content-between align-items-start h-100 py-3">
@@ -89,9 +90,9 @@
                                 <input class="input-quantity text-center" style="font-size: 14px;" :data-product="row.id" type="number" v-model.number="row.cantidad">
                                 <button @click.stop.prevent="incrementQuantity(row)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                                </button>                                    
+                                </button>
                             </div>
-                            </div>                            
+                            </div>
                         </td>
                     </tr>
 
@@ -113,7 +114,7 @@
                     </tr>
                 </tfoot>
             </table>
-        </div><!-- End .cart-table-container -->        
+        </div><!-- End .cart-table-container -->
     </div><!-- End .col-lg-8 -->
 
     <div class="col-md-4">
@@ -134,6 +135,15 @@
                         <td>IGV</td>
                         <td>S/ @{{ summary.total_igv }}</td>
                     </tr>
+                    <tr v-if="appliedCoupon && appliedCoupon.code">
+                        <td>
+                            Cupon <span class="badge badge-dark">@{{ appliedCoupon.code }}</span><br>
+                            <button class="btn btn-sm btn-link text-danger" @click="removeCoupon">Eliminar Cupon</button>
+                        </td>
+                        <td>
+                            S/ @{{ appliedCoupon.discount }}
+                        </td>
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr>
@@ -142,6 +152,18 @@
                     </tr>
                 </tfoot>
             </table>
+
+            <!-- Coupon input and applied coupon display -->
+            <div class="coupon-block mt-3">
+                <div class="input-group">
+                    <input v-model="couponField" type="text" class="form-control" placeholder="Código de cupón">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" @click="applyCoupon" :disabled="couponLoading">Aplicar</button>
+                    </div>
+                </div>
+
+                <small class="text-danger" v-if="couponMessage">@{{ couponMessage }}</small>
+            </div>
 
             <div class="checkout-methods text-center">
 
@@ -183,7 +205,7 @@
                 @endauth
 
             </div><!-- End .checkout-methods -->
-        </div><!-- End .cart-summary -->                
+        </div><!-- End .cart-summary -->
     </div><!-- End .col-lg-4 -->
     <div class="col-12 row mx-0">
         <div class="col-sm-6 pl-0">
@@ -298,12 +320,12 @@
                             <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Dirección</label>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <input v-model="addressModal.address" type="text" placeholder="Ingrese su dirección completa" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; outline: none; background-color: #fff;">
-                                @if(!empty($googleMapsApiKey)) 
+                                @if(!empty($googleMapsApiKey))
                                     <button @click="searchAddressInMap(addressModal.address)" class="btn btn-primary" style="width: 100px;height: 38px; padding: 0 15px; font-size: 14px; margin: 0;">Buscar</button>
                                 @endif
                             </div>
                         </div>
-                        
+
                         <div style="margin-bottom: 10px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Referencias</label>
                             <textarea v-model="addressModal.reference" placeholder="Ej: Al costado del parque, frente a la iglesia" rows="2" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; resize: none; outline: none; background-color: #fff;"></textarea>
@@ -316,7 +338,7 @@
             </div>
         </div>
     </div>
-    
+
 </div><!-- End .row -->
 
 <input type="hidden" id="total_amount" data-total="0.0">
@@ -368,6 +390,10 @@
             },
             records: [],
             records_old: [],
+            couponField: '',
+            couponMessage: null,
+            couponLoading: false,
+            appliedCoupon: null,
             order_generated: {},
             summary: {
                 subtotal: '0.0',
@@ -385,6 +411,7 @@
             typeDocumentList: [],
             numberDocument: '',
             phone_whatsapp: {!! json_encode($configuration->phone_whatsapp ) !!},
+            global_discount_type: {!! json_encode($global_discount_type) !!},
             all_identity_document_types : [{id: '6', name: 'RUC'}, {id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '1', name: 'DNI'}],
             addressSuggestions: [],
             departments: [],
@@ -443,7 +470,7 @@
           })
 
           this.calculateSummary()
-          
+
           // Inicializar Google Maps cuando esté disponible
           if (typeof google !== 'undefined') {
               this.initMap()
@@ -514,7 +541,7 @@
                 //   }else if (this.formIdentity.identity_document_type_id === '1' && this.payment_cash.amount >= 700) {
                 //     this.typeDocumentList = [{id: '1', name: 'DNI'}]
                 //     this.typeDocuments = ''
-                //   } 
+                //   }
                 //   else {
                 //     this.typeDocumentList = ticket
                 //   }
@@ -523,14 +550,14 @@
                 {
                     this.typeDocumentList = this.getIdentityDocumentTypes(['6'])
                 }
-                else if (this.form_document.codigo_tipo_documento == '03' && this.payment_cash.amount >= 700) 
+                else if (this.form_document.codigo_tipo_documento == '03' && this.payment_cash.amount >= 700)
                 {
                     this.typeDocumentList = this.getIdentityDocumentTypes(['1'])
                 }
-                else if (this.form_document.codigo_tipo_documento == '80') 
+                else if (this.form_document.codigo_tipo_documento == '80')
                 {
                     this.typeDocumentList = (this.payment_cash.amount >= 700) ? this.getIdentityDocumentTypes(['6', '1']) : this.getIdentityDocumentTypes()
-                } 
+                }
                 else {
                     this.typeDocumentList = this.getIdentityDocumentTypes(['0', '1', '4'])
                 }
@@ -554,10 +581,10 @@
                 this.form_document.datos_del_cliente_o_receptor.numero_documento = this.numberDocument
                 // this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.formIdentity.identity_document_type_id
                 this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.typeDocuments
-                
+
             },
             async getFormPaymentCash() {
-                
+
                 this.refreshSetDataCustomer()
 
                 let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
@@ -568,7 +595,11 @@
                     precio_culqi: precio_culqi,
                     customer: this.form_document.datos_del_cliente_o_receptor,
                     items: this.records,
-                    purchase: await this.getDocument()
+                    purchase: await this.getDocument(),
+                    // Coupon fields for backend
+                    discount_coupon_code: this.appliedCoupon ? this.appliedCoupon.code : null,
+                    discount_coupon_id: this.appliedCoupon ? this.appliedCoupon.id : null,
+                    total_discount: this.appliedCoupon ? this.appliedCoupon.discount : 0
                 }
             },
             showSwalMessage(title, text, type){
@@ -646,47 +677,91 @@
                 return axiosConfig;
             },
             async getDocument() {
-                this.form_document.items = await this.getItemsDocument()
-                this.form_document.totales = await this.getTotales()
-
-                // if (this.formIdentity.identity_document_type_id === '6') {
-                //     this.form_document.serie_documento = 'F001'
-                //     this.form_document.codigo_tipo_documento = '01'
-                // }
-                // if (this.formIdentity.identity_document_type_id === '1') {
-                //     this.form_document.serie_documento = 'B001'
-                //     this.form_document.codigo_tipo_documento = '03'
-                // }
-                
-                if (this.form_document.codigo_tipo_documento == '01')
-                {
-                    this.form_document.serie_documento = 'F001'
-                }else if (this.form_document.codigo_tipo_documento == '03') 
-                {
-                    this.form_document.serie_documento = 'B001'
-                }else
-                {
-                    this.form_document.serie_documento = null
+                this.form_document.items = await this.getItemsDocument();
+                // Armar descuentos y totales según estructura esperada
+                const descuentos = await this.getDescuentos();
+                const totales = await this.getTotales(descuentos);
+                // Solo incluir descuentos si hay cupón aplicado
+                let doc = Object.assign({}, this.form_document);
+                doc.totales = totales;
+                if (descuentos.length > 0) {
+                    doc.descuentos = descuentos;
                 }
-
-
-                return this.form_document
+                if (doc.codigo_tipo_documento == '01') {
+                    doc.serie_documento = 'F001';
+                } else if (doc.codigo_tipo_documento == '03') {
+                    doc.serie_documento = 'B001';
+                } else {
+                    doc.serie_documento = null;
+                }
+                return doc;
             },
-            async getTotales() {
+            async getDescuentos() {
+                if(!this.appliedCoupon || !this.global_discount_type) return [];
 
-                let totals = await {
-                    "total_exportacion": 0.00,
-                    "total_operaciones_gravadas": this.aux_totals.total_taxed,
-                    "total_operaciones_inafectas": 0.00,
-                    "total_operaciones_exoneradas": this.aux_totals.total_exonerated,
-                    "total_operaciones_gratuitas": 0.00,
-                    "total_igv": this.aux_totals.total_igv,
-                    "total_impuestos": this.aux_totals.total_igv,
-                    "total_valor": this.aux_totals.total_value,
-                    "total_venta": this.aux_totals.total
+                let montoEntrada = parseFloat(this.appliedCoupon.discount || 0); // Los 100 soles
+                let codigo = this.global_discount_type.id;
+                let descripcion = this.global_discount_type.description;
+                let base = 0;
+                let montoCalculado = 0;
+
+                if(this.global_discount_type.base == 1) {
+                    // Descuento afecta base imponible (Código SUNAT 02)
+                    montoCalculado = montoEntrada / 1.18;
+                    base = parseFloat(this.summary.total_taxed);
+                } else {
+                    // Descuento NO afecta base imponible (Código SUNAT 03)
+                    montoCalculado = montoEntrada;
+                    base = parseFloat(this.summary.total_value) + parseFloat(this.summary.total_igv);
                 }
 
-                return totals
+                let factor = base > 0 ? (montoCalculado / base) : 0;
+
+                return [{
+                    codigo: codigo,
+                    descripcion: descripcion,
+                    factor: parseFloat(factor.toFixed(5)),
+                    monto: parseFloat(montoCalculado.toFixed(2)),
+                    base: parseFloat(base.toFixed(2))
+                }];
+            },
+            async getTotales(descuentos = []) {
+                let total_descuentos_monto = 0.00;
+                if (descuentos.length > 0) {
+                    total_descuentos_monto = descuentos.reduce((sum, d) => sum + (parseFloat(d.monto) || 0), 0);
+                }
+
+                // Valores originales del subtotal (sin descuentos)
+                let base_antes = parseFloat(this.aux_totals.total_taxed);
+                let igv_antes = parseFloat(this.aux_totals.total_igv);
+
+                let total_operaciones_gravadas = base_antes;
+                let total_igv = igv_antes;
+                let total_venta = base_antes + igv_antes;
+
+                if (descuentos.length > 0 && this.global_discount_type) {
+                    if (this.global_discount_type.base == 1) {
+                        total_operaciones_gravadas = parseFloat((base_antes - total_descuentos_monto).toFixed(2));
+                        total_igv = parseFloat((total_operaciones_gravadas * 0.18).toFixed(2));
+                        total_venta = parseFloat((total_operaciones_gravadas + total_igv).toFixed(2));
+                    } else {
+                        // Descuento al total directamente
+                        total_venta = parseFloat(( (base_antes + igv_antes) - total_descuentos_monto ).toFixed(2));
+                    }
+                }
+
+                return {
+                    total_descuentos: total_descuentos_monto,
+                    total_exportacion: 0.00,
+                    total_operaciones_gravadas: total_operaciones_gravadas,
+                    total_operaciones_inafectas: parseFloat(this.aux_totals.total_exonerated || 0),
+                    total_operaciones_exoneradas: 0.00,
+                    total_operaciones_gratuitas: 0.00,
+                    total_igv: total_igv,
+                    total_impuestos: total_igv,
+                    total_valor: total_operaciones_gravadas,
+                    total_venta: total_venta
+                };
             },
             openAddressModal() {
                 $('#addressModal').modal('show')
@@ -718,7 +793,7 @@
                 if (this.addressModal.reference) {
                     fullAddress += ' - Ref: ' + this.addressModal.reference
                 }
-                
+
                 this.form_contact.address = fullAddress
 
                 // Asegurarse de que el modal se cierre después de confirmar
@@ -800,7 +875,7 @@
             },
             getAddressFromLatLng(latLng) {
                 if (!this.geocoder) return
-                
+
                 this.geocoder.geocode({'location': latLng}, (results, status) => {
                     if (status === 'OK' && results[0]) {
                         // Obtener la dirección formateada completa
@@ -814,7 +889,7 @@
                     console.warn('Geocoder o Map no inicializados');
                     return;
                 }
-                
+
                 console.log('Buscando dirección:', address);
                 this.geocoder.geocode({'address': address}, (results, status) => {
                     if (status === 'OK' && results[0]) {
@@ -822,7 +897,7 @@
                         const location = results[0].geometry.location;
                         this.addressModal.latitude = location.lat();
                         this.addressModal.longitude = location.lng();
-                        
+
                         // Actualizar el mapa
                         this.map.setCenter(location);
                         this.map.setZoom(16);
@@ -1035,7 +1110,12 @@
                 this.summary.total_exonerated = total_exonerated.toFixed(2)
                 this.summary.total_igv = total_igv.toFixed(2)
                 this.summary.total_value = total_value.toFixed(2)
-                this.summary.total = total.toFixed(2)
+                // Aplicar descuento si existe
+                let computedTotal = total;
+                if (this.appliedCoupon && this.appliedCoupon.discount) {
+                    computedTotal = Math.max(0, computedTotal - parseFloat(this.appliedCoupon.discount));
+                }
+                this.summary.total = computedTotal.toFixed(2)
                 this.aux_totals = this.summary
                 // console.log(this.summary)
 
@@ -1122,7 +1202,49 @@
                 const province = this.provinces.find(prov => prov.value === this.selectedProvince);
                 this.districts = province ? province.children : [];
                 this.selectedDistrict = '';
-            }
+            },
+            async applyCoupon() {
+                if (!this.couponField || this.couponLoading) return;
+                this.couponLoading = true;
+                this.couponMessage = null;
+
+                try {
+                    const payload = { code: this.couponField, order_total: this.summary.total };
+                    const res = await axios.post('/ecommerce/validate-coupon', payload, this.getHeaderConfig());
+                    if (res.data && res.data.success) {
+                        const d = res.data.data;
+                        this.appliedCoupon = {
+                            id: d.id,
+                            code: d.code,
+                            discount: parseFloat(d.discount),
+                            free_shipping: d.free_shipping
+                        };
+                        // Update totals according to backend suggestion
+                        if (typeof d.new_total !== 'undefined') {
+                            this.summary.total = parseFloat(d.new_total).toFixed(2);
+                            this.payment_cash.amount = this.summary.total;
+                        }
+                        this.couponMessage = null;
+                    } else {
+                        this.couponMessage = (res.data && res.data.message) ? res.data.message : 'cupon no valido';
+                    }
+                } catch (err) {
+                    if (err.response && err.response.data && err.response.data.message) {
+                        this.couponMessage = err.response.data.message;
+                    } else {
+                        this.couponMessage = 'cupon no valido';
+                    }
+                } finally {
+                    this.couponLoading = false;
+                }
+            },
+
+            removeCoupon() {
+                this.appliedCoupon = null;
+                this.couponField = '';
+                this.couponMessage = null;
+                this.calculateSummary();
+            },
         },
     })
 
@@ -1206,6 +1328,10 @@
                 customer: JSON.stringify(formpayment.customer),
                 items: JSON.stringify(getItems()),
                 purchase: JSON.stringify(formpayment.purchase),
+                // Coupon fields
+                discount_coupon_code: formpayment.discount_coupon_code,
+                discount_coupon_id: formpayment.discount_coupon_id,
+                total_discount: formpayment.total_discount
 
             }
 

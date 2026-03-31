@@ -5,7 +5,7 @@
         <div>
           <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
-              <div class="row">                
+              <div class="row">
                 <div class="col-md-6">
                   <div class="form-group" :class="{'has-danger': errors.information_contact_email}">
                     <label class="control-label">Email</label>
@@ -104,11 +104,11 @@
                     <div class="form-group form-modern mb-3">
                       <el-switch v-model="form.full_width_banner" :active-value="1" :inactive-value="0"></el-switch>
                       <label class="ms-2 mb-0">Activar ancho completo del banner</label>
-                      <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Las imágenes del carrusel ocuparán el 100% del ancho de la pantalla. 
+                      <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Las imágenes del carrusel ocuparán el 100% del ancho de la pantalla.
                         Aseguresé que sus imágenes tenga la proporción 5:2
                       </small>
-                    </div>                
-                  </div> 
+                    </div>
+                  </div>
                 </div>
                 <div class="col-md-6">
                   <label class="control-label">Preferencias de Visualización</label>
@@ -124,10 +124,10 @@
                   </div>
                   <div class="form-group form-modern mb-3">
                     <el-switch v-model="form.only_available_products" :active-value="1" :inactive-value="0"></el-switch>
-                    <label class="ms-2 mb-0">Ocultar productos sin stock</label>                  
+                    <label class="ms-2 mb-0">Ocultar productos sin stock</label>
                     <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">Los productos agotados no aparecerán en el catálogo de la tienda</small>
                   </div>
-                </div> 
+                </div>
                 <div class="col-12">
                   <div class="form-group editor-resizable">
                       <label class="control-label">Términos y Condiciones</label>
@@ -164,7 +164,7 @@
                       <div class="resize-handle" @mousedown="startResize"></div>
                   </div>
                 </div>
-              </div>              
+              </div>
             </div>
             <div class="form-actions text-end float-end pt-2">
               <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
@@ -177,6 +177,9 @@
       </el-tab-pane>
       <el-tab-pane label="Pasarelas de pago">
         <PaymentGateways />
+      </el-tab-pane>
+      <el-tab-pane label="Cupones de descuento">
+        <DigitalCoupon />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -199,11 +202,13 @@
 import ConfigurationLinks from '../configuration_links/index.vue';
 import PaymentGateways from '../payment_gateways/index.vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import DigitalCoupon from '../configuration_digital_coupon/index.vue';
 import CKEditor from 'vue-ckeditor5';
 export default {
   components: {
     ConfigurationLinks,
     PaymentGateways,
+    DigitalCoupon,
     'vue-ckeditor': CKEditor.component
   },
   data() {
@@ -239,8 +244,8 @@ export default {
         // Cargar preferencias si existen
         let preferences = { show_description: 1, show_stock: 0, only_available_products: 0, full_width_banner: 0 };
         if (data.preferences) {
-          const prefs = typeof data.preferences === 'string' 
-            ? JSON.parse(data.preferences) 
+          const prefs = typeof data.preferences === 'string'
+            ? JSON.parse(data.preferences)
             : data.preferences;
           preferences = prefs;
         }

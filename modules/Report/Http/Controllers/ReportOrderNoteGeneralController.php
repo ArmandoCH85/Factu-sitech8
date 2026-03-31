@@ -71,11 +71,20 @@ class ReportOrderNoteGeneralController extends Controller
             case '01':
                 $data = $model::whereToDeliverState($request);
                 break;
+            case '03':
+                $data = $model::whereEnviadoState($request);
+                break;
             case '05':
                 $data = $model::whereDeliveredState($request);
                 break;
+            case '07':
+                $data = $model::whereObservadoState($request);
+                break;
             case '09':
                 $data = $model::whereRejectedState($request);
+                break;
+            case '13':
+                $data = $model::wherePorAnularState($request);
                 break;
             case '11':
                 $data = $model::whereVoidedState($request);

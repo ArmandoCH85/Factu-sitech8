@@ -26,7 +26,7 @@
     "src": "public/images/labeling_machines_img/Cybra.png"
   },
   "public/images/labeling_machines_img/Honeywell.svg": {
-    "file": "assets/Honeywell-37e8daf7.svg",
+    "file": "assets/Honeywell-26b9a232.svg",
     "src": "public/images/labeling_machines_img/Honeywell.svg"
   },
   "public/images/labeling_machines_img/Labeljoy.svg": {
@@ -62,7 +62,7 @@
       "assets/Bartender-f7840412.svg",
       "assets/Cybra-0baac118.png",
       "assets/golabel-6a3ee9ed.png",
-      "assets/Honeywell-37e8daf7.svg",
+      "assets/Honeywell-26b9a232.svg",
       "assets/Labeljoy-77fd3f21.svg",
       "assets/Nicelabel-a678859a.svg",
       "assets/Teklynx-df64a2cf.svg",
@@ -72,7 +72,7 @@
     "css": [
       "assets/app-2b3b7c49.css"
     ],
-    "file": "assets/app-d3539a45.js",
+    "file": "assets/app-f397ec24.js",
     "imports": [
       "_vue-clipboard-0a851819.js"
     ],

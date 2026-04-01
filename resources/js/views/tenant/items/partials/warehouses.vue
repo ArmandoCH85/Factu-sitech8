@@ -37,32 +37,34 @@
 
                         <template v-if="item_unit_types.length > 0">
                             <h5>Lista de Precios Creados</h5>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Unidad</th>
-                                        <th>Description</th>
-                                        <th>Factor</th>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Unidad</th>
+                                            <th>Description</th>
+                                            <th>Factor</th>
 
-                                        <template v-for="pl in price_labels">
-                                            <th>{{ pl.label }}</th>
-                                        </template>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr
-                                        v-for="(row, index) in item_unit_types"
-                                        :key="index"
-                                    >
-                                        <th>{{ row.unit_type_id }}</th>
-                                        <th>{{ row.description }}</th>
-                                        <th>{{ row.quantity_unit }}</th>
-                                            <th v-for="price in row.prices">
-                                                {{ price.price }}
-                                            </th>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            <template v-for="pl in price_labels">
+                                                <th>{{ pl.label }}</th>
+                                            </template>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="(row, index) in item_unit_types"
+                                            :key="index"
+                                        >
+                                            <th>{{ row.unit_type_id }}</th>
+                                            <th>{{ row.description }}</th>
+                                            <th>{{ row.quantity_unit }}</th>
+                                                <th v-for="price in row.prices">
+                                                    {{ price.price }}
+                                                </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </template>
                     </div>
                 </div>

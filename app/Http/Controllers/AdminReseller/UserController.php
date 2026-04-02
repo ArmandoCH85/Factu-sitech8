@@ -70,7 +70,7 @@ class UserController extends Controller
             [
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255', 'unique:system.users,email'],
-                'password' => ['required', 'string', 'min:6'],
+                'password' => ['required', 'string', 'min:6', 'confirmed'],
                 'status' => ['nullable', 'boolean'],
                 'can_create_clients' => ['boolean'],
                 'module_permissions' => ['present', 'array'],
@@ -78,7 +78,10 @@ class UserController extends Controller
                 'client_ids' => ['present', 'array'],
                 'client_ids.*' => ['integer'],
             ],
-            ['password.min' => 'La contraseña debe tener al menos 6 caracteres.']
+            [
+                'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+                'password.confirmed' => 'Las contraseñas no coinciden.',
+            ]
         );
 
         $this->assertClientIdsExistInSystem($data['client_ids']);
@@ -124,7 +127,7 @@ class UserController extends Controller
             [
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255', Rule::unique('system.users', 'email')->ignore($administrator->id)],
-                'password' => ['nullable', 'string', 'min:6'],
+                'password' => ['nullable', 'string', 'min:6', 'confirmed'],
                 'status' => ['required', 'boolean'],
                 'can_create_clients' => ['boolean'],
                 'module_permissions' => ['present', 'array'],
@@ -132,7 +135,10 @@ class UserController extends Controller
                 'client_ids' => ['present', 'array'],
                 'client_ids.*' => ['integer'],
             ],
-            ['password.min' => 'La contraseña debe tener al menos 6 caracteres.']
+            [
+                'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+                'password.confirmed' => 'Las contraseñas no coinciden.',
+            ]
         );
 
         $this->assertClientIdsExistInSystem($data['client_ids']);

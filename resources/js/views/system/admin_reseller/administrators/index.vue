@@ -94,7 +94,8 @@
             width="92%"
             top="5vh"
             custom-class="dialog-administrator-form"
-            append-to-body>
+            append-to-body
+            @closed="handleDialogClosed">
             <el-tabs v-model="activeTab" type="card" class="administrator-form-tabs">
                 <el-tab-pane label="General" name="general">
                     <div class="row pt-2 px-1">
@@ -117,6 +118,23 @@
                                 <label class="control-label">{{ form.id ? 'Password (opcional)' : 'Password' }}</label>
                                 <el-input v-model="form.password" show-password placeholder="En edición, dejar vacío para no cambiar"></el-input>
                                 <small class="form-control-feedback" v-if="errors.password">{{ errors.password[0] }}</small>
+                            </div>
+                            <div
+                                v-if="showPasswordConfirmation"
+                                class="form-group mb-3"
+                                :class="{ 'has-danger': errors.password_confirmation || passwordMismatch }">
+                                <label class="control-label">{{ form.id ? 'Confirmar nueva contraseña' : 'Confirmar contraseña' }}</label>
+                                <el-input
+                                    v-model="form.password_confirmation"
+                                    show-password
+                                    :placeholder="form.id ? 'Repita la nueva contraseña' : 'Repita la contraseña'">
+                                </el-input>
+                                <small class="form-control-feedback text-danger" v-if="errors.password_confirmation">
+                                    {{ errors.password_confirmation[0] }}
+                                </small>
+                                <small class="form-control-feedback text-danger" v-else-if="passwordMismatch">
+                                    Las contraseñas no coinciden
+                                </small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -185,7 +203,7 @@
 
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showDialog = false">Cancelar</el-button>
-                <el-button type="primary" :loading="loadingSubmit" @click="submit">Guardar</el-button>
+                <el-button type="primary" :loading="loadingSubmit" :disabled="isSaveDisabled" @click="submit">Guardar</el-button>
             </span>
         </el-dialog>
     </div>
@@ -217,6 +235,35 @@ export default {
                 (row.email || '').toLowerCase().includes(query)
             );
         },
+        showPasswordConfirmation() {
+            if (!this.form.id) return true;
+            const p = this.form.password;
+            return p != null && String(p).length > 0;
+        },
+        passwordMismatch() {
+            if (!this.showPasswordConfirmation) return false;
+            const p = this.form.password != null ? String(this.form.password) : '';
+            const c = this.form.password_confirmation != null ? String(this.form.password_confirmation) : '';
+            if (c === '') return false;
+            return p !== c;
+        },
+        isSaveDisabled() {
+            if (!this.form.id) {
+                const c = this.form.password_confirmation != null ? String(this.form.password_confirmation) : '';
+                if (c === '') return true;
+                const p = this.form.password != null ? String(this.form.password) : '';
+                if (p !== c) return true;
+                return false;
+            }
+            return false;
+        },
+    },
+    watch: {
+        'form.password'(val) {
+            if (this.form.id && (val == null || val === '')) {
+                this.form.password_confirmation = null;
+            }
+        },
     },
     created() {
         this.initForm();
@@ -231,11 +278,15 @@ export default {
                 name: null,
                 email: null,
                 password: null,
+                password_confirmation: null,
                 status: true,
                 module_permissions: [],
                 client_ids: [],
                 can_create_clients: false,
             };
+        },
+        handleDialogClosed() {
+            this.initForm();
         },
         moduleCountLabel(row) {
             const n = (row.module_permissions || []).length;
@@ -298,6 +349,7 @@ export default {
                 name: row.name,
                 email: row.email,
                 password: null,
+                password_confirmation: null,
                 status: !!row.status,
                 module_permissions: this.normalizePermissions(row),
                 client_ids: [...(row.assigned_client_ids || [])],
@@ -316,6 +368,17 @@ export default {
                 return;
             }
 
+            if (this.showPasswordConfirmation) {
+                const p = rawPassword != null ? String(rawPassword) : '';
+                const c = this.form.password_confirmation != null ? String(this.form.password_confirmation) : '';
+                if (p !== c) {
+                    this.errors = {
+                        password_confirmation: ['Las contraseñas no coinciden'],
+                    };
+                    return;
+                }
+            }
+
             this.loadingSubmit = true;
 
             const payload = {
@@ -327,6 +390,9 @@ export default {
                 client_ids: this.form.client_ids || [],
                 can_create_clients: !!this.form.can_create_clients,
             };
+            if (this.showPasswordConfirmation && hasPassword) {
+                payload.password_confirmation = this.form.password_confirmation;
+            }
 
             const request = this.form.id
                 ? this.$http.put(`/${this.resource}/${this.form.id}`, payload)

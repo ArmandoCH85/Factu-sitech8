@@ -30,7 +30,10 @@ class UserController extends Controller
     {
         $resellerId = (int) auth()->user()->id;
 
-        $users = User::where('reseller_id', $resellerId)->orderByDesc('id')->get();
+        $users = User::where('reseller_id', $resellerId)
+            ->orderByDesc('is_master')
+            ->orderByDesc('id')
+            ->get();
 
         $assignableClients = Client::withoutGlobalScopes()
             ->orderBy('name')
@@ -88,6 +91,8 @@ class UserController extends Controller
 
         $token = $this->generateUniqueApiToken();
 
+        $isFirstAdministrator = User::where('reseller_id', $resellerId)->count() === 0;
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -96,6 +101,7 @@ class UserController extends Controller
             'reseller_id' => $resellerId,
             'status' => $data['status'] ?? true,
             'can_create_clients' => $data['can_create_clients'] ?? false,
+            'is_master' => $isFirstAdministrator,
             'module_permissions' => ResellerSystemAdminModules::normalizePermissions($data['module_permissions']),
         ]);
 
@@ -169,6 +175,10 @@ class UserController extends Controller
     {
         if ((int) $administrator->reseller_id !== (int) auth()->user()->id) {
             abort(403);
+        }
+
+        if ($administrator->isResellerSystemMasterAdministrator()) {
+            abort(403, 'No autorizado: no se puede eliminar al usuario maestro.');
         }
 
         $administrator->delete();

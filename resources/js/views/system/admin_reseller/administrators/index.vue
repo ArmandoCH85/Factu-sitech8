@@ -56,10 +56,12 @@
                                 <td>{{ row.name }}</td>
                                 <td>{{ row.email }}</td>
                                 <td class="text-center">
-                                    <span class="text-muted small">{{ moduleCountLabel(row) }}</span>
+                                    <span v-if="isMasterAdministrator(row)" class="small admin-reseller-master-label">MASTER</span>
+                                    <span v-else class="text-muted small">{{ moduleCountLabel(row) }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="text-muted small">{{ companiesCountLabel(row) }}</span>
+                                    <span v-if="isMasterAdministrator(row)" class="small admin-reseller-master-label">TODAS</span>
+                                    <span v-else class="text-muted small">{{ companiesCountLabel(row) }}</span>
                                 </td>
                                 <td class="text-center">
                                     <el-switch
@@ -74,7 +76,12 @@
                                     <el-button type="primary" size="small" class="me-1 mb-0" @click="openEdit(row)">
                                         Editar
                                     </el-button>
-                                    <el-button type="primary" size="small" class="mb-0" @click="remove(row)">
+                                    <el-button
+                                        v-if="!isMasterAdministrator(row)"
+                                        type="primary"
+                                        size="small"
+                                        class="mb-0"
+                                        @click="remove(row)">
                                         Eliminar
                                     </el-button>
                                 </td>
@@ -294,6 +301,9 @@ export default {
         handleDialogClosed() {
             this.initForm();
         },
+        isMasterAdministrator(row) {
+            return !!(row && (row.is_master === true || row.is_master === 1 || row.id === 1));
+        },
         moduleCountLabel(row) {
             const n = (row.module_permissions || []).length;
             return `${n} módulo${n === 1 ? '' : 's'}`;
@@ -338,6 +348,7 @@ export default {
                 this.records = (response.data.data || []).map((item) => ({
                     ...item,
                     status: !!item.status,
+                    is_master: !!(item.is_master === true || item.is_master === 1),
                     module_permissions: this.normalizePermissions(item),
                     can_create_clients: !!item.can_create_clients,
                     assigned_client_ids: Array.isArray(item.assigned_client_ids) ? item.assigned_client_ids : [],
@@ -471,13 +482,32 @@ export default {
                     this.$message.success(response.data.message);
                     this.getData();
                 })
-                .catch(() => {});
+                .catch((error) => {
+                    if (!error || !error.response) {
+                        return;
+                    }
+                    if (error.response.status === 403) {
+                        const msg =
+                            (error.response.data && error.response.data.message) ||
+                            'No autorizado: no se puede eliminar al usuario maestro.';
+                        this.$message.error(msg);
+                    }
+                });
         },
     },
 };
 </script>
 
 <style scoped>
+/* Etiqueta maestro: misma base que los contadores (.text-muted.small), tono plomo y trazado discreto */
+.admin-reseller-master-label {
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: #868e96;
+    line-height: 1.35;
+    text-transform: uppercase;
+}
+
 .admin-can-create-clients-box {
     box-sizing: border-box;
     min-height: 40px;

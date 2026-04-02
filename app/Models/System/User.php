@@ -26,7 +26,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'whatsapp_number', 'address_contact', 'introduction',
-        'reseller_id', 'api_token', 'status', 'module_permissions', 'can_create_clients',
+        'reseller_id', 'api_token', 'status', 'module_permissions', 'can_create_clients', 'is_master',
     ];
 
     /**
@@ -42,6 +42,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'status' => 'boolean',
         'module_permissions' => 'array',
         'can_create_clients' => 'boolean',
+        'is_master' => 'boolean',
     ];
 
     
@@ -88,11 +89,27 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * Subadministrador reseller marcado como maestro: mismo acceso a módulos que el reseller.
+     */
+    public function isResellerSystemMasterAdministrator(): bool
+    {
+        if ($this->reseller_id === null) {
+            return false;
+        }
+
+        return (bool) $this->is_master || (int) $this->id === 1;
+    }
+
+    /**
      * Usuario principal reseller (sin reseller_id) tiene acceso total al panel sistema.
      */
     public function canAccessSystemModule(string $moduleKey): bool
     {
         if ($this->reseller_id === null) {
+            return true;
+        }
+
+        if ($this->isResellerSystemMasterAdministrator()) {
             return true;
         }
 
@@ -107,6 +124,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function canAccessSystemPath(?string $firstPathSegment): bool
     {
         if ($this->reseller_id === null) {
+            return true;
+        }
+
+        if ($this->isResellerSystemMasterAdministrator()) {
+            $firstPathSegment = $firstPathSegment ?? '';
+            if ($firstPathSegment === 'admin-reseller') {
+                return false;
+            }
+
             return true;
         }
 

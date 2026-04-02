@@ -110,7 +110,8 @@ class Client extends Model
             $user = auth('admin')->user();
 
             // Subadministradores reseller: clientes asignados (pivot) o creados por el propio usuario.
-            if ($user instanceof \App\Models\System\User && $user->reseller_id !== null) {
+            // El administrador maestro ignora la asignación y ve todas las empresas.
+            if ($user instanceof \App\Models\System\User && $user->reseller_id !== null && ! $user->isResellerSystemMasterAdministrator()) {
                 $uid = (int) $user->id;
                 $builder->where(function (Builder $q) use ($uid) {
                     $q->whereExists(function ($sub) use ($uid) {

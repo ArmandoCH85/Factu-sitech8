@@ -120,7 +120,7 @@
                                 <small class="form-control-feedback" v-if="errors.password">{{ errors.password[0] }}</small>
                             </div>
                             <div
-                                v-if="showPasswordConfirmation"
+                                v-if="!form.id || form.password"
                                 class="form-group mb-3"
                                 :class="{ 'has-danger': errors.password_confirmation || passwordMismatch }">
                                 <label class="control-label">{{ form.id ? 'Confirmar nueva contraseña' : 'Confirmar contraseña' }}</label>
@@ -235,10 +235,12 @@ export default {
                 (row.email || '').toLowerCase().includes(query)
             );
         },
+        /** Edición: el usuario escribió algo en password (truthy, p. ej. string no vacío). */
+        hasPasswordChangeInEdit() {
+            return !!(this.form.id && this.form.password);
+        },
         showPasswordConfirmation() {
-            if (!this.form.id) return true;
-            const p = this.form.password;
-            return p != null && String(p).length > 0;
+            return !this.form.id || !!this.form.password;
         },
         passwordMismatch() {
             if (!this.showPasswordConfirmation) return false;
@@ -248,20 +250,24 @@ export default {
             return p !== c;
         },
         isSaveDisabled() {
+            const c = this.form.password_confirmation != null ? String(this.form.password_confirmation) : '';
+            const p = this.form.password != null ? String(this.form.password) : '';
             if (!this.form.id) {
-                const c = this.form.password_confirmation != null ? String(this.form.password_confirmation) : '';
                 if (c === '') return true;
-                const p = this.form.password != null ? String(this.form.password) : '';
                 if (p !== c) return true;
                 return false;
             }
+            if (!this.hasPasswordChangeInEdit) return false;
+            if (c === '') return true;
+            if (p !== c) return true;
             return false;
         },
     },
     watch: {
         'form.password'(val) {
-            if (this.form.id && (val == null || val === '')) {
-                this.form.password_confirmation = null;
+            if (!this.form.id) return;
+            if (val == null || val === '') {
+                this.form.password_confirmation = '';
             }
         },
     },
@@ -277,8 +283,8 @@ export default {
                 id: null,
                 name: null,
                 email: null,
-                password: null,
-                password_confirmation: null,
+                password: '',
+                password_confirmation: '',
                 status: true,
                 module_permissions: [],
                 client_ids: [],
@@ -348,8 +354,8 @@ export default {
                 id: row.id,
                 name: row.name,
                 email: row.email,
-                password: null,
-                password_confirmation: null,
+                password: '',
+                password_confirmation: '',
                 status: !!row.status,
                 module_permissions: this.normalizePermissions(row),
                 client_ids: [...(row.assigned_client_ids || [])],
@@ -361,7 +367,8 @@ export default {
             this.errors = {};
             const rawPassword = this.form.password;
             const hasPassword = rawPassword != null && rawPassword !== '';
-            if (hasPassword && String(rawPassword).length < 6) {
+            const needsMinLength = hasPassword;
+            if (needsMinLength && String(rawPassword).length < 6) {
                 this.errors = {
                     password: ['La contraseña debe tener al menos 6 caracteres.'],
                 };
@@ -390,7 +397,8 @@ export default {
                 client_ids: this.form.client_ids || [],
                 can_create_clients: !!this.form.can_create_clients,
             };
-            if (this.showPasswordConfirmation && hasPassword) {
+            const sendConfirmation = !this.form.id || this.hasPasswordChangeInEdit;
+            if (this.showPasswordConfirmation && sendConfirmation) {
                 payload.password_confirmation = this.form.password_confirmation;
             }
 

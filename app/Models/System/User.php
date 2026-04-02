@@ -17,6 +17,8 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Schema;
+use RuntimeException;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
@@ -32,6 +34,39 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'admin@senatiangel123art.uio.la',
         'admin@gmail.com',
     ];
+
+    /**
+     * Nombre físico de la tabla en la conexión system.
+     * Producción: suele ser "users". Local pro8: a veces "system_users" sin tabla "users".
+     */
+    public static function systemUsersTable(): string
+    {
+        static $resolved;
+
+        if ($resolved !== null) {
+            return $resolved;
+        }
+
+        $connectionName = (new static())->getConnectionName();
+        $schema = Schema::connection($connectionName);
+
+        if ($schema->hasTable('users')) {
+            return $resolved = 'users';
+        }
+
+        if ($schema->hasTable('system_users')) {
+            return $resolved = 'system_users';
+        }
+
+        throw new RuntimeException(
+            'No existe la tabla users ni system_users en la conexión ['.$connectionName.'] para el modelo System\\User.'
+        );
+    }
+
+    public function getTable()
+    {
+        return static::systemUsersTable();
+    }
 
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'whatsapp_number', 'address_contact', 'introduction',

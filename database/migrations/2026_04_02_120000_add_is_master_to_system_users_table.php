@@ -9,9 +9,12 @@ class AddIsMasterToSystemUsersTable extends Migration
 {
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'is_master')) {
-                $table->boolean('is_master')->default(false)->after('can_create_clients');
+        $connection = (new User())->getConnectionName();
+        $table = User::systemUsersTable();
+
+        Schema::connection($connection)->table($table, function (Blueprint $blueprint) use ($connection, $table) {
+            if (! Schema::connection($connection)->hasColumn($table, 'is_master')) {
+                $blueprint->boolean('is_master')->default(false)->after('can_create_clients');
             }
         });
 
@@ -21,9 +24,12 @@ class AddIsMasterToSystemUsersTable extends Migration
 
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'is_master')) {
-                $table->dropColumn('is_master');
+        $connection = (new User())->getConnectionName();
+        $table = User::systemUsersTable();
+
+        Schema::connection($connection)->table($table, function (Blueprint $blueprint) use ($connection, $table) {
+            if (Schema::connection($connection)->hasColumn($table, 'is_master')) {
+                $blueprint->dropColumn('is_master');
             }
         });
     }

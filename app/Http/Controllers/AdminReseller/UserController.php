@@ -69,11 +69,13 @@ class UserController extends Controller
     {
         $allowed = ResellerSystemAdminModules::allowedKeys();
         $resellerId = (int) auth()->user()->id;
+        $systemUsersConnection = (new User())->getConnectionName();
+        $systemUsersTable = User::systemUsersTable();
 
         $data = $request->validate(
             [
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255', 'unique:system.users,email'],
+                'email' => ['required', 'email', 'max:255', Rule::unique($systemUsersTable, 'email')->connection($systemUsersConnection)],
                 'password' => ['required', 'string', 'min:6', 'confirmed'],
                 'status' => ['nullable', 'boolean'],
                 'can_create_clients' => ['boolean'],
@@ -125,6 +127,8 @@ class UserController extends Controller
 
         $allowed = ResellerSystemAdminModules::allowedKeys();
         $resellerId = (int) auth()->user()->id;
+        $systemUsersConnection = (new User())->getConnectionName();
+        $systemUsersTable = User::systemUsersTable();
 
         if (!$request->filled('password')) {
             $request->merge(['password' => null]);
@@ -133,7 +137,7 @@ class UserController extends Controller
         $data = $request->validate(
             [
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255', Rule::unique('system.users', 'email')->ignore($administrator->id)],
+                'email' => ['required', 'email', 'max:255', Rule::unique($systemUsersTable, 'email')->connection($systemUsersConnection)->ignore($administrator->id)],
                 'password' => ['nullable', 'string', 'min:6', 'confirmed'],
                 'status' => ['required', 'boolean'],
                 'can_create_clients' => ['boolean'],

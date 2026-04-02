@@ -8,6 +8,7 @@ use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Traits\UsesSystemConnection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\Facades\Log;
@@ -105,14 +106,27 @@ class Client extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('reseller_subadmin_owns_clients', function (Builder $builder) {
+        static::addGlobalScope('reseller_subadmin_assigned_clients', function (Builder $builder) {
             $user = auth('admin')->user();
 
-            // Solo subadministradores reseller (tienen reseller_id) deben ver únicamente sus propios clientes.
+            // Subadministradores reseller: clientes asignados (pivot) o creados por el propio usuario.
             if ($user instanceof \App\Models\System\User && $user->reseller_id !== null) {
-                $builder->where('created_by_user_id', (int) $user->id);
+                $uid = (int) $user->id;
+                $builder->where(function (Builder $q) use ($uid) {
+                    $q->whereExists(function ($sub) use ($uid) {
+                        $sub->selectRaw('1')
+                            ->from('reseller_admin_clients')
+                            ->whereColumn('reseller_admin_clients.client_id', 'clients.id')
+                            ->where('reseller_admin_clients.admin_user_id', $uid);
+                    })->orWhere('clients.created_by_user_id', $uid);
+                });
             }
         });
+    }
+
+    public function assignedResellerAdministrators(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'reseller_admin_clients', 'client_id', 'admin_user_id');
     }
 
 

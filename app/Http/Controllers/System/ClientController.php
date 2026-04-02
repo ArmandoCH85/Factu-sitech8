@@ -653,6 +653,14 @@ use App\Models\System\User as SystemUser;
             ini_set('memory_limit', '2048M');
             \Log::info('=== INICIO STORE CLIENT ===', ['timestamp' => now()]);
 
+            $authAdmin = auth('admin')->user();
+            if ($authAdmin instanceof SystemUser && $authAdmin->reseller_id !== null && ! $authAdmin->canCreateClients()) {
+                return [
+                    'success' => false,
+                    'message' => 'No tiene permiso para crear nuevos clientes.',
+                ];
+            }
+
             $hostname = new Hostname();
             $website = new Website();
 

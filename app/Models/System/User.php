@@ -4,6 +4,7 @@ namespace App\Models\System;
 
 use Hyn\Tenancy\Traits\UsesSystemConnection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +26,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'whatsapp_number', 'address_contact', 'introduction',
-        'reseller_id', 'api_token', 'status', 'module_permissions',
+        'reseller_id', 'api_token', 'status', 'module_permissions', 'can_create_clients',
     ];
 
     /**
@@ -40,6 +41,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $casts = [
         'status' => 'boolean',
         'module_permissions' => 'array',
+        'can_create_clients' => 'boolean',
     ];
 
     
@@ -62,6 +64,27 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function administrators(): HasMany
     {
         return $this->hasMany(self::class, 'reseller_id');
+    }
+
+    /**
+     * Clientes del panel sistema asignados a este subadministrador reseller.
+     */
+    public function assignedClients(): BelongsToMany
+    {
+        return $this->belongsToMany(Client::class, 'reseller_admin_clients', 'admin_user_id', 'client_id');
+    }
+
+    /**
+     * Subadministradores reseller: solo si can_create_clients es true pueden registrar nuevos clientes.
+     * El usuario principal reseller (sin reseller_id) siempre puede.
+     */
+    public function canCreateClients(): bool
+    {
+        if ($this->reseller_id === null) {
+            return true;
+        }
+
+        return (bool) $this->can_create_clients;
     }
 
     /**
@@ -93,12 +116,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             return false;
         }
 
-        // Subadministradores reseller: misma gestión de clientes (listado, modal, tablas, guardado) que el administrador principal
-        if ($firstPathSegment === 'clients') {
-            return true;
+        if ($firstPathSegment === 'dashboard' || $firstPathSegment === 'clients') {
+            return $this->canAccessSystemModule('clients');
         }
 
-        $alwaysAllowed = ['', 'dashboard', 'phone', 'users', 'guest-register'];
+        if ($firstPathSegment === 'configurations') {
+            return $this->canAccessSystemModule('configurations');
+        }
+
+        $alwaysAllowed = ['', 'phone', 'users', 'guest-register'];
         if (in_array($firstPathSegment, $alwaysAllowed, true)) {
             return true;
         }

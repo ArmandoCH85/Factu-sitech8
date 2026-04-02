@@ -11,10 +11,12 @@
             <nav id="menu" class="nav-main pt-1" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ (in_array($path[0], ['clients', 'dashboard']))?'nav-active':'' }}">
+                        @if($sysAdmin && ($sysAdmin->reseller_id === null || $sysAdmin->canAccessSystemModule('clients')))
                         <a class="nav-link" href="{{route('system.dashboard')}}">
                             <svg  xmlns="http://www.w3.org/2000/svg"  width="30"  height="30"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-layout-dashboard"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M5 16h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /><path d="M15 12h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M15 4h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /></svg>
                             <span>Dashboard</span>
                         </a>
+                        @endif
                     </li>
                 </ul>
             </nav>
@@ -23,7 +25,7 @@
                     @if($sysAdmin && $sysAdmin->reseller_id === null)
                     <li class="{{ ($path[0] === 'admin-reseller')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('system.admin_reseller.administrators.index') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12a2 2 0 1 0 -2 -2" /><path d="M14 10a2 2 0 1 0 2 2" /><path d="M17 19v-1.5a3.5 3.5 0 0 0 -7 0v1.5" /><path d="M7 19v-1.5a3.5 3.5 0 0 1 5.245 -3.042" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-shield"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 21v-2a4 4 0 0 1 4 -4h2" /><path d="M22 16c0 4 -2.5 6 -3.5 6s-3.5 -2 -3.5 -6c1 0 2.5 -.5 3.5 -1.5c1 1 2.5 1.5 3.5 1.5z" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /></svg>
                             <span>Administradores</span>
                         </a>
                     </li>
@@ -190,7 +192,7 @@
         </script>
 
     </div>
-    @if($sysAdmin && $sysAdmin->reseller_id === null)
+    @if($sysAdmin && ($sysAdmin->reseller_id === null || $sysAdmin->canAccessSystemModule('configurations')))
     <nav id="menu" class="nav-main configuration-nav pt-0 px-2" role="navigation">
         <ul class="nav nav-main">
             <li class="{{ ($path[0] === 'configurations')?'nav-active':'' }}">

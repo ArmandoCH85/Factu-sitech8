@@ -9,7 +9,8 @@ namespace App\Support;
 class ResellerSystemAdminModules
 {
     public const DEFINITIONS = [
-        'clients' => 'Clientes',
+        'clients' => 'Dashboard',
+        'configurations' => 'Configuración',
         'payment-orders' => 'Pagos',
         'multi-users' => 'Multi Usuarios',
         'plans' => 'Planes',

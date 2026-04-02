@@ -43,6 +43,9 @@
                                 <th>#</th>
                                 <th>Nombre</th>
                                 <th>Email</th>
+                                <th class="text-center">Módulos</th>
+                                <th class="text-center">Empresas</th>
+                                <th class="text-center">Crear Cliente</th>
                                 <th class="text-center">Estado</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
@@ -53,15 +56,31 @@
                                 <td>{{ row.name }}</td>
                                 <td>{{ row.email }}</td>
                                 <td class="text-center">
+                                    <span class="text-muted small">{{ moduleCountLabel(row) }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-muted small">{{ companiesCountLabel(row) }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <el-switch
+                                        v-model="row.can_create_clients"
+                                        @change="changeCreateClientPermission(row)">
+                                    </el-switch>
+                                </td>
+                                <td class="text-center">
                                     <el-switch v-model="row.status" @change="changeStatus(row)"></el-switch>
                                 </td>
-                                <td class="text-end">
-                                    <el-button type="text" @click="openEdit(row)">Editar</el-button>
-                                    <el-button type="text" class="text-danger" @click="remove(row)">Eliminar</el-button>
+                                <td class="text-end align-middle">
+                                    <el-button type="primary" size="small" class="me-1 mb-0" @click="openEdit(row)">
+                                        Editar
+                                    </el-button>
+                                    <el-button type="primary" size="small" class="mb-0" @click="remove(row)">
+                                        Eliminar
+                                    </el-button>
                                 </td>
                             </tr>
                             <tr v-if="filteredRecords.length === 0">
-                                <td colspan="5" class="text-center text-muted py-4">No hay administradores registrados.</td>
+                                <td colspan="8" class="text-center text-muted py-4">No hay administradores registrados.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -69,35 +88,64 @@
             </div>
         </div>
 
-        <el-dialog :title="form.id ? 'Editar Administrador' : 'Nuevo Administrador'" :visible.sync="showDialog" width="780px">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group" :class="{ 'has-danger': errors.name }">
-                        <label class="control-label">Nombre</label>
-                        <el-input v-model="form.name"></el-input>
-                        <small class="form-control-feedback" v-if="errors.name">{{ errors.name[0] }}</small>
+        <el-dialog
+            :title="form.id ? 'Editar Administrador' : 'Nuevo Administrador'"
+            :visible.sync="showDialog"
+            width="92%"
+            top="5vh"
+            custom-class="dialog-administrator-form"
+            append-to-body>
+            <el-tabs v-model="activeTab" type="card" class="administrator-form-tabs">
+                <el-tab-pane label="General" name="general">
+                    <div class="row pt-2 px-1">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3" :class="{ 'has-danger': errors.name }">
+                                <label class="control-label">Nombre</label>
+                                <el-input v-model="form.name" placeholder="Nombre completo"></el-input>
+                                <small class="form-control-feedback" v-if="errors.name">{{ errors.name[0] }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3" :class="{ 'has-danger': errors.email }">
+                                <label class="control-label">Email</label>
+                                <el-input v-model="form.email" placeholder="correo@empresa.com"></el-input>
+                                <small class="form-control-feedback" v-if="errors.email">{{ errors.email[0] }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3" :class="{ 'has-danger': errors.password }">
+                                <label class="control-label">{{ form.id ? 'Password (opcional)' : 'Password' }}</label>
+                                <el-input v-model="form.password" show-password placeholder="En edición, dejar vacío para no cambiar"></el-input>
+                                <small class="form-control-feedback" v-if="errors.password">{{ errors.password[0] }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="control-label invisible" aria-hidden="true">
+                                    Permitir crear nuevos clientes
+                                </label>
+                                <div
+                                    class="admin-can-create-clients-box d-flex justify-content-between align-items-center flex-nowrap w-100"
+                                    role="group"
+                                    aria-label="Permitir crear nuevos clientes">
+                                    <span class="admin-can-create-clients-box-label text-truncate me-2">
+                                        Permitir crear nuevos clientes
+                                    </span>
+                                    <el-switch
+                                        v-model="form.can_create_clients"
+                                        class="admin-can-create-clients-switch flex-shrink-0">
+                                    </el-switch>
+                                </div>
+                                <small class="admin-can-create-clients-helper small d-block">
+                                    Si está desactivado, no verá el botón para registrar clientes.
+                                </small>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group" :class="{ 'has-danger': errors.email }">
-                        <label class="control-label">Email</label>
-                        <el-input v-model="form.email"></el-input>
-                        <small class="form-control-feedback" v-if="errors.email">{{ errors.email[0] }}</small>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group" :class="{ 'has-danger': errors.password }">
-                        <label class="control-label">{{ form.id ? 'Password (opcional)' : 'Password' }}</label>
-                        <el-input v-model="form.password" show-password placeholder="En edición, dejar vacío para no cambiar"></el-input>
-                        <small class="form-control-feedback" v-if="errors.password">{{ errors.password[0] }}</small>
-                    </div>
-                </div>
-            </div>
+                </el-tab-pane>
 
-            <div class="row mt-2">
-                <div class="col-12">
-                    <h4 class="border-bottom pb-2 mb-3">Permisos de Módulos</h4>
-                    <p class="text-muted small mb-2">Marque los módulos del panel a los que podrá acceder este administrador.</p>
+                <el-tab-pane label="Módulos del sistema" name="modules">
+                    <p class="text-muted small mb-2 px-1">Marque los módulos del panel a los que podrá acceder este administrador.</p>
                     <div :class="{ 'has-danger': errors.module_permissions }">
                         <el-checkbox-group v-model="form.module_permissions" class="row">
                             <div
@@ -109,8 +157,31 @@
                         </el-checkbox-group>
                         <small class="form-control-feedback d-block" v-if="errors.module_permissions">{{ errors.module_permissions[0] }}</small>
                     </div>
-                </div>
-            </div>
+                </el-tab-pane>
+
+                <el-tab-pane label="Clientes asignados" name="clients">
+                    <p class="text-muted small mb-2 px-1">
+                        Seleccione las empresas (clientes) a las que podrá acceder. Se listan todas las registradas en el sistema.
+                        Además, siempre podrá ver los clientes que él mismo registre.
+                    </p>
+                    <div class="form-group mb-0 px-1" :class="{ 'has-danger': errors.client_ids }">
+                        <el-select
+                            v-model="form.client_ids"
+                            multiple
+                            filterable
+                            placeholder="Buscar clientes..."
+                            style="width: 100%">
+                            <el-option
+                                v-for="c in assignableClients"
+                                :key="c.id"
+                                :label="`${c.number} — ${c.name}`"
+                                :value="c.id">
+                            </el-option>
+                        </el-select>
+                        <small class="form-control-feedback d-block" v-if="errors.client_ids">{{ errors.client_ids[0] }}</small>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
 
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showDialog = false">Cancelar</el-button>
@@ -132,18 +203,9 @@ export default {
             searchQuery: '',
             errors: {},
             form: {},
-            moduleOptions: [
-                { key: 'payment-orders', label: 'Pagos' },
-                { key: 'multi-users', label: 'Multi Usuarios' },
-                { key: 'plans', label: 'Planes' },
-                { key: 'massive-invoice', label: 'Facturación Masiva' },
-                { key: 'accounting', label: 'Contabilidad' },
-                { key: 'auto-update', label: 'Actualización' },
-                { key: 'backup', label: 'Backup' },
-                { key: 'information', label: 'Información' },
-                { key: 'logs', label: 'Logs' },
-                { key: 'reports', label: 'Reportes' },
-            ],
+            activeTab: 'general',
+            moduleOptions: [],
+            assignableClients: [],
         };
     },
     computed: {
@@ -163,6 +225,7 @@ export default {
     methods: {
         initForm() {
             this.errors = {};
+            this.activeTab = 'general';
             this.form = {
                 id: null,
                 name: null,
@@ -170,7 +233,17 @@ export default {
                 password: null,
                 status: true,
                 module_permissions: [],
+                client_ids: [],
+                can_create_clients: false,
             };
+        },
+        moduleCountLabel(row) {
+            const n = (row.module_permissions || []).length;
+            return `${n} módulo${n === 1 ? '' : 's'}`;
+        },
+        companiesCountLabel(row) {
+            const n = Array.isArray(row.assigned_client_ids) ? row.assigned_client_ids.length : 0;
+            return `${n} empresa${n === 1 ? '' : 's'}`;
         },
         toggleFilters() {
             this.isFiltersVisible = !this.isFiltersVisible;
@@ -188,12 +261,29 @@ export default {
             }
             return [];
         },
+        buildModuleOptions(definitions) {
+            if (!definitions || typeof definitions !== 'object') {
+                return [];
+            }
+            return Object.keys(definitions).map((key) => ({
+                key,
+                label: definitions[key],
+            }));
+        },
         getData() {
             this.$http.get(`/${this.resource}/records`).then((response) => {
+                if (response.data.module_definitions) {
+                    this.moduleOptions = this.buildModuleOptions(response.data.module_definitions);
+                }
+                if (response.data.assignable_clients) {
+                    this.assignableClients = response.data.assignable_clients;
+                }
                 this.records = (response.data.data || []).map((item) => ({
                     ...item,
                     status: !!item.status,
                     module_permissions: this.normalizePermissions(item),
+                    can_create_clients: !!item.can_create_clients,
+                    assigned_client_ids: Array.isArray(item.assigned_client_ids) ? item.assigned_client_ids : [],
                 }));
             });
         },
@@ -210,12 +300,23 @@ export default {
                 password: null,
                 status: !!row.status,
                 module_permissions: this.normalizePermissions(row),
+                client_ids: [...(row.assigned_client_ids || [])],
+                can_create_clients: !!row.can_create_clients,
             };
             this.showDialog = true;
         },
         submit() {
-            this.loadingSubmit = true;
             this.errors = {};
+            const rawPassword = this.form.password;
+            const hasPassword = rawPassword != null && rawPassword !== '';
+            if (hasPassword && String(rawPassword).length < 6) {
+                this.errors = {
+                    password: ['La contraseña debe tener al menos 6 caracteres.'],
+                };
+                return;
+            }
+
+            this.loadingSubmit = true;
 
             const payload = {
                 name: this.form.name,
@@ -223,6 +324,8 @@ export default {
                 password: this.form.password || undefined,
                 status: this.form.status,
                 module_permissions: this.form.module_permissions || [],
+                client_ids: this.form.client_ids || [],
+                can_create_clients: !!this.form.can_create_clients,
             };
 
             const request = this.form.id
@@ -237,7 +340,8 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response && error.response.status === 422) {
-                        this.errors = error.response.data;
+                        const d = error.response.data;
+                        this.errors = (d && d.errors) ? d.errors : d || {};
                         return;
                     }
                     this.$message.error('No se pudo guardar el registro.');
@@ -253,6 +357,8 @@ export default {
                     email: row.email,
                     status: row.status,
                     module_permissions: row.module_permissions || [],
+                    client_ids: row.assigned_client_ids || [],
+                    can_create_clients: !!row.can_create_clients,
                 })
                 .then((response) => {
                     this.$message.success(response.data.message);
@@ -260,6 +366,24 @@ export default {
                 .catch(() => {
                     row.status = !row.status;
                     this.$message.error('No se pudo actualizar el estado.');
+                });
+        },
+        changeCreateClientPermission(row) {
+            this.$http
+                .put(`/${this.resource}/${row.id}`, {
+                    name: row.name,
+                    email: row.email,
+                    status: !!row.status,
+                    module_permissions: row.module_permissions || [],
+                    client_ids: row.assigned_client_ids || [],
+                    can_create_clients: !!row.can_create_clients,
+                })
+                .then(() => {
+                    this.$message.success('Permiso actualizado correctamente.');
+                })
+                .catch(() => {
+                    row.can_create_clients = !row.can_create_clients;
+                    this.$message.error('No se pudo actualizar el permiso.');
                 });
         },
         remove(row) {
@@ -278,3 +402,61 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.admin-can-create-clients-box {
+    box-sizing: border-box;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    background-color: var(--light-color, #fff);
+}
+
+.admin-can-create-clients-box:hover {
+    border-color: #b3bad3;
+}
+
+.admin-can-create-clients-box-label {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--dark-color, #303133);
+    min-width: 0;
+}
+
+.admin-can-create-clients-helper {
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+    line-height: 1.35;
+    color: #909399;
+}
+
+.admin-can-create-clients-switch {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.administrator-form-tabs >>> .el-tabs__content {
+    padding-top: 8px;
+}
+</style>
+
+<style>
+/* Dialog creado en body: sin scoped para que aplique a custom-class */
+.dialog-administrator-form {
+    max-width: 880px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.dialog-administrator-form .el-dialog__body {
+    padding: 12px 20px 20px;
+}
+
+@media (max-width: 576px) {
+    .dialog-administrator-form .el-dialog__body {
+        padding: 8px 12px 16px;
+    }
+}
+</style>

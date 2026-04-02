@@ -231,7 +231,7 @@
                         </li>
                     </ol>                    
                     <div class="right-wrapper pull-right">
-                        <div class="btn-group flex-wrap">
+                        <div v-if="canCreateClients !== false" class="btn-group flex-wrap">
                             <button
                                 class="btn btn-custom btn-sm mt-2 me-2 mb-3 primary-buton pull-end"
                                 type="button"
@@ -840,7 +840,8 @@ export default {
         'discUsed',
         'iUsed',
         'storageSize',
-        'version'
+        'version',
+        'canCreateClients',
     ],
     components: {
         // CompaniesForm,

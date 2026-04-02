@@ -56,11 +56,23 @@
                                 <td>{{ row.name }}</td>
                                 <td>{{ row.email }}</td>
                                 <td class="text-center">
-                                    <span v-if="isMasterAdministrator(row)" class="small admin-reseller-master-label">MASTER</span>
+                                    <el-tag
+                                        v-if="isMasterAdministrator(row)"
+                                        type="info"
+                                        size="small"
+                                        class="admin-reseller-master-tag">
+                                        MASTER
+                                    </el-tag>
                                     <span v-else class="text-muted small">{{ moduleCountLabel(row) }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <span v-if="isMasterAdministrator(row)" class="small admin-reseller-master-label">TODAS</span>
+                                    <el-tag
+                                        v-if="isMasterAdministrator(row)"
+                                        type="info"
+                                        size="small"
+                                        class="admin-reseller-master-tag">
+                                        TODAS
+                                    </el-tag>
                                     <span v-else class="text-muted small">{{ companiesCountLabel(row) }}</span>
                                 </td>
                                 <td class="text-center">
@@ -302,7 +314,7 @@ export default {
             this.initForm();
         },
         isMasterAdministrator(row) {
-            return !!(row && (row.is_master === true || row.is_master === 1 || row.id === 1));
+            return !!(row && (row.is_master === true || row.is_master === 1));
         },
         moduleCountLabel(row) {
             const n = (row.module_permissions || []).length;
@@ -499,13 +511,19 @@ export default {
 </script>
 
 <style scoped>
-/* Etiqueta maestro: misma base que los contadores (.text-muted.small), tono plomo y trazado discreto */
-.admin-reseller-master-label {
+/* Info / plomo: aspecto de etiqueta, no de botón (Element UI tag plain + refuerzo visual) */
+.admin-reseller-master-tag {
     font-weight: 500;
     letter-spacing: 0.05em;
-    color: #868e96;
-    line-height: 1.35;
     text-transform: uppercase;
+    border-color: #e4e7ed !important;
+    background-color: #f4f4f5 !important;
+    color: #909399 !important;
+}
+
+.admin-reseller-master-tag:hover {
+    border-color: #dcdfe6 !important;
+    background-color: #eef0f3 !important;
 }
 
 .admin-can-create-clients-box {

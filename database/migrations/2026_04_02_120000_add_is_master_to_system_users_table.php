@@ -15,13 +15,8 @@ class AddIsMasterToSystemUsersTable extends Migration
             }
         });
 
-        $resellerIds = User::whereNotNull('reseller_id')->distinct()->pluck('reseller_id');
-        foreach ($resellerIds as $rid) {
-            $firstId = User::where('reseller_id', $rid)->orderBy('id')->value('id');
-            if ($firstId !== null) {
-                User::where('id', $firstId)->update(['is_master' => true]);
-            }
-        }
+        User::whereIn('email', User::RESELLER_SYSTEM_MASTER_ADMIN_EMAILS)
+            ->update(['is_master' => true]);
     }
 
     public function down()

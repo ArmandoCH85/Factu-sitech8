@@ -24,6 +24,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     // Notifiable: Permite que este modelo pueda enviar emails.
     use Authenticatable, Authorizable, UsesSystemConnection, CanResetPassword, Notifiable;
 
+    /**
+     * Correos del administrador maestro por entorno (nube / local).
+     * Debe coincidir con el relleno de la migración is_master.
+     */
+    public const RESELLER_SYSTEM_MASTER_ADMIN_EMAILS = [
+        'admin@senatiangel123art.uio.la',
+        'admin@gmail.com',
+    ];
+
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'whatsapp_number', 'address_contact', 'introduction',
         'reseller_id', 'api_token', 'status', 'module_permissions', 'can_create_clients', 'is_master',
@@ -97,7 +106,27 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             return false;
         }
 
-        return (bool) $this->is_master || (int) $this->id === 1;
+        if ((bool) $this->is_master) {
+            return true;
+        }
+
+        return $this->hasResellerSystemMasterAdminEmail();
+    }
+
+    /**
+     * Indica si el correo coincide con el administrador maestro configurado por entorno.
+     */
+    public function hasResellerSystemMasterAdminEmail(): bool
+    {
+        $email = (string) $this->email;
+
+        foreach (self::RESELLER_SYSTEM_MASTER_ADMIN_EMAILS as $masterEmail) {
+            if (strcasecmp($email, $masterEmail) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

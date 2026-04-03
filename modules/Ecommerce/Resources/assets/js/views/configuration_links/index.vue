@@ -4,9 +4,8 @@
     <form autocomplete="off" @submit.prevent="submit">
       <div class="form-body">
         <div class="row">
-          <div class="col-12 d-flex align-items-center">
-            <h4>Links personalizados para el menú</h4>
-            <hr class="flex-grow-1 ms-3">
+          <div class="col-12">
+            <h4><strong>Links personalizados para el menú</strong></h4>
           </div>
           <div class="col-md-4">
             <div class="form-group" :class="{'has-danger': errors.title_one_customised_link}">
@@ -78,9 +77,8 @@
           </div>
 
           <!-- Tags menú -->
-          <div class="col-12 d-flex align-items-center mt-3">
-            <h4>Tags menú</h4>
-            <hr class="flex-grow-1 ms-3">
+          <div class="col-12 mt-3">
+            <h4><strong>Tags menú</strong></h4>
           </div>
           <div class="col-md-4">
             <div class="form-group" :class="{'has-danger': errors.tag_shipping}">
@@ -117,9 +115,8 @@
           </div>
 
           <!-- Redes sociales -->
-          <div class="col-12 d-flex align-items-center mt-3">
-            <h4>Redes Sociales</h4>
-            <hr class="flex-grow-1 ms-3">
+          <div class="col-12 mt-3">
+            <h4><strong>Redes Sociales</strong></h4>
           </div>
           <div class="col-md-6">
             <div class="form-group" :class="{'has-danger': errors.link_facebook}">

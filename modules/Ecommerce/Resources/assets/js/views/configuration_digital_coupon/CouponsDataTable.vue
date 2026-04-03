@@ -1,7 +1,19 @@
 <template>
     <div v-loading="loading">
+        <!-- Botón toggle filtros -->
+        <div class="btn-filter-content">
+            <el-button
+                type="secondary"
+                class="btn-show-filter mb-3"
+                :class="{ shift: isVisible }"
+                @click="isVisible = !isVisible"
+            >
+                {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
+            </el-button>
+        </div>
+
         <!-- Filtros -->
-        <div class="row mb-3">
+        <div class="row mb-3" v-if="isVisible">
             <div class="col-lg-4 col-md-5 col-sm-12 pb-2">
                 <el-input
                     v-model="filters.q"
@@ -90,6 +102,7 @@ export default {
             },
             loading: false,
             searchTimeout: null,
+            isVisible: false,
         };
     },
     created() {

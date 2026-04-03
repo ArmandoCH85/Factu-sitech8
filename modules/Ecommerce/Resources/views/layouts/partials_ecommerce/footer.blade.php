@@ -288,7 +288,8 @@
                                 </span>
                             </div>
                         </li>
-                    @elseif($information->information_contact_phone)
+                    @endif
+                    @if($information->information_contact_phone)
                         <li>
                             <div class="fci-icon"><i class="ti ti-phone"></i></div>
                             <div class="fci-body">
@@ -316,9 +317,9 @@
                     @endif
                     @if($information->information_contact_address)
                         <li>
-                            <div class="fci-icon"><i class="ti ti-map-pin"></i></div>
+                            <div class="fci-icon"><i class="ti ti-clock"></i></div>
                             <div class="fci-body">
-                                <span class="fci-label">Ubicación</span>
+                                <span class="fci-label">Horario de atención</span>
                                 <span class="fci-value">{{ $information->information_contact_address }}</span>
                             </div>
                         </li>
@@ -326,7 +327,7 @@
                         <li>
                             <div style="text-align: center">
                                 <span class="fci-label">Libro de Reclamaciones</span>
-                                <a class="pt-4" style="display: block" href="/ecommerce/libro-de-reclamaciones"><img src="{{ asset('porto-ecommerce/assets/images/libro-de-reclamaciones.png') }}" style="margin: auto" width="120px" alt="Libro de Reclamaciones"></a>
+                                <a class="pt-4" style="display: block" href="/ecommerce/libro-de-reclamaciones"><img src="{{ asset('porto-ecommerce/assets/images/libro-de-reclamaciones.png') }}" style="margin: auto" width="96px" alt="Libro de Reclamaciones"></a>
                             </div>
                         </li>
                 </ul>

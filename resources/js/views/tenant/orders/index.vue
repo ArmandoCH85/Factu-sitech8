@@ -45,20 +45,17 @@
             </div>
         </div>
         <div class="card tab-content-default row-new mb-0">
-            <!-- <div class="card-header bg-info">
-        <h3 class="my-0">Listado de Pedidos Tienda Virtual</h3>
-      </div> -->
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :status-options="options">
                     <tr slot="heading" width="100%">
                         <!-- <th>#</th> -->
-                        <th>Codigo de Pedido</th>
+                        <th># Pedido</th>
                         <th>Cliente</th>
                         <th class="text-center">Detalle Productos</th>
                         <th class="text-end">Total</th>
                         <th>Fecha Emision</th>
                         <th>Medio Pago</th>
-                        <th>Estatus del Pedido</th>
+                        <th>Estado</th>
                         <th class="text-center">Documento</th>
                         <th class="text-end">Opciones</th>
                     </tr>
@@ -365,7 +362,8 @@ export default {
             document_types: [],
             order_id: null,
             dataSaleNote: {},
-            showDialogSaleNote: false
+            showDialogSaleNote: false,
+            statusFilter: null
         };
     },
     async created() {

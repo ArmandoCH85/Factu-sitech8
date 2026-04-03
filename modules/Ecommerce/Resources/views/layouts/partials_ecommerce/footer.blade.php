@@ -12,7 +12,7 @@
 
     /* ── Footer middle ── */
     .footer-middle {
-        padding: 52px 0 36px;
+        padding: 60px 0;
     }
     .footer-col-title {
         font-size: 13px;
@@ -150,8 +150,8 @@
         <div class="row">
 
             {{-- Columna 1: Logo + Redes Sociales --}}
-            <div class="col-md-3 col-sm-6 mb-5">
-                @php($footerLogo = data_get($company ?? null, 'logo') ?: data_get($information ?? null, 'logo'))
+            <div class="col-md-3 col-sm-6">
+                @php($footerLogo = data_get($company ?? null, 'logo_dark') ?: data_get($company ?? null, 'logo') ?: data_get($information ?? null, 'logo'))
                 <a href="{{ route('tenant.ecommerce.index') }}" class="d-inline-block mb-1">
                     @if($footerLogo)
                         <img src="{{ asset('storage/uploads/logos/'.$footerLogo) }}" alt="{{ $company->name ?? 'Logo' }}" style="max-height: 64px;">
@@ -159,8 +159,14 @@
                         <img src="{{ asset('logo/tulogo.png') }}" alt="Logo" style="max-height: 64px;">
                     @endif
                 </a>
+                @if(!empty($company->trade_name)  && $company->name !== $company->trade_name)
+                    <p class="footer-tagline m-0">{{ $company->trade_name }}</p>
+                @endif
                 @if(!empty($company->name))
-                    <p class="footer-tagline">{{ $company->name }}</p>
+                    <p class="footer-tagline m-0">{{ $company->name }}</p>
+                @endif
+                @if(!empty($company->number))
+                    <p class="footer-tagline m-0 pb-4">RUC: {{ $company->number }}</p>
                 @endif
 
                 <p class="footer-col-title">Síguenos</p>
@@ -190,7 +196,7 @@
             </div>
 
             {{-- Columna 2: Información --}}
-            <div class="col-md-3 col-sm-6 mb-5">
+            <div class="col-md-3 col-sm-6">
                 <p class="footer-col-title">Información</p>
                 <div class="footer-col-divider"></div>
                 <ul class="footer-nav">
@@ -215,6 +221,12 @@
                             </a>
                         </li>
                     @endif
+                        <li>
+                            <a href="{{ route('search.index') }}">
+                                <i class="ti ti-chevron-right"></i> Consulta de Comprobantes Electrónicos
+                            </a>
+                        </li>
+
                     @if(!empty($information->customised_link_one) && !empty($information->title_one_customised_link))
                         <li>
                             <a href="{{ $information->customised_link_one }}">
@@ -240,7 +252,7 @@
             </div>
 
             {{-- Columna 3: Categorías --}}
-            <div class="col-md-3 col-sm-6 mb-5">
+            <div class="col-md-3 col-sm-6">
                 <p class="footer-col-title">Categorías</p>
                 <div class="footer-col-divider"></div>
                 <ul class="footer-nav">
@@ -260,7 +272,7 @@
             </div>
 
             {{-- Columna 4: Contacto & Ayuda --}}
-            <div class="col-md-3 col-sm-6 mb-5">
+            <div class="col-md-3 col-sm-6">
                 <p class="footer-col-title">Contacto &amp; Ayuda</p>
                 <div class="footer-col-divider"></div>
                 <ul class="footer-contact-list">
@@ -311,6 +323,12 @@
                             </div>
                         </li>
                     @endif
+                        <li>
+                            <div style="text-align: center">
+                                <span class="fci-label">Libro de Reclamaciones</span>
+                                <a class="pt-4" style="display: block" href="/ecommerce/libro-de-reclamaciones"><img src="{{ asset('porto-ecommerce/assets/images/libro-de-reclamaciones.png') }}" style="margin: auto" width="120px" alt="Libro de Reclamaciones"></a>
+                            </div>
+                        </li>
                 </ul>
             </div>
 
@@ -566,24 +584,15 @@ function hexToHSL(hex) {
   ];
 }
 
-// Fetch a Laravel
-/*
 fetch('/ecommerce/color-ecommerce')
   .then(response => response.json())
   .then(data => {
-    console.log('Color ecommerce:', data.color);
-
-    // Convertir el HEX recibido a HSL
     const hsl = hexToHSL(data.color);
-
-    // Guardar en variables CSS globales
     document.documentElement.style.setProperty("--primary-h", hsl[0]);
     document.documentElement.style.setProperty("--primary-s", hsl[1]);
     document.documentElement.style.setProperty("--primary-l", hsl[2]);
-
   })
   .catch(error => console.error('Error obteniendo el color:', error));
-*/
 </script>
 
 

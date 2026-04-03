@@ -112,6 +112,26 @@
                           <el-option label="Stock > Stock min" value="safe"></el-option>
                         </el-select>
                     </div>
+                    <div v-if="showStatusFilter" class="col-lg-3 col-md-3 col-sm-12 pb-2 d-flex">
+                        <div class="d-flex align-items-center me-2 text-nowrap">
+                            Estado:
+                        </div>
+                        <el-select
+                            v-model="status_order_filter"
+                            size="small"
+                            clearable
+                            @change="handleStatusOrderChange"
+                            placeholder="Todos"
+                            style="width: 100%"
+                        >
+                            <el-option
+                                v-for="item in statusOptions"
+                                :key="item.id"
+                                :label="item.description"
+                                :value="item.id"
+                            ></el-option>
+                        </el-select>
+                    </div>
                     <div v-if="showWarehouseFilter" class="col-lg-3 col-md-3 col-sm-12 pb-2 d-flex ms-auto">
                         <div class="d-flex align-items-center me-2 text-nowrap">
                             Almacén:
@@ -302,6 +322,14 @@ export default {
             type: Object,
             required: false,
             default: null
+        },
+        extraFilters: {
+            type: Object,
+            default: () => ({})
+        },
+        statusOptions: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
@@ -334,6 +362,7 @@ export default {
             showDisabledValue: 'all',
             warehouse_id: 'all',
             warehouses: [],
+            status_order_filter: null,
         };
     },
     computed: {
@@ -345,6 +374,9 @@ export default {
         },
         showStockFilter() {
             return this.resource === 'inventory' && window.location.pathname === '/inventory';
+        },
+        showStatusFilter() {
+            return this.resource === 'orders';
         }
     },
     created() {
@@ -438,6 +470,9 @@ export default {
         handleStockChange() {
             this.getRecords();
         },
+        handleStatusOrderChange() {
+            this.getRecords();
+        },
         checkScrollShadows() {
             const el = this.$refs.scrollContainer;
             if (!el) return;
@@ -494,6 +529,8 @@ export default {
                 show_disabled: this.showDisabledValue,
                 warehouse_id: this.warehouse_id,
                 stock_filter: this.stock_filter,
+                ...this.extraFilters,
+                status_order_id: this.status_order_filter || undefined,
                 ...this.search
             });
         },
@@ -571,6 +608,12 @@ export default {
         },
         sortDirection(newVal) {
             this.currentSort.direction = newVal;
+        },
+        extraFilters: {
+            handler() {
+                this.getRecords();
+            },
+            deep: true
         }
     }
 };

@@ -1360,17 +1360,10 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                     <path d="M10.01 17h.005" />
                                 </svg>
                                 <span>
-                                    Suscripción <sup
-                                        style="background: #ffc300;padding: 0px 3px;border-radius: 4px;">Beta</sup>
+                                    Suscripción
                                 </span>
                             </a>
                             <ul class="nav nav-children">
-                                <li
-                                    class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
-                                    <a class="nav-link" href="{{ route('tenant.fullsuscription.plans.index') }}">
-                                        Planes
-                                    </a>
-                                </li>
                                 <li
                                     class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'payments')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ route('tenant.fullsuscription.payments.index') }}">
@@ -1381,6 +1374,12 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                     class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'payment_receipt')) ? 'nav-active' : '' }}">
                                     <a class="nav-link" href="{{ route('tenant.fullsuscription.payment_receipt.index') }}">
                                         Recibos de pago
+                                    </a>
+                                </li>
+                                <li
+                                    class="{{ (($firstLevel === 'full_suscription') && ($secondLevel === 'plans')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('tenant.fullsuscription.plans.index') }}">
+                                        Planes
                                     </a>
                                 </li>
                             </ul>

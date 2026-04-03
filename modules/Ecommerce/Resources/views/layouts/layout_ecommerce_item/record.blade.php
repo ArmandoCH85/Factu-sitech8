@@ -63,7 +63,7 @@
     </script>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.svg') }}">
 
     <!-- Plugins CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/bootstrap.min.css') }}">
@@ -86,7 +86,7 @@
 
         @include('ecommerce::layouts.partials_ecommerce.header')
         @include('ecommerce::layouts.partials_ecommerce.header_bottom_sticky')
-        
+
 
 
         <main class="main">

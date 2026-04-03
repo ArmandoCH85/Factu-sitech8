@@ -53,7 +53,7 @@
     @endif
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.svg') }}">
 
     <!-- Plugins CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/bootstrap.min.css') }}">
@@ -75,7 +75,7 @@
             display: none;
         }
     </style>
-    
+
 </head>
 <body>
     <div class="page-wrapper">

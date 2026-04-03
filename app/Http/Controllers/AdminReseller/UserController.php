@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\System\Client;
 use App\Models\System\User;
 use App\Support\ResellerSystemAdminModules;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class UserController extends Controller
 {
@@ -69,16 +72,14 @@ class UserController extends Controller
     {
         $allowed = ResellerSystemAdminModules::allowedKeys();
         $resellerId = (int) auth()->user()->id;
-        $systemUsersConnection = (new User())->getConnectionName();
-        $systemUsersTable = User::systemUsersTable();
 
         $data = $request->validate(
             [
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255', Rule::unique($systemUsersTable, 'email')->connection($systemUsersConnection)],
+                'email' => ['required', 'email', 'max:255', $this->systemUserUniqueEmailRule()],
                 'password' => ['required', 'string', 'min:6', 'confirmed'],
                 'status' => ['nullable', 'boolean'],
-                'can_create_clients' => ['boolean'],
+                'can_create_clients' => ['nullable', 'boolean'],
                 'module_permissions' => ['present', 'array'],
                 'module_permissions.*' => ['string', Rule::in($allowed)],
                 'client_ids' => ['present', 'array'],
@@ -92,25 +93,33 @@ class UserController extends Controller
 
         $this->assertClientIdsExistInSystem($data['client_ids']);
 
-        $token = $this->generateUniqueApiToken();
+        try {
+            $token = $this->generateUniqueApiToken();
 
-        $isFirstAdministrator = User::where('reseller_id', $resellerId)->count() === 0;
+            $isFirstAdministrator = User::query()
+                ->where('reseller_id', $resellerId)
+                ->count() === 0;
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'api_token' => $token,
-            'reseller_id' => $resellerId,
-            'status' => $data['status'] ?? true,
-            'can_create_clients' => $data['can_create_clients'] ?? false,
-            'is_master' => $isFirstAdministrator,
-            'module_permissions' => ResellerSystemAdminModules::normalizePermissions($data['module_permissions']),
-        ]);
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'api_token' => $token,
+                'reseller_id' => $resellerId,
+                'status' => $data['status'] ?? true,
+                'can_create_clients' => $data['can_create_clients'] ?? false,
+                'is_master' => $isFirstAdministrator,
+                'module_permissions' => ResellerSystemAdminModules::normalizePermissions($data['module_permissions']),
+            ]);
 
-        $user->assignedClients()->sync($data['client_ids']);
+            $user->assignedClients()->sync($data['client_ids']);
 
-        $user->setAttribute('assigned_client_ids', $data['client_ids']);
+            $user->setAttribute('assigned_client_ids', $data['client_ids']);
+        } catch (Throwable $e) {
+            report($e);
+
+            return $this->jsonAdministratorError($e);
+        }
 
         return response()->json([
             'success' => true,
@@ -126,48 +135,61 @@ class UserController extends Controller
         }
 
         $allowed = ResellerSystemAdminModules::allowedKeys();
-        $resellerId = (int) auth()->user()->id;
-        $systemUsersConnection = (new User())->getConnectionName();
-        $systemUsersTable = User::systemUsersTable();
 
-        if (!$request->filled('password')) {
-            $request->merge(['password' => null]);
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', $this->systemUserUniqueEmailRule($administrator)],
+            'status' => ['required', 'boolean'],
+            'can_create_clients' => ['nullable', 'boolean'],
+            'module_permissions' => ['present', 'array'],
+            'module_permissions.*' => ['string', Rule::in($allowed)],
+            'client_ids' => ['present', 'array'],
+            'client_ids.*' => ['integer'],
+        ];
+
+        /** Switches Estado / Crear cliente no envían password; el formulario de edición sí. */
+        if ($request->filled('password')) {
+            $rules['password'] = ['required', 'string', 'min:6', 'confirmed'];
         }
 
-        $data = $request->validate(
-            [
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255', Rule::unique($systemUsersTable, 'email')->connection($systemUsersConnection)->ignore($administrator->id)],
-                'password' => ['nullable', 'string', 'min:6', 'confirmed'],
-                'status' => ['required', 'boolean'],
-                'can_create_clients' => ['boolean'],
-                'module_permissions' => ['present', 'array'],
-                'module_permissions.*' => ['string', Rule::in($allowed)],
-                'client_ids' => ['present', 'array'],
-                'client_ids.*' => ['integer'],
-            ],
-            [
-                'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
-                'password.confirmed' => 'Las contraseñas no coinciden.',
-            ]
-        );
+        try {
+            $data = $request->validate(
+                $rules,
+                [
+                    'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+                    'password.confirmed' => 'Las contraseñas no coinciden.',
+                ]
+            );
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            report($e);
+
+            return $this->jsonAdministratorError($e);
+        }
 
         $this->assertClientIdsExistInSystem($data['client_ids']);
 
-        $administrator->name = $data['name'];
-        $administrator->email = $data['email'];
-        $administrator->status = $data['status'];
-        $administrator->can_create_clients = $data['can_create_clients'] ?? false;
-        $administrator->module_permissions = ResellerSystemAdminModules::normalizePermissions($data['module_permissions']);
+        try {
+            $administrator->name = $data['name'];
+            $administrator->email = $data['email'];
+            $administrator->status = $data['status'];
+            $administrator->can_create_clients = $data['can_create_clients'] ?? false;
+            $administrator->module_permissions = ResellerSystemAdminModules::normalizePermissions($data['module_permissions']);
 
-        if (!empty($data['password'])) {
-            $administrator->password = Hash::make($data['password']);
+            if (!empty($data['password'] ?? null)) {
+                $administrator->password = Hash::make($data['password']);
+            }
+
+            $administrator->save();
+
+            $administrator->assignedClients()->sync($data['client_ids']);
+            $administrator->setAttribute('assigned_client_ids', $data['client_ids']);
+        } catch (Throwable $e) {
+            report($e);
+
+            return $this->jsonAdministratorError($e);
         }
-
-        $administrator->save();
-
-        $administrator->assignedClients()->sync($data['client_ids']);
-        $administrator->setAttribute('assigned_client_ids', $data['client_ids']);
 
         return response()->json([
             'success' => true,
@@ -219,5 +241,50 @@ class UserController extends Controller
         } while (User::where('api_token', $token)->exists());
 
         return $token;
+    }
+
+    /**
+     * unique con conexión y tabla física del modelo System\User (users vs system_users).
+     * Rule::unique(Model::class) serializa "conexión.tabla" para el verificador de Laravel;
+     * no usar ->connection() sobre Unique (no existe en el framework).
+     */
+    protected function systemUserUniqueEmailRule(?User $ignoreUser = null): Unique
+    {
+        $rule = Rule::unique(User::class, 'email');
+
+        if ($ignoreUser !== null) {
+            $rule->ignore($ignoreUser->id, $ignoreUser->getKeyName());
+        }
+
+        return $rule;
+    }
+
+    /**
+     * Respuesta JSON con el mensaje real de la excepción (diagnóstico de tabla/columna/SQL).
+     */
+    protected function jsonAdministratorError(Throwable $e, int $status = 500)
+    {
+        $payload = [
+            'success' => false,
+            'message' => $e->getMessage(),
+        ];
+
+        if ($e instanceof QueryException) {
+            $payload['error'] = 'database';
+            if (config('app.debug')) {
+                $payload['sql'] = $e->getSql();
+                $payload['bindings'] = $e->getBindings();
+            }
+        } else {
+            $payload['error'] = class_basename($e);
+        }
+
+        if (config('app.debug')) {
+            $payload['exception'] = $e::class;
+            $payload['file'] = $e->getFile();
+            $payload['line'] = $e->getLine();
+        }
+
+        return response()->json($payload, $status);
     }
 }

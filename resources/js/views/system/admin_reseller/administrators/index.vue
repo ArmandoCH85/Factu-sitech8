@@ -441,7 +441,11 @@ export default {
                         this.errors = (d && d.errors) ? d.errors : d || {};
                         return;
                     }
-                    this.$message.error('No se pudo guardar el registro.');
+                    const d = error.response && error.response.data;
+                    const msg =
+                        (d && (d.message || (typeof d === 'string' ? d : ''))) ||
+                        'No se pudo guardar el registro.';
+                    this.$message.error(msg);
                 })
                 .finally(() => {
                     this.loadingSubmit = false;
@@ -460,9 +464,12 @@ export default {
                 .then((response) => {
                     this.$message.success(response.data.message);
                 })
-                .catch(() => {
+                .catch((error) => {
                     row.status = !row.status;
-                    this.$message.error('No se pudo actualizar el estado.');
+                    const d = error.response && error.response.data;
+                    const msg =
+                        (d && d.message) || 'No se pudo actualizar el estado.';
+                    this.$message.error(msg);
                 });
         },
         changeCreateClientPermission(row) {
@@ -478,9 +485,12 @@ export default {
                 .then(() => {
                     this.$message.success('Permiso actualizado correctamente.');
                 })
-                .catch(() => {
+                .catch((error) => {
                     row.can_create_clients = !row.can_create_clients;
-                    this.$message.error('No se pudo actualizar el permiso.');
+                    const d = error.response && error.response.data;
+                    const msg =
+                        (d && d.message) || 'No se pudo actualizar el permiso.';
+                    this.$message.error(msg);
                 });
         },
         remove(row) {

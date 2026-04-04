@@ -148,7 +148,12 @@
                                             </div>
                                         </template>
                                     </el-select>
-                                    <span class="btn-add-new" @click.prevent="showDialogNewPerson = true" title="Agregar nuevo cliente">
+                                    <template v-if="form.customer_id">
+                                        <span class="btn-add-new btn-add-new-invoice" style="right: 40px;" @click.prevent="showDialogNewPerson = true; editPerson = true" title="Editar cliente">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+                                        </span>
+                                    </template>
+                                    <span class="btn-add-new" @click.prevent="showDialogNewPerson = true; editPerson = false" title="Agregar nuevo cliente">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                                     </span>
                                     <small
@@ -1579,6 +1584,7 @@
             :external="true"
             :input_person="personFormInput"
             :document_type_id="form.document_type_id"
+            :recordId="editPerson ? form.customer_id : null"
         ></person-form>
 
         <quotation-options
@@ -1708,6 +1714,7 @@ export default {
     mixins: [functions, exchangeRate, editableRowItems, fnItemSearchQuickSale],
     data() {
         return {
+            editPerson: false,
             sellers: [],
             input_person: {},
             resource: "quotations",

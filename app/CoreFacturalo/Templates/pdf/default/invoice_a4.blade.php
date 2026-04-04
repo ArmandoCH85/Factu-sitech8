@@ -85,12 +85,12 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     <div class="company_logo_box">
                         <img
                             src="data:{{ mime_content_type(public_path($logo)) }};base64, {{ base64_encode(file_get_contents(public_path($logo))) }}"
-                            alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
+                            alt="{{ \App\CoreFacturalo\Helpers\CompanyDocumentDisplay::logoAlt($company) }}" class="company_logo" style="max-width: 150px;">
                     </div>
                 </td>
                 <td width="50%" class="pl-3 text-center">
                     <div>
-                        <h4>{{ $company->name }}</h4>
+                        @include('pdf.partials.company_document_header_names')
                         <h5>{{ 'RUC '.$company->number }}</h5>
                         <h6 style="text-transform: uppercase;">
                             {{ ($establishment->address !== '-') ? $establishment->address : '' }}
@@ -119,7 +119,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
             @else
                 <td colspan="2" width="70%" class="pl-1 text-left">
                     <div>
-                        <h4>{{ $company->name }}</h4>
+                        @include('pdf.partials.company_document_header_names')
                         <h5>{{ 'RUCs '.$company->number }}</h5>
                         <h6 style="text-transform: uppercase;">
                             {{ ($establishment->address !== '-') ? $establishment->address : '' }}

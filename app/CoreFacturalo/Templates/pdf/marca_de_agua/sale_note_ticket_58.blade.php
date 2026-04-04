@@ -21,7 +21,7 @@
 
 @if($company->logo)
     <div class="text-center company_logo_box pt-5">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo_ticket contain">
+        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{ \App\CoreFacturalo\Helpers\CompanyDocumentDisplay::logoAlt($company) }}" class="company_logo_ticket contain">
     </div>
 {{--@else--}}
     {{--<div class="text-center company_logo_box pt-5">--}}
@@ -30,7 +30,7 @@
 @endif
 <table class="full-width">
     <tr>
-        <td class="text-center"><h4>{{ $company->name }}</h4></td>
+        <td class="text-center">@include('pdf.partials.company_document_header_names')</td>
     </tr>
     <tr>
         <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>

@@ -23,10 +23,17 @@
     , informamos que su comprobante electrónico ha sido emitido exitosamente.</p>
 <p>Los datos de su comprobante electrónico son:</p>
 @php
+    use App\CoreFacturalo\Helpers\CompanyDocumentDisplay as EmailDocCompany;
+
     $establishment = App\Models\Tenant\Establishment::find($document->establishment_id);
 @endphp
 <ul>
-    <li>Razon social: {{ $company->name }}</li>
+    @if(EmailDocCompany::namesAreSame($company))
+    <li>Razón social: {{ EmailDocCompany::commercialLine($company) }}</li>
+    @else
+    <li>Nombre comercial: {{ EmailDocCompany::commercialLine($company) }}</li>
+    <li>Razón social: {{ $company->name }}</li>
+    @endif
     <li>Teléfono: {{ $establishment->telephone }}</li>
 {{--    <li>Tipo de comprobante: {{ $document->document_type->description }}</li>--}}
     <li>Fecha de emisión: {{ $document->date_of_issue->format('d/m/Y') }}</li>

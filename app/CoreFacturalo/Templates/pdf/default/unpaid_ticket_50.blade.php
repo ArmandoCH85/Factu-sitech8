@@ -25,7 +25,7 @@
     </tr>
     <tr>
         <td class="text-center text-uppercase">
-            {{ $company->name }}<br>
+            @include('pdf.partials.company_document_header_names_plain')<br>
             {{ 'RUC '.$company->number }}
         </td>
     </tr>

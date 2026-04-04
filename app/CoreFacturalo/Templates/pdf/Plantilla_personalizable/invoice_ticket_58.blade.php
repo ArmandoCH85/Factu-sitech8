@@ -64,14 +64,14 @@
                 <div class="text-center company_logo_box">
                     <img
                         src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}"
-                        alt="{{$company->name}}" class="company_logo" style="max-width: 60%; margin-left: 20%;">
+                        alt="{{ \App\CoreFacturalo\Helpers\CompanyDocumentDisplay::logoAlt($company) }}" class="company_logo" style="max-width: 60%; margin-left: 20%;">
                 </div>
             @endif
         </td>
     </tr>
     <tr>
         <td class="text-center text-uppercase">
-            {{ $company->name }}<br>
+            @include('pdf.partials.company_document_header_names_plain')<br>
             {{ 'RUC '.$company->number }}
         </td>
     </tr>

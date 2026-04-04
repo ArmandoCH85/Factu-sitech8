@@ -13,7 +13,7 @@ class WaiterController extends Controller
     public function records()
     {
         $role_mozo = RestaurantRole::where('code', 'MOZO')->first();
-        $records = User::where('restaurant_role_id', $role_mozo ? $role_mozo->id : null)->get()->transform(function ($row){
+        $records = User::where('restaurant_role_id', $role_mozo ? $role_mozo->id : null)->orderAuthenticatedFirst()->get()->transform(function ($row){
             return [
                 'id' => $row->id,
                 'name' => $row->name,
@@ -67,7 +67,7 @@ class WaiterController extends Controller
     public function listRecords()
     {
         $role_mozo = RestaurantRole::where('code', 'MOZO')->first();
-        $records = User::where('restaurant_role_id', $role_mozo ? $role_mozo->id : null)->get()->transform(function ($row){
+        $records = User::where('restaurant_role_id', $role_mozo ? $role_mozo->id : null)->orderAuthenticatedFirst()->get()->transform(function ($row){
             return [
                 'name' => $row->name,
                 'email' => $row->email,

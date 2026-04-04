@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -220,6 +221,18 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
 
         return $this->canAccessSystemModule($firstPathSegment);
+    } 
+
+    /**
+     * Ordena con el administrador autenticado (guard admin) primero y el resto por id ascendente.
+     */
+    public function scopeOrderAuthenticatedFirst(Builder $query): Builder
+    {
+        if ($id = auth('admin')->id()) {
+            $query->orderByRaw('id = ? DESC', [$id]);
+        }
+
+        return $query->orderBy('id');
     }
 
-}
+} 

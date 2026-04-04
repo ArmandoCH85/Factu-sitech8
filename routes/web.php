@@ -990,6 +990,7 @@ if ($hostname) {
             //Users
             Route::get('users/create', 'System\UserController@create')->name('system.users.create');
             Route::get('users/record', 'System\UserController@record');
+            Route::get('users/records', 'System\UserController@records');
             Route::post('users', 'System\UserController@store');
 
             Route::get('services/ruc/{number}', 'System\ServiceController@ruc');

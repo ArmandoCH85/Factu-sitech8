@@ -29,7 +29,7 @@ class ReportCashController extends Controller
             ['id' => '03', 'description' => 'NOTAS DE VENTA'],
         ];
 
-        $users = User::orderAuthenticatedFirst()->get(['id','name']);
+        $users = User::get(['id','name']);
         
         return compact('document_types','users');
     }

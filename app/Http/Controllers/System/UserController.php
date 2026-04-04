@@ -90,11 +90,4 @@ class UserController extends Controller
         return $user_resource->phone;
     }
 
-    public function records()
-    {
-        $records = User::orderAuthenticatedFirst()->get();
-
-        return UserResource::collection($records);
-    }
-
 }

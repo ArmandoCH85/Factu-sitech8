@@ -34,8 +34,7 @@ class UserController extends Controller
         $resellerId = (int) auth()->user()->id;
 
         $users = User::where('reseller_id', $resellerId)
-            ->orderByDesc('is_master')
-            ->orderByDesc('id')
+            ->orderBy('id')
             ->get();
 
         $assignableClients = Client::withoutGlobalScopes()
@@ -57,7 +56,6 @@ class UserController extends Controller
 
         foreach ($users as $user) {
             $user->setAttribute('assigned_client_ids', $clientIdsByAdmin[(int) $user->id] ?? []);
-            $user->setAttribute('is_master', $user->isResellerSystemMasterAdministrator());
         }
 
         return response()->json([

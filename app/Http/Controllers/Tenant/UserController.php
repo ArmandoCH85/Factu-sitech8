@@ -268,7 +268,7 @@ class UserController extends Controller
 
     public function records()
     {
-        $records = User::orderAuthenticatedFirst()->get();
+        $records = User::all();
 
         return new UserCollection($records);
     }

@@ -46,7 +46,7 @@ class PendingAccountCommissionController extends Controller
 
     public function tables()
     {
-        $users = User::orderAuthenticatedFirst()->get(['id', 'name']);
+        $users = User::get(['id', 'name']);
         return compact('users');
     }
 

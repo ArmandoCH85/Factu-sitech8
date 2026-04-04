@@ -1129,18 +1129,6 @@ $withEstablishment = true){
         ]);
     }
 
-    /**
-     * Ordena con el usuario autenticado (guard web / tenant) primero y el resto por id ascendente.
-     */
-    public function scopeOrderAuthenticatedFirst(Builder $query): Builder
-    {
-        if ($id = auth()->id()) {
-            $query->orderByRaw('id = ? DESC', [$id]);
-        }
-
-        return $query->orderBy('id');
-    }
-
         
     /**
      * 

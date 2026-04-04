@@ -17,9 +17,6 @@ class AddIsMasterToSystemUsersTable extends Migration
                 $blueprint->boolean('is_master')->default(false)->after('can_create_clients');
             }
         });
-
-        User::whereIn('email', User::RESELLER_SYSTEM_MASTER_ADMIN_EMAILS)
-            ->update(['is_master' => true]);
     }
 
     public function down()

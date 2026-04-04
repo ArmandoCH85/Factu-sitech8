@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -26,15 +25,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     // CanResetPassword: Activa las funciones internas de resetear clave.
     // Notifiable: Permite que este modelo pueda enviar emails.
     use Authenticatable, Authorizable, UsesSystemConnection, CanResetPassword, Notifiable;
-
-    /**
-     * Correos del administrador maestro por entorno (nube / local).
-     * Debe coincidir con el relleno de la migración is_master.
-     */
-    public const RESELLER_SYSTEM_MASTER_ADMIN_EMAILS = [
-        'admin@senatiangel123art.uio.la',
-        'admin@gmail.com',
-    ];
 
     /**
      * Nombre físico de la tabla en la conexión system.
@@ -134,35 +124,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
-     * Subadministrador reseller marcado como maestro: mismo acceso a módulos que el reseller.
+     * Subadministrador reseller marcado como maestro en base de datos (columna is_master).
      */
     public function isResellerSystemMasterAdministrator(): bool
     {
-        if ($this->reseller_id === null) {
-            return false;
-        }
-
-        if ((bool) $this->is_master) {
-            return true;
-        }
-
-        return $this->hasResellerSystemMasterAdminEmail();
-    }
-
-    /**
-     * Indica si el correo coincide con el administrador maestro configurado por entorno.
-     */
-    public function hasResellerSystemMasterAdminEmail(): bool
-    {
-        $email = (string) $this->email;
-
-        foreach (self::RESELLER_SYSTEM_MASTER_ADMIN_EMAILS as $masterEmail) {
-            if (strcasecmp($email, $masterEmail) === 0) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->reseller_id !== null && (bool) $this->is_master;
     }
 
     /**
@@ -221,18 +187,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
 
         return $this->canAccessSystemModule($firstPathSegment);
-    } 
-
-    /**
-     * Ordena con el administrador autenticado (guard admin) primero y el resto por id ascendente.
-     */
-    public function scopeOrderAuthenticatedFirst(Builder $query): Builder
-    {
-        if ($id = auth('admin')->id()) {
-            $query->orderByRaw('id = ? DESC', [$id]);
-        }
-
-        return $query->orderBy('id');
     }
 
 } 

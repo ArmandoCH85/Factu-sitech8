@@ -17,6 +17,7 @@ export default defineConfig({
       input: [
         'resources/js/system.js',
         'resources/js/app.js',
+        'modules/ClaimsBook/Resources/assets/js/app.js',
         // 'resources/sass/style.scss',
         // 'resources/sass/auth.scss'
       ],
@@ -60,6 +61,7 @@ export default defineConfig({
       '@viewsModuleQrChatBuho': path.resolve(__dirname, 'modules/QrChatBuho/Resources/assets/js/views'),
       '@viewsModuleQrApi' : path.resolve(__dirname, 'modules/QrApi/Resources/assets/js/views'),
       '@viewsModuleCustomField' : path.resolve(__dirname, 'modules/CustomField/Resources/assets/js'),
+      '@viewsModuleClaimsBook' : path.resolve(__dirname, 'modules/ClaimsBook/Resources/assets/js'),
       'vue': path.resolve(__dirname, 'node_modules/vue/dist/vue.esm.js'),
     },
   },

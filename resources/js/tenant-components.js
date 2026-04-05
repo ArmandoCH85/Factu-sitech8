@@ -375,6 +375,9 @@ import EmptyState from './components/EmptyState.vue'
 import TenantItemAffectations from './views/tenant/item_affectations/index.vue';
 import TenantcustomFieldsIndex from '@viewsModuleCustomField/custom_fields/index.vue';
 
+import TenantClaimsBookIndex from '@viewsModuleClaimsBook/views/index.vue'
+import TenantClaimsBookForm from '@viewsModuleClaimsBook/views/claim_form.vue'
+
 //componente agregado para issue #93 añadir icono cuando no hay datos
 Vue.component('empty-state', EmptyState);
 // Sire
@@ -755,3 +758,7 @@ Vue.component('tenant-system-activity-logs-transactions-index', TenantSystemActi
 Vue.component('tenant-remember-change-password', TenantRememberChangePassword)
 Vue.component('tenant-report-pending-account-commissions-index', TenantReportPendingAccountCommissionsIndex)
 Vue.component('tenant-item-editor-tag', TenatnEditorTag)
+
+// Libro de Reclamaciones
+Vue.component('tenant-claims-book-index',          TenantClaimsBookIndex)
+Vue.component('tenant-claims-book-form',           TenantClaimsBookForm)

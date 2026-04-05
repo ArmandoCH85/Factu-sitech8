@@ -33,8 +33,7 @@
 
             <p class="cem-note">
                 <i class="el-icon-info"></i>
-                El script detecta automáticamente el dominio del tenant; no necesitas configurar nada más.
-                Puedes ajustar el alto del iframe modificando la variable <code>height</code> dentro del script si lo necesitas.
+                El script detecta automáticamente el subdominio; no necesitas configurar nada más.
             </p>
         </div>
 

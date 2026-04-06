@@ -60,7 +60,7 @@
     "css": [
       "assets/app-be1949df.css"
     ],
-    "file": "assets/app-3ac55a3c.js",
+    "file": "assets/app-a1dd6686.js",
     "imports": [
       "_vue-clipboard-5020e07f.js",
       "__plugin-vue2_normalizer-cce4e3e6.js",
@@ -77,7 +77,7 @@
     "css": [
       "assets/system-62d3f1aa.css"
     ],
-    "file": "assets/system-19c292e6.js",
+    "file": "assets/system-89cf84ae.js",
     "imports": [
       "_vue-clipboard-5020e07f.js",
       "__plugin-vue2_normalizer-cce4e3e6.js"

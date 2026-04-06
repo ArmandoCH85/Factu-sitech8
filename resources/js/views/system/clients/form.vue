@@ -241,63 +241,62 @@
                             </small>
                         </div>
                     </div>
-                    <div class="row">
-                        <hr class="mt-5 mb-4">
-                        <h4>
-                            Información de contacto
-                        </h4>
-                        <div class="col-md-4">
-                            <div :class="{'has-danger': errors.client_name}"
-                                    class="form-group">
-                                <label class="control-label">
-                                    Nombre del cliente
-                                </label>
-                                <el-input
-                                    v-model="form.client_name">
-                                </el-input>
-                                <small
-                                    v-if="errors.client_name"
-                                    class="form-control-feedback"
-                                    v-text="errors.client_name[0]">
-                                </small>
-                            </div>
+                    <h4 class="mt-4">
+                        Información de contacto
+                    </h4>
+                    <div class="col-md-4">
+                        <div :class="{'has-danger': errors.client_name}"
+                                class="form-group">
+                            <label class="control-label">
+                                Nombre del cliente
+                            </label>
+                            <el-input
+                                v-model="form.client_name">
+                            </el-input>
+                            <small
+                                v-if="errors.client_name"
+                                class="form-control-feedback"
+                                v-text="errors.client_name[0]">
+                            </small>
                         </div>
-                        <div class="col-md-4">
-                            <div :class="{'has-danger': errors.contact_email}"
-                                    class="form-group">
-                                <label class="control-label">
-                                    Correo de contacto
-                                </label>
-                                <el-input
-                                    v-model="form.contact_email">
-                                </el-input>
-                                <small
-                                    v-if="errors.contact_email"
-                                    class="form-control-feedback"
-                                    v-text="errors.contact_email[0]">
-                                </small>
-                            </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div :class="{'has-danger': errors.contact_email}"
+                                class="form-group">
+                            <label class="control-label">
+                                Correo de contacto
+                            </label>
+                            <el-input
+                                v-model="form.contact_email">
+                            </el-input>
+                            <small
+                                v-if="errors.contact_email"
+                                class="form-control-feedback"
+                                v-text="errors.contact_email[0]">
+                            </small>
                         </div>
-                        <div class="col-md-4">
-                            <div :class="{'has-danger': errors.phone_ws}"
-                                    class="form-group">
-                                <label class="control-label">
-                                    Nümero de WhatsApp
-                                </label>
-                                <el-input
-                                    v-model="form.phone_ws">
-                                </el-input>
-                                <small
-                                    v-if="errors.phone_ws"
-                                    class="form-control-feedback"
-                                    v-text="errors.phone_ws[0]">
-                                </small>
-                            </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div :class="{'has-danger': errors.phone_ws}"
+                                class="form-group">
+                            <label class="control-label">
+                                Nümero de WhatsApp
+                            </label>
+                            <el-input
+                                v-model="form.phone_ws">
+                            </el-input>
+                            <small
+                                v-if="errors.phone_ws"
+                                class="form-control-feedback"
+                                v-text="errors.phone_ws[0]">
+                            </small>
                         </div>
                     </div>
                 </div>
+                <div class="row">
                 <el-collapse
-                    v-model="collapse">
+                    v-model="collapse"
+                    class="border-0">
                     <el-collapse-item
                         name="1"
                         title="Módulos">
@@ -671,6 +670,7 @@
                         </div>
                     </el-collapse-item>
                 </el-collapse>
+                </div>
 
                 <div class="row">
                     <div class="col-md-6 center-el-checkbox mt-4">
@@ -684,7 +684,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-actions text-end pt-2">
+            <div class="form-actions text-end pt-2 px-2">
                 <el-button
                     class="second-buton"
                     @click.prevent="close()">

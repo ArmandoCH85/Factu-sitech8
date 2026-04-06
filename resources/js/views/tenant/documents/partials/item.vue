@@ -580,7 +580,8 @@
                                                         v-show="p.is_active"
                                                         :key="p.id"
                                                         size="small"
-                                                        @click.prevent="selectedPrice(row, p.price)"
+                                                        :type="isSelectedUnitPrice(row, p) ? 'primary' : 'default'"
+                                                        @click.prevent="selectedPrice(row, p)"
                                                     >{{ p.label }} - {{ p.price }}</el-button>
                                                 </div>
                                                 <div v-else class="text-muted">
@@ -1025,6 +1026,7 @@ export default {
     mixins: [checkPermissionEditPrices],
     data() {
         return {
+            selected_price_id: null,
             showDiscounts: true,
             extra_temp: undefined,
             can_add_new_product: false,
@@ -1823,7 +1825,7 @@ export default {
                         const foundPrice = first_list.prices.find(p => p.price_label_id === price_label_id);
 
                         if (foundPrice && foundPrice.price) {
-                            this.form.unit_price_value = foundPrice.price;
+                            this.selectedPrice(first_list, foundPrice);
                         }
                     }
                 }
@@ -2198,17 +2200,20 @@ export default {
             }
             return false;
         },
-        selectedPrice(row, amount = false) {
-            if (this.isSelectedPrice(row) && !amount) {
+        selectedPrice(row, price = null) {
+            if (this.isSelectedPrice(row) && !price) {
                 this.form.item_unit_type_id = null;
                 this.item_unit_type = {};
                 this.form.unit_price = this.form.item.sale_unit_price;
                 this.form.unit_price_value = this.form.item.sale_unit_price;
                 this.form.item.unit_type_id = this.form.item.original_unit_type_id;
+                this.selected_price_id = null;
             } else {
                 let value = 0;
-                if (amount) {
-                    value = amount;
+
+                if (price) {
+                    value = price.price;
+                    this.selected_price_id = price.id;
                 } else {
                     switch (row.price_default) {
                         case 1:
@@ -2221,6 +2226,7 @@ export default {
                             value = row.price3;
                             break;
                     }
+                    this.selected_price_id = null;
                 }
 
                 this.form.item_unit_type_id = row.id;
@@ -2231,6 +2237,10 @@ export default {
             }
 
             this.calculateQuantity();
+        },
+        isSelectedUnitPrice(row, price) {
+            return String(this.form.item_unit_type_id) === String(row.id) &&
+                String(this.selected_price_id) === String(price.id);
         },
         addRowLotGroup(id) {
             this.form.IdLoteSelected = id;

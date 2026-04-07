@@ -561,7 +561,7 @@
                         // Verificar establecimientos
                         $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
                         $showMultiUser = $multiUserCount > 1 && config('configuration.multi_user_enabled');
-                        $showEstablishments = auth()->user()->type == 'admin' && count($establishments) > 1;
+                        $showEstablishments = false;
                         $configuration = App\Models\Tenant\Configuration::first();
                         $visual = $configuration ? $configuration->visual : null;
                         $showInHeader = true;

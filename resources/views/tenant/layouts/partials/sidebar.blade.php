@@ -1784,7 +1784,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
             selector.disabled = true;
         }
 
-        fetch('/hotels/reception/change-user-establishment', {
+        fetch('/establishments/change-user-establishment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

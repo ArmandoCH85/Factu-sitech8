@@ -593,12 +593,24 @@
                                 $showBranchSelector = true;
                             @endphp
                             @if($showEstablishments)
-                               <tenant-hotel-sucursale
-                                id="header-establishment-selector"
-                                :establishments='@json($establishments)'
-                                :current_establishment={{ $current }}
-                                style="display: {{ $showInHeader ? 'block' : 'none !important' }};"
-                               ></tenant-hotel-sucursale>
+                               <div id="header-establishment-selector" style="display: {{ $showInHeader ? 'block' : 'none !important' }};">
+                                   <label class="control-label mt-0">Cambiar sucursal:</label>
+                                   <select
+                                       class="el-input__inner input-select-establishment"
+                                       name="establishment_selector_header"
+                                       id="header-dropdown-establishment-selector"
+                                       onchange="changeSidebarEstablishment(this.value)"
+                                   >
+                                       @foreach($establishments as $establishment)
+                                           <option
+                                               value="{{ $establishment->id }}"
+                                               {{ $establishment->id == $current ? 'selected' : '' }}
+                                           >
+                                               {{ $establishment->description }}
+                                           </option>
+                                       @endforeach
+                                   </select>
+                               </div>
                             @endif
                         </li>
                     @endif

@@ -174,6 +174,7 @@ if ($hostname) {
             Route::get('establishments/tables', 'Tenant\EstablishmentController@tables');
             Route::get('establishments/record/{establishment}', 'Tenant\EstablishmentController@record');
             Route::post('establishments', 'Tenant\EstablishmentController@store');
+            Route::post('establishments/change-user-establishment', 'Tenant\EstablishmentController@changeUserEstablishment');
             Route::get('establishments/records', 'Tenant\EstablishmentController@records');
             Route::delete('establishments/{establishment}', 'Tenant\EstablishmentController@destroy');
             Route::get('establishments/getEstablishmentActive', 'Tenant\EstablishmentController@getEstablishmentActive');

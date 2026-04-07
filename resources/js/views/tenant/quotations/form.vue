@@ -108,7 +108,11 @@
                                     <label
                                         class="control-label font-weight-bold"
                                     >
-                                        Cliente
+                                        <el-badge type="success" :value="getCustomer.person_type" class="item">
+                                            <span>
+                                                Cliente
+                                            </span>
+                                        </el-badge>
                                         <!-- <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a> -->
                                     </label>
                                     <el-select
@@ -1840,6 +1844,17 @@ export default {
         await this.createQuotationFromSO();
     },
     computed: {
+        getCustomer(){
+            const customer = this.customers.find(
+                c => String(c.id) === String(this.form.customer_id)
+            );
+            console.log('getCustomer', {
+                customer_id: this.form.customer_id,
+                customers: this.customers,
+                customer
+            });
+            return customer || {};
+        },
         getCurrentLogo() {
             const isDarkMode = document.documentElement.classList.contains('dark');
         
@@ -2070,16 +2085,20 @@ export default {
             let customer = _.find(this.customers, {
                 id: this.form.customer_id
             });
-            this.customer_addresses = customer.addresses;
+            this.customer_addresses = customer.addresses || [];
 
             if (customer.address) {
-                if (_.find(this.customer_addresses, { id: null })) return;
-
-                this.customer_addresses.unshift({
-                    id: null,
-                    address: customer.address
-                });
+                if (!_.find(this.customer_addresses, { id: null })) {
+                    this.customer_addresses.unshift({
+                        id: null,
+                        address: customer.address
+                    });
+                }
             }
+
+            this.selected_option_price = customer?.price_label_id
+                ? `price${customer.price_label_id}`
+                : 1;
         },
         changeTermsCondition() {
             if (this.form.active_terms_condition) {
@@ -2548,6 +2567,13 @@ export default {
                 .then(response => {
                     this.customers = response.data.customers;
                     this.form.customer_id = customer_id;
+                    let customer = this.customers.find(
+                        c => String(c.id) === String(customer_id)
+                    );
+
+                    this.selected_option_price = customer?.price_label_id
+                        ? `price${customer.price_label_id}`
+                        : 1;
                 });
         },
         setDescriptionOfItem(item) {

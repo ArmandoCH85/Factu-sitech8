@@ -121,7 +121,7 @@
                                     <th class="text-end font-weight-bold">Cantidad</th>
                                     <th class="text-end font-weight-bold">Valor Unitario</th>
                                     <th class="text-end font-weight-bold">Total</th>
-                                    <th class="font-weight-bold">Aplicar en periodo</th>
+                                    <th v-if="fakeForm.items && fakeForm.items.length > 1" class="font-weight-bold">Aplicar en periodo</th>
                                     <th></th>
                                 </tr>
                                 </thead>
@@ -141,7 +141,7 @@
                                         {{ row.total_value }}
                                     </td>
                                     <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
-                                    <td>
+                                    <td v-if="fakeForm.items && fakeForm.items.length > 1">
                                         <el-select
                                             v-model="row.apply_in_period"
                                             placeholder="Aplicar en"
@@ -181,8 +181,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div v-if="fakeForm.items && fakeForm.items.length > 1 && !fakeForm.items.some(i => i.apply_in_period === 'all')" class="alert alert-warning py-1 px-2 mt-2 mb-0">
+                            Al menos un producto debe tener seleccionada la opción <strong>"Cobrar en todos los periodos"</strong>.
+                        </div>
                         <div class="row">
-                            <div class="col-12  text-center">
+                            <div class="col-12 text-center mt-2">
                                 <div class="form-group">
                                     <button class="btn waves-effect waves-light btn-primary btn-sm" type="button" @click="clickAddItem">+ Agregar Producto
                                     </button>
@@ -426,6 +429,15 @@ export default {
 
         submit() {
             this.loading_submit = true
+            // Validar que al menos 1 producto tenga 'Cobrar en todos los periodos' cuando hay más de 1
+            if (this.fakeForm.items && this.fakeForm.items.length > 1) {
+                const hasAll = this.fakeForm.items.some(item => item.apply_in_period === 'all');
+                if (!hasAll) {
+                    this.errors = { apply_in_period: ['Al menos un producto debe tener seleccionada la opción "Cobrar en todos los periodos".'] };
+                    this.loading_submit = false;
+                    return;
+                }
+            }
             // Sincronizar fakeForm hacia el store (form_data) antes de enviar
             this.$store.commit('setFormData', this.fakeForm)
             let data = this.fakeForm;
@@ -470,6 +482,10 @@ export default {
                 }
                 this.fakeForm.items.push(newItem);
             }
+            // Si solo hay 1 item, forzar apply_in_period = 'all'
+            if (this.fakeForm.items.length === 1) {
+                this.fakeForm.items[0].apply_in_period = 'all';
+            }
             // Sincronizar fakeForm con store
             this.$store.commit('setFormData', this.fakeForm)
 
@@ -486,6 +502,10 @@ export default {
             // Crear nuevo array sin el item para que Vue reactive correctamente
             const newItems = [...this.fakeForm.items]
             newItems.splice(index, 1)
+            // Si queda solo 1 item, forzar apply_in_period = 'all'
+            if (newItems.length === 1) {
+                newItems[0].apply_in_period = 'all';
+            }
             // Usar $set para que Vue detecte el cambio
             this.$set(this.fakeForm, 'items', newItems)
 

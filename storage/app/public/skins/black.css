@@ -2709,6 +2709,19 @@ div.welcome-card .welcome-subtitle{
 .image-container-fluid:hover{
     border-color: color-mix(in srgb, var(--black-accent) 70%, #ffffff 75%);
 }
+.item-actions-tooltip {
+    right: 6px !important;
+}
+.item-actions-tooltip button{
+    height: 31px !important;
+    width: 47px !important;
+}
+.item-actions-tooltip button:first-child{
+    border-radius: 0 !important;
+}
+.item-actions-tooltip button:last-child{
+    border-radius: 0 8px 8px 0 !important;
+}
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {
     background-color: var(--black-bg-dark) !important;

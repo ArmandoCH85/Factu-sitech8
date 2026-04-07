@@ -1,14 +1,17 @@
 <template>
     <div v-loading="loading">
         <!-- Botón toggle filtros -->
-        <div class="btn-filter-content">
+        <div class="btn-filter-content d-flex">
             <el-button
                 type="secondary"
-                class="btn-show-filter mb-3"
+                class="btn-show-filter mb-3 me-3"
                 :class="{ shift: isVisible }"
                 @click="isVisible = !isVisible"
             >
                 {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
+            </el-button>
+            <el-button v-if="hasActiveFilters" @click="clearFilters" class="mb-3" type="secondary" icon="el-icon-refresh">
+                Limpiar filtros
             </el-button>
         </div>
 
@@ -24,7 +27,7 @@
                     clearable
                 ></el-input>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 pb-2">
+            <div class="col-lg-4 col-md-3 col-sm-12 pb-2">
                 <el-select
                     v-model="filters.status"
                     placeholder="Todos los estados"
@@ -38,7 +41,7 @@
                     <el-option label="Vencidos" value="expired"></el-option>
                 </el-select>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 pb-2">
+            <div class="col-lg-4 col-md-3 col-sm-12 pb-2">
                 <el-select
                     v-model="filters.type"
                     placeholder="Todos los tipos"
@@ -50,11 +53,6 @@
                     <el-option label="% Porcentaje" value="percentage"></el-option>
                     <el-option label="S/ Fijo" value="fixed"></el-option>
                 </el-select>
-            </div>
-            <div class="col-lg-2 col-md-1 col-sm-12 pb-2">
-                <el-button @click="clearFilters" style="width: 100%;">
-                    <i class="fa fa-times"></i> Limpiar
-                </el-button>
             </div>
         </div>
 
@@ -96,6 +94,11 @@ export default {
                 total: 0,
             },
             filters: {
+                q:      '',
+                status: '',
+                type:   '',
+            },
+            originalFilters: {
                 q:      '',
                 status: '',
                 type:   '',
@@ -149,8 +152,14 @@ export default {
         },
         clearFilters() {
             this.filters = { q: '', status: '', type: '' };
+            this.originalFilters = { ...this.filters };
             this.pagination.current_page = 1;
             this.getRecords();
+        },
+    },
+    computed: {
+        hasActiveFilters() {
+            return JSON.stringify(this.filters) !== JSON.stringify(this.originalFilters);
         },
     },
 };

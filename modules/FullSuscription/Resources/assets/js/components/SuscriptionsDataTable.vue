@@ -2,14 +2,23 @@
     <div v-loading="loading_submit">
         <div class="row ">
             <div class="col-md-12 col-lg-12 col-xl-12 filter-container" v-if="applyFilter">
-                <div class="btn-filter-content">
+                <div class="btn-filter-content d-flex">
                     <el-button
                         type="secondary"
-                        class="btn-show-filter mb-2"
+                        class="btn-show-filter mb-2 me-2"
                         :class="{ shift: isVisible }"
                         @click="toggleInformation"
                     >
                         {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
+                    </el-button>
+                    <el-button
+                        v-if="hasActiveFilters"
+                        @click="clearFilters"
+                        class="mb-2"
+                        type="secondary"
+                        icon="el-icon-refresh"
+                    >
+                        Limpiar filtros
                     </el-button>
                 </div>
                 <div v-if="isVisible" class="row mx-0">
@@ -45,7 +54,7 @@
                     </div>
 
                     <!-- Filtro por estado -->
-                    <div class="col-lg-2 col-md-4 col-sm-12 pb-2">
+                    <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
                         <el-select
                             v-model="planFilters.status"
                             placeholder="Estado"
@@ -60,7 +69,7 @@
                     </div>
 
                     <!-- Filtro por período de prueba -->
-                    <div class="col-lg-2 col-md-4 col-sm-12 pb-2">
+                    <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
                         <el-select
                             v-model="planFilters.trial"
                             placeholder="Período de Prueba"
@@ -72,16 +81,6 @@
                             <el-option label="Con Prueba" value="with"></el-option>
                             <el-option label="Sin Prueba" value="without"></el-option>
                         </el-select>
-                    </div>
-
-                    <!-- Botón limpiar -->
-                    <div class="col-lg-2 col-md-4 col-sm-12 pb-2">
-                        <el-button
-                            @click="clearFilters"
-                            style="width: 100%;"
-                        >
-                            <i class="fa fa-times"></i> Limpiar
-                        </el-button>
                     </div>
                 </div>
             </div>
@@ -153,6 +152,12 @@ export default {
                 frequency: null,   // período/frecuencia
                 status: null,      // estado (true/false)
                 trial: null        // período de prueba (with/without)
+            },
+            originalFilters: {
+                q: null,
+                frequency: null,
+                status: null,
+                trial: null
             },
             records: [],
             pagination: {},
@@ -275,6 +280,7 @@ export default {
                 status: null,
                 trial: null
             };
+            this.originalFilters = { ...this.planFilters };
             this.pagination.current_page = 1;
             this.getRecords();
         },
@@ -286,6 +292,10 @@ export default {
             'table_data',
             'resource',
         ]),
+
+        hasActiveFilters() {
+            return JSON.stringify(this.planFilters) !== JSON.stringify(this.originalFilters);
+        },
     },
 };
 </script>

@@ -36,7 +36,7 @@
                             </div>
                         </template>
                         <template v-else>
-                            <div class="tooltips-container" style="top: 46px;" v-show="hasSelectedItem">
+                            <div class="tooltips-container item-actions-tooltip" style="top: 46px;" v-show="hasSelectedItem">
                                 <el-tooltip
                                     slot="append"
                                     :disabled="isEditItemNote || isUpdateItem"

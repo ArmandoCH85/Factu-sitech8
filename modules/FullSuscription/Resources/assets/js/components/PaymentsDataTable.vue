@@ -3,14 +3,17 @@
         <div class="row">
             <!-- Panel de filtros -->
             <div class="col-md-12 col-lg-12 col-xl-12 filter-container">
-                <div class="btn-filter-content mb-1">
+                <div class="btn-filter-content mb-1 d-flex">
                     <el-button
                         type="secondary"
-                        class="btn-show-filter mb-2"
+                        class="btn-show-filter mb-2 me-2"
                         :class="{ shift: isVisible }"
                         @click="toggleFilters"
                     >
                         {{ isVisible ? 'Ocultar filtros' : 'Mostrar filtros' }}
+                    </el-button>
+                    <el-button v-if="hasActiveFilters" @click="clearFilters" class="mb-2" type="secondary" icon="el-icon-refresh">
+                        Limpiar filtros
                     </el-button>
                 </div>
 
@@ -28,7 +31,7 @@
                     </div>
 
                     <!-- Filtro por estado -->
-                    <div class="col-lg-2 col-md-6 col-sm-12 pb-2">
+                    <div class="col-lg-3 col-md-6 col-sm-12 pb-2">
                         <el-select
                             v-model="filters.status"
                             placeholder="Estado"
@@ -64,7 +67,7 @@
                     </div>
 
                     <!-- Filtro por vencimiento -->
-                    <div class="col-lg-2 col-md-6 col-sm-12 pb-2">
+                    <div class="col-lg-3 col-md-6 col-sm-12 pb-2">
                         <el-select
                             v-model="filters.vencimiento"
                             placeholder="Vencimiento"
@@ -78,13 +81,6 @@
                             <el-option label="Próximos 30 días" value="proximos_30"></el-option>
                             <el-option label="Ya vencidos"      value="ya_vencidos"></el-option>
                         </el-select>
-                    </div>
-
-                    <!-- Botón limpiar -->
-                    <div class="col-lg-2 col-md-6 col-sm-12 pb-2">
-                        <el-button @click="clearFilters" style="width: 100%;">
-                            <i class="fa fa-times"></i> Limpiar
-                        </el-button>
                     </div>
                 </div>
             </div>
@@ -141,12 +137,18 @@ export default {
                 plan_id:     null,
                 vencimiento: null,
             },
+            originalFilters: {
+                q:           null,
+                status:      null,
+                plan_id:     null,
+                vencimiento: null,
+            },
             pagination: {
                 current_page: 1,
                 per_page:     20,
                 total:        0,
             },
-            isVisible:       true,
+            isVisible:       false,
             loading_submit:  false,
             showLeftShadow:  false,
             showRightShadow: false,
@@ -242,12 +244,17 @@ export default {
 
         clearFilters() {
             this.filters = { q: null, status: null, plan_id: null, vencimiento: null };
+            this.originalFilters = { ...this.filters };
             this.pagination.current_page = 1;
             this.getRecords();
         },
     },
     computed: {
         ...mapState(['config', 'table_data', 'resource']),
+
+        hasActiveFilters() {
+            return JSON.stringify(this.filters) !== JSON.stringify(this.originalFilters);
+        },
     },
 };
 </script>

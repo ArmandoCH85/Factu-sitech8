@@ -38,7 +38,7 @@
         </div>
 
         <span slot="footer">
-            <el-button size="small" @click="$emit('update:visible', false)">Cerrar</el-button>
+            <el-button size="small" class="ms-auto" @click="$emit('update:visible', false)">Cerrar</el-button>
         </span>
     </el-dialog>
 </template>

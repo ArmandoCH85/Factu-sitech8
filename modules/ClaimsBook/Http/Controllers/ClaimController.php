@@ -200,6 +200,10 @@ JS;
             $query->where('claim_type', $request->claim_type);
         }
 
+        if ($request->filled('channel')) {
+            $query->where('channel', $request->channel);
+        }
+
         $records = $query->paginate(config('tenant.items_per_page', 20));
 
         return new ClaimCollection($records);

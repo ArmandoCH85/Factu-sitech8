@@ -86,7 +86,7 @@
         </div>
 
         <div slot="footer" class="ch-footer">
-            <!-- Sincronizar establecimientos como canales -->
+            <el-button size="small" @click="close">Cerrar</el-button>
             <el-button
                 size="small"
                 type="primary"
@@ -95,8 +95,7 @@
                 @click="syncChannels"
             >
                 <i class="el-icon-refresh"></i> Sincronizar sucursales
-            </el-button>
-            <el-button size="small" @click="close">Cerrar</el-button>
+            </el-button>            
         </div>
     </el-dialog>
 </template>

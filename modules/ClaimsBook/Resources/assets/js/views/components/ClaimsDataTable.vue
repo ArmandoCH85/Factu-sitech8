@@ -1,104 +1,108 @@
 <template>
-    <el-table
-        :data="records"
-        v-loading="loading"
-        style="width: 100%"
-        size="small"
-        class="cb-table mt-3"
-    >
-        <!-- Código de reclamo -->
-        <el-table-column label="Código" width="160" prop="code">
-            <template slot-scope="{ row }">
-                <span class="cb-code">{{ row.code }}</span>
-            </template>
-        </el-table-column>
-
-        <!-- Datos del reclamante -->
-        <el-table-column label="Cliente" min-width="180">
-            <template slot-scope="{ row }">
-                <div class="cb-customer-name">{{ row.name }}</div>
-                <div class="cb-customer-doc">
-                    {{ row.identity_document_type_label }}
-                    </br> {{ row.identity_document_number }}
-                </div>
-            </template>
-        </el-table-column>
-
-        <!-- Tipo: queja o reclamo -->
-        <el-table-column label="Tipo" width="90" align="center">
-            <template slot-scope="{ row }">
-                <el-tag
-                    :type="row.claim_type === 'reclamo' ? 'danger' : 'warning'"
-                    size="mini"
-                    style="text-transform:capitalize"
-                >
-                    {{ row.claim_type }}
-                </el-tag>
-            </template>
-        </el-table-column>
-
-        <!-- Fecha de registro -->
-        <el-table-column label="Fecha" width="100">
-            <template slot-scope="{ row }">
-                {{ formatDate(row.created_at) }}
-            </template>
-        </el-table-column>
-
-        <!-- Monto del comprobante vinculado -->
-        <el-table-column label="Monto" width="110" align="right">
-            <template slot-scope="{ row }">
-                <span v-if="row.has_receipt">
-                    {{ row.receipt_currency }} {{ row.receipt_amount }}
-                </span>
-                <span v-else class="cb-none">—</span>
-            </template>
-        </el-table-column>
-
-        <!-- Serie-Número del comprobante -->
-        <el-table-column label="Comprobante" width="130">
-            <template slot-scope="{ row }">
-                <span v-if="row.receipt_series">
-                    {{ row.receipt_series }}-{{ row.receipt_number }}
-                </span>
-                <span v-else class="cb-none">—</span>
-            </template>
-        </el-table-column>
-
-        <!-- Selector inline de estado con dot de color -->
-        <el-table-column label="Estado" width="200">
-            <template slot-scope="{ row }">
-                <el-select
-                    :value="row.status_claim_id"
-                    size="mini"
-                    style="width:100%"
-                    @change="newVal => $emit('status-change', row, newVal)"
-                >
-                    <el-option
-                        v-for="s in statusClaims"
-                        :key="s.id"
-                        :label="s.description"
-                        :value="s.id"
-                    >
-                        <span :style="{ color: s.color || '#909399' }">● </span>
-                        {{ s.description }}
-                    </el-option>
-                </el-select>
-            </template>
-        </el-table-column>
-
-        <!-- Botón de detalle -->
-        <el-table-column label="Opciones" width="90" align="center">
-            <template slot-scope="{ row }">
-                <el-button
-                    size="mini"
-                    type="primary"
-                    icon="el-icon-view"
-                    @click="$emit('view', row)"
-                    title="Ver detalle"
-                ></el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+    <div class="table-responsive mt-3">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-start">Código</th>
+                    <th class="text-start">Cliente</th>
+                    <th class="text-start">Tipo</th>
+                    <th class="text-start">Fecha</th>
+                    <th class="text-start">Comprobante</th>
+                    <th class="text-start">Monto</th>
+                    <th class="text-start">Canal</th>
+                    <th class="text-start">Estado</th>
+                    <th class="text-end">Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="loading">
+                    <td colspan="9" class="text-center py-4">
+                        <i class="el-icon-loading"></i> Cargando...
+                    </td>
+                </tr>
+                <tr v-else-if="records.length === 0">
+                    <td colspan="9" class="text-center py-4 text-muted">
+                        No se encontraron registros
+                    </td>
+                </tr>
+                <tr v-for="row in records" :key="row.id" v-else>
+                    <td>
+                        <span class="cb-code">{{ row.code }}</span>
+                    </td>
+                    <td>
+                        <div class="cb-customer-name">{{ row.name }}</div>
+                        <small class="text-muted">
+                            {{ row.identity_document_type_label }}
+                            {{ row.identity_document_number }}
+                        </small>
+                    </td>
+                    <td class="text-start">
+                        <span
+                            class="badge"
+                            :class="row.claim_type === 'reclamo' ? 'bg-danger' : 'bg-warning text-dark'"
+                            style="text-transform: capitalize"
+                        >
+                            {{ row.claim_type }}
+                        </span>
+                    </td>
+                    <td class="text-start">{{ formatDate(row.created_at) }}</td>
+                    <td class="text-start">
+                        <span v-if="row.receipt_series">
+                            {{ row.receipt_series }}-{{ row.receipt_number }}
+                        </span>
+                        <span v-else class="text-muted">—</span>
+                    </td>
+                    <td class="text-start">
+                        <span v-if="row.has_receipt">
+                            {{ row.receipt_currency }} {{ row.receipt_amount }}
+                        </span>
+                        <span v-else class="text-muted">—</span>
+                    </td>
+                    <td class="text-start">
+                        <span v-if="row.channel">{{ row.channel }}</span>
+                        <span v-else class="text-muted">—</span>
+                    </td>
+                    <td class="text-start">
+                        <el-select
+                            :value="row.status_claim_id"
+                            size="mini"
+                            style="width: 100%; min-width: 150px"
+                            @change="newVal => $emit('status-change', row, newVal)"
+                        >
+                            <el-option
+                                v-for="s in statusClaims"
+                                :key="s.id"
+                                :label="s.description"
+                                :value="s.id"
+                            >
+                                <span :style="{ color: s.color || '#909399' }">● </span>
+                                {{ s.description }}
+                            </el-option>
+                        </el-select>
+                    </td>
+                    <td class="text-end">
+                        <button
+                            type="button"
+                            class="btn waves-effect waves-light btn-xs btn-info"
+                            @click="$emit('view', row)"
+                            title="Ver detalle"
+                        >
+                            <i class="el-icon-view"></i> Ver
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="cb-pagination">
+            <el-pagination
+                    @current-change="onPageChange"
+                    layout="total, prev, pager, next"
+                    :total="pagination.total"
+                    :current-page="pagination.current_page"
+                    :page-size="pagination.per_page">
+            </el-pagination>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -106,25 +110,28 @@ export default {
     name: 'ClaimsDataTable',
 
     props: {
-        // Registros de reclamos a mostrar en la tabla
         records: {
             type: Array,
             default: () => []
         },
-        // Listado de estados disponibles para el selector inline
         statusClaims: {
             type: Array,
             default: () => []
         },
-        // Estado de carga para mostrar spinner sobre la tabla
         loading: {
             type: Boolean,
             default: false
+        },
+        pagination: {
+            type: Object,
+            default: () => ({ total: 0, per_page: 20, current_page: 1 })
         }
     },
 
     methods: {
-        // Formatea una fecha ISO a DD/MM/YYYY usando moment si está disponible
+        onPageChange(page) {
+            this.$emit('page-change', page)
+        },
         formatDate(dateStr) {
             if (!dateStr) return ''
             return moment ? moment(dateStr).format('DD/MM/YYYY') : dateStr.slice(0, 10)

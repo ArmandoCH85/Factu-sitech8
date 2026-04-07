@@ -3,27 +3,12 @@
         <!-- Encabezado de página -->
         <div class="page-header pe-0">
             <h2>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#000000"
-                  stroke-width="1.25"
-                  stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                  <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                  <path d="M3 6l0 13" />
-                  <path d="M12 6l0 13" />
-                  <path d="M21 6l0 13" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book" style="margin-top: -5px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>
             </h2>
             <ol class="breadcrumbs">
                 <li class="active"><span>Libro de Reclamaciones</span></li>
             </ol>
-            <div class="right-wrapper pull-right d-flex gap-2 mt-2 me-4">
+            <div class="right-wrapper pull-right d-flex gap-2 h-100 py-2 me-4">
                 <el-button
                     class="btn btn-custom btn-sm"
                     @click="showStatusModal = true"
@@ -57,99 +42,109 @@
         <!-- Panel principal -->
         <div class="card tab-content-default row-new mb-0">
             <div class="card-body">
-                <!-- Filtros colapsables -->
-                <el-collapse v-model="showFilters" class="cb-filters-collapse">
-                    <el-collapse-item name="filters">
-                        <template slot="title">
-                            <span class="cb-filter-title">
-                                <i class="el-icon-search"></i> Filtros de búsqueda
-                            </span>
-                        </template>
-                        <el-row :gutter="16" class="cb-filters-grid">
-                            <el-col :span="5" :xs="24">
-                                <el-input
-                                    v-model="filters.code"
-                                    placeholder="Código"
-                                    size="small"
-                                    clearable
-                                    @change="loadRecords"
-                                ></el-input>
-                            </el-col>
-                            <el-col :span="5" :xs="24">
-                                <el-input
-                                    v-model="filters.search"
-                                    placeholder="Nombre o N° doc."
-                                    size="small"
-                                    clearable
-                                    @change="loadRecords"
-                                ></el-input>
-                            </el-col>
-                            <el-col :span="6" :xs="24">
-                                <el-date-picker
-                                    v-model="filters.dateRange"
-                                    type="daterange"
-                                    start-placeholder="Fecha inicio"
-                                    end-placeholder="Fecha fin"
-                                    value-format="yyyy-MM-dd"
-                                    size="small"
-                                    style="width:100%"
-                                    @change="loadRecords"
-                                ></el-date-picker>
-                            </el-col>
-                            <el-col :span="4" :xs="24">
-                                <el-select
-                                    v-model="filters.status_claim_id"
-                                    placeholder="Estado"
-                                    size="small"
-                                    clearable
-                                    style="width:100%"
-                                    @change="loadRecords"
-                                >
-                                    <el-option
-                                        v-for="s in tables.status_claims"
-                                        :key="s.id"
-                                        :label="s.description"
-                                        :value="s.id"
-                                    ></el-option>
-                                </el-select>
-                            </el-col>
-                            <el-col :span="4" :xs="24">
-                                <el-select
-                                    v-model="filters.claim_type"
-                                    placeholder="Tipo"
-                                    size="small"
-                                    clearable
-                                    style="width:100%"
-                                    @change="loadRecords"
-                                >
-                                    <el-option value="queja" label="Queja"></el-option>
-                                    <el-option value="reclamo" label="Reclamo"></el-option>
-                                </el-select>
-                            </el-col>
-                        </el-row>
-                    </el-collapse-item>
-                </el-collapse>
-
+                <div class="btn-filter-content">
+                    <el-button
+                        type="secondary"
+                        class="btn-show-filter mb-3"
+                        :class="{ shift: isVisible }"
+                        @click="toggleInformation"
+                    >
+                        {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
+                    </el-button>
+                </div>
+                <div class="row mx-0 g-2" v-if="applyFilter && isVisible">
+                    <!-- Fila 1: Código · Nombre/doc · Fecha -->
+                    <div class="col-lg-2 col-md-3 col-sm-6 col-12">
+                        <el-input
+                            v-model="filters.code"
+                            placeholder="Código"
+                            size="small"
+                            clearable
+                            @input="onFilterChange"
+                            @clear="onFilterChange"
+                        ></el-input>
+                    </div>
+                    <div class="col-lg-4 col-md-5 col-sm-6 col-12">
+                        <el-input
+                            v-model="filters.search"
+                            placeholder="Nombre o N° documento"
+                            size="small"
+                            clearable
+                            @input="onFilterChange"
+                            @clear="onFilterChange"
+                        ></el-input>
+                    </div>
+                    <div class="col-lg-6 col-md-4 col-sm-12 col-12">
+                        <el-date-picker
+                            v-model="filters.dateRange"
+                            type="daterange"
+                            start-placeholder="Fecha inicio"
+                            end-placeholder="Fecha fin"
+                            value-format="yyyy-MM-dd"
+                            size="small"
+                            style="width:100%"
+                            @change="onFilterChange"
+                        ></el-date-picker>
+                    </div>
+                    <!-- Fila 2: Estado · Tipo · Canal -->
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                        <el-select
+                            v-model="filters.status_claim_id"
+                            placeholder="Estado"
+                            size="small"
+                            clearable
+                            style="width:100%"
+                            @change="onFilterChange"
+                        >
+                            <el-option
+                                v-for="s in tables.status_claims"
+                                :key="s.id"
+                                :label="s.description"
+                                :value="s.id"
+                            ></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <el-select
+                            v-model="filters.claim_type"
+                            placeholder="Tipo"
+                            size="small"
+                            clearable
+                            style="width:100%"
+                            @change="onFilterChange"
+                        >
+                            <el-option value="queja" label="Queja"></el-option>
+                            <el-option value="reclamo" label="Reclamo"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                        <el-select
+                            v-model="filters.channel"
+                            placeholder="Canal"
+                            size="small"
+                            clearable
+                            style="width:100%"
+                            @change="onFilterChange"
+                        >
+                            <el-option
+                                v-for="c in tables.claim_channels"
+                                :key="c.id"
+                                :label="c.name"
+                                :value="c.name"
+                            ></el-option>
+                        </el-select>
+                    </div>
+                </div>                
                 <!-- Tabla de reclamos — componente desacoplado -->
                 <claims-data-table
                     :records="records"
                     :status-claims="tables.status_claims"
                     :loading="loading"
+                    :pagination="pagination"
                     @status-change="onStatusChange"
                     @view="viewDetail"
+                    @page-change="onPageChange"
                 ></claims-data-table>
-
-                <!-- Paginación -->
-                <div class="cb-pagination">
-                    <el-pagination
-                        background
-                        layout="total, prev, pager, next"
-                        :total="pagination.total"
-                        :page-size="pagination.per_page"
-                        :current-page="pagination.current_page"
-                        @current-change="onPageChange"
-                    ></el-pagination>
-                </div>
             </div>
         </div>
 
@@ -250,6 +245,13 @@ export default {
         ClaimEmbedModal,
     },
 
+    props: {
+        applyFilter: {
+            type: Boolean,
+            default: true,
+            required: false
+        },
+    },
     data() {
         return {
             loading: false,
@@ -263,6 +265,7 @@ export default {
                 dateRange: this.defaultDateRange(),
                 status_claim_id: '',
                 claim_type: '',
+                channel: '',
             },
 
             // Paginación
@@ -290,6 +293,7 @@ export default {
             showStatusChangeDialog: false, // dialog unificado resolución/reapertura
             statusChangeMode:       'resolution', // 'resolution' | 'reopen'
             savingStatus:           false,
+            isVisible: false,
         }
     },
 
@@ -309,6 +313,15 @@ export default {
 
     methods: {
         // ── Carga de datos ────────────────────────────────────────────
+
+        toggleInformation() {
+            this.isVisible = !this.isVisible;
+        },
+
+        onFilterChange() {
+            this.pagination.current_page = 1
+            this.loadRecords()
+        },
 
         loadTables() {
             this.$http.get('/claims/tables').then(response => {
@@ -336,6 +349,7 @@ export default {
             if (this.filters.search)         p.search         = this.filters.search
             if (this.filters.status_claim_id) p.status_claim_id = this.filters.status_claim_id
             if (this.filters.claim_type)     p.claim_type     = this.filters.claim_type
+            if (this.filters.channel)        p.channel        = this.filters.channel
             if (this.filters.dateRange && this.filters.dateRange.length === 2) {
                 p.date_from = this.filters.dateRange[0]
                 p.date_to   = this.filters.dateRange[1]

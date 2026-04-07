@@ -182,7 +182,7 @@
         </div>
 
         <div slot="footer">
-            <el-button size="small" @click="close">Cerrar</el-button>
+            <el-button size="small" class="ms-auto" @click="close">Cerrar</el-button>
         </div>
     </el-dialog>
 </template>

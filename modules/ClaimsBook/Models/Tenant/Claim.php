@@ -148,6 +148,9 @@ class Claim extends ModelTenant
                 ? $this->statusClaim->getCollectionData()
                 : null,
 
+            // Canal
+            'channel'                 => $this->channel,
+
             // Gestión
             'is_closed'               => $this->is_closed,
             'resolution'              => $this->resolution,

@@ -840,6 +840,11 @@ if ($hostname) {
         Route::post('logout', 'System\LoginController@logout')->name('logout');
         Route::get('phone', 'System\UserController@getPhone');
 
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::get('consultas', 'System\PublicDocumentSearchController@index')->name('system.public_search.index');
+            Route::post('consultas', 'System\PublicDocumentSearchController@search')->name('system.public_search.search');
+        });
+
         //guest-Register
         Route::prefix('guest-register')->group(function () {
 

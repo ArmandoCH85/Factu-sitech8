@@ -4158,7 +4158,7 @@ export default {
             }
             return this.configuration.global_discount_type_id === "02" ;
         },
-        ...mapState(["config", "series", "all_series"]),
+        ...mapState(["config", "series", "all_series"]), 
         credit_payment_metod: function() {
             return _.filter(this.payment_method_types, { is_credit: true });
         },
@@ -4245,77 +4245,7 @@ export default {
         }
     },
     async created() {
-        this.loadConfiguration();
-        this.$store.commit("setConfiguration", this.configuration);
-
-        // Cargar price_options desde la API de price labels activos
-        await this.loadPriceOptions();
-
-        await this.initForm();
-        await this.$http.get(`/${this.resource}/tables`).then(response => {
-
-            this.document_types = response.data.document_types_invoice;
-            this.document_types_guide = response.data.document_types_guide;
-            this.currency_types = response.data.currency_types;
-            this.business_turns = response.data.business_turns;
-            this.establishments = response.data.establishments;
-            this.operation_types = response.data.operation_types;
-            this.is_restaurant_active = response.data.is_restaurant_active;
-            this.restaurant_tip_factor = response.data.restaurant_tip_factor;
-            this.$store.commit("setAllSeries", response.data.series);
-            // this.all_series = response.data.series
-            this.all_customers = response.data.customers;
-            this.sellers = response.data.sellers;
-            this.discount_types = response.data.discount_types;
-            this.charges_types = response.data.charges_types;
-            this.payment_method_types = response.data.payment_method_types;
-            this.enabled_discount_global =
-                response.data.enabled_discount_global;
-            this.company = response.data.company;
-            this.user = response.data.user;
-            this.document_type_03_filter =
-                response.data.document_type_03_filter;
-            this.select_first_document_type_03 =
-                response.data.select_first_document_type_03;
-            // this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
-            this.form.establishment_id =
-                this.establishments.length > 0
-                    ? this.establishments[0].id
-                    : null;
-            this.form.document_type_id =
-                this.document_types.length > 0
-                    ? this.document_types[0].id
-                    : null;
-            this.form.operation_type_id =
-                this.operation_types.length > 0
-                    ? this.operation_types[0].id
-                    : null;
-            this.form.seller_id = this.sellers.length > 0 ? this.idUser : null;
-            this.affectation_igv_types = response.data.affectation_igv_types;
-            // this.prepayment_documents = response.data.prepayment_documents;
-            this.is_client = response.data.is_client;
-            // this.cat_payment_method_types = response.data.cat_payment_method_types;
-            // this.all_detraction_types = response.data.detraction_types;
-            this.payment_destinations = response.data.payment_destinations;
-            this.payment_conditions = response.data.payment_conditions;
-
-            this.seller_class =
-                this.user == "admin" ? "col-lg-4 pb-2" : "col-lg-6 pb-2";
-            this.global_discount_types = response.data.global_discount_types;
-
-            // this.default_document_type = response.data.document_id;
-            // this.default_series_type = response.data.series_id;
-            this.selectDocumentType();
-            this.changeEstablishment();
-            this.changeDateOfIssue();
-            this.changeDocumentType();
-            this.changeDestinationSale();
-            this.setDefaultDocumentType();
-            this.setConfigGlobalDiscountType();
-            this.startConnectionQzTray();
-            this.verifySelectedSeller();
-        });
-
+        await this.initComponent();
         await this.getPercentageIgv();
         this.loading_form = true;
         this.$eventHub.$on("reloadDataPersons", customer_id => {
@@ -4327,6 +4257,9 @@ export default {
         });
         this.$eventHub.$on("reloadDataConsigned", () => {
             this.getConsigneds();
+        });
+        this.$eventHub.$on("establishmentChanged", () => {
+            this.initComponent();
         });
         if (this.documentId) {
             this.btnText = "Actualizar";
@@ -4475,6 +4408,78 @@ export default {
         }
     },
     methods: {
+        async initComponent() {
+            this.loadConfiguration();
+            this.$store.commit("setConfiguration", this.configuration);
+
+            // Cargar price_options desde la API de price labels activos
+            await this.loadPriceOptions();
+
+            await this.initForm();
+            await this.$http.get(`/${this.resource}/tables`).then(response => {
+                this.document_types = response.data.document_types_invoice;
+                this.document_types_guide = response.data.document_types_guide;
+                this.currency_types = response.data.currency_types;
+                this.business_turns = response.data.business_turns;
+                this.establishments = response.data.establishments;
+                this.operation_types = response.data.operation_types;
+                this.is_restaurant_active = response.data.is_restaurant_active;
+                this.restaurant_tip_factor = response.data.restaurant_tip_factor;
+                this.$store.commit("setAllSeries", response.data.series);
+                // this.all_series = response.data.series
+                this.all_customers = response.data.customers;
+                this.sellers = response.data.sellers;
+                this.discount_types = response.data.discount_types;
+                this.charges_types = response.data.charges_types;
+                this.payment_method_types = response.data.payment_method_types;
+                this.enabled_discount_global =
+                    response.data.enabled_discount_global;
+                this.company = response.data.company;
+                this.user = response.data.user;
+                this.document_type_03_filter =
+                    response.data.document_type_03_filter;
+                this.select_first_document_type_03 =
+                    response.data.select_first_document_type_03;
+                // this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
+                this.form.establishment_id =
+                    this.establishments.length > 0
+                        ? this.establishments[0].id
+                        : null;
+                this.form.document_type_id =
+                    this.document_types.length > 0
+                        ? this.document_types[0].id
+                        : null;
+                this.form.operation_type_id =
+                    this.operation_types.length > 0
+                        ? this.operation_types[0].id
+                        : null;
+                this.form.seller_id = this.sellers.length > 0 ? this.idUser : null;
+                this.affectation_igv_types = response.data.affectation_igv_types;
+                // this.prepayment_documents = response.data.prepayment_documents;
+                this.is_client = response.data.is_client;
+                // this.cat_payment_method_types = response.data.cat_payment_method_types;
+                // this.all_detraction_types = response.data.detraction_types;
+                this.payment_destinations = response.data.payment_destinations;
+                this.payment_conditions = response.data.payment_conditions;
+
+                this.seller_class =
+                    this.user == "admin" ? "col-lg-4 pb-2" : "col-lg-6 pb-2";
+                this.global_discount_types = response.data.global_discount_types;
+
+                // this.default_document_type = response.data.document_id;
+                // this.default_series_type = response.data.series_id;
+                this.selectDocumentType();
+                this.changeEstablishment();
+                this.changeDateOfIssue();
+                this.changeDocumentType();
+                this.changeDestinationSale();
+                this.setDefaultDocumentType();
+                this.setConfigGlobalDiscountType();
+                this.startConnectionQzTray();
+                this.verifySelectedSeller();
+            });
+        },
+
         searchNumber(data) {
             this.form.itinerant = {
                 id: this.itinerant_option_id,

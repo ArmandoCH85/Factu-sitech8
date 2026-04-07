@@ -130,6 +130,8 @@ class HotelReceptionController extends Controller
         $user->establishment_id = $request->establishment_id;
         $user->save();
 
+        auth()->user()->setAttribute('establishment_id', $user->establishment_id);
+
         return response()->json([
             'success' => true,
             'message'   => "Establecimiento actualizado con éxito",

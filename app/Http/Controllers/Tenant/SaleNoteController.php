@@ -516,6 +516,7 @@ class SaleNoteController extends Controller
                             ->whereType('customers')->orderBy('name')
                             ->whereIsEnabled()
                             ->get()->transform(function(Person $row) {
+                                return $row->getCollectionData();
                                 return [
                                     'id' => $row->id,
                                     'description' => $row->number.' - '.$row->name,
@@ -540,6 +541,7 @@ class SaleNoteController extends Controller
         $establishment_id =  $user->establishment_id;
         $userId =  $user->id;
         $customers = $this->table('customers');
+        logger()->info('sale-notes tables customer', ['customer' => $customers->first()]);
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $currency_types = CurrencyType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
@@ -1337,6 +1339,7 @@ class SaleNoteController extends Controller
 
                 $customers = Person::whereType('customers')
                     ->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function(Person$row) {
+                    return $row->getCollectionData();
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,

@@ -4233,9 +4233,15 @@ export default {
             return this.form.total < amount;
         },
         getCustomer(){
-            return _.find(this.customers, {
-                id: this.form.customer_id
-            }) ?? {};
+            const customer = this.customers.find(
+                c => String(c.id) === String(this.form.customer_id)
+            );
+            console.log('getCustomer', {
+                customer_id: this.form.customer_id,
+                customers: this.customers,
+                customer
+            });
+            return customer || {};
         }
     },
     async created() {

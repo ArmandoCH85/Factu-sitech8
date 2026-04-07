@@ -117,7 +117,11 @@
                                     <label
                                         class="control-label font-weight-bold"
                                     >
-                                        Cliente
+                                        <el-badge type="success" :value="getCustomer.person_type" class="item">
+                                            <span>
+                                                Cliente
+                                            </span>
+                                        </el-badge>
                                         <!-- <a
                                             href="#"
                                             @click.prevent="
@@ -2250,6 +2254,17 @@ export default {
 
             return term
         },
+        getCustomer(){
+            const customer = this.customers.find(
+                c => String(c.id) === String(this.form.customer_id)
+            );
+            console.log('getCustomer', {
+                customer_id: this.form.customer_id,
+                customers: this.customers,
+                customer
+            });
+            return customer || {};
+        },
     },
     watch: {
         'form.customer_id': 'checkCustomerExpiredDebt',
@@ -2841,7 +2856,14 @@ export default {
             if (seller !== undefined) {
                 this.form.seller_id = seller.id;
             }
-            this.getConsigneds()
+
+            if (customer.price_label_id) {
+                this.selected_option_price = `price_label_${customer.price_label_id}`;
+            } else {
+                this.selected_option_price = 1;
+            }
+
+            this.getConsigneds();
         },
         searchRemoteCustomers(input) {
             this.customerSearchTerm = input;
@@ -3461,6 +3483,11 @@ export default {
                 .then(response => {
                     this.customers = response.data.customers;
                     this.form.customer_id = customer_id;
+
+                    let customer = _.find(this.customers, { id: customer_id });
+                    this.selected_option_price = customer?.price_label_id
+                        ? `price_label_${customer.price_label_id}`
+                        : 1;
                 });
         },
         async selectDefaultCustomer() {
@@ -3496,6 +3523,10 @@ export default {
 
                 if (alt !== undefined) {
                     this.form.customer_id = this.config.establishment.customer_id;
+                    this.selected_option_price = alt.price_label_id
+                    ? `price_label_${alt.price_label_id}`
+                    : 1;
+                    
                     let seller = this.sellers.find(
                         element => element.id == alt.seller_id
                     );

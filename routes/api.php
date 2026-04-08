@@ -1,7 +1,11 @@
 <?php
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Tenant\ConfigurationImageController;
 
 Route::get('generate_token', 'Tenant\Api\MobileController@getSeries');
+Route::post('consultas/search', 'System\PublicDocumentSearchController@searchApi')
+    ->middleware('throttle:30,1')
+    ->name('api.public_search.search');
 
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
@@ -105,7 +109,6 @@ if ($hostname) {
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
-        // Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
 
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');

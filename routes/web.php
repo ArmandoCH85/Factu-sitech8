@@ -843,7 +843,12 @@ if ($hostname) {
         Route::middleware('throttle:30,1')->group(function () {
             Route::get('consultas', 'System\PublicDocumentSearchController@index')->name('system.public_search.index');
             Route::post('consultas', 'System\PublicDocumentSearchController@search')->name('system.public_search.search');
+            Route::get('consultas/widget/{slug}', 'System\PublicDocumentSearchController@widget')->name('system.public_search.widget');
+            Route::post('consultas/widget/{slug}', 'System\PublicDocumentSearchController@searchWidget')->name('system.public_search.widget.search');
+            Route::get('consultas/widget', 'System\PublicDocumentSearchController@widgetInternal')->name('system.public_search.widget.internal');
         });
+
+        Route::get('consultas/embed.js', 'System\PublicDocumentSearchController@embedScript')->name('system.public_search.embed');
 
         //guest-Register
         Route::prefix('guest-register')->group(function () {

@@ -144,6 +144,10 @@
                             S/ @{{ appliedCoupon.discount }}
                         </td>
                     </tr>
+                    <tr v-if="deliveryZone && parseFloat(deliveryZone.price) > 0">
+                        <td>Envío <small class="text-muted">(@{{ deliveryZone.name }})</small></td>
+                        <td>S/ @{{ summary.delivery }}</td>
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr>
@@ -152,6 +156,11 @@
                     </tr>
                 </tfoot>
             </table>
+
+            <!-- Mensaje sin cobertura de delivery -->
+            <div v-if="deliveryMessage" class="alert alert-warning text-left py-2 px-3 mb-2 mt-2" style="" role="alert">
+                <strong>&#9888; Sin cobertura:</strong> @{{ deliveryMessage }}
+            </div>
 
             <!-- Coupon input and applied coupon display -->
             <div class="coupon-block mt-3">
@@ -166,7 +175,6 @@
             </div>
 
             <div class="checkout-methods text-center">
-
                 @guest('ecommerce')
                 <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link culqi">Pagar
                     con VISA</a>
@@ -217,6 +225,10 @@
                         <label for="email">Teléfono:</label>
                         <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono" style="max-width: 100%;">
                         <small class="form-control-feedback" v-if="errors.telefono" v-text="errors.telefono[0]"></small>
+                    </div>
+                    <div class="form-group" v-if="ubigeoLabel">
+                        <label>Ubigeo:</label>
+                        <input type="text" class="form-control" :value="ubigeoLabel" readonly style="background-color: #f8f9fa; cursor: default; color: #495057;">
                     </div>
                     <div class="form-group" :class="{'text-danger': errors.address}">
                         <label for="email">Dirección:</label>
@@ -306,7 +318,7 @@
                                     </div>
                                     <div style="flex: 1;">
                                         <label for="district" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555; width: 100%;">Distrito</label>
-                                        <select v-model="selectedDistrict" name="district" id="district" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background-color: #fff; width: 100%;">
+                                        <select v-model="selectedDistrict" @change="checkDeliveryZone" name="district" id="district" style="padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; background-color: #fff; width: 100%;">
                                             <option value="">Seleccione distrito</option>
                                             <option v-for="district in districts" :key="district.value" :value="district.value">
                                                 @{{ district.label }}
@@ -370,6 +382,14 @@
                             <textarea v-model="addressModal.reference" placeholder="Ej: Al costado del parque, frente a la iglesia" rows="2" style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box; resize: none; outline: none; background-color: #fff;"></textarea>
                         </div>
                     </div>
+                </div>
+                <!-- Alerta sin cobertura dentro del modal de dirección -->
+                <div v-if="deliveryMessage" style="margin: 0 15px 10px; padding: 10px 14px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;" class="mt-2">
+                    <strong>Sin cobertura:</strong> @{{ deliveryMessage }}
+                </div>
+                <!-- Alerta de cobertura disponible dentro del modal -->
+                <div v-if="deliveryZone" style="margin: 0 15px 10px; padding: 10px 14px; background: #d1e7dd; border: 1px solid #a3cfbb; border-radius: 4px; color: #0a3622;">
+                    <strong>&#10003; Delivery disponible:</strong> @{{ deliveryZone.name }} &mdash; S/ @{{ deliveryZone.price }}
                 </div>
                 <div style="padding: 15px; border-top: 1px solid #dee2e6;">
                     <button type="button" @click="confirmAddress()" style="background-color: #ff6600; color: white; border: none; padding: 12px 40px; font-size: 1rem; font-weight: 500; border-radius: 50px; cursor: pointer; width: 100%; text-transform: uppercase;">Continuar</button>
@@ -462,6 +482,11 @@
             highlightedIndex: -1,
             addressSuggestions: [],
             addressSearchTimeout: null,
+            // Zona de delivery encontrada para la dirección del cliente
+            deliveryZone: null,
+            deliveryMessage: '',
+            // Primera dirección guardada del cliente (cargada desde el servidor)
+            userDefaultAddress: {!! json_encode($userAddress ?? null) !!},
         },
         computed: {
             maxLength: function () {
@@ -474,6 +499,15 @@
                 }
 
                 return 15
+            },
+            // Etiqueta del ubigeo formateada: DEPARTAMENTO / PROVINCIA / DISTRITO (código)
+            ubigeoLabel: function () {
+                if (!this.selectedDepartment || !this.selectedProvince || !this.selectedDistrict) return '';
+                const dept = this.departments.find(d => d.value === this.selectedDepartment);
+                const prov = this.provinces.find(p => p.value === this.selectedProvince);
+                const dist = this.districts.find(d => d.value === this.selectedDistrict);
+                if (!dept || !prov || !dist) return '';
+                return dept.label.toUpperCase() + ' / ' + prov.label.toUpperCase() + ' / ' + dist.label.toUpperCase() + ' (' + this.selectedDistrict + ')';
             }
         },
         watch: {
@@ -518,7 +552,10 @@
               this.initMap()
           }
 
-          this.fetchLocations();
+          // Cargar ubicaciones y autocompletar si el usuario tiene una dirección guardada
+          this.fetchLocations().then(() => {
+              this.loadDefaultAddress();
+          });
         },
         created() {
             let array = localStorage.getItem('products_cart');
@@ -991,36 +1028,40 @@
                     total_descuentos_monto = descuentos.reduce((sum, d) => sum + (parseFloat(d.monto) || 0), 0);
                 }
 
-                // Valores originales del subtotal (sin descuentos)
+                // Valores originales del subtotal de productos (sin descuentos ni delivery)
                 let base_antes = parseFloat(this.aux_totals.total_taxed);
-                let igv_antes = parseFloat(this.aux_totals.total_igv);
+                let igv_antes  = parseFloat(this.aux_totals.total_igv);
 
-                let total_operaciones_gravadas = base_antes;
-                let total_igv = igv_antes;
-                let total_venta = base_antes + igv_antes;
+                // Sumar delivery gravado (afectación IGV 10%) si corresponde
+                let delivery_price = (this.deliveryZone && this.deliveryZone.price) ? parseFloat(this.deliveryZone.price) : 0;
+                let delivery_base  = parseFloat((delivery_price / 1.18).toFixed(2));
+                let delivery_igv   = parseFloat((delivery_price - delivery_base).toFixed(2));
+
+                let total_operaciones_gravadas = base_antes + delivery_base;
+                let total_igv                  = igv_antes  + delivery_igv;
+                let total_venta                = total_operaciones_gravadas + total_igv;
 
                 if (descuentos.length > 0 && this.global_discount_type) {
                     if (this.global_discount_type.base == 1) {
-                        total_operaciones_gravadas = parseFloat((base_antes - total_descuentos_monto).toFixed(2));
-                        total_igv = parseFloat((total_operaciones_gravadas * 0.18).toFixed(2));
+                        total_operaciones_gravadas = parseFloat((total_operaciones_gravadas - total_descuentos_monto).toFixed(2));
+                        total_igv   = parseFloat((total_operaciones_gravadas * 0.18).toFixed(2));
                         total_venta = parseFloat((total_operaciones_gravadas + total_igv).toFixed(2));
                     } else {
-                        // Descuento al total directamente
-                        total_venta = parseFloat(( (base_antes + igv_antes) - total_descuentos_monto ).toFixed(2));
+                        total_venta = parseFloat((total_venta - total_descuentos_monto).toFixed(2));
                     }
                 }
 
                 return {
-                    total_descuentos: total_descuentos_monto,
-                    total_exportacion: 0.00,
-                    total_operaciones_gravadas: total_operaciones_gravadas,
-                    total_operaciones_inafectas: parseFloat(this.aux_totals.total_exonerated || 0),
-                    total_operaciones_exoneradas: 0.00,
-                    total_operaciones_gratuitas: 0.00,
-                    total_igv: total_igv,
-                    total_impuestos: total_igv,
-                    total_valor: total_operaciones_gravadas,
-                    total_venta: total_venta
+                    total_descuentos:               total_descuentos_monto,
+                    total_exportacion:              0.00,
+                    total_operaciones_gravadas:     total_operaciones_gravadas,
+                    total_operaciones_inafectas:    parseFloat(this.aux_totals.total_exonerated || 0),
+                    total_operaciones_exoneradas:   0.00,
+                    total_operaciones_gratuitas:    0.00,
+                    total_igv:                      total_igv,
+                    total_impuestos:                total_igv,
+                    total_valor:                    total_operaciones_gravadas,
+                    total_venta:                    total_venta
                 };
             },
             openAddressModal() {
@@ -1058,6 +1099,8 @@
 
                 // Asegurarse de que el modal se cierre después de confirmar
                 this.closeAddressModal()
+                // Verificar cobertura de delivery con la ubicación confirmada
+                this.checkDeliveryZone()
             },
             initMap() {
                 // Inicializar el mapa con una ubicación predeterminada
@@ -1256,6 +1299,33 @@
 
                 })
 
+                // Agregar ítem de delivery si hay zona activa con precio
+                if (this.deliveryZone && parseFloat(this.deliveryZone.price) > 0) {
+                    const delivery_price  = parseFloat(this.deliveryZone.price);
+                    const percentage_igv = 18;
+                    const unit_value   = delivery_price / (1 + percentage_igv / 100);
+                    const igv_val      = delivery_price - unit_value;
+                    rec.push({
+                        "codigo_interno":              "DELIVERY-ECOM",
+                        "descripcion":                 "Costo de Envío - " + this.deliveryZone.name,
+                        "codigo_producto_sunat":       "",
+                        "unidad_de_medida":            "ZZ",
+                        "cantidad":                    1,
+                        "valor_unitario":              parseFloat(unit_value.toFixed(6)),
+                        "codigo_tipo_precio":          "01",
+                        "precio_unitario":             delivery_price,
+                        "codigo_tipo_afectacion_igv":  "10",
+                        "total_base_igv":              parseFloat(unit_value.toFixed(2)),
+                        "porcentaje_igv":              percentage_igv,
+                        "total_igv":                   parseFloat(igv_val.toFixed(2)),
+                        "total_impuestos":             parseFloat(igv_val.toFixed(2)),
+                        "total_valor_item":            parseFloat(unit_value.toFixed(2)),
+                        "total_item":                  delivery_price,
+                        "actualizar_descripcion":      false,
+                        "nombre_producto_pdf":         this.deliveryZone.name
+                    });
+                }
+
                 return rec
             },
             initForm() {
@@ -1376,8 +1446,15 @@
                 if (this.appliedCoupon && this.appliedCoupon.discount) {
                     computedTotal = Math.max(0, computedTotal - parseFloat(this.appliedCoupon.discount));
                 }
-                this.summary.total = computedTotal.toFixed(2)
-                this.aux_totals = this.summary
+                // Agregar costo de delivery si hay zona activa
+
+                let deliveryPrice = (this.deliveryZone && this.deliveryZone.price) ? parseFloat(this.deliveryZone.price) : 0;
+                computedTotal += deliveryPrice;
+                let deliveryIgv = parseFloat((deliveryPrice / 1.18 * 0.18).toFixed(2));
+                this.summary.delivery         = deliveryPrice.toFixed(2);
+                this.summary.delivery_igv     = deliveryIgv.toFixed(2);
+                this.summary.total            = computedTotal.toFixed(2)
+                this.aux_totals               = Object.assign({}, this.summary)
                 // console.log(this.summary)
 
 
@@ -1409,7 +1486,16 @@
             saveContactDataUser()
             {
                 let url_finally = '{{ route("tenant_ecommerce_user_data")}}';
-                axios.post(url_finally, this.form_contact, this.getHeaderConfig())
+
+                // Incluir datos de ubigeo y dirección de entrega para registrar en las direcciones del cliente
+                let payload = Object.assign({}, this.form_contact, {
+                    department_id:    this.selectedDepartment   || null,
+                    province_id:      this.selectedProvince     || null,
+                    district_id:      this.selectedDistrict     || null,
+                    delivery_address: this.addressModal.address || this.form_contact.address || null,
+                });
+
+                axios.post(url_finally, payload, this.getHeaderConfig())
                     .then(response => {
                        console.log(response.data)
                     })
@@ -1444,7 +1530,8 @@
                 // Aquí puedes agregar lógica para actualizar el mapa según la dirección seleccionada
             },
             fetchLocations() {
-                axios.get('{{ route("get_location_cascade") }}')
+                // Retorna la promesa para poder encadenar acciones post-carga
+                return axios.get('{{ route("get_location_cascade") }}')
                     .then(response => {
                         this.departments = response.data;
                     })
@@ -1452,17 +1539,108 @@
                         console.error('Error fetching locations:', error);
                     });
             },
+            // Precarga la primera dirección guardada del cliente en el modal y los selectores ubigeo
+            loadDefaultAddress() {
+                const addr = this.userDefaultAddress;
+                if (!addr || !addr.address) return;
+
+                // Autocompletar dirección en el modal
+                this.addressModal.address = addr.address;
+
+                // Si no hay ubigeo completo no se puede cargar la cascada
+                if (!addr.department_id) return;
+
+                const dept = this.departments.find(d => d.value === addr.department_id);
+                if (!dept) return;
+
+                // Nivel 1: departamento
+                this.selectedDepartment = dept.value;
+                this.provinces = dept.children || [];
+                this.selectedProvince = '';
+                this.districts = [];
+                this.selectedDistrict = '';
+
+                if (!addr.province_id) return;
+
+                this.$nextTick(() => {
+                    const prov = this.provinces.find(p => p.value === addr.province_id);
+                    if (!prov) return;
+
+                    // Nivel 2: provincia
+                    this.selectedProvince = prov.value;
+                    this.districts = prov.children || [];
+                    this.selectedDistrict = '';
+
+                    if (!addr.district_id) return;
+
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            const dist = this.districts.find(d => d.value === addr.district_id);
+                            if (!dist) return;
+
+                            // Nivel 3: distrito
+                            this.selectedDistrict = dist.value;
+
+                            // Verificar zona de delivery con la ubicación precargada
+                            this.checkDeliveryZone();
+                        }, 100);
+                    });
+                });
+            },
             updateProvinces() {
                 const department = this.departments.find(dep => dep.value === this.selectedDepartment);
                 this.provinces = department ? department.children : [];
                 this.selectedProvince = '';
                 this.districts = [];
                 this.selectedDistrict = '';
+                // Limpiar zona al cambiar departamento para no mostrar datos obsoletos
+                this.deliveryZone = null;
+                this.deliveryMessage = '';
+                this.calculateSummary();
             },
             updateDistricts() {
                 const province = this.provinces.find(prov => prov.value === this.selectedProvince);
                 this.districts = province ? province.children : [];
                 this.selectedDistrict = '';
+                // Limpiar zona al cambiar provincia
+                this.deliveryZone = null;
+                this.deliveryMessage = '';
+                this.calculateSummary();
+            },
+            async checkDeliveryZone() {
+                if (!this.selectedDepartment) {
+                    this.deliveryZone = null;
+                    this.deliveryMessage = '';
+                    this.calculateSummary();
+                    return;
+                }
+
+                try {
+                    const params = {
+                        department: this.selectedDepartment,
+                        province:   this.selectedProvince   || undefined,
+                        district:   this.selectedDistrict   || undefined,
+                    };
+                    const res = await axios.get('/ecommerce/delivery-zones/check', { params });
+
+                    if (res.data.found) {
+                        this.deliveryZone    = res.data.zone;
+                        this.deliveryMessage = '';
+                    } else if (res.data.configured === false) {
+                        // No hay zonas configuradas: silencio total
+                        this.deliveryZone    = null;
+                        this.deliveryMessage = '';
+                    } else {
+                        // Hay zonas pero ninguna cubre esta dirección
+                        this.deliveryZone    = null;
+                        this.deliveryMessage = res.data.message || 'Lo sentimos, no contamos con delivery en tu zona por el momento.';
+                    }
+                } catch (e) {
+                    this.deliveryZone    = null;
+                    this.deliveryMessage = '';
+                }
+
+                this.calculateSummary();
             },
             async applyCoupon() {
                 if (!this.couponField || this.couponLoading) return;

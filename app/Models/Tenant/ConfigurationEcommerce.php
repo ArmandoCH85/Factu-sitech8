@@ -34,6 +34,7 @@ class ConfigurationEcommerce extends ModelTenant
         'terms_conditions',
         'privacy_policy',
         'about_us',
+        'delivery_no_coverage_message',
     ];
 
     protected $casts = [

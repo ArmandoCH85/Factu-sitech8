@@ -28,8 +28,11 @@ use Modules\ApiPeruDev\Data\ServiceData;
 use App\Models\Tenant\Document;
 use Modules\Item\Models\Category;
 use App\Models\Tenant\Catalogs\Department;
+use Modules\Ecommerce\Models\Tenant\DeliveryZone;
+use Modules\Ecommerce\Models\Tenant\DeliveryZoneLocation;
 use Modules\Ecommerce\Models\Tenant\DiscountCoupon;
 use Modules\Ecommerce\Models\Tenant\DiscountCouponUsage;
+use App\Models\Tenant\PersonAddress;
 
 use App\Models\System\Configuration as SystemConfiguration;
 
@@ -206,7 +209,22 @@ class EcommerceController extends Controller
         $systemConfig = Configuration::with('globalDiscountType')->first();
         $global_discount_type = $systemConfig->globalDiscountType;
 
-        return view('ecommerce::cart.detail', compact('configuration', 'categories', 'global_discount_type'));
+        // Obtener la primera dirección guardada del cliente autenticado para pre-cargar el modal
+        $userAddress = null;
+        if ($ecommerceUser = auth('ecommerce')->user()) {
+            $firstAddress = $ecommerceUser->addresses()->first();
+            if ($firstAddress) {
+                $userAddress = [
+                    'address'       => $firstAddress->address,
+                    'department_id' => $firstAddress->department_id,
+                    'province_id'   => $firstAddress->province_id,
+                    'district_id'   => $firstAddress->district_id,
+                    'phone'         => $firstAddress->phone,
+                ];
+            }
+        }
+
+        return view('ecommerce::cart.detail', compact('configuration', 'categories', 'global_discount_type', 'userAddress'));
     }
 
     public function orderList()
@@ -835,6 +853,28 @@ class EcommerceController extends Controller
 
         $user->save();
 
+        // Registrar la dirección de entrega en el historial de direcciones del cliente si tiene ubigeo completo
+        $deliveryAddress = $request->input('delivery_address');
+        $districtId      = $request->input('district_id');
+
+        if ($deliveryAddress && $districtId) {
+            $user->addresses()->firstOrCreate(
+                [
+                    'address'     => $deliveryAddress,
+                    'district_id' => $districtId,
+                ],
+                [
+                    'country_id'    => 'PE',
+                    'department_id' => $request->input('department_id'),
+                    'province_id'   => $request->input('province_id'),
+                    'district_id'   => $districtId,
+                    'address'       => $deliveryAddress,
+                    'phone'         => $request->input('telephone'),
+                    'main'          => false,
+                ]
+            );
+        }
+
         return ['success' => true];
 
     }
@@ -915,5 +955,97 @@ class EcommerceController extends Controller
         $about_us = $config ? $config->about_us : null;
         $categories = \Modules\Item\Models\Category::get();
         return view('ecommerce::pages_fields.about_us', compact('about_us', 'categories'));
+    }
+
+    /**
+     * Verifica si una dirección tiene cobertura de delivery y retorna la zona aplicable.
+     * Lógica de matching en orden de prioridad (más específico primero):
+     *   1. Dpto + Prov + Distrito (coincidencia exacta)
+     *   2. Dpto + Prov (province_id definido, district_id nulo en la fila)
+     *   3. Solo Dpto (province_id nulo en la fila)
+     *   4. Sin cobertura → devuelve mensaje personalizado
+     */
+    public function checkDeliveryZone(Request $request)
+    {
+        $department = $request->input('department');
+        $province   = $request->input('province');
+        $district   = $request->input('district');
+
+        if (empty($department)) {
+            return response()->json(['found' => false, 'message' => '']);
+        }
+
+        // Colección de zonas activas con sus ubicaciones
+        $activeZoneIds = DeliveryZone::active()->pluck('id');
+
+        if ($activeZoneIds->isEmpty()) {
+            $message = ConfigurationEcommerce::first()?->delivery_no_coverage_message ?? '';
+            return response()->json(['found' => false, 'configured' => false, 'message' => $message]);
+        }
+
+        // Candidato: coincidencia exacta (dpto + prov + distrito)
+        if ($district && $province) {
+            $location = DeliveryZoneLocation::whereIn('delivery_zone_id', $activeZoneIds)
+                ->where('department_id', $department)
+                ->where('province_id', $province)
+                ->where('district_id', $district)
+                ->first();
+
+            if ($location) {
+                $zone = $location->zone;
+                return response()->json([
+                    'found' => true,
+                    'zone'  => [
+                        'id'    => $zone->id,
+                        'name'  => $zone->name,
+                        'price' => $zone->price,
+                    ],
+                ]);
+            }
+        }
+
+        // Candidato: coincidencia por dpto + provincia (sin distrito específico)
+        if ($province) {
+            $location = DeliveryZoneLocation::whereIn('delivery_zone_id', $activeZoneIds)
+                ->where('department_id', $department)
+                ->where('province_id', $province)
+                ->whereNull('district_id')
+                ->first();
+
+            if ($location) {
+                $zone = $location->zone;
+                return response()->json([
+                    'found' => true,
+                    'zone'  => [
+                        'id'    => $zone->id,
+                        'name'  => $zone->name,
+                        'price' => $zone->price,
+                    ],
+                ]);
+            }
+        }
+
+        // Candidato: cobertura sólo por departamento
+        $location = DeliveryZoneLocation::whereIn('delivery_zone_id', $activeZoneIds)
+            ->where('department_id', $department)
+            ->whereNull('province_id')
+            ->whereNull('district_id')
+            ->first();
+
+        if ($location) {
+            $zone = $location->zone;
+            return response()->json([
+                'found' => true,
+                'zone'  => [
+                    'id'    => $zone->id,
+                    'name'  => $zone->name,
+                    'price' => $zone->price,
+                ],
+            ]);
+        }
+
+        // Sin cobertura
+        $message = ConfigurationEcommerce::first()?->delivery_no_coverage_message ?? '';
+        return response()->json(['found' => false, 'configured' => true, 'message' => $message]);
     }
 }

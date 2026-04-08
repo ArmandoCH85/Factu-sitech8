@@ -55,6 +55,7 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
 
     Route::get('configuration', 'ConfigurationController@index')->middleware('redirect.module')->name('tenant_ecommerce_configuration');
     Route::post('configuration', 'ConfigurationController@store_configuration');
+    Route::post('configuration_delivery', 'ConfigurationController@store_configuration_delivery');
     Route::post('configuration_culqui', 'ConfigurationController@store_configuration_culqui');
     Route::post('configuration_paypal', 'ConfigurationController@store_configuration_paypal');
     Route::post('configuration_social', 'ConfigurationController@store_configuration_social');
@@ -77,6 +78,16 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
         Route::post('/', 'DiscountCouponController@store');
         Route::post('/{id}/status', 'DiscountCouponController@updateStatus');
         Route::delete('/{id}', 'DiscountCouponController@destroy');
+    });
+
+    // Zonas de delivery
+    Route::get('delivery-zones/check', 'EcommerceController@checkDeliveryZone')->name('tenant.ecommerce.delivery_zones.check');
+    Route::prefix('delivery-zones')->group(function () {
+        Route::post('/records', 'DeliveryZoneController@records');
+        Route::get('/record', 'DeliveryZoneController@record');
+        Route::post('/', 'DeliveryZoneController@store');
+        Route::post('/{id}/status', 'DeliveryZoneController@updateStatus');
+        Route::delete('/{id}', 'DeliveryZoneController@destroy');
     });
 
     Route::prefix('item-sets')->group(function() {

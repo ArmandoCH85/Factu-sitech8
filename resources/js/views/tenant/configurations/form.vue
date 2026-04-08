@@ -2078,6 +2078,8 @@
                             </div>
                         </div>
                     </el-tab-pane>
+                    <!-- Ocultando sección de Pedidos -->
+                     <!--
                     <el-tab-pane class="mb-3" name="nine">
                         <span slot="label">Pedidos</span>
                         <div class="row switch-configuration-container">
@@ -2110,7 +2112,7 @@
                             </div>
                         </div>
                     </el-tab-pane>
-
+                    -->
                     <el-tab-pane class="mb-3" name="ten">
                         <span slot="label">Reportes</span>
                         <report-configurations-index></report-configurations-index>

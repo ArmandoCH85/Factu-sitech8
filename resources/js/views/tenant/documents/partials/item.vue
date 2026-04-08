@@ -1098,6 +1098,9 @@ export default {
             this.reloadDataItems(item_id);
             this.itemSearchTerm = ''
         });
+        this.$eventHub.$on("establishmentChanged", () => {
+            this.getTables();
+        });
         if (this.displayDiscount !== undefined) {
             if (this.displayDiscount == true) {
                 this.showDiscounts = true;

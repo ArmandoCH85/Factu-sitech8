@@ -46,12 +46,28 @@ class ConfigurationController extends Controller
         if ($request->has('about_us')) {
             $configuration->about_us = $request->input('about_us');
         }
+        if ($request->has('delivery_no_coverage_message')) {
+            $configuration->delivery_no_coverage_message = $request->input('delivery_no_coverage_message');
+        }
 
         $configuration->save();
 
         return [
             'success' => true,
             'message' => 'Configuración actualizada'
+        ];
+    }
+
+    public function store_configuration_delivery(Request $request)
+    {
+        $id = $request->input('id');
+        $configuration = ConfigurationEcommerce::find($id);
+        $configuration->delivery_no_coverage_message = $request->input('delivery_no_coverage_message', '');
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración de delivery actualizada'
         ];
     }
 

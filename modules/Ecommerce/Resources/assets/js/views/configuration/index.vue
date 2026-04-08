@@ -203,6 +203,14 @@
           <DigitalCoupon ref="digitalCoupon" />
         </div>
       </el-tab-pane>
+      <el-tab-pane label="Zonas de delivery">
+        <div>
+          <div class="mb-3">
+            <h4 class="mb-2"><strong>Zonas de Delivery</strong></h4>
+          </div>
+          <DeliveryZones />
+        </div>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -223,6 +231,7 @@
 <script>
 import ConfigurationLinks from '../configuration_links/index.vue';
 import PaymentGateways from '../payment_gateways/index.vue';
+import DeliveryZones from '../configuration_delivery_zones/index.vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DigitalCoupon from '../configuration_digital_coupon/index.vue';
 import CKEditor from 'vue-ckeditor5';
@@ -231,6 +240,7 @@ export default {
     ConfigurationLinks,
     PaymentGateways,
     DigitalCoupon,
+    DeliveryZones,
     'vue-ckeditor': CKEditor.component
   },
   data() {

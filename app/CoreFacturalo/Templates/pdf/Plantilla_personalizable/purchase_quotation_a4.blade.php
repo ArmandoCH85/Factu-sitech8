@@ -90,6 +90,16 @@
             {{ $document->user->name }}
         </td>
     </tr>
+    @if(!empty($document->suppliers))
+    <tr>
+        <td class="align-top">Proveedor(a):</td>
+        <td colspan="3" class="text-left">
+            @foreach($document->suppliers as $supplier)
+                {{ $supplier->name }} ({{ $supplier->number }}) - {{ $supplier->email }}{{ !$loop->last ? ', ' : '' }}
+            @endforeach
+        </td>
+    </tr>
+    @endif
 </table>
 
 @php

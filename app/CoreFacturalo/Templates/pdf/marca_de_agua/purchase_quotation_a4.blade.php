@@ -67,7 +67,12 @@
         <td class="align-top">Proveedor(a):</td>
         <td colspan="3" class="text-left">
             @foreach($document->suppliers as $supplier)
-                {{ $supplier->name }} ({{ $supplier->number }}) - {{ $supplier->email }}{{ !$loop->last ? ', ' : '' }}
+                @php
+                    $supplier_name = $supplier->name ?? $supplier->description ?? '';
+                    $supplier_number = $supplier->number ?? '';
+                    $supplier_email = $supplier->email ?? '';
+                @endphp
+                {{ $supplier_name }}{{ $supplier_number ? ' ('.$supplier_number.')' : '' }}{{ $supplier_email ? ' - '.$supplier_email : '' }}{{ !$loop->last ? ', ' : '' }}
             @endforeach
         </td>
     </tr>

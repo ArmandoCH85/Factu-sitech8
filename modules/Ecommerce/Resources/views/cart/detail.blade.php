@@ -1626,7 +1626,12 @@
                     if (res.data.found) {
                         this.deliveryZone    = res.data.zone;
                         this.deliveryMessage = '';
+                    } else if (res.data.configured === false) {
+                        // No hay zonas configuradas: silencio total
+                        this.deliveryZone    = null;
+                        this.deliveryMessage = '';
                     } else {
+                        // Hay zonas pero ninguna cubre esta dirección
                         this.deliveryZone    = null;
                         this.deliveryMessage = res.data.message || 'Lo sentimos, no contamos con delivery en tu zona por el momento.';
                     }

@@ -980,7 +980,7 @@ class EcommerceController extends Controller
 
         if ($activeZoneIds->isEmpty()) {
             $message = ConfigurationEcommerce::first()?->delivery_no_coverage_message ?? '';
-            return response()->json(['found' => false, 'message' => $message]);
+            return response()->json(['found' => false, 'configured' => false, 'message' => $message]);
         }
 
         // Candidato: coincidencia exacta (dpto + prov + distrito)
@@ -1046,6 +1046,6 @@ class EcommerceController extends Controller
 
         // Sin cobertura
         $message = ConfigurationEcommerce::first()?->delivery_no_coverage_message ?? '';
-        return response()->json(['found' => false, 'message' => $message]);
+        return response()->json(['found' => false, 'configured' => true, 'message' => $message]);
     }
 }

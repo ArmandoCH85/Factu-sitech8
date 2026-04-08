@@ -232,6 +232,7 @@
 import ConfigurationLinks from '../configuration_links/index.vue';
 import PaymentGateways from '../payment_gateways/index.vue';
 import DeliveryZones from '../configuration_delivery_zones/index.vue';
+import 'ckeditor5/ckeditor5.css';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DigitalCoupon from '../configuration_digital_coupon/index.vue';
 import CKEditor from 'vue-ckeditor5';
@@ -255,6 +256,7 @@ export default {
           classic: ClassicEditor
       },
       editorConfig: {
+          licenseKey: 'GPL',
           toolbar: [
               'heading',
               '|',
@@ -262,7 +264,9 @@ export default {
               'bulletedList', 'numberedList',
               '|',
               'blockQuote',
-              'undo', 'redo'
+              'undo', 'redo',
+              '|',
+              'sourceEditing'
           ]
       },
       isResizing: false,

@@ -90,6 +90,21 @@
             {{ $document->user->name }}
         </td>
     </tr>
+    @if(!empty($document->suppliers))
+    <tr>
+        <td class="align-top">Proveedor(a):</td>
+        <td colspan="3" class="text-left">
+            @foreach($document->suppliers as $supplier)
+                @php
+                    $supplier_name = $supplier->name ?? $supplier->description ?? '';
+                    $supplier_number = $supplier->number ?? '';
+                    $supplier_email = $supplier->email ?? '';
+                @endphp
+                {{ $supplier_name }}{{ $supplier_number ? ' ('.$supplier_number.')' : '' }}{{ $supplier_email ? ' - '.$supplier_email : '' }}{{ !$loop->last ? ', ' : '' }}
+            @endforeach
+        </td>
+    </tr>
+    @endif
 </table>
 
 @php

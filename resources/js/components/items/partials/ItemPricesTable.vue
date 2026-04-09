@@ -8,7 +8,7 @@
                         class="mt-1"
                         type="number"
                         size="small"
-                        v-model.number="price.price"
+                        v-model="price.price"
                         step="0.01"
                         :min="0"
                         @input="emitChanges"

@@ -12,6 +12,8 @@ use App\Http\Resources\Tenant\EstablishmentResource;
 use App\Http\Resources\Tenant\EstablishmentCollection;
 use App\Models\Tenant\Warehouse;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\User;
+use Illuminate\Http\Request;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Exception;
 
@@ -168,5 +170,21 @@ class EstablishmentController extends Controller
     {
         $establishments = Establishment::select('id', 'code')->get();
         return response()->json($establishments);
+    }
+
+    public function changeUserEstablishment(Request $request)
+    {
+        $request->validate([
+            'establishment_id' => ['required', 'integer', 'exists:tenant.establishments,id'],
+        ]);
+
+        $user = User::findOrFail(auth()->user()->id);
+        $user->establishment_id = $request->establishment_id;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Establecimiento actualizado con éxito',
+        ], 200);
     }
 }

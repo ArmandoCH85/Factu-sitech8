@@ -174,6 +174,7 @@ if ($hostname) {
             Route::get('establishments/tables', 'Tenant\EstablishmentController@tables');
             Route::get('establishments/record/{establishment}', 'Tenant\EstablishmentController@record');
             Route::post('establishments', 'Tenant\EstablishmentController@store');
+            Route::post('establishments/change-user-establishment', 'Tenant\EstablishmentController@changeUserEstablishment');
             Route::get('establishments/records', 'Tenant\EstablishmentController@records');
             Route::delete('establishments/{establishment}', 'Tenant\EstablishmentController@destroy');
             Route::get('establishments/getEstablishmentActive', 'Tenant\EstablishmentController@getEstablishmentActive');
@@ -259,6 +260,9 @@ if ($hostname) {
             Route::get('items/export/barcode/print_x', 'Tenant\ItemController@printBarCodeX')->name('tenant.items.export.barcode.print.x');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
             Route::post('get-items', 'Tenant\ItemController@getAllItems');
+
+            Route::get('consultas', 'System\PublicDocumentSearchController@tenantForm')->name('tenant.public_search.form');
+            Route::post('consultas', 'System\PublicDocumentSearchController@tenantSearch')->name('tenant.public_search.form.search');
 
             //Persons
             Route::prefix('persons')->group(function () {
@@ -838,6 +842,16 @@ if ($hostname) {
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
         Route::get('phone', 'System\UserController@getPhone');
+
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::get('consultas', 'System\PublicDocumentSearchController@index')->name('system.public_search.index');
+            Route::post('consultas', 'System\PublicDocumentSearchController@search')->name('system.public_search.search');
+            Route::get('consultas/widget/{slug}', 'System\PublicDocumentSearchController@widget')->name('system.public_search.widget');
+            Route::post('consultas/widget/{slug}', 'System\PublicDocumentSearchController@searchWidget')->name('system.public_search.widget.search');
+            Route::get('consultas/widget', 'System\PublicDocumentSearchController@widgetInternal')->name('system.public_search.widget.internal');
+        });
+
+        Route::get('consultas/embed.js', 'System\PublicDocumentSearchController@embedScript')->name('system.public_search.embed');
 
         //guest-Register
         Route::prefix('guest-register')->group(function () {

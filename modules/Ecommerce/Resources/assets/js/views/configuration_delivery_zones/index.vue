@@ -5,7 +5,7 @@
       <div class="input-group">
         <el-input v-model="noCoverageMessage"
           placeholder="Ej: Lo sentimos, por ahora no contamos con delivery en tu zona." style="flex: 1;"></el-input>
-        <el-button type="primary" size="small" plain class="ms-2" style="white-space: nowrap;" :loading="savingMessage"
+        <el-button type="primary" size="small" plain class="ms-2 btn btn-sm" style="white-space: nowrap;" :loading="savingMessage"
           @click="saveNoCoverageMessage">Guardar</el-button>
       </div>
     </div>
@@ -25,21 +25,22 @@
     </div>
 
     <!-- Tabla -->
-    <div style="overflow-x: auto;">
-      <table class="table table-hover table-sm align-middle">
+    <div class="table-responsive">
+      <table class="table">
         <thead>
           <tr>
-            <th style="width: 72px;" class="text-center">Activo</th>
-            <th class="text-start">Nombre</th>
-            <th style="width: 160px;" class="text-start">Precio (S/)</th>
-            <th style="width: 150px;" class="text-end">Opciones</th>
+            <th class="text-center">Activo</th>
+            <th style="min-width: 150px;" class="text-start">Nombre</th>
+            <th style="width: 120px;" class="text-start">Precio (S/)</th>
+            <th style="width: 260px;" class="text-end">Cobertura</th>
+            <th style="width: 100px;" class="text-end">Opciones</th>
           </tr>
         </thead>
 
         <!-- Cargando -->
         <tbody v-if="loading">
           <tr>
-            <td colspan="4" class="text-center py-4">
+            <td colspan="5" class="text-center py-4">
               <i class="fa fa-spinner fa-spin"></i> Cargando...
             </td>
           </tr>
@@ -48,18 +49,21 @@
         <tbody v-else>
 
           <!-- ── Nueva zona: fila principal ── -->
-          <tr class="table-light">
+          <tr class="" :style="newRow._open ? 'border-bottom: 0px solid transparent !important' : ''">
             <td class="text-center">
-              <el-switch v-model="newRow.active" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+              <el-switch v-model="newRow.active"></el-switch>
             </td>
             <td>
               <el-input v-model="newRow.name" placeholder="Nombre de la zona" size="small"></el-input>
             </td>
             <td>
-              <el-input-number v-model="newRow.price" :min="0" :precision="2" :step="1" size="small"
-                style="width: 100%;"></el-input-number>
+              <el-input v-model="newRow.price" :min="0" :precision="2" :step="1" size="small" type="number"
+                style="width: 100%;"></el-input>
             </td>
-            <td class="text-end" style="white-space: nowrap;">
+            <td class="text-end">
+              <span :class="coverageLabelClass(newRow)" style="font-size:11px; margin-left:3px;">
+                {{ coverageLabel(newRow) }}
+              </span>
               <!-- Toggle cobertura -->
               <button class="btn btn-xs btn-light btn-shad me-1" type="button"
                 :title="newRow._open ? 'Ocultar cobertura' : 'Ver cobertura'"
@@ -69,19 +73,14 @@
                   <polyline v-if="newRow._open" points="18 15 12 9 6 15"></polyline>
                   <polyline v-else points="6 9 12 15 18 9"></polyline>
                 </svg>
-                <span v-if="newRow.locations.length > 0"
-                  style="font-size:10px; background:#0d6efd; color:#fff; border-radius:10px; padding:1px 5px; margin-left:3px;">
-                  {{ newRow.locations.length }}
-                </span>
               </button>
+            </td>
+            <td class="text-end" style="white-space: nowrap;">
               <!-- Guardar -->
               <button class="btn btn-xs btn-success btn-shad me-1" type="button" title="Guardar"
                 :disabled="newRow._saving || !newRowReady" @click.prevent="saveNewRow">
                 <i v-if="newRow._saving" class="fa fa-spinner fa-spin"></i>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
               </button>
               <!-- Limpiar -->
               <button class="btn btn-xs btn-secondary btn-shad" type="button" title="Limpiar"
@@ -96,26 +95,25 @@
           </tr>
 
           <!-- ── Nueva zona: fila cobertura colapsable ── -->
-          <tr v-if="newRow._open" class="table-light">
-            <td colspan="4" class="py-2 px-3" style="border-top: 1px dashed #dee2e6;">
+          <tr v-if="newRow._open">
+            <td colspan="5" class="pt-2 pb-4">
               <div class="d-flex flex-wrap gap-1 mb-1">
                 <el-select v-model="newRow._picker.depts" multiple collapse-tags filterable placeholder="Departamento"
                   size="small" style="min-width: 80px; flex: 1;" @change="onPickerDeptChange(newRow._picker)">
-                  <el-option v-for="d in locationTree" :key="d.value" :label="d.label" :value="d.value"></el-option>
+                  <el-option v-for="d in getPickerAvailableDepts(newRow)" :key="d.value" :label="d.label" :value="d.value"></el-option>
                 </el-select>
-                <el-select v-model="newRow._picker.provs" multiple collapse-tags filterable placeholder="Provincia"
-                  size="small" style="min-width: 80px; flex: 1;" :disabled="newRow._picker.depts.length !== 1"
+                <el-select v-if="newRow._picker.depts.length === 1" v-model="newRow._picker.provs" multiple collapse-tags filterable placeholder="Provincia (opc.)"
+                  size="small" style="min-width: 80px; flex: 1;"
                   @change="onPickerProvChange(newRow._picker)">
                   <el-option v-for="p in getPickerProvinces(newRow._picker)" :key="p.value" :label="p.label"
                     :value="p.value"></el-option>
                 </el-select>
-                <el-select v-model="newRow._picker.dists" multiple collapse-tags filterable
-                  placeholder="Distrito (opc.)" size="small" style="min-width: 80px; flex: 1;"
-                  :disabled="newRow._picker.depts.length !== 1 || newRow._picker.provs.length !== 1">
+                <el-select v-if="newRow._picker.depts.length === 1 && newRow._picker.provs.length === 1" v-model="newRow._picker.dists" multiple collapse-tags filterable
+                  placeholder="Distrito (opc.)" size="small" style="min-width: 80px; flex: 1;">
                   <el-option v-for="d in getPickerDistricts(newRow._picker)" :key="d.value" :label="d.label"
                     :value="d.value"></el-option>
                 </el-select>
-                <el-button type="primary" size="mini" icon="el-icon-plus"
+                <el-button type="primary" size="mini" icon="el-icon-plus" class="btn btn-sm"
                   :disabled="newRow._picker.depts.length === 0"
                   @click.prevent="addCoverage(newRow)"></el-button>
               </div>
@@ -130,19 +128,21 @@
           <template v-for="row in records">
 
             <!-- Fila principal -->
-            <tr :key="'main-' + row.id">
+            <tr :key="'main-' + row.id" :style="row._open ? 'border-bottom: 0px solid transparent !important' : ''">
               <td class="text-center">
-                <el-switch v-model="row.active" active-color="#13ce66" inactive-color="#ff4949"
-                  @change="toggleStatus(row)"></el-switch>
+                <el-switch v-model="row.active" @change="toggleStatus(row)"></el-switch>
               </td>
               <td>
                 <el-input v-model="row.name" size="small" placeholder="Nombre de la zona"></el-input>
               </td>
               <td>
-                <el-input-number v-model="row.price" :min="0" :precision="2" :step="1" size="small"
-                  style="width: 100%;"></el-input-number>
+                <el-input v-model="row.price" :min="0" :precision="2" :step="1" size="small" type="number"
+                  style="width: 100%;"></el-input>
               </td>
-              <td class="text-end" style="white-space: nowrap;">
+              <td class="text-end">
+                <span :class="coverageLabelClass(row)" style="font-size:11px; margin-left:3px;">
+                  {{ coverageLabel(row) }}
+                </span>
                 <!-- Toggle cobertura -->
                 <button class="btn btn-xs btn-light btn-shad me-1" type="button"
                   :title="row._open ? 'Ocultar cobertura' : 'Ver cobertura'"
@@ -152,19 +152,14 @@
                     <polyline v-if="row._open" points="18 15 12 9 6 15"></polyline>
                     <polyline v-else points="6 9 12 15 18 9"></polyline>
                   </svg>
-                  <span v-if="row.locations && row.locations.length > 0"
-                    style="font-size:10px; background:#0d6efd; color:#fff; border-radius:10px; padding:1px 5px; margin-left:3px;">
-                    {{ row.locations.length }}
-                  </span>
                 </button>
+              </td>
+              <td class="text-end" style="white-space: nowrap;">                
                 <!-- Guardar -->
                 <button class="btn btn-xs btn-success btn-shad me-1" type="button" title="Guardar"
                   :disabled="row._saving" @click.prevent="saveRow(row)">
                   <i v-if="row._saving" class="fa fa-spinner fa-spin"></i>
-                  <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
                 </button>
                 <!-- Duplicar -->
                 <button class="btn btn-xs btn-warning btn-shad me-1" type="button" title="Duplicar"
@@ -194,25 +189,24 @@
 
             <!-- Fila cobertura colapsable -->
             <tr v-if="row._open" :key="'cov-' + row.id">
-              <td colspan="4" class="py-2 px-3" style="border-top: 1px dashed #dee2e6; background: #f8f9fa;">
+              <td colspan="5" class="pt-2 pb-4">
                 <div class="d-flex flex-wrap gap-1 mb-1">
                   <el-select v-model="row._picker.depts" multiple collapse-tags filterable placeholder="Departamento"
                     size="small" style="min-width: 80px; flex: 1;" @change="onPickerDeptChange(row._picker)">
-                    <el-option v-for="d in locationTree" :key="d.value" :label="d.label" :value="d.value"></el-option>
+                    <el-option v-for="d in getPickerAvailableDepts(row)" :key="d.value" :label="d.label" :value="d.value"></el-option>
                   </el-select>
-                  <el-select v-model="row._picker.provs" multiple collapse-tags filterable placeholder="Provincia"
-                    size="small" style="min-width: 80px; flex: 1;" :disabled="row._picker.depts.length !== 1"
+                  <el-select v-if="row._picker.depts.length === 1" v-model="row._picker.provs" multiple collapse-tags filterable placeholder="Provincia (opc.)"
+                    size="small" style="min-width: 80px; flex: 1;"
                     @change="onPickerProvChange(row._picker)">
                     <el-option v-for="p in getPickerProvinces(row._picker)" :key="p.value" :label="p.label"
                       :value="p.value"></el-option>
                   </el-select>
-                  <el-select v-model="row._picker.dists" multiple collapse-tags filterable placeholder="Distrito (opc.)"
-                    size="small" style="min-width: 80px; flex: 1;"
-                    :disabled="row._picker.depts.length !== 1 || row._picker.provs.length !== 1">
+                  <el-select v-if="row._picker.depts.length === 1 && row._picker.provs.length === 1" v-model="row._picker.dists" multiple collapse-tags filterable placeholder="Distrito (opc.)"
+                    size="small" style="min-width: 80px; flex: 1;">
                     <el-option v-for="d in getPickerDistricts(row._picker)" :key="d.value" :label="d.label"
                       :value="d.value"></el-option>
                   </el-select>
-                  <el-button type="primary" size="mini" icon="el-icon-plus"
+                  <el-button type="primary" size="mini" icon="el-icon-plus" class="btn btn-sm"
                     :disabled="row._picker.depts.length === 0"
                     @click.prevent="addCoverage(row)"></el-button>
                 </div>
@@ -264,7 +258,7 @@ export default {
         active: '',
       },
       searchTimeout: null,
-      newRow: { name: '', price: 0, active: true, locations: [], _picker: { depts: [], provs: [], dists: [] }, _saving: false, _open: true },
+      newRow: { name: '', price: 0, active: true, locations: [], _picker: { depts: [], provs: [], dists: [] }, _saving: false, _open: false },
       noCoverageMessage: '',
       savingMessage: false,
       locationTree: [],
@@ -280,8 +274,7 @@ export default {
   computed: {
     newRowReady() {
       return !!(this.newRow.name && this.newRow.name.trim()) &&
-        this.newRow.price > 0 &&
-        this.newRow.locations.length > 0;
+        this.newRow.price > 0;
     },
   },
   methods: {
@@ -354,6 +347,11 @@ export default {
       } catch (e) {
         this.locationTree = [];
       }
+    },
+    getPickerAvailableDepts(row) {
+      const locs = row.locations || [];
+      const usedDeptIds = new Set(locs.map(l => l.department_id));
+      return this.locationTree.filter(d => !usedDeptIds.has(d.value));
     },
     getPickerProvinces(picker) {
       if (picker.depts.length !== 1) return [];
@@ -433,11 +431,15 @@ export default {
         return;
       }
       this.newRow._saving = true;
+      let locations = this.newRow.locations;
+      if (locations.length === 0) {
+        locations = this.locationTree.map(d => ({ department_id: d.value, province_id: null, district_id: null, label: d.label }));
+      }
       this.$http.post('/ecommerce/delivery-zones', {
         name: this.newRow.name.trim(),
         price: this.newRow.price,
         active: this.newRow.active,
-        locations: this.newRow.locations.map(({ department_id, province_id, district_id }) => ({
+        locations: locations.map(({ department_id, province_id, district_id }) => ({
           department_id,
           province_id: province_id || null,
           district_id: district_id || null,
@@ -459,12 +461,16 @@ export default {
         return;
       }
       row._saving = true;
+      let locations = row.locations || [];
+      if (locations.length === 0) {
+        locations = this.locationTree.map(d => ({ department_id: d.value, province_id: null, district_id: null, label: d.label }));
+      }
       this.$http.post('/ecommerce/delivery-zones', {
         id: row.id,
         name: row.name.trim(),
         price: row.price,
         active: row.active,
-        locations: (row.locations || []).map(({ department_id, province_id, district_id }) => ({
+        locations: locations.map(({ department_id, province_id, district_id }) => ({
           department_id,
           province_id: province_id || null,
           district_id: district_id || null,
@@ -507,6 +513,33 @@ export default {
         .then(() => this.getRecords());
     },
 
+
+    coverageLabel(row) {
+      const locs = row.locations || [];
+      if (locs.length === 0) return 'Sin cobertura (se aplicará a todo el Perú)';
+      const uniqueDepts = [...new Set(locs.map(l => l.department_id))];
+      if (this.locationTree.length > 0 && uniqueDepts.length >= this.locationTree.length) {
+        const allDeptLevel = uniqueDepts.every(deptId =>
+          locs.some(l => l.department_id === deptId && !l.province_id && !l.district_id)
+        );
+        if (allDeptLevel) return 'Todo el Perú';
+      }
+      const deptCount = uniqueDepts.length;
+      const hasDetail = locs.some(l => l.province_id || l.district_id);
+      if (!hasDetail) {
+        return deptCount === 1 ? '1 departamento' : `${deptCount} departamentos`;
+      }
+      return deptCount === 1
+        ? `1 departamento (${locs.length} ${locs.length === 1 ? 'zona' : 'zonas'})`
+        : `${deptCount} departamentos (${locs.length} ${locs.length === 1 ? 'zona' : 'zonas'})`;
+    },
+    coverageLabelClass(row) {
+      const locs = row.locations || [];
+      if (locs.length === 0) return 'text-muted';
+      const uniqueDepts = [...new Set(locs.map(l => l.department_id))];
+      if (this.locationTree.length > 0 && uniqueDepts.length >= this.locationTree.length) return 'text-success fw-semibold';
+      return 'text-primary';
+    },
 
     extractErrorMessage(error, fallback) {
       if (error.response?.status === 422) {

@@ -46,13 +46,17 @@ if(config('configuration.multi_user_enabled')) {
 }
 $showMultiUser = $multiUserCount > 1 && config('configuration.multi_user_enabled');
 
+// Si hay múltiples sucursales o multiempresa disponible,
+// el selector debe permanecer visible en sidebar para evitar perder acceso.
+$defaultSidebarVisibility = (count($establishments) > 1) || $showMultiUser;
+
 if (is_null($showInSidebar)) {
     if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
-        $showInSidebar = (bool)$visual->branch_selector_in_sidebar;
+        $showInSidebar = (bool)$visual->branch_selector_in_sidebar || $defaultSidebarVisibility;
     } elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
-        $showInSidebar = (bool)$visual['branch_selector_in_sidebar'];
+        $showInSidebar = (bool)$visual['branch_selector_in_sidebar'] || $defaultSidebarVisibility;
     } else {
-        $showInSidebar = (count($establishments) > 1) || $showMultiUser;
+        $showInSidebar = $defaultSidebarVisibility;
     }
 }
 

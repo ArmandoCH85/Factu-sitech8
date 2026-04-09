@@ -46,6 +46,41 @@ class PublicDocumentSearchController extends Controller
         return $this->widget($slug);
     }
 
+    public function tenantForm()
+    {
+        $slug = $this->currentTenantSlug();
+        $form = $this->defaultForm();
+        $form['tenant_slug'] = $slug;
+
+        return $this->responseView(
+            $form,
+            null,
+            null,
+            null,
+            false,
+            $slug,
+            $this->resolveBrandingBySlug($slug)
+        );
+    }
+
+    public function tenantSearch(Request $request)
+    {
+        $slug = $this->currentTenantSlug();
+        $request->merge(['tenant_slug' => $slug]);
+
+        $payload = $this->resolveSearch($request);
+
+        return $this->responseView(
+            $payload['validated'],
+            $payload['result'],
+            $payload['statusMessage'],
+            $payload['statusType'],
+            false,
+            $slug,
+            $payload['branding']
+        );
+    }
+
     public function embedScript()
     {
         $js = <<<'JS'
@@ -110,8 +145,19 @@ JS;
         ]);
     }
 
-    private function responseView(array $form, ?array $result, ?string $statusMessage, ?string $statusType, bool $embedded = false, ?string $tenantSlug = null, array $branding = [])
+    private function responseView(
+        array $form,
+        ?array $result,
+        ?string $statusMessage,
+        ?string $statusType,
+        bool $embedded = false,
+        ?string $tenantSlug = null,
+        array $branding = []
+    )
     {
+        $allowTenantCustomization = request()->routeIs('tenant.public_search.form')
+            || request()->routeIs('tenant.public_search.form.search');
+
         return response()->view('system.public-search.index', [
             'documentTypes' => self::DOCUMENT_TYPES,
             'form' => array_merge($this->defaultForm(), $form),
@@ -121,6 +167,7 @@ JS;
             'embedded' => $embedded,
             'tenantSlug' => $tenantSlug,
             'brand' => array_merge($this->defaultBranding(), $branding),
+            'allowTenantCustomization' => $allowTenantCustomization,
         ])->header('X-Frame-Options', 'ALLOWALL');
     }
 
@@ -265,7 +312,18 @@ JS;
             }
         }
 
-        if ($configuration && !empty($configuration->login_bg_color)) {
+        $branding = $this->applyConfigurationBranding($branding, $configuration);
+
+        return $branding;
+    }
+
+    private function applyConfigurationBranding(array $branding, ?Configuration $configuration): array
+    {
+        if (!$configuration) {
+            return $branding;
+        }
+
+        if (!empty($configuration->login_bg_color)) {
             $branding['color'] = $configuration->login_bg_color;
         }
 
@@ -285,6 +343,17 @@ JS;
             'color' => '#0d8796',
             'ruc' => null,
         ];
+    }
+
+    private function currentTenantSlug(): ?string
+    {
+        $hostname = app(CurrentHostname::class);
+
+        if ($hostname && !empty($hostname->fqdn)) {
+            return $hostname->fqdn;
+        }
+
+        return request()->getHost();
     }
 
     private function resolveDocument(array $validated, int $customerId): ?Document

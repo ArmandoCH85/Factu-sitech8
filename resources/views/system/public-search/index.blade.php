@@ -1,7 +1,15 @@
 @extends('system.layouts.auth')
 
 @section('content')
-    <div style="--brand-color: {{ $brand['color'] ?? '#0d8796' }}; --action-color: #101d3f; background: linear-gradient(rgba(160, 178, 198, 0.62), rgba(150, 170, 192, 0.66)), url('/images/fondo-busqueda.png') center / cover no-repeat; min-height: 100vh; padding: 32px 12px;">
+    @php
+        $searchAction = !empty($allowTenantCustomization)
+            ? route('tenant.public_search.form.search')
+            : ($tenantSlug
+                ? route('system.public_search.widget.search', ['slug' => $tenantSlug])
+                : route('system.public_search.search'));
+    @endphp
+
+    <div style="--brand-color: {{ $brand['color'] ?? '#0d8796' }}; --action-color: #101d3f; background: linear-gradient(rgba(243, 244, 246, 0.98), rgba(229, 231, 235, 0.98)); min-height: 100vh; padding: 32px 12px;">
         <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10">
@@ -20,16 +28,29 @@
                             <div>
                                 <h3 class="my-0" style="color:#163a5c; font-weight:700; letter-spacing:.02em;">BUSCAR COMPROBANTE ELECTRONICO</h3>
                                 <small class="d-block mt-1" style="color:#5b728b; font-weight:500;">{{ $brand['name'] ?? 'Consulta pública de comprobantes' }}</small>
+                                <small class="d-block mt-2" style="color:#637789; font-weight:500;">Consulta de validez de comprobantes electrónicos de pago.</small>
+                                <div class="mx-auto mt-3" style="max-width: 420px; text-align: center;">
+                                    <label for="ruc_emisor" class="mb-1 d-block" style="font-size:.82rem; color:#5a6f82; font-weight:600; text-align:center;">RUC Emisor</label>
+                                    <input
+                                        type="text"
+                                        name="ruc_emisor"
+                                        id="ruc_emisor"
+                                        form="public-search-form"
+                                        maxlength="11"
+                                        class="form-control mx-auto text-center @error('ruc_emisor') is-invalid @enderror {{ $tenantSlug && !empty($brand['ruc']) ? 'bg-light' : '' }}"
+                                        value="{{ old('ruc_emisor', $tenantSlug ? ($brand['ruc'] ?? $form['ruc_emisor']) : $form['ruc_emisor']) }}"
+                                        placeholder="Ej: 20123456789"
+                                        {{ $tenantSlug && !empty($brand['ruc']) ? 'readonly' : '' }}
+                                    >
+                                    @error('ruc_emisor')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-body" style="background: #ffffff;">
-                        <div class="mb-4 p-3 rounded-lg" style="background: #f8fbfc; border: 1px solid rgba(0,0,0,.05); box-shadow: inset 0 1px 0 rgba(255,255,255,.85); border-left: 4px solid var(--brand-color);">
-                            <strong class="d-block" style="color: var(--brand-color); font-size: 1rem;">{{ $brand['name'] ?? 'Buscador público' }}</strong>
-                            <small class="text-muted d-block mt-1">Consulta de validez de comprobantes electrónicos de pago. Ingrese los datos exactos del comprobante para obtener XML y PDF.</small>
-                        </div>
-
-                        <form method="POST" action="{{ $tenantSlug ? route('system.public_search.widget.search', ['slug' => $tenantSlug]) : route('system.public_search.search') }}" autocomplete="off">
+                        <form id="public-search-form" method="POST" action="{{ $searchAction }}" autocomplete="off">
                             @csrf
 
                             @if($tenantSlug)
@@ -37,23 +58,6 @@
                             @endif
 
                             <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="ruc_emisor">RUC Emisor</label>
-                                        <input
-                                            type="text"
-                                            name="ruc_emisor"
-                                            id="ruc_emisor"
-                                            maxlength="11"
-                                            class="form-control @error('ruc_emisor') is-invalid @enderror {{ $tenantSlug ? 'bg-light' : '' }}"
-                                            value="{{ old('ruc_emisor', $tenantSlug ? ($brand['ruc'] ?? $form['ruc_emisor']) : $form['ruc_emisor']) }}"
-                                            placeholder="Ej: 20123456789"
-                                        >
-                                        @error('ruc_emisor')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="document_type_id">Tipo Documento</label>
@@ -69,16 +73,13 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="date_of_issue">Fecha Emisión</label>
-                                        <input type="date" name="date_of_issue" id="date_of_issue" class="form-control @error('date_of_issue') is-invalid @enderror" value="{{ old('date_of_issue', $form['date_of_issue']) }}">
-                                        @error('date_of_issue')
+                                        <label for="number">Número</label>
+                                        <input type="text" name="number" id="number" maxlength="20" class="form-control @error('number') is-invalid @enderror" value="{{ old('number', $form['number']) }}" placeholder="Ej: 000001">
+                                        @error('number')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="series">Serie</label>
@@ -88,11 +89,14 @@
                                         @enderror
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="number">Número</label>
-                                        <input type="text" name="number" id="number" maxlength="20" class="form-control @error('number') is-invalid @enderror" value="{{ old('number', $form['number']) }}" placeholder="Ej: 12345">
-                                        @error('number')
+                                        <label for="customer_number">Doc. Cliente (RUC/DNI)</label>
+                                        <input type="text" name="customer_number" id="customer_number" maxlength="15" class="form-control @error('customer_number') is-invalid @enderror" value="{{ old('customer_number', $form['customer_number']) }}" placeholder="Número de documento">
+                                        @error('customer_number')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -106,14 +110,11 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group mb-0">
-                                        <label for="customer_number">Doc. Cliente (RUC/DNI)</label>
-                                        <input type="text" name="customer_number" id="customer_number" maxlength="15" class="form-control @error('customer_number') is-invalid @enderror" value="{{ old('customer_number', $form['customer_number']) }}" placeholder="Número de documento">
-                                        @error('customer_number')
+                                        <label for="date_of_issue">Fecha Emisión</label>
+                                        <input type="date" name="date_of_issue" id="date_of_issue" class="form-control @error('date_of_issue') is-invalid @enderror" value="{{ old('date_of_issue', $form['date_of_issue']) }}">
+                                        @error('date_of_issue')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -131,18 +132,18 @@
                             </div>
                         @endif
 
-                        <div class="table-responsive mt-4">
-                            <table class="table table-borderless mb-0">
-                                <thead style="background:#f3f7fa; border-radius: 12px; overflow: hidden;">
-                                    <tr>
-                                        <th class="py-2" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">CLIENTE</th>
-                                        <th class="py-2" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">NÚMERO</th>
-                                        <th class="py-2 text-right" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">TOTAL</th>
-                                        <th class="py-2 text-right" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">DESCARGAS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if($result)
+                        @if($result)
+                            <div class="table-responsive mt-4">
+                                <table class="table table-borderless mb-0">
+                                    <thead style="background:#f3f7fa; border-radius: 12px; overflow: hidden;">
+                                        <tr>
+                                            <th class="py-2" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">CLIENTE</th>
+                                            <th class="py-2" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">NÚMERO</th>
+                                            <th class="py-2 text-right" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">TOTAL</th>
+                                            <th class="py-2 text-right" style="font-size:.8rem; letter-spacing:.03em; color:#334155;">DESCARGAS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <tr style="background:#fff; border-radius: 12px; box-shadow: 0 4px 14px rgba(15,23,42,.04);">
                                             <td class="py-3">{{ $result['customer'] }}</td>
                                             <td class="py-3">{{ $result['number'] }}</td>
@@ -170,18 +171,15 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    @else
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted py-3">Ingrese los datos del comprobante para visualizar los resultados aquí.</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
         </div>
     </div>
+
 @endsection

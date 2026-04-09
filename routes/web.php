@@ -261,6 +261,9 @@ if ($hostname) {
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
             Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
+            Route::get('consultas', 'System\PublicDocumentSearchController@tenantForm')->name('tenant.public_search.form');
+            Route::post('consultas', 'System\PublicDocumentSearchController@tenantSearch')->name('tenant.public_search.form.search');
+
             //Persons
             Route::prefix('persons')->group(function () {
                 /**

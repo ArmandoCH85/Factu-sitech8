@@ -1530,7 +1530,7 @@ class Facturalo
             if (!isset($company->certificate)) {
                 return true;
             }  else {
-                return Storage::exists('certificates'.DIRECTORY_SEPARATOR.$company->certificate);
+                return !Storage::exists('certificates'.DIRECTORY_SEPARATOR.$company->certificate);
             }
 
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
 use App\Models\System\Client;
+use App\Models\System\Configuration as SystemConfiguration;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
@@ -339,10 +340,25 @@ JS;
     {
         return [
             'name' => 'Buscador de comprobantes',
-            'logo' => null,
+            'logo' => $this->resolveSystemLoginLogo(),
             'color' => '#0d8796',
             'ruc' => null,
         ];
+    }
+
+    private function resolveSystemLoginLogo(): ?string
+    {
+        try {
+            $configuration = SystemConfiguration::first();
+
+            if (!$configuration || !$configuration->login || empty($configuration->login->logo)) {
+                return null;
+            }
+
+            return $configuration->login->logo;
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     private function currentTenantSlug(): ?string

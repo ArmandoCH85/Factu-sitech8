@@ -37,10 +37,9 @@
                                         id="ruc_emisor"
                                         form="public-search-form"
                                         maxlength="11"
-                                        class="form-control mx-auto text-center @error('ruc_emisor') is-invalid @enderror {{ $tenantSlug && !empty($brand['ruc']) ? 'bg-light' : '' }}"
+                                        class="form-control mx-auto text-center @error('ruc_emisor') is-invalid @enderror"
                                         value="{{ old('ruc_emisor', $tenantSlug ? ($brand['ruc'] ?? $form['ruc_emisor']) : $form['ruc_emisor']) }}"
                                         placeholder="Ej: 20123456789"
-                                        {{ $tenantSlug && !empty($brand['ruc']) ? 'readonly' : '' }}
                                     >
                                     @error('ruc_emisor')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>

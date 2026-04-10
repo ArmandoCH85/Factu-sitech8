@@ -281,7 +281,8 @@
         @endif
 
         <tr>
-            <td colspan="3" class="desc-ticket text-uppercase">TOTAL A PAGAR:
+            <td class="desc-ticket text-uppercase text-left" style="white-space: nowrap;">Productos: {{ rtrim(rtrim(number_format(collect($document->items)->sum(function ($item) { return (float) data_get($item, 'quantity', 0); }), 2, '.', ''), '0'), '.') }}</td>
+            <td colspan="2" class="desc-ticket text-uppercase">TOTAL A PAGAR:
                 {{ $document->currency_type->symbol }}</td>
             <td colspan="2" class="text-right desc-ticket text-uppercase">{{ number_format($document->total, 2) }}</td>
         </tr>

@@ -564,6 +564,12 @@ foreach ($document->items as $row) {
             <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
         <tr>
+            <td class="p-1 text-left align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}" style="white-space: nowrap;">
+                Productos: {{ rtrim(rtrim(number_format(collect($document->items)->sum(function ($item) { return (float) data_get($item, 'quantity', 0); }), 2, '.', ''), '0'), '.') }}
+            </td>
+            <td class="p-1 text-right align-top desc cell-solid font-bold"></td>
+        </tr>
+        <tr>
             <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}">
                 TOTAL A PAGAR. {{$document->currency_type->symbol}}
             </td>

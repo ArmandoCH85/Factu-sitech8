@@ -942,6 +942,11 @@ export default {
     tenantSlug: {
       type: String,
       default: ''
+    },
+    // Color primario del widget (hex, ej: "#409EFF") — personalizable sin BD
+    primaryColor: {
+      type: String,
+      default: ''
     }
   },
 
@@ -1045,6 +1050,13 @@ export default {
         ? this.form.location_cascade[2]
         : null
     },
+  },
+
+  mounted() {
+    // Aplicar el color primario personalizado como variable CSS sobre el wrapper
+    if (this.primaryColor && /^#[0-9A-Fa-f]{6}$/.test(this.primaryColor)) {
+      this.$el.style.setProperty('--cf-primary', this.primaryColor)
+    }
   },
 
   created() {

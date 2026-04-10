@@ -71,8 +71,17 @@ class ClaimController extends Controller
      */
     public function widget($slug)
     {
+        // Leer y sanitizar el color primario (solo hex de 6 dígitos permitido)
+        $color = request()->query('color', '#18181b');
+        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
+            $color = '#18181b';
+        }
+
         return response()
-            ->view('claimsbook::widget', ['tenant_slug' => $slug])
+            ->view('claimsbook::widget', [
+                'tenant_slug'   => $slug,
+                'primary_color' => $color,
+            ])
             ->header('X-Frame-Options', 'ALLOWALL');
     }
 
@@ -109,13 +118,19 @@ class ClaimController extends Controller
     var origin = src.substring(0, src.indexOf('/claims/embed.js'));
     var slug   = (new URL(src)).hostname;
 
+    // Leer el color primario configurado en el atributo data-color del script (opcional)
+    var color = script.getAttribute('data-color') || '';
+
     // Crear el contenedor
     var wrap = document.createElement('div');
     wrap.style.cssText = 'width:100%;';
 
-    // Crear el iframe
+    // Crear el iframe — incluir el color como query param si fue configurado
+    var iframeSrc = origin + '/claims/widget/' + slug;
+    if (color) { iframeSrc += '?color=' + encodeURIComponent(color); }
+
     var iframe = document.createElement('iframe');
-    iframe.src         = origin + '/claims/widget/' + slug;
+    iframe.src         = iframeSrc;
     iframe.width       = '100%';
     iframe.height      = '720';
     iframe.frameBorder = '0';

@@ -37,5 +37,11 @@ Vue.component('tenant-claims-book-form', ClaimsBookForm)
 // Montar sobre el punto de anclaje definido en widget.blade.php
 const el = document.getElementById('main-wrapper')
 if (el) {
-    new Vue({ el })
+    new Vue({
+        el,
+        // Exponer el color resuelto (URL param o localStorage) para que el template lo use como prop
+        data: {
+            widgetColor: window.widgetColor || '#18181b',
+        },
+    })
 }

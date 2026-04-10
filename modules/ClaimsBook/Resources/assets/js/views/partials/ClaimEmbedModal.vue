@@ -19,6 +19,24 @@
                 <a :href="widgetUrl" target="_blank" class="cem-link">{{ widgetUrl }}</a>
             </div>
 
+            <!-- Selector de color primario -->
+            <div class="cem-color-row">
+                <span class="cem-label">Color primario:</span>
+                <el-color-picker
+                    v-model="primaryColor"
+                    size="medium"
+                    style="min-width: 40px;"
+                    @change="onColorChange"
+                ></el-color-picker>
+                <span class="cem-color-hint">{{ primaryColor }}</span>
+                <el-button
+                    size="mini"
+                    type="text"
+                    class="cem-reset-color"
+                    @click="resetColor"
+                >Restablecer</el-button>
+            </div>
+
             <!-- Bloque de código -->
             <div class="cem-code-block">
                 <pre ref="codeBlock" class="cem-pre">{{ embedCode }}</pre>
@@ -113,6 +131,29 @@
     border-radius: 3px;
     color: #e6a23c;
 }
+
+.cem-color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f4f4f5;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+}
+
+.cem-color-hint {
+    font-size: 12px;
+    color: #606266;
+    font-family: 'Consolas', monospace;
+}
+
+.cem-reset-color {
+    margin-left: auto;
+    font-size: 12px;
+    color: #909399;
+    padding: 0;
+}
 </style>
 
 <script>
@@ -130,23 +171,52 @@ export default {
         return {
             widgetUrl: '',
             embedCode: '',
+            primaryColor: '#18181b',
+        }
+    },
+
+    created() {
+        // Recuperar el color guardado previamente; si no existe usar el valor por defecto
+        const saved = localStorage.getItem('claims_widget_primary_color')
+        if (saved && /^#[0-9A-Fa-f]{6}$/.test(saved)) {
+            this.primaryColor = saved
         }
     },
 
     methods: {
+        // Persiste el color en localStorage y regenera el código
+        onColorChange() {
+            localStorage.setItem('claims_widget_primary_color', this.primaryColor)
+            this.buildCode()
+        },
+
         // Construye la URL del widget y el snippet del script loader a partir del host actual
         buildCode() {
             const origin    = window.location.origin   // ej: https://1.facturaloperu-pro8.oo
             const slug      = window.location.hostname // ej: 1.facturaloperu-pro8.oo
             const scriptUrl = `${origin}/claims/embed.js`
+            const isDefault = this.primaryColor === '#18181b'
 
-            this.widgetUrl = `${origin}/claims/widget/${slug}`
+            // La URL de previa incluye el color si no es el valor por defecto
+            this.widgetUrl = isDefault
+                ? `${origin}/claims/widget/${slug}`
+                : `${origin}/claims/widget/${slug}?color=${encodeURIComponent(this.primaryColor)}`
+
+            // Generar el atributo data-color solo si el usuario eligió un color personalizado
+            const colorAttr = isDefault ? '' : ` data-color="${this.primaryColor}"`
 
             // Una sola línea de script; el JS crea e inserta el iframe automáticamente
             this.embedCode = [
                 `<!-- Libro de Reclamaciones — copie y pegue esta línea donde quiera mostrar el formulario -->`,
-                `<script src="${scriptUrl}"><\/script>`,
+                `<script src="${scriptUrl}"${colorAttr}><\/script>`,
             ].join('\n')
+        },
+
+        // Restablece el color primario al valor por defecto, limpia localStorage y regenera el código
+        resetColor() {
+            this.primaryColor = '#18181b'
+            localStorage.removeItem('claims_widget_primary_color')
+            this.buildCode()
         },
 
         // Copia el código al portapapeles del usuario

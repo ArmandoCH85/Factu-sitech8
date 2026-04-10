@@ -455,7 +455,7 @@ export default {
             this.submit();
             
             const event = new CustomEvent('branchSelectorVisibilityChanged', {
-                detail: { showInHeader: !this.branchSelectorInSidebar }
+                detail: { showInHeader: false }
             });
             window.dispatchEvent(event);
         },

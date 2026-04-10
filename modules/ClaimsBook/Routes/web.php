@@ -43,6 +43,13 @@ if ($current_hostname) {
         // Lookup público de código de reclamo (para precargar datos de reclamo previo)
         Route::get('/claims/lookup/{code}', 'ClaimController@lookupCode');
 
+        // Servir archivos del disco tenant relacionados con reclamos
+        // Ruta pública relacionada a `claims` y manejada por `ClaimController::file`
+        // Ej: /claims/file/responses/imagen.png
+        Route::get('/claims/file/{folder}/{filename}', 'ClaimController@file')
+            ->name('tenant.claims.file')
+            ->where('filename', '.*');
+
         // ──────────────────────────────────────────────────────────────────────────
         // Rutas PRIVADAS — requieren auth y tenant activo
         // ──────────────────────────────────────────────────────────────────────────
@@ -67,6 +74,10 @@ if ($current_hostname) {
 
                 // Cambio de estado de un reclamo
                 Route::put('/{id}/status', 'ClaimController@updateStatus');
+                // Actualización unificada: estado, resolución, responsable y adjuntos de respuesta
+                Route::post('/{id}/update', 'ClaimController@updateRecord');
+                // Asignar responsable a un reclamo
+                Route::put('/{id}/assign', 'ClaimController@updateAssign');
             });
 
         Route::middleware(['auth', 'locked.tenant', 'check.email.verified'])

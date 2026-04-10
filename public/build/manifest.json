@@ -9,11 +9,11 @@
     ],
     "file": "assets/_plugin-vue2_normalizer-cce4e3e6.js"
   },
-  "_claim_form-4f11a583.js": {
+  "_claim_form-7cd03368.js": {
     "css": [
-      "assets/claim_form-e0101b5d.css"
+      "assets/claim_form-cf8d777e.css"
     ],
-    "file": "assets/claim_form-4f11a583.js",
+    "file": "assets/claim_form-7cd03368.js",
     "imports": [
       "__plugin-vue2_normalizer-cce4e3e6.js"
     ]
@@ -32,14 +32,14 @@
     ]
   },
   "claim_form.css": {
-    "file": "assets/claim_form-e0101b5d.css",
+    "file": "assets/claim_form-cf8d777e.css",
     "src": "claim_form.css"
   },
   "modules/ClaimsBook/Resources/assets/js/app.js": {
-    "file": "assets/app-6a761088.js",
+    "file": "assets/app-ea7471a3.js",
     "imports": [
       "__plugin-vue2_normalizer-cce4e3e6.js",
-      "_claim_form-4f11a583.js"
+      "_claim_form-7cd03368.js"
     ],
     "isEntry": true,
     "src": "modules/ClaimsBook/Resources/assets/js/app.js"
@@ -53,18 +53,18 @@
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
   "resources/js/app.css": {
-    "file": "assets/app-1e72f301.css",
+    "file": "assets/app-48546c65.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-1e72f301.css"
+      "assets/app-48546c65.css"
     ],
-    "file": "assets/app-56774e05.js",
+    "file": "assets/app-088e3271.js",
     "imports": [
       "_vue-clipboard-07d36620.js",
       "__plugin-vue2_normalizer-cce4e3e6.js",
-      "_claim_form-4f11a583.js"
+      "_claim_form-7cd03368.js"
     ],
     "isEntry": true,
     "src": "resources/js/app.js"

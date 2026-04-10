@@ -3,7 +3,7 @@
     <el-dialog
         :title="dialogTitle"
         :visible.sync="internalVisible"
-        :width="mode === 'resolution' ? '480px' : '420px'"
+        :width="mode === 'resolution' ? '520px' : '420px'"
         :close-on-click-modal="false"
         append-to-body
         @close="$emit('cancel')"
@@ -19,6 +19,25 @@
                 :rows="4"
                 placeholder="Describa la resolución adoptada..."
             ></el-input>
+
+            <!-- Adjuntos de respuesta (opcional) -->
+            <div class="csd-upload-section">
+                <p class="csd-hint">Adjuntar archivos de respuesta (opcional)</p>
+                <el-upload
+                    ref="uploadRef"
+                    action="#"
+                    :auto-upload="false"
+                    :on-change="handleFileChange"
+                    :on-remove="handleFileRemove"
+                    :limit="5"
+                    :on-exceed="() => $message.warning('Máximo 5 archivos permitidos')"
+                    multiple
+                    accept=".pdf,.png,.jpg,.jpeg,.mp4"
+                >
+                    <el-button size="small" icon="el-icon-upload2">Adjuntar archivos</el-button>
+                    <div slot="tip" class="el-upload__tip">PDF, PNG, JPG, MP4 · máx. 32 MB por archivo</div>
+                </el-upload>
+            </div>
         </template>
 
         <!-- Modo reapertura: advertencia de que el reclamo ya fue cerrado -->
@@ -88,20 +107,42 @@ export default {
     },
 
     watch: {
-        // Limpiar el texto al cerrar el dialog
+        // Limpiar campos al cerrar el dialog
         visible(val) {
-            if (!val) this.resolution = ''
+            if (!val) {
+                this.resolution = ''
+                this.$nextTick(() => {
+                    this.$refs.uploadRef && this.$refs.uploadRef.clearFiles()
+                })
+            }
         }
     },
 
     methods: {
         confirm() {
-            this.$emit('confirm', this.resolution)
+            // Recopilar archivos del uploader (solo disponibles en modo resolución)
+            const files = (this.$refs.uploadRef ? this.$refs.uploadRef.uploadFiles : [])
+            this.$emit('confirm', { resolution: this.resolution, files })
         },
+
         cancel() {
             this.$emit('update:visible', false)
             this.$emit('cancel')
-        }
+        },
+
+        // Valida tamaño máximo al agregar un archivo
+        handleFileChange(file, fileList) {
+            const maxSize = 32 * 1024 * 1024
+            if (file.raw && file.raw.size > maxSize) {
+                this.$message.error(`"${file.name}" supera el tamaño máximo de 32 MB`)
+                const idx = fileList.findIndex(f => f.uid === file.uid)
+                if (idx !== -1) fileList.splice(idx, 1)
+            }
+        },
+
+        handleFileRemove() {
+            // El uploader gestiona la lista internamente
+        },
     }
 }
 </script>
@@ -112,4 +153,10 @@ export default {
     color: #606266;
     margin-bottom: 12px;
 }
+.csd-upload-section {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #ebeef5;
+}
 </style>
+

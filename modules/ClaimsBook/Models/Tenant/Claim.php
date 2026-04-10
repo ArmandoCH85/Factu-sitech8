@@ -7,7 +7,11 @@ namespace Modules\ClaimsBook\Models\Tenant;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
+use App\Models\Tenant\User;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Modelo principal del libro de reclamaciones.
@@ -25,6 +29,7 @@ class Claim extends ModelTenant
         'code',
         'tracking_number',
         'parent_code',
+        'public_code',
 
         // Paso 1: datos del reclamante
         'identity_document_type',
@@ -50,27 +55,119 @@ class Claim extends ModelTenant
         'detail',
         'expected_result',
         'channel',
-        'attachment',
+        'attachments',
         'terms_accepted',
 
         // Gestión interna
         'status_claim_id',
+        'assigned_user_id',
         'resolution',
+        'response_attachments',
+        'pdf_path',
         'is_closed',
+        'due_date',
     ];
 
     protected $casts = [
-        'tracking_number' => 'integer',
-        'has_receipt'     => 'boolean',
-        'receipt_amount'  => 'float',
-        'terms_accepted'  => 'boolean',
-        'is_closed'       => 'boolean',
-        'asset_date'      => 'date',
+        'tracking_number'      => 'integer',
+        'has_receipt'          => 'boolean',
+        'receipt_amount'       => 'float',
+        'terms_accepted'       => 'boolean',
+        'is_closed'            => 'boolean',
+        'asset_date'           => 'date',
+        'due_date'             => 'date',
+        'attachments'          => 'array',
+        'response_attachments' => 'array',
     ];
+
+    // ──────────────────────────────────────────────────────────────
+    // Eventos del modelo
+    // ──────────────────────────────────────────────────────────────
+
+    /**
+     * Genera automáticamente public_code y due_date al crear un nuevo reclamo.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (self $claim) {
+            // Generar código público único de 15 caracteres alfanuméricos en mayúsculas
+            if (empty($claim->public_code)) {
+                do {
+                    $code = strtoupper(Str::random(15));
+                } while (static::where('public_code', $code)->exists());
+
+                $claim->public_code = $code;
+            }
+
+            // Calcular fecha límite: 15 días hábiles (sin sábados ni domingos)
+            if (empty($claim->due_date)) {
+                $claim->due_date = static::calculateDueDate(Carbon::now());
+            }
+        });
+    }
+
+    /**
+     * Calcula la fecha límite sumando $businessDays días hábiles a la fecha dada,
+     * excluyendo sábados y domingos.
+     */
+    protected static function calculateDueDate(Carbon $from, int $businessDays = 15): Carbon
+    {
+        $date = $from->copy();
+        $count = 0;
+
+        while ($count < $businessDays) {
+            $date->addDay();
+            if (!$date->isWeekend()) {
+                $count++;
+            }
+        }
+
+        return $date;
+    }
+
+    /**
+     * Calcula los días hábiles restantes desde hoy hasta `due_date`.
+     * - Devuelve null si `due_date` no está definido.
+     * - Devuelve 0 si `due_date` es igual o anterior a la fecha actual.
+     */
+    protected function calculateRemainingBusinessDays(): ?int
+    {
+        if (!$this->due_date) {
+            return null;
+        }
+
+        $start = Carbon::now()->startOfDay();
+        $end = $this->due_date->copy()->startOfDay();
+
+        if ($end->lte($start)) {
+            return 0;
+        }
+
+        $count = 0;
+        // Contar días hábiles entre start (hoy) y end (due_date), excluyendo sábados y domingos
+        while ($start->lt($end)) {
+            $start->addDay();
+            if (!$start->isWeekend()) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
 
     // ──────────────────────────────────────────────────────────────
     // Relaciones
     // ──────────────────────────────────────────────────────────────
+
+    /**
+     * Usuario asignado para atender el reclamo.
+     */
+    public function assignedUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_user_id');
+    }
 
     /**
      * Estado actual del reclamo.
@@ -151,9 +248,38 @@ class Claim extends ModelTenant
             // Canal
             'channel'                 => $this->channel,
 
+            // Responsable asignado
+            'assigned_user_id'        => $this->assigned_user_id,
+            'assigned_user_name'      => $this->assignedUser
+                ? $this->assignedUser->name
+                : null,
+
             // Gestión
             'is_closed'               => $this->is_closed,
             'resolution'              => $this->resolution,
+
+            // Archivos adjuntos al reclamo (convertir a URL pública cuando aplique)
+            'attachments' => collect($this->attachments ?? [])->map(function ($path) {
+                return $this->pathToUrl($path);
+            })->filter()->values()->all(),
+
+            // Adjuntos a la respuesta oficial (convertir a URL pública cuando aplique)
+            'response_attachments' => collect($this->response_attachments ?? [])->map(function ($path) {
+                return $this->pathToUrl($path);
+            })->filter()->values()->all(),
+
+            // PDF de constancia
+            'pdf_path' => $this->pdf_path,
+            'pdf_url'  => $this->pathToUrl($this->pdf_path),
+
+            // Código público de consulta
+            'public_code'             => $this->public_code,
+
+            // Fecha límite de atención (15 días hábiles)
+            'due_date'                => $this->due_date ? $this->due_date->format('Y-m-d') : null,
+            'due_date_formatted'      => $this->due_date ? $this->due_date->format('d/m/Y') : null,
+            // Días hábiles restantes hasta la fecha límite
+            'remaining_business_days' => $this->calculateRemainingBusinessDays(),
         ];
     }
 
@@ -176,11 +302,45 @@ class Claim extends ModelTenant
             'detail'                  => $this->detail,
             'expected_result'         => $this->expected_result,
             'channel'                 => $this->channel,
-            'attachment'              => $this->attachment,
-            'attachment_url'          => $this->attachment
-                ? asset('storage/' . $this->attachment)
-                : null,
             'terms_accepted'          => $this->terms_accepted,
         ]);
+    }
+
+    /**
+     * Convert a storage path or URL to a public-accessible URL.
+     * - If given an absolute URL or path starting with '/', returns it unchanged.
+     * - If exists in tenant disk, returns the claim file route.
+     * - If exists in public disk, returns Storage::disk('public')->url(...).
+     * - Otherwise returns null.
+     */
+    protected function pathToUrl($path)
+    {
+        if (empty($path)) return null;
+
+        if (Str::startsWith($path, ['http://', 'https://', '/'])) return $path;
+
+        // If path is like 'claims/{folder}/{filename}', build friendly route
+        if (preg_match('#^claims/([^/]+)/(.+)$#', $path, $m)) {
+            $folder = $m[1];
+            $filename = basename($m[2]);
+            if (Storage::disk('tenant')->exists($path)) {
+                return route('tenant.claims.file', ['folder' => $folder, 'filename' => $filename]);
+            }
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->url($path);
+        }
+
+        // As a last resort, if file exists on tenant disk but not matching 'claims/...', try raw existence
+        if (Storage::disk('tenant')->exists($path)) {
+            // try to extract folder and filename
+            $parts = explode('/', $path);
+            $filename = array_pop($parts);
+            $folder = array_pop($parts) ?? '';
+            return route('tenant.claims.file', ['folder' => $folder, 'filename' => $filename]);
+        }
+
+        return null;
     }
 }

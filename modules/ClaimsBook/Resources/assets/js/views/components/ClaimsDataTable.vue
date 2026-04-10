@@ -11,23 +11,25 @@
                     <th class="text-start">Monto</th>
                     <th class="text-start">Canal</th>
                     <th class="text-start">Estado</th>
+                    <th class="text-start">Responsable</th>
                     <th class="text-end">Opciones</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-if="loading">
-                    <td colspan="9" class="text-center py-4">
+                    <td colspan="10" class="text-center py-4">
                         <i class="el-icon-loading"></i> Cargando...
                     </td>
                 </tr>
                 <tr v-else-if="records.length === 0">
-                    <td colspan="9" class="text-center py-4 text-muted">
+                    <td colspan="10" class="text-center py-4 text-muted">
                         No se encontraron registros
                     </td>
                 </tr>
                 <tr v-for="row in records" :key="row.id" v-else>
                     <td>
-                        <span class="cb-code">{{ row.code }}</span>
+                        <div class="cb-code">{{ row.public_code }}</div>
+                        <small class="text-muted">{{ row.code }}</small>
                     </td>
                     <td>
                         <div class="cb-customer-name">{{ row.name }}</div>
@@ -45,7 +47,10 @@
                             {{ row.claim_type }}
                         </span>
                     </td>
-                    <td class="text-start">{{ formatDate(row.created_at) }}</td>
+                    <td class="text-start">
+                        {{ formatDate(row.created_at) }}<br>
+                        <span class="text-danger" v-if="row.status_claim.is_initial && row.remaining_business_days">{{ row.remaining_business_days }} restantes por atender</span>
+                    </td>
                     <td class="text-start">
                         <span v-if="row.receipt_series">
                             {{ row.receipt_series }}-{{ row.receipt_number }}
@@ -80,6 +85,21 @@
                             </el-option>
                         </el-select>
                     </td>
+                    <td class="text-start">
+                        <el-select
+                            v-model="row.assigned_user_id"
+                            size="mini"
+                            style="width: 100%; min-width: 150px"
+                            @change="newVal => onAssign(row, newVal)"
+                        >
+                            <el-option
+                                v-for="user in users"
+                                :key="user.id"
+                                :label="user.name"
+                                :value="user.id"
+                            ></el-option>
+                        </el-select>
+                    </td>
                     <td class="text-end">
                         <button
                             type="button"
@@ -109,6 +129,12 @@
 export default {
     name: 'ClaimsDataTable',
 
+    data() {
+        return {
+            users: []
+        }
+    },
+
     props: {
         records: {
             type: Array,
@@ -135,7 +161,18 @@ export default {
         formatDate(dateStr) {
             if (!dateStr) return ''
             return moment ? moment(dateStr).format('DD/MM/YYYY') : dateStr.slice(0, 10)
+        },
+        onAssign(row, userId) {
+            // Emitir al padre para que realice la actualización persistente
+            this.$emit('assign-change', row, userId)
         }
+    },
+
+    mounted() {
+        // Obtener usuarios para el selector (misma ruta usada en el modal)
+        this.$http.get('/users/records').then(response => {
+            this.users = response.data.data || []
+        }).catch(() => { this.users = [] })
     }
 }
 </script>

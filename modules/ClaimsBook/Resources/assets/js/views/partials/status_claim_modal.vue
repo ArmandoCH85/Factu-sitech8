@@ -69,18 +69,32 @@
                         <el-input v-model="status.description" size="small"></el-input>
                     </div>
 
-                    <!-- Paleta de colores -->
-                    <div class="sc-field">
-                        <label>Color del estado</label>
-                        <div class="sc-color-palette">
-                            <span
-                                v-for="c in colorPalette"
-                                :key="c"
-                                class="sc-palette-dot"
-                                :class="{ 'sc-palette-dot--active': status.color === c }"
-                                :style="{ background: c }"
-                                @click="status.color = c"
-                            ></span>
+                    <div class="row">
+                        <!-- Paleta de colores -->
+                        <div class="sc-field col-6">
+                            <label>Color del estado</label>
+                            <div class="sc-color-palette">
+                                <span
+                                    v-for="c in colorPalette"
+                                    :key="c"
+                                    class="sc-palette-dot"
+                                    :class="{ 'sc-palette-dot--active': status.color === c }"
+                                    :style="{ background: c }"
+                                    @click="status.color = c"
+                                ></span>
+                            </div>
+                        </div>
+                        <!-- select de usuario asignado por defecto -->
+                        <div class="sc-field col-6" v-if="status.is_initial">
+                            <label>Responsable por defecto</label>
+                            <el-select v-model="status.assigned_user_id" placeholder="Seleccionar usuario" size="small">
+                                <el-option
+                                    v-for="user in users"
+                                    :key="user.id"
+                                    :label="user.name"
+                                    :value="user.id"
+                                ></el-option>
+                            </el-select>
                         </div>
                     </div>
 
@@ -307,6 +321,7 @@ export default {
             newDescription: '',
             storing: false,
             saving: null,
+            users: [],
 
             // Paleta de colores predefinidos
             colorPalette: [
@@ -328,6 +343,9 @@ export default {
             this.$http.get('/statusClaim/records').then(response => {
                 this.statuses = response.data.map(s => this.normalize(s))
                 this.activePanel = null
+            })
+            this.$http.get('/users/records').then(response => {
+                this.users = response.data.data
             })
         },
 
@@ -366,6 +384,7 @@ export default {
                 is_initial: status.is_initial,
                 is_final: status.is_final,
                 action_send_email: status.action_send_email,
+                assigned_user_id: status.is_initial ? status.assigned_user_id : null
             }
 
             this.$http.put(`/statusClaim/update/${status.id}`, payload)

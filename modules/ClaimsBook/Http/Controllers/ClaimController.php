@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\User;
 use Hyn\Tenancy\Contracts\CurrentHostname;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
@@ -20,20 +21,47 @@ use Modules\ClaimsBook\Models\Tenant\Claim;
 use Modules\ClaimsBook\Models\Tenant\StatusClaim;
 use Modules\ClaimsBook\Models\Tenant\ClaimChannel;
 use Modules\ClaimsBook\Http\Resources\ClaimCollection;
+use Modules\ClaimsBook\Jobs\SendClaimAssignedEmail;
 use Modules\ClaimsBook\Jobs\SendClaimStatusEmail;
+use Modules\ClaimsBook\Services\ClaimPdfService;
 
 class ClaimController extends Controller
 {
+    protected ClaimPdfService $pdfService;
+
+    public function __construct(ClaimPdfService $pdfService)
+    {
+        $this->pdfService = $pdfService;
+    }
+
     // ──────────────────────────────────────────────────────────────
     // Vistas
     // ──────────────────────────────────────────────────────────────
 
     /**
-     * Vista principal del libro de reclamaciones (panel de administración).
+     * Vista principal del libro def reclamaciones (panel de administración).
      */
     public function index()
     {
         return view('claimsbook::index');
+    }
+
+    /**
+     * Make a filesystem-safe filename from the original uploaded name.
+     */
+    private function makeSafeFilename($original)
+    {
+        $original = trim($original);
+        $info = pathinfo($original);
+        $name = $info['filename'] ?? 'file';
+        $ext = isset($info['extension']) ? '.' . $info['extension'] : '';
+
+        // Replace any non safe chars with underscore (keep unicode letters if needed)
+        $safeName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', $name);
+        // Limit length
+        $safeName = substr($safeName, 0, 120);
+
+        return $safeName . $ext;
     }
 
     /**
@@ -106,6 +134,34 @@ JS;
     }
 
     /**
+     * Serve a file stored on the tenant disk for claims.
+     * The path is passed base64-encoded to preserve slashes.
+     * Public route under /claims/file/{encoded}.
+     */
+    public function file($folder, $filename)
+    {
+        // Sanitize filename to avoid directory traversal
+        $filename = ltrim($filename, '/');
+        $filename = basename($filename);
+
+        $path = "claims/{$folder}/{$filename}";
+
+        if (empty($path) || ! Storage::disk('tenant')->exists($path)) {
+            abort(404, 'File not found');
+        }
+
+        try {
+            $mime = Storage::disk('tenant')->mimeType($path);
+        } catch (\Exception $e) {
+            $mime = 'application/octet-stream';
+        }
+
+        $content = Storage::disk('tenant')->get($path);
+
+        return response($content, 200)->header('Content-Type', $mime);
+    }
+
+    /**
      * Endpoint público para que el widget obtenga sus datos de referencia
      * (canales, tipos de documento de identidad y cascada de ubicaciones)
      * sin requerir autenticación del tenant.
@@ -172,8 +228,37 @@ JS;
         $query = Claim::with('statusClaim', 'identityDocumentType')
             ->orderBy('created_at', 'desc');
 
+        // Búsqueda por `code` — puede contener `code` interno o `public_code`.
+        // Si hay coincidencia exacta en cualquiera, traer registros relacionados
         if ($request->filled('code')) {
-            $query->where('code', 'like', "%{$request->code}%");
+            $input = $request->code;
+
+            // Intentar coincidencia exacta por public_code
+            $found = Claim::where('public_code', $input)->first();
+            if ($found) {
+                $parent = $found->parent_code ?? $this->extractParentCode($found->code);
+                $query->where(function ($q) use ($parent) {
+                    $q->where('parent_code', $parent)
+                      ->orWhere('code', 'like', "{$parent}-%");
+                });
+            } else {
+                // Intentar coincidencia exacta por code
+                $found = Claim::where('code', $input)->first();
+                if ($found) {
+                    // agrupar por correlativo (quitar los últimos 3 caracteres)
+                    $base = substr($input, 0, -3);
+                    $query->where(function ($q) use ($base) {
+                        $q->where('parent_code', $base)
+                          ->orWhere('code', 'like', "{$base}-%");
+                    });
+                } else {
+                    // Búsqueda parcial: comparar en ambos campos
+                    $query->where(function ($q) use ($input) {
+                        $q->where('code', 'like', "%{$input}%")
+                          ->orWhere('public_code', 'like', "%{$input}%");
+                    });
+                }
+            }
         }
 
         if ($request->filled('search')) {
@@ -291,24 +376,35 @@ JS;
             $previousClaim = Claim::where('code', $request->previous_code)->first();
         }
 
-        // Procesar adjunto antes de la transacción (operación de I/O fuera del bloque DB)
-        $attachmentPath = null;
-        if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
-            $attachmentPath = $request->file('attachment')
-                ->store('claims/attachments', 'tenant');
-        }
-
         // Generar código y persistir dentro de una transacción sobre la conexión del tenant.
         // El lockForUpdate() en generateCode requiere una transacción activa para ser efectivo
         // y garantizar que el SELECT y el INSERT sean atómicos (evita correlativos duplicados).
         $connectionName = (new Claim())->getConnectionName();
 
-        $claim = DB::connection($connectionName)->transaction(function () use ($request, $initialStatus, $previousClaim, $attachmentPath) {
+        $claim = DB::connection($connectionName)->transaction(function () use ($request, $initialStatus, $previousClaim) {
             $code           = $this->generateCode($request->claim_type, $previousClaim);
             $trackingNumber = $previousClaim ? ($previousClaim->tracking_number + 1) : 0;
             $parentCode     = $previousClaim
                 ? ($previousClaim->parent_code ?? $this->extractParentCode($previousClaim->code))
                 : $this->extractParentCode($code);
+
+            $assignedUserId = null;
+            if ($initialStatus && !empty($initialStatus->assigned_user_id)) {
+                $assignedUserId = $initialStatus->assigned_user_id;
+            } else {
+                $firstUser = User::orderBy('id')->first();
+                $assignedUserId = $firstUser ? $firstUser->id : null;
+            }
+
+            // Store initial attachment (if any) preserving original filename.
+            $attachments = [];
+            if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+                $orig = $request->file('attachment')->getClientOriginalName();
+                $safe = $this->makeSafeFilename($orig);
+                $filename = "{$code}_{$safe}";
+                $stored = $request->file('attachment')->storeAs('claims/attachments', $filename, 'tenant');
+                if ($stored) $attachments[] = $stored;
+            }
 
             return Claim::create([
                 'code'                     => $code,
@@ -336,18 +432,49 @@ JS;
                 'detail'                   => $request->detail,
                 'expected_result'          => $request->expected_result,
                 'channel'                  => $request->channel,
-                'attachment'               => $attachmentPath,
+                'attachments'              => $attachments,
                 'terms_accepted'           => true,
 
                 'status_claim_id'          => $initialStatus ? $initialStatus->id : null,
+                'assigned_user_id'         => $assignedUserId,
                 'is_closed'                => false,
             ]);
         });
 
+        // Generar PDF de constancia (fuera de la transacción para no bloquearla)
+        try {
+            $this->pdfService->generate($claim->fresh()->load('statusClaim', 'assignedUser', 'district', 'identityDocumentType'));
+        } catch (\Throwable $e) {
+            Log::error('ClaimPdfService generate error on store: ' . $e->getMessage());
+        }
+
+        // Notificar al cliente si el estado inicial tiene acción de correo configurada
+        if ($initialStatus && $initialStatus->action_send_email) {
+            try {
+                dispatch(new SendClaimStatusEmail(
+                    $claim->id,
+                    $initialStatus->id,
+                    $this->buildClaimListUrl()
+                ));
+            } catch (\Throwable $e) {
+                Log::error("SendClaimStatusEmail dispatch error on store: {$e->getMessage()}");
+            }
+        }
+
+        // Notificar al usuario asignado sobre el nuevo reclamo
+        if ($claim->assigned_user_id) {
+            try {
+                dispatch(new SendClaimAssignedEmail($claim->id));
+            } catch (\Throwable $e) {
+                Log::error("SendClaimAssignedEmail dispatch error on store: {$e->getMessage()}");
+            }
+        }
+
+        $claim->refresh();
         return response()->json([
             'success' => true,
             'message' => 'Reclamo registrado correctamente',
-            'code'    => $claim->code,
+            'code'    => $claim->public_code,
         ]);
     }
 
@@ -404,7 +531,14 @@ JS;
 
         $claim->save();
 
-        // Encolar notificación por correo si el estado lo requiere
+        // Regenerar PDF PRIMERO para poder adjuntarlo al correo
+        try {
+            $this->pdfService->generate($claim->fresh()->load('statusClaim', 'assignedUser', 'district', 'identityDocumentType'));
+        } catch (\Throwable $e) {
+            Log::error('ClaimPdfService generate error on updateStatus: ' . $e->getMessage());
+        }
+
+        // Notificación por correo DESPUÉS del PDF (ya actualizado)
         if ($status->action_send_email) {
             try {
                 dispatch(new SendClaimStatusEmail(
@@ -423,6 +557,142 @@ JS;
         ]);
     }
 
+    /**
+     * Actualiza de forma unificada el estado, resolución, responsable
+     * y archivos adjuntos de respuesta de un reclamo.
+     * Acepta multipart/form-data para soportar la carga de archivos.
+     */
+    public function updateRecord(Request $request, $id)
+    {
+        $request->validate([
+            'status_claim_id'          => 'nullable|integer',
+            'resolution'               => 'nullable|string',
+            'assigned_user_id'         => 'nullable|integer',
+            'response_attachments'     => 'nullable|array|max:5',
+            'response_attachments.*'   => 'file|max:32768|mimes:pdf,png,jpg,jpeg,mp4',
+        ]);
+
+        $claim = Claim::findOrFail($id);
+
+        // Flag para despachar email después de regenerar el PDF
+        $shouldSendEmail = false;
+        $emailStatusId   = null;
+
+        // Actualizar estado si viene en el payload
+        if ($request->filled('status_claim_id')) {
+            $status = StatusClaim::find($request->status_claim_id);
+            if (! $status) {
+                return response()->json(['message' => 'Estado no válido'], 422);
+            }
+
+            // Estado final requiere resolución obligatoria
+            if ($status->is_final) {
+                $request->validate(['resolution' => 'required|string|min:5']);
+            }
+
+            $claim->status_claim_id = $status->id;
+            $claim->is_closed       = $status->is_final;
+
+            // Capturar si hay que enviar email (se despachará después del PDF)
+            if ($status->action_send_email) {
+                $shouldSendEmail = true;
+                $emailStatusId   = $status->id;
+            }
+        }
+
+        // Actualizar resolución
+        if ($request->filled('resolution')) {
+            $claim->resolution = $request->resolution;
+        }
+
+        // Actualizar responsable (acepta null para quitar asignación)
+        if ($request->has('assigned_user_id')) {
+            $userId = $request->input('assigned_user_id');
+            if ($userId) {
+                $user = User::find($userId);
+                if (! $user) {
+                    return response()->json(['message' => 'Usuario no encontrado'], 422);
+                }
+            }
+            $claim->assigned_user_id = $userId;
+        }
+
+        // Agregar nuevos archivos adjuntos de respuesta (sin reemplazar los existentes)
+        if ($request->hasFile('response_attachments')) {
+            $existing = $claim->response_attachments ?? [];
+            foreach ($request->file('response_attachments') as $file) {
+                if ($file->isValid()) {
+                    $orig = $file->getClientOriginalName();
+                    $safe = $this->makeSafeFilename($orig);
+                    $filename = "{$claim->code}_{$safe}";
+                    $stored = $file->storeAs('claims/responses', $filename, 'tenant');
+                    $existing[] = $stored;
+                }
+            }
+            $claim->response_attachments = $existing;
+        }
+
+        $claim->save();
+
+        // Regenerar PDF PRIMERO para poder adjuntarlo al correo
+        try {
+            $this->pdfService->generate($claim->fresh()->load('statusClaim', 'assignedUser', 'district', 'identityDocumentType'));
+        } catch (\Throwable $e) {
+            Log::error('ClaimPdfService generate error on updateRecord: ' . $e->getMessage());
+        }
+
+        // Notificación por correo DESPUÉS del PDF (ya actualizado)
+        if ($shouldSendEmail) {
+            try {
+                dispatch(new SendClaimStatusEmail(
+                    $claim->id,
+                    $emailStatusId,
+                    $this->buildClaimListUrl()
+                ));
+            } catch (\Throwable $e) {
+                Log::error("SendClaimStatusEmail dispatch error: {$e->getMessage()}");
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Reclamo actualizado correctamente',
+            'data'    => $claim->fresh()
+                ->load('statusClaim', 'district', 'identityDocumentType', 'assignedUser')
+                ->getDetailData(),
+        ]);
+    }
+
+    /**
+     * Asigna o actualiza el usuario responsable del reclamo.
+     * Espera payload: { assigned_user_id }
+     */
+    public function updateAssign(Request $request, $id)
+    {
+        $request->validate([
+            'assigned_user_id' => 'nullable|integer',
+        ]);
+
+        $claim = Claim::findOrFail($id);
+
+        $userId = $request->input('assigned_user_id');
+        if ($userId) {
+            $user = User::find($userId);
+            if (! $user) {
+                return response()->json(['message' => 'Usuario no encontrado'], 422);
+            }
+        }
+
+        $claim->assigned_user_id = $userId;
+        $claim->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Responsable actualizado correctamente',
+            'assigned_user_id' => $claim->assigned_user_id,
+        ]);
+    }
+
     // ──────────────────────────────────────────────────────────────
     // API Pública — Lookup de código
     // ──────────────────────────────────────────────────────────────
@@ -435,31 +705,48 @@ JS;
     public function lookupCode($code)
     {
         $claim = Claim::with('statusClaim', 'identityDocumentType')
-            ->where('code', $code)
+            ->where('public_code', $code)
             ->first();
 
         if (! $claim) {
             return response()->json(['message' => 'Código no encontrado'], 404);
         }
+        // Reutilizar el helper del modelo para obtener URLs públicas de adjuntos
+        $detail = $claim->getDetailData();
 
         return response()->json([
             'found'                    => true,
-            'code'                     => $claim->code,
+            'code'                     => $claim->public_code,
             // Paso 1 — Datos del reclamante
-            'identity_document_type'   => $claim->identity_document_type,
-            'identity_document_number' => $claim->identity_document_number,
-            'name'                     => $claim->name,
-            'email'                    => $claim->email,
-            'phone'                    => $claim->phone,
-            'district_id'              => $claim->district_id,
-            'address'                  => $claim->address,
-            // Estado y resolución
-            'claim_type'               => $claim->claim_type,
-            'status'                   => $claim->statusClaim
-                ? $claim->statusClaim->getCollectionData()
-                : null,
-            'resolution'               => $claim->resolution,
-            'is_closed'                => $claim->is_closed,
+            'identity_document_type'   => $detail['identity_document_type'] ?? $claim->identity_document_type,
+            'identity_document_number' => $detail['identity_document_number'] ?? $claim->identity_document_number,
+            'name'                     => $detail['name'] ?? $claim->name,
+            'email'                    => $detail['email'] ?? $claim->email,
+            'phone'                    => $detail['phone'] ?? $claim->phone,
+            'district_id'              => $detail['district_id'] ?? $claim->district_id,
+            'address'                  => $detail['address'] ?? $claim->address,
+            // Paso 2 — Bien o servicio (necesario para auto-rellenar cuando el reclamo fue cerrado)
+            'asset_type'               => $detail['asset_type'] ?? $claim->asset_type,
+            'asset_description'        => $detail['asset_description'] ?? $claim->asset_description,
+            'asset_date'               => $detail['asset_date'] ?? null,
+            'has_receipt'              => $detail['has_receipt'] ?? $claim->has_receipt,
+            'receipt_series'           => $detail['receipt_series'] ?? $claim->receipt_series,
+            'receipt_number'           => $detail['receipt_number'] ?? $claim->receipt_number,
+            'receipt_amount'           => $detail['receipt_amount'] ?? $claim->receipt_amount,
+            'receipt_currency'         => $detail['receipt_currency'] ?? $claim->receipt_currency,
+            // Paso 3 — Detalle (para mostrar en paso 0 y auto-rellenar en cerrado)
+            'detail'                   => $detail['detail'] ?? $claim->detail,
+            'expected_result'          => $detail['expected_result'] ?? $claim->expected_result,
+            // Estado, resolución y canal
+            'claim_type'               => $detail['claim_type'] ?? $claim->claim_type,
+            'channel'                  => $detail['channel'] ?? $claim->channel,
+            'status'                   => $detail['status_claim'] ?? ($claim->statusClaim ? $claim->statusClaim->getCollectionData() : null),
+            'resolution'               => $detail['resolution'] ?? $claim->resolution,
+            'is_closed'                => $detail['is_closed'] ?? $claim->is_closed,
+            // Adjuntos: ya convertidos a URLs públicas por getDetailData()
+            'attachments'              => $detail['attachments'] ?? [],
+            'response_attachments'     => $detail['response_attachments'] ?? [],
+            'pdf_url'                  => $detail['pdf_url'] ?? null,
         ]);
     }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="cb-index" v-loading="loading">
+    <div class="" v-loading="loading">
         <!-- Encabezado de página -->
         <div class="page-header pe-0">
             <h2>
@@ -134,7 +134,7 @@
                             ></el-option>
                         </el-select>
                     </div>
-                </div>                
+                </div>
                 <!-- Tabla de reclamos — componente desacoplado -->
                 <claims-data-table
                     :records="records"
@@ -142,6 +142,7 @@
                     :loading="loading"
                     :pagination="pagination"
                     @status-change="onStatusChange"
+                    @assign-change="onAssignChange"
                     @view="viewDetail"
                     @page-change="onPageChange"
                 ></claims-data-table>
@@ -171,6 +172,8 @@
         <claim-detail-modal
             :showDialog.sync="showDetailModal"
             :claimId="selectedClaimId"
+            :status-claims="tables.status_claims"
+            @updated="loadRecords"
         ></claim-detail-modal>
 
         <!-- Modal de código de integración (widget embed) -->
@@ -409,25 +412,30 @@ export default {
             this.showStatusChangeDialog = false
         },
 
-        confirmStatusChange(resolution) {
+        confirmStatusChange({ resolution, files }) {
             if (!this.pendingStatusChange) return
             const { row, newStatusId } = this.pendingStatusChange
 
-            if (this.statusChangeMode === 'resolution' && !resolution.trim()) {
+            if (this.statusChangeMode === 'resolution' && (!resolution || !resolution.trim())) {
                 this.$message.error('Ingrese la resolución para cerrar el reclamo')
                 return
             }
 
-            this.saveStatusChange(row, newStatusId, resolution || null)
+            this.saveStatusChange(row, newStatusId, resolution || null, files || [])
             this.showStatusChangeDialog = false
         },
 
-        saveStatusChange(row, statusId, resolution) {
+        saveStatusChange(row, statusId, resolution, files = []) {
             this.savingStatus = true
-            const payload = { status_claim_id: statusId }
-            if (resolution) payload.resolution = resolution
 
-            this.$http.put(`/claims/${row.id}/status`, payload)
+            const fd = new FormData()
+            fd.append('status_claim_id', statusId)
+            if (resolution) fd.append('resolution', resolution)
+            files.forEach((f, i) => {
+                if (f.raw) fd.append(`response_attachments[${i}]`, f.raw)
+            })
+
+            this.$http.post(`/claims/${row.id}/update`, fd)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
@@ -440,10 +448,34 @@ export default {
                 .catch(() => {
                     // El select sigue mostrando el valor anterior (no se mudó porque usamos :value)
                     this.$message.error('Error al actualizar el estado')
+                    this.loadRecords()
                 })
                 .finally(() => {
                     this.savingStatus        = false
                     this.pendingStatusChange = null
+                    this.loadRecords()
+                })
+        },
+
+        // Maneja el cambio de responsable desde la tabla (emitted by ClaimsDataTable)
+        onAssignChange(row, userId) {
+            // En caso de fallo, recargamos los registros para sincronizar el estado
+            this.$http.put(`/claims/${row.id}/assign`, { assigned_user_id: userId })
+                .then(response => {
+                    if (response.data && response.data.success) {
+                        this.$message.success(response.data.message || 'Responsable asignado correctamente')
+                        // Actualizar la fila localmente si backend devolvió datos
+                        row.assigned_user_id = userId
+                    } else {
+                        this.$message.error((response.data && response.data.message) || 'Error al asignar responsable')
+                    }
+                })
+                .catch(() => {
+                    this.$message.error('Error al asignar responsable')
+                    this.loadRecords()
+                })
+                .finally(() => {
+                    this.loadRecords()
                 })
         },
 

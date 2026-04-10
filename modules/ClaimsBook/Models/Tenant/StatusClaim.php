@@ -25,6 +25,7 @@ class StatusClaim extends ModelTenant
         'is_initial',
         'is_final',
         'action_send_email',
+        'assigned_user_id',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class StatusClaim extends ModelTenant
         'is_initial'       => 'boolean',
         'is_final'         => 'boolean',
         'action_send_email'=> 'boolean',
+        'assigned_user_id' => 'integer',
     ];
 
     /**
@@ -55,6 +57,7 @@ class StatusClaim extends ModelTenant
             'is_initial'       => $this->is_initial,
             'is_final'         => $this->is_final,
             'action_send_email'=> $this->action_send_email,
+            'assigned_user_id' => $this->assigned_user_id,
         ];
     }
 }

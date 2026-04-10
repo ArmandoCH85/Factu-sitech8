@@ -62,6 +62,7 @@ class StatusClaimController extends Controller
             'is_initial'        => 'boolean',
             'is_final'          => 'boolean',
             'action_send_email' => 'boolean',
+            'assigned_user_id'  => 'nullable|integer',
         ]);
 
         // Garantizar unicidad de is_initial
@@ -85,7 +86,7 @@ class StatusClaimController extends Controller
         $nextSortOrder = (StatusClaim::max('sort_order') ?? -1) + 1;
 
         $status = StatusClaim::create(array_merge(
-            $request->only(['description', 'color', 'is_initial', 'is_final', 'action_send_email']),
+            $request->only(['description', 'color', 'is_initial', 'is_final', 'action_send_email', 'assigned_user_id']),
             ['sort_order' => $nextSortOrder]
         ));
 
@@ -110,6 +111,7 @@ class StatusClaimController extends Controller
             'is_initial'        => 'boolean',
             'is_final'          => 'boolean',
             'action_send_email' => 'boolean',
+            'assigned_user_id'  => 'nullable|integer',
         ]);
 
         $status = StatusClaim::findOrFail($id);
@@ -137,7 +139,7 @@ class StatusClaimController extends Controller
         }
 
         $status->update(
-            $request->only(['description', 'color', 'is_initial', 'is_final', 'action_send_email'])
+            $request->only(['description', 'color', 'is_initial', 'is_final', 'action_send_email', 'assigned_user_id'])
         );
 
         $this->flushCache();

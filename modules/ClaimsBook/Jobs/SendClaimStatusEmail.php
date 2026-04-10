@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant\Configuration;
 use Modules\ClaimsBook\Mail\ClaimStatusChanged;
 use Modules\ClaimsBook\Models\Tenant\Claim;
@@ -66,6 +67,7 @@ class SendClaimStatusEmail implements ShouldQueue
             'claim' => [
                 'id'         => $claim->id,
                 'code'       => $claim->code,
+                'public_code'=> $claim->public_code,
                 'claim_type' => $claim->claim_type,
                 'name'       => $claim->name,
                 'email'      => $claim->email,
@@ -82,7 +84,20 @@ class SendClaimStatusEmail implements ShouldQueue
             'route_list' => $this->routeList,
         ];
 
-        Mail::to($claim->email)->send(new ClaimStatusChanged($data));
+        $mailable = new ClaimStatusChanged($data);
+
+        // Adjuntar el PDF de constancia si está disponible en el disco del tenant
+        if ($claim->pdf_path) {
+            $absolutePath = Storage::disk('tenant')->path($claim->pdf_path);
+            if (file_exists($absolutePath)) {
+                $mailable->attach($absolutePath, [
+                    'as'   => $claim->public_code . '.pdf',
+                    'mime' => 'application/pdf',
+                ]);
+            }
+        }
+
+        Mail::to($claim->email)->send($mailable);
 
         Log::info("SendClaimStatusEmail: Email enviado para reclamo {$claim->code} → estado {$status?->description}");
     }

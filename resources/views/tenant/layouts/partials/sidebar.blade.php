@@ -1063,6 +1063,32 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                         </li>
                     @endif
 
+                    @if(in_array('claims_book', $vc_modules))
+                        <li
+                            class="{{  ($firstLevel === 'claims' ) ? 'nav-active' : ''}}">
+                            <a class="nav-link dashboard-link" href="{{ url('claims') }}">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#607d8b"
+                                    stroke-width="1.25"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    >
+                                    <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+                                    <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+                                    <path d="M3 6l0 13" />
+                                    <path d="M12 6l0 13" />
+                                    <path d="M21 6l0 13" />
+                                </svg>
+                                <span>Libro de Reclamaciones</span>
+                            </a>
+                        </li>
+                    @endif
+
                     {{-- Tienda virtual --}}
                     @if(in_array('ecommerce', $vc_modules))
                         <li

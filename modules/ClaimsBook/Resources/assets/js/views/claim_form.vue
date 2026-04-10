@@ -26,12 +26,13 @@
         ¿Ya presentó un reclamo? Ingrese su código para vincularlo o realizar seguimiento.
       </p>
       <div class="cf-inline">
-        <el-input v-model="form.previous_code" placeholder="Ej: R032500-0001-00" size="small"
+        <el-input v-model="form.previous_code" placeholder="Ej: RJL76KQ2WO37U" size="small"
           :disabled="lookingUp"></el-input>
         <button class="cf-btn cf-btn-outline" :disabled="lookingUp" @click="lookupPreviousCode">
           <span v-if="lookingUp" class="cf-spinner"></span>
           <span v-else>Verificar</span>
         </button>
+        <button class="cf-btn cf-btn-outline" :disabled="lookingUp" @click="clearForm">Limpiar</button>
       </div>
     </div>
 
@@ -90,31 +91,125 @@
     <!-- ──────────── Paso 0: Código de reclamo previo ──────────── -->
     <div v-if="currentStep === 0" class="cf-step-content">
       <div v-if="previousClaim" class="cf-prev-result">
-        <div class="cf-alert cf-alert-info">
+
+        <!-- Banner de estado: color dinámico según si está cerrado o en proceso -->
+        <div class="cf-alert" :class="previousClaim.is_closed ? 'cf-alert-success' : 'cf-alert-info'">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <span>
-            Reclamo <strong>{{ previousClaim.code }}</strong> —
-            Estado: <strong>{{ previousClaim.status ? previousClaim.status.description : 'Sin estado' }}</strong>
-          </span>
+          <div>
+            <div>Reclamo <strong>{{ previousClaim.code }}</strong> — Estado: <strong>{{ previousClaim.status ? previousClaim.status.description : 'Sin estado' }}</strong></div>
+            <div style="font-size:12px;margin-top:3px;opacity:.85">
+              <span v-if="previousClaim.is_closed">Reclamo cerrado y resuelto. Puede vincular un nuevo reclamo a continuación.</span>
+              <span v-else>Su reclamo está en proceso de atención. Puede realizar seguimiento con el código indicado.</span>
+            </div>
+          </div>
         </div>
-        <div v-if="previousClaim.is_closed" class="cf-alert cf-alert-warning" style="margin-top:10px">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+
+        <!-- Resumen compacto: igual para ambos flujos; incluye datos personales, bien y detalle -->
+        <div class="cf-prev-summary">
+          <div class="cf-summary-row" v-if="previousClaim.name">
+            <span class="cf-summary-label">Nombre</span>
+            <span>{{ previousClaim.name }}</span>
+          </div>
+          <div class="cf-summary-row" v-if="previousClaim.email">
+            <span class="cf-summary-label">Email</span>
+            <span>{{ maskEmail(previousClaim.email) }}</span>
+          </div>
+          <div class="cf-summary-row" v-if="previousClaim.phone">
+            <span class="cf-summary-label">Teléfono</span>
+            <span>{{ previousClaim.phone }}</span>
+          </div>
+          <div class="cf-summary-row" v-if="previousClaim.claim_type">
+            <span class="cf-summary-label">Tipo</span>
+            <span>{{ previousClaim.claim_type === 'queja' ? 'Queja' : 'Reclamo' }}</span>
+          </div>
+          <div class="cf-summary-row" v-if="previousClaim.channel">
+            <span class="cf-summary-label">Canal</span>
+            <span>{{ previousClaim.channel }}</span>
+          </div>
+        </div>
+
+        <!-- Bien/servicio reclamado -->
+        <div v-if="previousClaim.asset_type || previousClaim.asset_description" class="cf-info-block" style="margin-top:12px">
+          <p class="cf-info-block-title">Bien o servicio reclamado</p>
+          <div class="cf-summary-row" v-if="previousClaim.asset_type">
+            <span class="cf-summary-label">Tipo</span>
+            <span>{{ previousClaim.asset_type === 'producto' ? 'Producto' : 'Servicio' }}</span>
+          </div>
+          <div class="cf-summary-row" v-if="previousClaim.asset_description">
+            <span class="cf-summary-label">Descripción</span>
+            <span style="white-space:pre-wrap">{{ previousClaim.asset_description }}</span>
+          </div>
+        </div>
+
+        <!-- Detalle del reclamo -->
+        <div v-if="previousClaim.detail || previousClaim.expected_result" class="cf-info-block" style="margin-top:12px">
+          <p class="cf-info-block-title">Detalle del reclamo</p>
+          <div class="cf-summary-row" v-if="previousClaim.detail">
+            <span class="cf-summary-label">Detalle</span>
+            <span style="white-space:pre-wrap">{{ previousClaim.detail }}</span>
+          </div>
+          <div class="cf-summary-row" v-if="previousClaim.expected_result">
+            <span class="cf-summary-label">Pedido</span>
+            <span style="white-space:pre-wrap">{{ previousClaim.expected_result }}</span>
+          </div>
+        </div>
+
+        <!-- Resolución (solo cuando está cerrado) -->
+        <div v-if="previousClaim.is_closed" class="cf-resolution-box" style="margin-top:12px">
+          <p class="cf-resolution-label">Resolución de la empresa</p>
+          <p class="cf-resolution-text">{{ previousClaim.resolution || 'Sin resolución registrada.' }}</p>
+        </div>
+
+        <!-- Adjuntos del reclamante -->
+        <div v-if="previousClaim.attachments && previousClaim.attachments.length" class="cf-receipt-section" style="margin-top:12px">
+          <p class="cf-receipt-section-title">Archivos adjuntos del reclamante</p>
+          <ul class="cf-file-list">
+            <li v-for="(url, idx) in previousClaim.attachments" :key="'att-'+idx">
+              <a :href="url" @click.prevent="downloadUrl(url)" :title="getFilenameFromUrl(url)" rel="noopener noreferrer">{{ getFilenameFromUrl(url) }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Adjuntos de respuesta de la empresa -->
+        <div v-if="previousClaim.response_attachments && previousClaim.response_attachments.length" class="cf-receipt-section" style="margin-top:12px">
+          <p class="cf-receipt-section-title">Archivos adjuntos por la empresa</p>
+          <ul class="cf-file-list">
+            <li v-for="(url, idx) in previousClaim.response_attachments" :key="'resp-'+idx">
+              <a :href="url" @click.prevent="downloadUrl(url)" :title="getFilenameFromUrl(url)" rel="noopener noreferrer">{{ getFilenameFromUrl(url) }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Constancia PDF -->
+        <div v-if="previousClaim.pdf_url" class="cf-receipt-section" style="margin-top:12px">
+          <p class="cf-receipt-section-title">Constancia (PDF)</p>
+          <ul class="cf-file-list">
+            <li>
+              <a :href="previousClaim.pdf_url" @click.prevent="downloadUrl(previousClaim.pdf_url)" :title="getFilenameFromUrl(previousClaim.pdf_url)" rel="noopener noreferrer">{{ getFilenameFromUrl(previousClaim.pdf_url) }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Aviso cuando está en proceso (no se puede continuar) -->
+        <div v-if="!previousClaim.is_closed" class="cf-alert cf-alert-warning" style="margin-top:14px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
-          <span>Este reclamo ya fue cerrado con resolución.</span>
+          <span>No es posible vincular un nuevo reclamo mientras el anterior está en proceso de atención.</span>
         </div>
-        <div v-if="previousClaim.is_closed" class="cf-resolution-box">
-          <p class="cf-resolution-label">Resolución</p>
-          <p class="cf-resolution-text">{{ previousClaim.resolution || 'Sin resolución registrada.' }}</p>
-        </div>
+
       </div>
+      <!-- Solo muestra Continuar cuando el reclamo previo fue cerrado -->
+      <p style="text-align: right;"><small>Si el resultado no ha sido el esperado, puedes generar un reclamo relacionado.</small></p>
       <div class="cf-step-actions">
-        <button class="cf-btn cf-btn-primary" @click="goNext">Continuar</button>
+        <button v-if="previousClaim && previousClaim.is_closed" class="cf-btn cf-btn-primary" @click="goNext">
+          Generar reclamo relacionado
+        </button>
       </div>
     </div>
 
@@ -290,16 +385,23 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Adjunto (opcional · máx. 1 MB: jpg, jpeg, png, pdf)">
-              <el-upload ref="uploader" action="#" :http-request="() => { }" :on-change="onFileChange"
-                :on-remove="onFileRemove" :file-list="fileList" :limit="1" :auto-upload="false"
+            <el-form-item label="Adjunto (opcional · máx. 5 archivos · máx. 1 MB por archivo: jpg, jpeg, png, pdf)">
+              <el-upload ref="uploader" action="#"
+                :http-request="() => { }"
+                :on-change="onFileChange"
+                :on-remove="onFileRemove"
+                :file-list="fileList"
+                :limit="5"
+                multiple
+                :auto-upload="false"
+                :on-exceed="() => $message.warning('Máximo 5 archivos permitidos')"
                 accept=".jpg,.jpeg,.png,.pdf">
                 <button type="button" class="cf-btn cf-btn-outline cf-btn-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
                   </svg>
-                  Adjuntar archivo
+                  Adjuntar archivos
                 </button>
               </el-upload>
             </el-form-item>
@@ -535,6 +637,81 @@
 }
 
 .cf-prev-result { margin-bottom: 16px; }
+
+/* ── Resumen compacto del reclamo previo (paso 0) ── */
+.cf-prev-summary {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  background: var(--cf-bg);
+}
+
+.cf-summary-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.cf-summary-label {
+  min-width: 72px;
+  color: var(--cf-muted-fg);
+  font-weight: 500;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ── Lista de archivos en paso 0 ── */
+.cf-file-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cf-file-list li a {
+  font-size: 12.5px;
+  color: #2563eb;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.cf-file-list li a:hover {
+  text-decoration: underline;
+}
+
+/* ── Variante success para alerta de reclamo cerrado ── */
+.cf-alert-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+/* ── Bloque de info expandido (bien, detalle) ── */
+.cf-info-block {
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  padding: 12px 14px;
+  background: var(--cf-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cf-info-block-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cf-muted-fg);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
+}
 
 .cf-resolution-box {
   margin-top: 12px;
@@ -903,16 +1080,16 @@ export default {
       this.$http.get(`/claims/lookup/${encodeURIComponent(code)}`)
         .then(response => {
           this.previousClaim = response.data
-          // Autorrellenar todos los campos del paso 1 con los datos del reclamo anterior
           const d = response.data
+
+          // Siempre autorrellenar paso 1
           if (d.identity_document_type)   this.form.identity_document_type   = d.identity_document_type
           if (d.identity_document_number) this.form.identity_document_number = d.identity_document_number
           if (d.name)                     this.form.name                     = d.name
           if (d.email)                    this.form.email                    = d.email
           if (d.phone)                    this.form.phone                    = d.phone
           if (d.address)                  this.form.address                  = d.address
-          // Reconstruir la cascada de ubicación a partir del district_id (ubigeo 6 dígitos)
-          // Nivel 1: departamento (2 dígitos), nivel 2: provincia (4 dígitos), nivel 3: distrito (6 dígitos)
+          // Reconstruir cascada de ubicación (ubigeo 6 dígitos)
           if (d.district_id) {
             const distStr = String(d.district_id)
             this.form.location_cascade = [
@@ -921,12 +1098,31 @@ export default {
               distStr,
             ]
           }
-          // Mostrar el step de reclamo previo solo cuando hay resultado
-          this.currentStep = 0
+
+          if (d.is_closed) {
+            // Reclamo cerrado: autorrellenar pasos 2 y parcialmente 3, saltar al paso 3
+            if (d.asset_type)        this.form.asset_type        = d.asset_type
+            if (d.asset_description) this.form.asset_description = d.asset_description
+            if (d.asset_date)        this.form.asset_date        = d.asset_date
+            this.form.has_receipt = !!d.has_receipt
+            if (d.has_receipt) {
+              if (d.receipt_amount)   this.form.receipt_amount   = d.receipt_amount
+              if (d.receipt_currency) this.form.receipt_currency = d.receipt_currency
+              if (d.receipt_series)   this.form.receipt_series   = d.receipt_series
+              if (d.receipt_number)   this.form.receipt_number   = d.receipt_number
+            }
+            // Paso 3 parcial: tipo y canal; detail, expected_result, archivos y aceptación quedan vacíos
+            if (d.claim_type) this.form.claim_type = d.claim_type
+            if (d.channel)    this.form.channel    = d.channel
+            // Mostrar paso 0 primero (igual que en proceso) para que el usuario vea el resumen
+            this.currentStep = 0
+          } else {
+            // Reclamo en proceso: mostrar info en paso 0, no permite continuar
+            this.currentStep = 0
+          }
         })
         .catch(() => {
           this.previousClaim = null
-          // Si el usuario estaba en el paso 0, regresarlo al paso 1
           if (this.currentStep === 0) this.currentStep = 1
           this.$message.warning('Código no encontrado')
         })
@@ -934,13 +1130,59 @@ export default {
     },
 
     goNext() {
+      // Reclamo previo cerrado en paso 0: saltar directo al paso 3 (1 y 2 bloqueados)
+      if (this.currentStep === 0 && this.previousClaim && this.previousClaim.is_closed) {
+        this.currentStep = 3
+        return
+      }
       this.currentStep++
     },
 
     goPrev() {
-      // El paso mínimo accesible es 0 solo si hay un reclamo previo cargado
       const minStep = this.previousClaim ? 0 : 1
+      // Reclamo cerrado: desde paso 3, volver al 0 para ver info del reclamo previo
+      if (this.previousClaim && this.previousClaim.is_closed && this.currentStep === 3) {
+        this.currentStep = 0
+        return
+      }
       if (this.currentStep > minStep) this.currentStep--
+    },
+
+    // Reinicia completamente el formulario (borra código previo, previous claim y todos los campos)
+    clearForm() {
+      this.previousClaim  = null
+      this.lookingUp      = false
+      this.fileList       = []
+      this.attachmentFile = null
+      this.currentStep    = 1
+      this.form = {
+        previous_code: '',
+        identity_document_type: '',
+        identity_document_number: '',
+        name: '',
+        email: '',
+        phone: '',
+        location_cascade: [],
+        address: '',
+        asset_type: '',
+        asset_description: '',
+        asset_date: '',
+        has_receipt: false,
+        receipt_amount: '',
+        receipt_currency: 'PEN',
+        receipt_document_type: '03',
+        receipt_series: '',
+        receipt_number: '',
+        claim_type: '',
+        detail: '',
+        expected_result: '',
+        channel: '',
+        terms_accepted: false,
+      }
+      if (this.$refs.uploader)  this.$refs.uploader.clearFiles()
+      if (this.$refs.formStep1) this.$refs.formStep1.clearValidate()
+      if (this.$refs.formStep2) this.$refs.formStep2.clearValidate()
+      if (this.$refs.formStep3) this.$refs.formStep3.clearValidate()
     },
 
     // Valida el formulario del paso actual antes de avanzar
@@ -1079,6 +1321,42 @@ export default {
         this.$message.error('No se pudo copiar automáticamente')
       }
       document.body.removeChild(el)
+    },
+
+    // Enmascarar email: car****@gmail.com
+    maskEmail(email) {
+      if (!email) return ''
+      const [local, domain] = String(email).split('@')
+      if (!domain) return email
+      const visible = local.length > 3 ? local.substring(0, 3) : local.substring(0, 1)
+      return `${visible}****@${domain}`
+    },
+
+    // Obtener nombre de archivo desde una URL
+    getFilenameFromUrl(url) {
+      try {
+        const parts = String(url).split('/')
+        const last = parts[parts.length - 1] || ''
+        return decodeURIComponent((last.split('?')[0]) || 'archivo')
+      } catch {
+        return 'archivo'
+      }
+    },
+
+    // Forzar descarga del recurso (genera un enlace y dispara click)
+    downloadUrl(url) {
+      try {
+        const a = document.createElement('a')
+        a.href = url
+        a.target = '_blank'
+        a.download = this.getFilenameFromUrl(url) || ''
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+      } catch (e) {
+        // fallback: abrir en nueva pestaña
+        window.open(url, '_blank')
+      }
     },
 
     // Reinicia el formulario para registrar otro reclamo

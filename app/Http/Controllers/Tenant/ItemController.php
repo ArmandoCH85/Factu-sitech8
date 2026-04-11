@@ -732,6 +732,9 @@ class ItemController extends Controller
                     'item_id' => $item->id
                 ]);
                 */
+            } else {
+                // Si se desactiva el manejo de lotes, eliminar lotes de cabecera no usados por el item.
+                ItemLotsGroup::where('item_id', $item->id)->delete();
             }
         }
 
@@ -931,6 +934,8 @@ class ItemController extends Controller
         try {
 
             $item = Item::findOrFail($id);
+            // Evita violaciones de FK en items cuando quedan lotes de cabecera huérfanos.
+            ItemLotsGroup::where('item_id', $item->id)->delete();
             $this->deleteRecordInitialKardex($item);
             $this->deleteRecordInitialWeightedCosts($item);
             $item->delete();

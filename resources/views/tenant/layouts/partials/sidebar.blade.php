@@ -1067,32 +1067,6 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                         </li>
                     @endif
 
-                    @if(in_array('claims_book', $vc_modules))
-                        <li
-                            class="{{  ($firstLevel === 'claims' ) ? 'nav-active' : ''}}">
-                            <a class="nav-link dashboard-link" href="{{ url('claims') }}">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="#607d8b"
-                                    stroke-width="1.25"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    >
-                                    <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                                    <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-                                    <path d="M3 6l0 13" />
-                                    <path d="M12 6l0 13" />
-                                    <path d="M21 6l0 13" />
-                                </svg>
-                                <span>Libro de Reclamaciones</span>
-                            </a>
-                        </li>
-                    @endif
-
                     {{-- Tienda virtual --}}
                     @if(in_array('ecommerce', $vc_modules))
                         <li
@@ -1112,13 +1086,6 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                 <span>Tienda Virtual</span>
                             </a>
                             <ul class="nav nav-children">
-                                @if(in_array('ecommerce', $vc_module_levels))
-                                    <li class="">
-                                        <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">Ir
-                                            a
-                                            Tienda</a>
-                                    </li>
-                                @endif
                                 @if(in_array('ecommerce_orders', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'orders') ? 'nav-active' : '' }}">
                                         <a class="nav-link" href="{{route('tenant_orders_index')}}">Pedidos</a>
@@ -1126,8 +1093,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                 @endif
                                 @if(in_array('ecommerce_items', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'items_ecommerce') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">Productos Tienda
-                                            Virtual</a>
+                                        <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">Productos visibles</a>
                                     </li>
                                 @endif
 
@@ -1138,20 +1104,25 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
 
                                 @if(in_array('ecommerce_tags', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'tags') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.tags.index')}}">Tags -
-                                            Categorias(Etiquetas)</a>
+                                        <a class="nav-link" href="{{route('tenant.tags.index')}}">Etiquetas</a>
                                     </li>
                                 @endif
                                 @if(in_array('ecommerce_promotions', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'promotions') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{route('tenant.promotion.index')}}">Promociones(Banners)</a>
+                                        <a class="nav-link" href="{{route('tenant.promotion.index')}}">Banners</a>
                                     </li>
                                 @endif
-                                {{-- @if(in_array('ecommerce_settings', $vc_module_levels))
-                                <li class="{{ ($secondLevel === 'configuration')?'nav-active':'' }}">
+                                @if(in_array('ecommerce_settings', $vc_module_levels))
+                                <li class="nav-item-with-action {{ ($secondLevel === 'configuration')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant_ecommerce_configuration')}}">Configuración</a>
+                                    <button
+                                        type="button"
+                                        class="{{ ($firstLevel === 'quotations') ? 'second-buton' : 'btn-primary' }} btn btn-xs nav-action m-0 py-0"
+                                        title="Ver tienda"
+                                        onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">Ver Tienda
+                                    </button>
                                 </li>
-                                @endif --}}
+                                @endif
                             </ul>
                         </li>
                     @endif
@@ -1573,6 +1544,16 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                     </li>
                                 @endif
                             </ul>
+                        </li>
+                    @endif
+
+                    @if(in_array('claims_book', $vc_modules))
+                        <li
+                            class="{{  ($firstLevel === 'claims' ) ? 'nav-active' : ''}}">
+                            <a class="nav-link dashboard-link" href="{{ url('claims') }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book-2"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12" /><path d="M19 16h-12a2 2 0 0 0 -2 2" /><path d="M9 8h6" /></svg>
+                                <span>Libro de Reclamaciones</span>
+                            </a>
                         </li>
                     @endif
 

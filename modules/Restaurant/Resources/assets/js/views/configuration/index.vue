@@ -588,6 +588,7 @@
 <script>
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
+import { buhoprinter } from '@mixins/buhoprinter'
 import Notas from '../notes/index.vue'
 import UsersForm from './partials/form.vue'
 import Environments from './partials/environments.vue'
@@ -608,7 +609,7 @@ const SOCKET = io(url, {
 //  }
 
 export default {
-    mixins: [deletable],
+    mixins: [deletable, buhoprinter],
     components: {Notas,UsersForm,Environments},
     data() {
       return {
@@ -898,35 +899,29 @@ export default {
       },
       async startConnectionQzTray() {
 
-        if (!qz.websocket.isActive()) {
-          console.log('Iniciando conexión con QZ Tray...');
+        if (!this.isBuhoActive) {
+          console.log('Iniciando conexión con BuhoPrinter...');
           try {
-            await qz.websocket.connect();
-            console.log('Conexión QZ Tray establecida exitosamente');
-            this.qzConnected = qz.websocket.isActive();
-            // Ahora que la conexión está establecida, consultar impresoras
+            await this.startConnectionBuho();
+            console.log('Conexión BuhoPrinter establecida exitosamente');
+            this.qzConnected = this.isBuhoActive;
             await this.getAllPrintersAvailable();
           } catch (err) {
-            console.error('Error al conectar con QZ Tray:', err);
+            console.error('Error al conectar con BuhoPrinter:', err);
             this.qzConnected = false;
           }
         } else {
-          console.log('QZ Tray ya está conectado');
+          console.log('BuhoPrinter ya está conectado');
           this.qzConnected = true;
           await this.getAllPrintersAvailable();
         }
       },
       async getAllPrintersAvailable() {
-        qz.printers.find("Microsoft Print to PDF").then(function(found) {
-          console.log("Printer: " + found);
-        });
         try {
           console.log('Consultando impresoras disponibles...');
-          const availablePrinters = await qz.printers.find();
-          console.log('Impresoras obtenidas de QZ Tray:', availablePrinters);
-          console.log('Total de impresoras:', availablePrinters.length);
+          const availablePrinters = await this.getBuhoPrinters();
+          console.log('Impresoras obtenidas de BuhoPrinter:', availablePrinters);
           this.printers = ['No asignada', ...availablePrinters];
-          console.log('Impresoras asignadas a Vue:', this.printers);
         } catch (err) {
           console.error('Error al obtener impresoras:', err);
           this.printers = ['No asignada'];

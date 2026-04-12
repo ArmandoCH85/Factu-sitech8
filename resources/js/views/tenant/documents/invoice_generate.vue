@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                         </div>
-                    </header>                    
+                    </header>
                     <div class="card-body card-body-invoice no-gutters border-0 shadow-none p-0 py-1 py-md-2 px-md-2">
                         <div class="row inputs-container mx-1">
                             <div class="col-md-5 col-lg-4 align-self-end invoice-type">
@@ -3950,6 +3950,7 @@ import SetTip from "@components/SetTip.vue";
 
 import LotsForm from "./partials/lots.vue";
 import { editableRowItems } from "@mixins/editable-row-items";
+import { buhoprinter } from "@mixins/buhoprinter";
 import ItemSearchQuickSale from "@components/items/ItemSearchQuickSale.vue";
 import PackItemDescription from "@components/items/PackItemDescription.vue";
 // import ItemDetailForm from '@views/items/form.vue'
@@ -3994,7 +3995,8 @@ export default {
         pointSystemFunctions,
         fnRestrictSaleItemsCpe,
         editableRowItems,
-        fnItemSearchQuickSale
+        fnItemSearchQuickSale,
+        buhoprinter,
     ],
     data() {
         return {
@@ -4059,6 +4061,7 @@ export default {
             prepayment_documents: [],
             currency_type: {},
             documentNewId: null,
+            printTicketUrl: null,
             prepayment_deduction: false,
             activePanel: 0,
             total_global_discount: 0,
@@ -4158,7 +4161,7 @@ export default {
             }
             return this.configuration.global_discount_type_id === "02" ;
         },
-        ...mapState(["config", "series", "all_series"]), 
+        ...mapState(["config", "series", "all_series"]),
         credit_payment_metod: function() {
             return _.filter(this.payment_method_types, { is_credit: true });
         },
@@ -4571,7 +4574,7 @@ export default {
                 const response = await this.$http.get('/price-labels/active');
                 const labels = response.data.data || [];
 
-                
+
                 const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
                 this.price_options = [
                     {
@@ -4715,8 +4718,8 @@ export default {
             this.$eventHub.$emit("eventInitTip");
         },
         startConnectionQzTray() {
-            if (!qz.websocket.isActive() && this.isAutoPrint) {
-                startConnection();
+            if (!this.isBuhoActive && this.isAutoPrint) {
+                this.startConnectionBuho();
             }
         },
         changeRowExchangePoints(row, index) {
@@ -6612,7 +6615,7 @@ export default {
 
             if (this.form.has_retention ) {
                 this.changeRetention();
-            } 
+            }
 
             this.setTotalDefaultPayment();
             this.setPendingAmount();
@@ -6962,7 +6965,7 @@ export default {
             // validar monto total y cliente_id para "Clientes varios"
             const monto = parseFloat(this.form.total) || 0;
             const clienteId = this.form.customer_id;
-            
+
             // Si monto > 700 y cliente_id = 1 (Clientes varios)
             if (monto > 700 && clienteId === 1) {
                 this.$alert('Ventas mayores a S/ 700 requieren un cliente con DNI registrado.', 'Cliente Requerido', {
@@ -6976,7 +6979,7 @@ export default {
                 this.$message.warning(
                     "El comprobante no cumple con el monto mínimo para aplicar retención o el cliente no es sujeto de retención"
                 );
-                return false;    
+                return false;
             }
 
             //Validando las series seleccionadas
@@ -7091,6 +7094,7 @@ export default {
                     if (response.data.success) {
                         let response_sent = response
                         this.documentNewId = response.data.data.id;
+                        this.printTicketUrl = response.data?.links?.print_ticket ?? null;
 
                         if(this.config.send_auto && this.form.document_type_id === '01') {
                             response_sent = await this.sendDocument(this.documentNewId);
@@ -7144,40 +7148,8 @@ export default {
             }
         },
         autoPrintDocument() {
-            if (this.isAutoPrint) {
-                this.$http
-                    .get(`/printticket/document/${this.documentNewId}/ticket`)
-                    .then(response => {
-                        this.printTicket(response.data);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            }
-        },
-        printTicket(html_pdf) {
-            if (html_pdf.length > 0) {
-                const config = getUpdatedConfig();
-                const opts = getUpdatedConfig();
-
-                const printData = [
-                    {
-                        type: "html",
-                        format: "plain",
-                        data: html_pdf,
-                        options: opts
-                    }
-                ];
-
-                qz.print(config, printData)
-                    .then(() => {
-                        this.$notify({
-                            title: "",
-                            message: "Impresión en proceso...",
-                            type: "success"
-                        });
-                    })
-                    .catch(displayError);
+            if (this.isAutoPrint && this.printTicketUrl) {
+                this.printPdfFromUrl(this.printTicketUrl);
             }
         },
         saveCashDocument() {

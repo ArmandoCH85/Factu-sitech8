@@ -602,6 +602,7 @@ import SaleNotesOptions from '../../sale_notes/partials/options.vue'
 import OptionsForm from './options.vue'
 import MultiplePaymentForm from './multiple_payment.vue'
 import {pointSystemFunctions} from '@mixins/functions'
+import { buhoprinter } from '@mixins/buhoprinter'
 import {calculateRowItem} from "@helpers/functions"
 import DiscountPermissionForm from './discount_permission.vue'
 import SearchAgent from '@components/SearchAgent.vue'
@@ -609,7 +610,7 @@ import SearchAgent from '@components/SearchAgent.vue'
 
 export default {
     components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress, DiscountPermissionForm, SearchAgent},
-    mixins: [pointSystemFunctions],
+    mixins: [pointSystemFunctions, buhoprinter],
 
     props: [
         'form',
@@ -690,8 +691,8 @@ export default {
 
         await this.setInitialAmount()
 
-        if (!qz.websocket.isActive() && this.isPrint) {
-            startConnection();
+        if (!this.isBuhoActive && this.isPrint) {
+            this.startConnectionBuho();
         }
 
         if(this.enabledPointSystem)
@@ -701,7 +702,7 @@ export default {
             this.checkUsedPointsByItem()
         }
         await this.getFormPosLocalStorage()
-        
+
 
         this.setTotalPointsBySale(this.configuration)
 
@@ -806,7 +807,7 @@ export default {
 
         },
         async setInitialAmount() {
-            this.enter_amount = this.getTotal() 
+            this.enter_amount = this.getTotal()
             // this.form.payments = this.payments
             // this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
             await this.$refs.enter_amount.$el.getElementsByTagName('input')[0].focus()
@@ -1103,7 +1104,7 @@ export default {
 
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
-            
+
             _.forEach(this.form.payments, row => {
                 payment += amount;
                 if (total - payment < 0) {
@@ -1501,7 +1502,7 @@ export default {
 
             await this.$http.post(`/${this.resource_documents}`, this.form).then(async (response) => {
                 if (response.data.success) {
-                    let response_sent = null 
+                    let response_sent = null
                     this.responseForm = response.data
 
                     if (this.form.document_type_id === "80") {
@@ -1599,59 +1600,10 @@ export default {
             try {
                 await this.printPdfFromUrl(this.responseForm.links.print_ticket);
             } catch (e) {
-                console.error('options autoPrint error', e);
+                console.error('payment autoPrint error', e);
             }
         },
 
-        async printPdfFromUrl(url) {
-            if (!url) return;
-
-            try {
-                // Obtener el PDF como arrayBuffer
-                const res = await fetch(url, { credentials: 'include' });
-                if (!res.ok) {
-                    console.error('Error fetching PDF for print:', res.statusText);
-                    return;
-                }
-                const arrayBuffer = await res.arrayBuffer();
-                const bytes = new Uint8Array(arrayBuffer);
-
-                // Convertir a base64 en trozos para evitar límites de pila
-                let binary = '';
-                const chunkSize = 0x8000;
-                for (let i = 0; i < bytes.length; i += chunkSize) {
-                    const chunk = bytes.subarray(i, i + chunkSize);
-                    binary += String.fromCharCode.apply(null, chunk);
-                }
-                const base64Data = btoa(binary);
-
-                // Asegurar conexión con QZ Tray
-                if (!window.qz || !window.qz.websocket) {
-                    console.error('QZ Tray no está disponible en el contexto global');
-                    return;
-                }
-
-                if (!window.qz.websocket.isActive()) {
-                    try {
-                        await window.qz.websocket.connect();
-                    } catch (err) {
-                        console.error('No se pudo conectar a QZ Tray:', err);
-                        return;
-                    }
-                }
-
-                // Obtener configuración (getUpdatedConfig está definido en public/js/function-qztray.js)
-                const cfg = (typeof window.getUpdatedConfig === 'function') ? window.getUpdatedConfig() : window.qz.configs.create(null);
-
-                // Imprimir PDF en base64 usando QZ Tray
-                await window.qz.print(cfg, [
-                    { type: 'pdf', format: 'base64', data: base64Data }
-                ]);
-
-            } catch (err) {
-                console.error('printPdfFromUrl error', err);
-            }
-        },
         sendDocument(id)
         {
             return this.$http
@@ -1681,31 +1633,16 @@ export default {
             })
         },
         async printticket(){
-            //getUpdatedConfig();
             await this.sleep(400);
-            var configg = getUpdatedConfig();
-            var opts = getUpdatedConfig();
-            var printData = [
-                {
-                    type: 'html',
-                    format: 'plain',
-                    data: this.form.datahtml,
-                    options: opts
-                }
-            ];
-            // qz.print(configg, printData).catch(displayError);
-
-            qz.print(configg, printData)
-                .then(()=>{
-
-                    this.$notify({
-                        title: '',
-                        message: 'Impresión en proceso...',
-                        type: 'success'
-                    })
-
-                })
-                .catch(displayError)
+            const configg = this.getUpdatedConfig();
+            if (!this.form.datahtml) return;
+            // Reutiliza el print_ticket PDF del último comprobante guardado
+            const url = this.responseForm?.links?.print_ticket;
+            if (url) {
+                await this.printPdfFromUrl(url);
+            } else {
+                console.warn('[BuhoPrinter] print_ticket URL no disponible.');
+            }
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)
@@ -1757,7 +1694,7 @@ export default {
             )
                 ? this.form.total - amount
                 : 0;
-                
+
             // this.calculateAmountToPayments();
         },
     }

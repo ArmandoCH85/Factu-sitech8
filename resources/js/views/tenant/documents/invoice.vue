@@ -1462,6 +1462,7 @@ import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
 import {exchangeRate, functions} from '../../../mixins/functions'
+import { buhoprinter } from '../../../mixins/buhoprinter'
 import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
@@ -1490,7 +1491,7 @@ export default {
         DocumentDetraction,
         DocumentTransportForm
     },
-    mixins: [functions, exchangeRate],
+    mixins: [functions, exchangeRate, buhoprinter],
     data() {
         return {
             datEmision: {
@@ -1550,6 +1551,7 @@ export default {
             prepayment_documents: [],
             currency_type: {},
             documentNewId: null,
+            printTicketUrl: null,
             prepayment_deduction: false,
             activePanel: 0,
             total_global_discount: 0,
@@ -1761,9 +1763,9 @@ export default {
         ]),
         startConnectionQzTray(){
 
-            if (!qz.websocket.isActive() && this.isAutoPrint)
+            if (!this.isBuhoActive && this.isAutoPrint)
             {
-                startConnection();
+                this.startConnectionBuho();
             }
 
         },
@@ -3494,6 +3496,7 @@ export default {
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
                     this.documentNewId = response.data.data.id;
+                    this.printTicketUrl = response.data?.links?.print_ticket ?? null;
 
                     this.showOptionsDialog(response)
 
@@ -3543,45 +3546,9 @@ export default {
         },
         autoPrintDocument(){
 
-            if(this.isAutoPrint)
+            if(this.isAutoPrint && this.printTicketUrl)
             {
-                this.$http.get(`/printticket/document/${this.documentNewId}/ticket`)
-                        .then(response => {
-                            this.printTicket(response.data)
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        })
-            }
-
-        },
-        printTicket(html_pdf){
-
-            if (html_pdf.length > 0)
-            {
-                const config = getUpdatedConfig()
-                const opts = getUpdatedConfig()
-
-                const printData = [
-                    {
-                        type: 'html',
-                        format: 'plain',
-                        data: html_pdf,
-                        options: opts
-                    }
-                ]
-
-                qz.print(config, printData)
-                    .then(()=>{
-
-                        this.$notify({
-                            title: '',
-                            message: 'Impresión en proceso...',
-                            type: 'success'
-                        })
-
-                    })
-                    .catch(displayError)
+                this.printPdfFromUrl(this.printTicketUrl);
             }
 
         },

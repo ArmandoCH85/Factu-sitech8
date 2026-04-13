@@ -52,9 +52,9 @@ $defaultSidebarVisibility = (count($establishments) > 1) || $showMultiUser;
 
 if (is_null($showInSidebar)) {
     if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
-        $showInSidebar = (bool)$visual->branch_selector_in_sidebar || $defaultSidebarVisibility;
+        $showInSidebar = (bool)$visual->branch_selector_in_sidebar;
     } elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
-        $showInSidebar = (bool)$visual['branch_selector_in_sidebar'] || $defaultSidebarVisibility;
+        $showInSidebar = (bool)$visual['branch_selector_in_sidebar'];
     } else {
         $showInSidebar = $defaultSidebarVisibility;
     }

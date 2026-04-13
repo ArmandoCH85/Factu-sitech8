@@ -4,7 +4,7 @@
         class="card mb-0 pt-2 pt-md-0"
         @click.self="toggleInformation" 
     >
-    <span class="module-title-marker" data-page-title="Nueva Cotización"></span>
+    <span class="module-title-marker" :data-page-title="resourceId ? 'Editar Cotización' : 'Nueva Cotización'"></span>
         <!-- <div class="card-header bg-info">
             <h3 class="my-0">Nuevo Comprobante</h3>
         </div> -->
@@ -1558,7 +1558,7 @@
                             native-type="submit"
                             :loading="loading_submit"
                             v-if="form.items.length > 0"
-                            >Generar</el-button
+                            >{{ resourceId ? 'Actualizar' : 'Generar' }}</el-button
                         >
                     </div>
                 </form>
@@ -1705,7 +1705,7 @@ import ItemSearchQuickSale from "@components/items/ItemSearchQuickSale.vue";
 import PackItemDescription from "@components/items/PackItemDescription.vue";
 
 export default {
-    props: ["typeUser", "saleOpportunityId", "configuration", "authUser"],
+    props: ["typeUser", "saleOpportunityId", "resourceId", "configuration", "authUser"],
     components: {
         QuotationFormItem,
         PersonForm,
@@ -1776,7 +1776,8 @@ export default {
             global_discount_types: [],
             global_discount_type: {},
             payment_condition: '01',
-            customerSearchTerm: ''
+            customerSearchTerm: '',
+            recordDiscountsGlobal: null
         };
     },
     watch: {
@@ -1842,6 +1843,7 @@ export default {
         });
 
         await this.createQuotationFromSO();
+        await this.initRecord();
     },
     computed: {
         getCustomer(){
@@ -2154,6 +2156,48 @@ export default {
         },
         clickCancel(index) {
             this.form.payments.splice(index, 1);
+        },
+        initRecord() {
+            if (!this.resourceId) return;
+
+            this.$http.get(`/${this.resource}/record/${this.resourceId}`)
+                .then(response => {
+                    let dato = response.data.data.quotation;
+                    this.form.id = dato.id;
+                    this.form.customer_id = dato.customer_id;
+                    this.form.currency_type_id = dato.currency_type_id;
+                    this.form.payment_method_type_id = dato.payment_method_type_id;
+                    this.form.date_of_due = dato.date_of_due;
+                    this.form.date_of_issue = dato.date_of_issue;
+                    this.form.delivery_date = dato.delivery_date;
+                    this.form.exchange_rate_sale = dato.exchange_rate_sale;
+                    this.form.description = dato.description;
+                    this.form.shipping_address = dato.shipping_address;
+                    this.form.account_number = dato.account_number;
+                    this.form.terms_condition = dato.terms_condition;
+                    this.form.seller_id = dato.seller_id;
+                    this.form.active_terms_condition = dato.terms_condition ? true : false;
+                    this.form.items = this.onPrepareItems(dato.items);
+                    this.form.payments = dato.payments;
+                    this.form.referential_information = dato.referential_information;
+                    this.changeCustomer();
+                    this.form.customer_address_id = dato.customer.address_id;
+
+                    if (dato.discounts[0]) {
+                        this.recordDiscountsGlobal = dato.discounts[0];
+                        let discount_type_id = dato.discounts[0].discount_type_id;
+                        this.total_global_discount = discount_type_id !== '02'
+                            ? dato.total_discount
+                            : _.round(Number(dato.total_discount * 1.18).toFixed(3), 2);
+                    }
+                    this.calculateTotal();
+                });
+        },
+        onPrepareItems(items) {
+            return items.map(item => {
+                item.discounts = (item.discounts) ? Object.values(item.discounts) : [];
+                return item;
+            });
         },
         async createQuotationFromSO() {
             if (this.saleOpportunityId) {
@@ -2525,10 +2569,19 @@ export default {
 
             this.loading_submit = true;
 
+            const isEdit = this.form.id && this.form.id > 0;
+            const endpoint = isEdit ? `/${this.resource}/update` : `/${this.resource}`;
+
             await this.$http
-                .post(`/${this.resource}`, this.form)
+                .post(endpoint, this.form)
                 .then(response => {
                     if (response.data.success) {
+                        if (isEdit) {
+                            this.quotationNewId = response.data.data.id;
+                            this.showDialogOptions = true;
+                            return;
+                        }
+
                         this.resetForm();
                         this.quotationNewId = response.data.data.id;
                         this.saveCashDocument(this.quotationNewId);

@@ -628,7 +628,7 @@ export default {
         },
         // Métodos auxiliares para redirecciones en dropdown
         goToEdit(id) {
-            window.location.href = `/${this.resource}/edit/${id}`;
+            window.location.href = `/${this.resource}/create/${id}`;
         },
         goToDispatch(id) {
             window.location.href = `/dispatches/create_new/quotation/${id}`;

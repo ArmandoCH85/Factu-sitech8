@@ -262,6 +262,21 @@ class DispatchController extends Controller
                 $observations = $document->observation;
             }
             $company = Company::first();
+
+            $total_weight_from_attributes = 0;
+            if ($parentTable === 'quotation') {
+                foreach ($document->items as $item) {
+                    $raw_attributes = $item->getRawOriginal('attributes');
+                    if ($raw_attributes) {
+                        $attrs = json_decode($raw_attributes, true);
+                        if (is_array($attrs) && count($attrs) > 0) {
+                            $first_attr = $attrs[0];
+                            $total_weight_from_attributes += (float)($first_attr['value'] ?? 0) * (float)$item->quantity;
+                        }
+                    }
+                }
+            }
+
             $data = [
                 'establishment_id' => $document->establishment_id,
                 'customer_id' => $document->customer_id,
@@ -280,7 +295,7 @@ class DispatchController extends Controller
                     'name' => $parentTable == 'purchases' ? $document->supplier->name : $company->name
                 ],
                 'observations' => $observations,
-
+                'total_weight' => $total_weight_from_attributes,
             ];
         }
 

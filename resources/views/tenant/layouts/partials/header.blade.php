@@ -561,7 +561,7 @@
                         // Verificar establecimientos
                         $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
                         $showMultiUser = $multiUserCount > 1 && config('configuration.multi_user_enabled');
-                        $showEstablishments = false;
+                        $showEstablishments = auth()->user()->type == 'admin' && count($establishments) > 0;
                         $configuration = App\Models\Tenant\Configuration::first();
                         $visual = $configuration ? $configuration->visual : null;
                         $showInHeader = true;
@@ -571,7 +571,7 @@
                             $showInHeader = !(bool)$visual['branch_selector_in_sidebar'];
                         }
 
-                        $showDivider = $showMultiUser || ($showEstablishments && $showInHeader);
+                        $showDivider = $showMultiUser || $showEstablishments;
                     @endphp
 
                     @if($showDivider)
@@ -732,31 +732,33 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('branchSelectorVisibilityChanged', function(event) {
-            const headerBranchContainer = document.getElementById('header-branch-container');
-            const headerSelector = document.getElementById('header-establishment-selector');
-            const headerMultiUser = document.getElementById('header-multi-user-selector');
-            const headerDivider = document.getElementById('header-branch-divider');
+            if (!event.detail) return;
 
-            if (!headerBranchContainer) {
-                if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
-                    if (headerSelector) headerSelector.style.display = event.detail.showInHeader ? 'block' : 'none';
-                    if (headerMultiUser) headerMultiUser.style.display = event.detail.showInHeader ? 'block' : 'none';
-                    if (headerDivider) headerDivider.style.display = event.detail.showInHeader ? 'block' : 'none';
-                }
+            let showInHeader;
+            if (typeof event.detail.showInSidebar !== 'undefined') {
+                showInHeader = !event.detail.showInSidebar;
+            } else if (typeof event.detail.showInHeader !== 'undefined') {
+                showInHeader = event.detail.showInHeader;
+            } else {
                 return;
             }
 
-            if (event.detail && typeof event.detail.showInHeader !== 'undefined') {
-                const visible = event.detail.showInHeader;
+            const headerBranchContainer = document.getElementById('header-branch-container');
+            const headerDivider = document.getElementById('header-branch-divider');
+            const headerMultiUser = document.getElementById('header-multi-user-selector');
+            const headerEstablishment = document.getElementById('header-establishment-selector');
 
-                headerBranchContainer.style.display = visible ? 'block' : 'none !important';
-
-                if (headerSelector) headerSelector.style.display = visible ? 'block' : 'none';
-                if (headerMultiUser) headerMultiUser.style.display = visible ? 'block' : 'none';
-
-                if (headerDivider) {
-                    headerDivider.style.display = visible ? 'block' : 'none';
-                }
+            if (headerBranchContainer) {
+                headerBranchContainer.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
+            }
+            if (headerDivider) {
+                headerDivider.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
+            }
+            if (headerMultiUser) {
+                headerMultiUser.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
+            }
+            if (headerEstablishment) {
+                headerEstablishment.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
             }
         });
     });

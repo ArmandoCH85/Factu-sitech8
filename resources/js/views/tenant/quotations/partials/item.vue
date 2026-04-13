@@ -1626,6 +1626,7 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true;
 
+            this.form.attributes = [];
             if (this.hasAttributes()) {
                 const contex = this;
                 this.form.item.attributes.forEach(row => {

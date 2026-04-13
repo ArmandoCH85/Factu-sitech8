@@ -65,6 +65,7 @@ class Claim extends ModelTenant
         'response_attachments',
         'pdf_path',
         'is_closed',
+        'closed_at',
         'due_date',
     ];
 
@@ -74,6 +75,7 @@ class Claim extends ModelTenant
         'receipt_amount'       => 'float',
         'terms_accepted'       => 'boolean',
         'is_closed'            => 'boolean',
+        'closed_at'            => 'datetime',
         'asset_date'           => 'date',
         'due_date'             => 'date',
         'attachments'          => 'array',
@@ -256,6 +258,10 @@ class Claim extends ModelTenant
 
             // Gestión
             'is_closed'               => $this->is_closed,
+            'closed_at'               => $this->closed_at ? $this->closed_at->toDateTimeString() : null,
+            'days_to_resolve'         => $this->is_closed && $this->closed_at && $this->created_at
+                ? (int) ceil($this->created_at->diffInHours($this->closed_at) / 24)
+                : null,
             'resolution'              => $this->resolution,
 
             // Archivos adjuntos al reclamo (convertir a URL pública cuando aplique)

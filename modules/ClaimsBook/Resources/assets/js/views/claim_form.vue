@@ -3,9 +3,23 @@
 
     <!-- Encabezado -->
     <div class="cf-header">
-      <div class="cf-header-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book-2"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12" /><path d="M19 16h-12a2 2 0 0 0 -2 2" /><path d="M9 8h6" /></svg>
+      <!-- Logo / ícono -->
+      <div class="cf-header-icon" v-if="showCompany && tables.company && tables.company.logo">
+        <img :src="tables.company.logo" :alt="tables.company.trade_name || tables.company.name" style="width:148px; height:148px; object-fit:contain;" />
       </div>
+      <div class="cf-header-icon" v-else>
+        <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12" /><path d="M19 16h-12a2 2 0 0 0 -2 2" /><path d="M9 8h6" /></svg>
+      </div>
+
+      <!-- Nombre y datos de empresa -->
+      <template v-if="showCompany && tables.company">
+        <p class="cf-subtitle" style="margin-bottom:16px;">
+          <span v-if="tables.company.trade_name && tables.company.name !== tables.company.trade_name">{{ tables.company.name }}</span>
+          <span v-if="tables.company.trade_name && tables.company.name !== tables.company.trade_name && tables.company.ruc" style="margin:0 5px;">·</span>
+          <span v-if="tables.company.ruc">RUC {{ tables.company.ruc }}</span>
+        </p>
+      </template>
+
       <h3 class="cf-title">Libro de Reclamaciones</h3>
       <p class="cf-subtitle">
         Conforme a lo establecido en el Código de Protección y Defensa del Consumidor
@@ -14,11 +28,14 @@
     </div>
 
     <!-- Código de reclamo previo -->
-    <div class="cf-prev-code-card">
-      <p class="cf-prev-code-hint">
-        ¿Ya presentó un reclamo? Ingrese su código para vincularlo o realizar seguimiento.
+    <div v-if="showPrevCodeSection" class="cf-prev-code-card">
+      <p class="cf-prev-code-hint" style="cursor:pointer; user-select:none; display:flex; align-items:center; justify-content:space-between; margin:0;" @click="showPrevCodeForm = !showPrevCodeForm">
+        <span>¿Ya presentó un reclamo? Consulte su estado aqui</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" :style="showPrevCodeForm ? 'transform:rotate(180deg)' : ''">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </p>
-      <div class="cf-inline">
+      <div v-if="showPrevCodeForm" class="cf-inline" style="margin-top:12px;">
         <el-input v-model="form.previous_code" placeholder="Ej: RJL76KQ2WO37U" size="small"
           :disabled="lookingUp"></el-input>
         <button class="cf-btn cf-btn-outline" :disabled="lookingUp" @click="lookupPreviousCode">
@@ -30,7 +47,7 @@
     </div>
 
     <!-- Stepper custom -->
-    <div class="cf-stepper">
+    <div v-if="!showPrevCodeForm" class="cf-stepper">
       <template v-if="previousClaim">
         <div class="cf-step-item" :class="{ active: activeStep === 0, done: activeStep > 0 }">
           <div class="cf-step-circle">
@@ -100,73 +117,13 @@
           </div>
         </div>
 
-        <!-- Resumen compacto: igual para ambos flujos; incluye datos personales, bien y detalle -->
-        <div class="cf-prev-summary">
-          <div class="cf-summary-row" v-if="previousClaim.name">
-            <span class="cf-summary-label">Nombre</span>
-            <span>{{ previousClaim.name }}</span>
-          </div>
-          <div class="cf-summary-row" v-if="previousClaim.email">
-            <span class="cf-summary-label">Email</span>
-            <span>{{ maskEmail(previousClaim.email) }}</span>
-          </div>
-          <div class="cf-summary-row" v-if="previousClaim.phone">
-            <span class="cf-summary-label">Teléfono</span>
-            <span>{{ previousClaim.phone }}</span>
-          </div>
-          <div class="cf-summary-row" v-if="previousClaim.claim_type">
-            <span class="cf-summary-label">Tipo</span>
-            <span>{{ previousClaim.claim_type === 'queja' ? 'Queja' : 'Reclamo' }}</span>
-          </div>
-          <div class="cf-summary-row" v-if="previousClaim.channel">
-            <span class="cf-summary-label">Canal</span>
-            <span>{{ previousClaim.channel }}</span>
-          </div>
-        </div>
-
-        <!-- Bien/servicio reclamado -->
-        <div v-if="previousClaim.asset_type || previousClaim.asset_description" class="cf-info-block" style="margin-top:12px">
-          <p class="cf-info-block-title">Bien o servicio reclamado</p>
-          <div class="cf-summary-row" v-if="previousClaim.asset_type">
-            <span class="cf-summary-label">Tipo</span>
-            <span>{{ previousClaim.asset_type === 'producto' ? 'Producto' : 'Servicio' }}</span>
-          </div>
-          <div class="cf-summary-row" v-if="previousClaim.asset_description">
-            <span class="cf-summary-label">Descripción</span>
-            <span style="white-space:pre-wrap">{{ previousClaim.asset_description }}</span>
-          </div>
-        </div>
-
-        <!-- Detalle del reclamo -->
-        <div v-if="previousClaim.detail || previousClaim.expected_result" class="cf-info-block" style="margin-top:12px">
-          <p class="cf-info-block-title">Detalle del reclamo</p>
-          <div class="cf-summary-row" v-if="previousClaim.detail">
-            <span class="cf-summary-label">Detalle</span>
-            <span style="white-space:pre-wrap">{{ previousClaim.detail }}</span>
-          </div>
-          <div class="cf-summary-row" v-if="previousClaim.expected_result">
-            <span class="cf-summary-label">Pedido</span>
-            <span style="white-space:pre-wrap">{{ previousClaim.expected_result }}</span>
-          </div>
-        </div>
-
         <!-- Resolución (solo cuando está cerrado) -->
         <div v-if="previousClaim.is_closed" class="cf-resolution-box" style="margin-top:12px">
           <p class="cf-resolution-label">Resolución de la empresa</p>
           <p class="cf-resolution-text">{{ previousClaim.resolution || 'Sin resolución registrada.' }}</p>
         </div>
 
-        <!-- Adjuntos del reclamante -->
-        <div v-if="previousClaim.attachments && previousClaim.attachments.length" class="cf-receipt-section" style="margin-top:12px">
-          <p class="cf-receipt-section-title">Archivos adjuntos del reclamante</p>
-          <ul class="cf-file-list">
-            <li v-for="(url, idx) in previousClaim.attachments" :key="'att-'+idx">
-              <a :href="url" @click.prevent="downloadUrl(url)" :title="getFilenameFromUrl(url)" rel="noopener noreferrer">{{ getFilenameFromUrl(url) }}</a>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Adjuntos de respuesta de la empresa -->
+         <!-- Adjuntos de respuesta de la empresa -->
         <div v-if="previousClaim.response_attachments && previousClaim.response_attachments.length" class="cf-receipt-section" style="margin-top:12px">
           <p class="cf-receipt-section-title">Archivos adjuntos por la empresa</p>
           <ul class="cf-file-list">
@@ -176,38 +133,102 @@
           </ul>
         </div>
 
-        <!-- Constancia PDF -->
-        <div v-if="previousClaim.pdf_url" class="cf-receipt-section" style="margin-top:12px">
-          <p class="cf-receipt-section-title">Constancia (PDF)</p>
-          <ul class="cf-file-list">
-            <li>
-              <a :href="previousClaim.pdf_url" @click.prevent="downloadUrl(previousClaim.pdf_url)" :title="getFilenameFromUrl(previousClaim.pdf_url)" rel="noopener noreferrer">{{ getFilenameFromUrl(previousClaim.pdf_url) }}</a>
-            </li>
-          </ul>
+        <!-- Toggle detalles -->
+        <div style="margin-top:12px; text-align:center;">
+          <button class="cf-btn cf-btn-link" style="font-size:13px;" @click="showClaimDetails = !showClaimDetails">
+            {{ showClaimDetails ? 'Ocultar detalles' : 'Ver todos los detalles del reclamo' }}
+          </button>
         </div>
 
-        <!-- Aviso cuando está en proceso (no se puede continuar) -->
-        <div v-if="!previousClaim.is_closed" class="cf-alert cf-alert-warning" style="margin-top:14px">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-          <span>No es posible vincular un nuevo reclamo mientras el anterior está en proceso de atención.</span>
+        <!-- Resumen compacto y detalles colapsables -->
+        <div v-if="showClaimDetails">
+          <div class="cf-prev-summary">
+            <div class="cf-summary-row" v-if="previousClaim.name">
+              <span class="cf-summary-label">Nombre</span>
+              <span>{{ previousClaim.name }}</span>
+            </div>
+            <div class="cf-summary-row" v-if="previousClaim.email">
+              <span class="cf-summary-label">Email</span>
+              <span>{{ maskEmail(previousClaim.email) }}</span>
+            </div>
+            <div class="cf-summary-row" v-if="previousClaim.phone">
+              <span class="cf-summary-label">Teléfono</span>
+              <span>{{ previousClaim.phone }}</span>
+            </div>
+            <div class="cf-summary-row" v-if="previousClaim.claim_type">
+              <span class="cf-summary-label">Tipo</span>
+              <span>{{ previousClaim.claim_type === 'queja' ? 'Queja' : 'Reclamo' }}</span>
+            </div>
+            <div class="cf-summary-row" v-if="previousClaim.channel">
+              <span class="cf-summary-label">Canal</span>
+              <span>{{ previousClaim.channel }}</span>
+            </div>
+          </div>
+
+          <!-- Bien/servicio reclamado -->
+          <div v-if="previousClaim.asset_type || previousClaim.asset_description" class="cf-info-block" style="margin-top:12px">
+            <p class="cf-info-block-title">Bien o servicio reclamado</p>
+            <div class="cf-summary-row" v-if="previousClaim.asset_type">
+              <span class="cf-summary-label">Tipo</span>
+              <span>{{ previousClaim.asset_type === 'producto' ? 'Producto' : 'Servicio' }}</span>
+            </div>
+            <div class="cf-summary-row" v-if="previousClaim.asset_description">
+              <span class="cf-summary-label">Descripción</span>
+              <span style="white-space:pre-wrap">{{ previousClaim.asset_description }}</span>
+            </div>
+          </div>
+
+          <!-- Detalle del reclamo -->
+          <div v-if="previousClaim.detail || previousClaim.expected_result" class="cf-info-block" style="margin-top:12px">
+            <p class="cf-info-block-title">Detalle del reclamo</p>
+            <div class="cf-summary-row" v-if="previousClaim.detail">
+              <span class="cf-summary-label">Detalle</span>
+              <span style="white-space:pre-wrap">{{ previousClaim.detail }}</span>
+            </div>
+            <div class="cf-summary-row" v-if="previousClaim.expected_result">
+              <span class="cf-summary-label">Pedido</span>
+              <span style="white-space:pre-wrap">{{ previousClaim.expected_result }}</span>
+            </div>
+          </div>
+
+          <!-- Adjuntos del reclamante -->
+          <div v-if="previousClaim.attachments && previousClaim.attachments.length" class="cf-receipt-section" style="margin-top:12px">
+            <p class="cf-receipt-section-title">Archivos adjuntos del reclamante</p>
+            <ul class="cf-file-list">
+              <li v-for="(url, idx) in previousClaim.attachments" :key="'att-'+idx">
+                <a :href="url" @click.prevent="downloadUrl(url)" :title="getFilenameFromUrl(url)" rel="noopener noreferrer">{{ getFilenameFromUrl(url) }}</a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Constancia PDF -->
+          <div v-if="previousClaim.pdf_url" class="cf-receipt-section" style="margin-top:12px">
+            <p class="cf-receipt-section-title">Constancia (PDF)</p>
+            <ul class="cf-file-list">
+              <li>
+                <a :href="previousClaim.pdf_url" @click.prevent="downloadUrl(previousClaim.pdf_url)" :title="getFilenameFromUrl(previousClaim.pdf_url)" rel="noopener noreferrer">{{ getFilenameFromUrl(previousClaim.pdf_url) }}</a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Aviso cuando está en proceso (no se puede continuar) -->
+          <div v-if="!previousClaim.is_closed">
+          </div>
         </div>
 
       </div>
       <!-- Solo muestra Continuar cuando el reclamo previo fue cerrado -->
-      <p style="text-align: right;"><small>Si el resultado no ha sido el esperado, puedes generar un reclamo relacionado.</small></p>
-      <div class="cf-step-actions">
-        <button v-if="previousClaim && previousClaim.is_closed" class="cf-btn cf-btn-primary" @click="goNext">
-          Generar reclamo relacionado
-        </button>
+      <div v-if="previousClaim && previousClaim.is_closed" class="cf-step-actions">
+         <p style="text-align: right;">
+            <small>¿La resolución no responde a tu reclamo? Puedes enviarnos tu respuesta y revisaremos el caso nuevamente.</small>
+            <button class="cf-btn cf-btn-link" @click="showPrevCodeSection = false; showPrevCodeForm = false; goNext()">Enviar respuesta
+            </button>
+        </p>
       </div>
     </div>
 
-    <!-- ──────────── Paso 1: Datos del reclamante ──────────── -->
-    <div v-if="currentStep === 1" class="cf-step-content">
+    <!-- ───────��──── Paso 1: Datos del reclamante ──────────── -->
+    <div v-if="!showPrevCodeForm && currentStep === 1" class="cf-step-content">
       <p class="cf-section-title">Datos del reclamante</p>
       <el-form ref="formStep1" :model="form" :rules="rulesStep1" label-position="top" size="small">
         <el-row :gutter="16">
@@ -260,7 +281,7 @@
     </div>
 
     <!-- ──────────── Paso 2: Bien contratado ──────────── -->
-    <div v-if="currentStep === 2" class="cf-step-content">
+    <div v-if="!showPrevCodeForm && currentStep === 2" class="cf-step-content">
       <p class="cf-section-title">Bien o servicio contratado</p>
       <el-form ref="formStep2" :model="form" :rules="rulesStep2" label-position="top" size="small">
         <el-row :gutter="16">
@@ -275,7 +296,8 @@
           <el-col :span="12" :xs="24">
             <el-form-item label="Fecha de contratación" prop="asset_date">
               <el-date-picker v-model="form.asset_date" type="date" placeholder="Seleccione fecha"
-                value-format="yyyy-MM-dd" style="width:100%"></el-date-picker>
+                value-format="yyyy-MM-dd" style="width:100%"
+                :picker-options="{ disabledDate: d => d > new Date() }"></el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -345,19 +367,26 @@
     </div>
 
     <!-- ──────────── Paso 3: Detalle del reclamo ──────────── -->
-    <div v-if="currentStep === 3" class="cf-step-content">
+    <div v-if="!showPrevCodeForm && currentStep === 3" class="cf-step-content">
+      <div v-if="!showPrevCodeSection" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#166534; line-height:1.6;">
+        Ya tenemos guardada toda su información personal y los datos del reclamo anterior. Solo complete los campos a continuación con la nueva información que desea agregar.
+      </div>
       <p class="cf-section-title">Detalle del reclamo</p>
       <el-form ref="formStep3" :model="form" :rules="rulesStep3" label-position="top" size="small">
         <el-row :gutter="16">
-          <el-col :span="12" :xs="24">
+          <el-col v-if="showPrevCodeSection" :span="12" :xs="24">
             <el-form-item label="Tipo de registro" prop="claim_type">
               <el-select v-model="form.claim_type" placeholder="Seleccione" style="width:100%">
-                <el-option value="queja" label="Queja — sin afectación económica"></el-option>
-                <el-option value="reclamo" label="Reclamo — con afectación económica"></el-option>
+                <el-option value="queja" label="Queja"></el-option>
+                <el-option value="reclamo" label="Reclamo"></el-option>
               </el-select>
+              <div style="margin-top:6px; font-size:12px; color:#9298a5; line-height:1.5;">
+                <div><strong>RECLAMO:</strong> Disconformidad relacionada a los productos o servicios.</div>
+                <div style="margin-top:3px;"><strong>QUEJA:</strong> Disconformidad NO relacionada a los productos o servicios; si no al descontento respecto a la atención al público.</div>
+              </div>
             </el-form-item>
           </el-col>
-          <el-col :span="12" :xs="24">
+          <el-col v-if="showPrevCodeSection" :span="12" :xs="24">
             <el-form-item label="Canal de atención">
               <el-select v-model="form.channel" placeholder="Seleccione un canal" clearable style="width:100%">
                 <el-option v-for="ch in tables.claim_channels" :key="ch.id" :label="ch.name"
@@ -413,6 +442,7 @@
         </el-row>
       </el-form>
       <div class="cf-step-actions">
+        <button v-if="!showPrevCodeSection" class="cf-btn cf-btn-link" style="margin-right:auto;" @click="reset">← Enviar un nuevo reclamo</button>
         <button class="cf-btn cf-btn-outline" @click="goPrev">Atrás</button>
         <button class="cf-btn cf-btn-primary" :disabled="submitting" @click="submit">
           <span v-if="submitting" class="cf-spinner cf-spinner-white"></span>
@@ -421,11 +451,25 @@
       </div>
     </div>
 
+    <div class="cf-alert cf-alert-default">
+        <div>
+            <p class="cf-prev-code-hint">La formulación de la queja o reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el INDECOPI.</p>
+            <p class="cf-prev-code-hint">El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a quince (15) días hábiles, el cual es improrrogable.</p>
+            <p class="cf-prev-code-hint" style="margin-bottom: 0;">Si no se consigna de manera adecuada toda la información mínima obligatoria, la queja o el reclamo se considerará no presentado.</p>
+        </div>
+    </div>
+    <div>
+        <small class="cf-prev-code-hint">
+            Este libro de reclamaciones virtual es un servicio proporcionado por <a href="https://buho.la" target="_blank">Digital Buho</a> en cumplimiento de la Ley N° 29571, Código de Protección y Defensa del Consumidor.
+        </small>
+    </div>
     <!-- ──────────── Modal de resultado (éxito / error) ──────────── -->
     <claim-result-dialog
       :visible.sync="showResultDialog"
       :success="resultSuccess"
       :code="submittedCode"
+      :pdf-url="resultPdfUrl"
+      :email="resultEmail"
       :error-msg="resultErrorMsg"
       @closed="reset"
     ></claim-result-dialog>
@@ -435,8 +479,8 @@
 <style scoped>
 /* ── Variables (shadcn/ui palette) ── */
 .cf-wrapper {
-  --cf-bg:          #ffffff;
-  --cf-border:      #e4e4e7;
+  --cf-bg:          #f5f7f9;
+  --cf-border:      #e2e8f0;
   --cf-ring:        #a1a1aa;
   --cf-foreground:  #09090b;
   --cf-muted:       #f4f4f5;
@@ -463,21 +507,84 @@
   margin-bottom: 28px;
 }
 
+/* ── Tarjeta de empresa ── */
+.cf-company-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--cf-muted);
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.cf-company-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid var(--cf-border);
+  background: #fff;
+  flex-shrink: 0;
+}
+.cf-company-info {
+  min-width: 0;
+}
+.cf-company-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cf-foreground);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cf-company-razon {
+  font-size: 12px;
+  color: var(--cf-muted-fg);
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cf-company-meta {
+  font-size: 12px;
+  color: var(--cf-muted-fg);
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.cf-company-sep {
+  color: var(--cf-ring);
+}
+
 .cf-header-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 148px;
+  height: 148px;
   border-radius: var(--cf-radius);
   background: var(--cf-muted);
   color: var(--cf-foreground);
   margin-bottom: 14px;
+  padding: 10px;
+}
+
+.cf-header-icon:has(svg) {
+    width: 36px !important;
+    height: 36px !important;
+}
+.cf-header-icon svg {
+    width: 32px;
 }
 
 .cf-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--cf-foreground);
   margin: 0 0 6px;
   letter-spacing: -0.02em;
@@ -493,11 +600,12 @@
 }
 
 /* ── Código de reclamo previo ── */
-.cf-prev-code-card {
+.cf-prev-code-card,
+.cf-alert.cf-alert-default  {
   border: 1px solid var(--cf-border);
   border-radius: var(--cf-radius);
   padding: 16px;
-  background: var(--cf-muted);
+  background: #fff;
   margin-bottom: 24px;
 }
 
@@ -789,6 +897,11 @@
   white-space: nowrap;
   font-family: inherit;
 }
+.cf-btn.cf-btn-link {
+    padding: 0;
+    height: 0;
+    text-decoration: underline;
+}
 
 .cf-btn:disabled {
   opacity: 0.5;
@@ -828,8 +941,9 @@
   justify-content: flex-end;
   gap: 8px;
   margin-top: 24px;
-  padding-top: 16px;
+  padding: 16px 0;
   border-top: 1px solid var(--cf-border);
+  align-items: center;
 }
 
 /* ── Spinner ── */
@@ -857,10 +971,24 @@
 .cf-wrapper :deep(.el-textarea__inner) {
   border-color: var(--cf-border);
   border-radius: var(--cf-radius);
-  font-size: 13.5px;
+  font-size: 15px;
   color: var(--cf-foreground);
   background: var(--cf-bg);
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cf-wrapper :deep(.el-input__inner) {
+  height: 36px;
+  line-height: 36px;
+}
+
+.cf-wrapper :deep(.el-textarea__inner) {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  min-height: 128px !important;
+  height: auto;
+  line-height: 1.6;
+  field-sizing: content;
+  resize: none;
 }
 
 .cf-wrapper :deep(.el-input__inner:focus),
@@ -940,6 +1068,11 @@ export default {
     primaryColor: {
       type: String,
       default: ''
+    },
+    // Mostrar u ocultar los datos de la empresa en el encabezado
+    showCompany: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -947,11 +1080,16 @@ export default {
     return {
       currentStep: 1,
       submitting: false,
+      showClaimDetails: false,
+      showPrevCodeForm: false,
+      showPrevCodeSection: true,
       // Control del modal de resultado
       showResultDialog: false,
       resultSuccess: false,
       submittedCode: '',
       resultErrorMsg: '',
+      resultPdfUrl: '',
+      resultEmail: '',
       lookingUp: false,
       previousClaim: null,
       fileList: [],
@@ -962,6 +1100,7 @@ export default {
         identity_document_types: [],
         claim_channels: [],
         locations: [],
+        company: null,
       },
 
       // Datos del formulario (todos los pasos)
@@ -1231,8 +1370,10 @@ export default {
         })
           .then(response => {
             if (response.data.success) {
-              this.submittedCode   = response.data.code
-              this.resultSuccess   = true
+              this.submittedCode    = response.data.code
+              this.resultPdfUrl     = response.data.pdf_url || ''
+              this.resultEmail      = response.data.email   || ''
+              this.resultSuccess    = true
               this.showResultDialog = true
             }
           })

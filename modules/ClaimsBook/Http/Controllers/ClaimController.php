@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Department;
@@ -77,10 +79,13 @@ class ClaimController extends Controller
             $color = '#18181b';
         }
 
+        $showCompany = request()->query('show_company', '1') !== '0';
+
         return response()
             ->view('claimsbook::widget', [
                 'tenant_slug'   => $slug,
                 'primary_color' => $color,
+                'show_company'  => $showCompany,
             ])
             ->header('X-Frame-Options', 'ALLOWALL');
     }
@@ -118,16 +123,19 @@ class ClaimController extends Controller
     var origin = src.substring(0, src.indexOf('/claims/embed.js'));
     var slug   = (new URL(src)).hostname;
 
-    // Leer el color primario configurado en el atributo data-color del script (opcional)
-    var color = script.getAttribute('data-color') || '';
+    // Leer atributos de configuración del script (opcionales)
+    var color       = script.getAttribute('data-color') || '';
+    var showCompany = script.getAttribute('data-show-company');
 
     // Crear el contenedor
     var wrap = document.createElement('div');
     wrap.style.cssText = 'width:100%;';
 
-    // Crear el iframe — incluir el color como query param si fue configurado
-    var iframeSrc = origin + '/claims/widget/' + slug;
-    if (color) { iframeSrc += '?color=' + encodeURIComponent(color); }
+    // Construir URL del iframe con los parámetros activos
+    var params = [];
+    if (color) { params.push('color=' + encodeURIComponent(color)); }
+    if (showCompany === 'false') { params.push('show_company=0'); }
+    var iframeSrc = origin + '/claims/widget/' + slug + (params.length ? '?' + params.join('&') : '');
 
     var iframe = document.createElement('iframe');
     iframe.src         = iframeSrc;
@@ -197,11 +205,13 @@ JS;
             ->orderBy('description')
             ->get(['id', 'description']);
         $locations               = $this->buildLocationCascade();
+        $company                 = $this->getCompanyData();
 
         return response()->json(compact(
             'claim_channels',
             'identity_document_types',
-            'locations'
+            'locations',
+            'company'
         ));
     }
 
@@ -221,12 +231,14 @@ JS;
             ->orderBy('description')
             ->get(['id', 'description']);
         $locations = $this->buildLocationCascade();
+        $company   = $this->getCompanyData();
 
         return response()->json(compact(
             'status_claims',
             'claim_channels',
             'identity_document_types',
-            'locations'
+            'locations',
+            'company'
         ));
     }
 
@@ -487,9 +499,11 @@ JS;
 
         $claim->refresh();
         return response()->json([
-            'success' => true,
-            'message' => 'Reclamo registrado correctamente',
-            'code'    => $claim->public_code,
+            'success'  => true,
+            'message'  => 'Reclamo registrado correctamente',
+            'code'     => $claim->public_code,
+            'pdf_url'  => $claim->getDetailData()['pdf_url'] ?? null,
+            'email'    => $claim->email,
         ]);
     }
 
@@ -539,6 +553,11 @@ JS;
 
         $claim->status_claim_id = $status->id;
         $claim->is_closed       = $status->is_final;
+        if ($status->is_final && !$claim->closed_at) {
+            $claim->closed_at = now();
+        } elseif (!$status->is_final) {
+            $claim->closed_at = null;
+        }
 
         if ($status->is_final && $request->filled('resolution')) {
             $claim->resolution = $request->resolution;
@@ -607,6 +626,11 @@ JS;
 
             $claim->status_claim_id = $status->id;
             $claim->is_closed       = $status->is_final;
+            if ($status->is_final && !$claim->closed_at) {
+                $claim->closed_at = now();
+            } elseif (!$status->is_final) {
+                $claim->closed_at = null;
+            }
 
             // Capturar si hay que enviar email (se despachará después del PDF)
             if ($status->action_send_email) {
@@ -840,6 +864,24 @@ JS;
      * Construye la cascada departamento > provincia > distrito para el cascader de Vue.
      * Mismo formato que EcommerceController::getLocationCascade().
      */
+    private function getCompanyData(): array
+    {
+        $company       = Company::withOut(['identity_document_type'])->first();
+        $establishment = Establishment::first();
+
+        if (! $company) {
+            return [];
+        }
+
+        return [
+            'name'       => $company->name,
+            'trade_name' => $company->trade_name,
+            'ruc'        => $company->number,
+            'logo'       => $company->logo ? asset('storage/uploads/logos/' . $company->logo) : null,
+            'address'    => $establishment ? $establishment->address : null,
+        ];
+    }
+
     private function buildLocationCascade(): array
     {
         $locations   = [];

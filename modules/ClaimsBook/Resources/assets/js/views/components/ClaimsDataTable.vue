@@ -7,6 +7,7 @@
                     <th class="text-start">Cliente</th>
                     <th class="text-start">Tipo</th>
                     <th class="text-start">Fecha</th>
+                    <th class="text-start">Vencimiento</th>
                     <th class="text-start">Comprobante</th>
                     <th class="text-start">Monto</th>
                     <th class="text-start">Canal</th>
@@ -17,12 +18,12 @@
             </thead>
             <tbody>
                 <tr v-if="loading">
-                    <td colspan="10" class="text-center py-4">
+                    <td colspan="11" class="text-center py-4">
                         <i class="el-icon-loading"></i> Cargando...
                     </td>
                 </tr>
                 <tr v-else-if="records.length === 0">
-                    <td colspan="10" class="text-center py-4 text-muted">
+                    <td colspan="11" class="text-center py-4 text-muted">
                         No se encontraron registros
                     </td>
                 </tr>
@@ -48,8 +49,16 @@
                         </span>
                     </td>
                     <td class="text-start">
-                        {{ formatDate(row.created_at) }}<br>
-                        <span class="text-danger" v-if="row.status_claim.is_initial && row.remaining_business_days">{{ row.remaining_business_days }} restantes por atender</span>
+                        {{ formatDate(row.created_at) }}
+                    </td>
+                    <td class="text-start" style="white-space:nowrap;">
+                        <span v-if="row.is_closed && row.days_to_resolve !== null" class="text-success">
+                            Resuelto en {{ row.days_to_resolve }} {{ row.days_to_resolve === 1 ? 'día' : 'días' }}
+                        </span>
+                        <span v-else-if="!row.is_closed && row.remaining_business_days" class="text-danger">
+                            {{ row.remaining_business_days }} días
+                        </span>
+                        <span v-else class="text-muted">—</span>
                     </td>
                     <td class="text-start">
                         <span v-if="row.receipt_series">
@@ -68,22 +77,28 @@
                         <span v-else class="text-muted">—</span>
                     </td>
                     <td class="text-start">
-                        <el-select
-                            :value="row.status_claim_id"
-                            size="mini"
-                            style="width: 100%; min-width: 150px"
-                            @change="newVal => $emit('status-change', row, newVal)"
-                        >
-                            <el-option
-                                v-for="s in statusClaims"
-                                :key="s.id"
-                                :label="s.description"
-                                :value="s.id"
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span
+                                :style="{ background: getStatusColor(row.status_claim_id), flexShrink: 0 }"
+                                style="display:inline-block; width:8px; height:8px; border-radius:50%;"
+                            ></span>
+                            <el-select
+                                :value="row.status_claim_id"
+                                size="mini"
+                                style="width: 100%; min-width: 150px"
+                                @change="newVal => $emit('status-change', row, newVal)"
                             >
-                                <span :style="{ color: s.color || '#909399' }">● </span>
-                                {{ s.description }}
-                            </el-option>
-                        </el-select>
+                                <el-option
+                                    v-for="s in statusClaims"
+                                    :key="s.id"
+                                    :label="s.description"
+                                    :value="s.id"
+                                >
+                                    <span :style="{ color: s.color || '#909399' }">● </span>
+                                    {{ s.description }}
+                                </el-option>
+                            </el-select>
+                        </div>
                     </td>
                     <td class="text-start">
                         <el-select
@@ -155,6 +170,11 @@ export default {
     },
 
     methods: {
+        getStatusColor(statusId) {
+            const s = this.statusClaims.find(s => s.id === statusId)
+            return (s && s.color) ? s.color : '#909399'
+        },
+
         onPageChange(page) {
             this.$emit('page-change', page)
         },

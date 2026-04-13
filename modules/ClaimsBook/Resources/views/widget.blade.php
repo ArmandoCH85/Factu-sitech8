@@ -17,6 +17,7 @@
             } catch (e) {}
             return '#18181b';
         }());
+        window.widgetShowCompany = {!! json_encode($show_company ?? true) !!};
     </script>
 
     @vite(['modules/ClaimsBook/Resources/assets/js/app.js'])
@@ -47,6 +48,7 @@
             :embedded="true"
             tenant-slug="{{ $tenant_slug }}"
             :primary-color="widgetColor"
+            :show-company="widgetShowCompany"
         ></tenant-claims-book-form>
     </div>
 </body>

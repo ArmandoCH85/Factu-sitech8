@@ -37,6 +37,15 @@
                 >Restablecer</el-button>
             </div>
 
+            <!-- Toggle datos de empresa -->
+            <div class="cem-color-row">
+                <span class="cem-label">Mostrar datos de la empresa:</span>
+                <el-switch v-model="showCompany" active-color="#18181b" @change="buildCode"></el-switch>
+                <span class="cem-color-hint" style="margin-left:4px;">
+                    {{ showCompany ? 'Logo, razón social y RUC visibles' : 'Se mostrará el ícono del libro' }}
+                </span>
+            </div>
+
             <!-- Bloque de código -->
             <div class="cem-code-block">
                 <pre ref="codeBlock" class="cem-pre">{{ embedCode }}</pre>
@@ -48,11 +57,6 @@
                     @click="copyCode"
                 >Copiar</el-button>
             </div>
-
-            <p class="cem-note">
-                <i class="el-icon-info"></i>
-                El script detecta automáticamente el subdominio; no necesitas configurar nada más.
-            </p>
         </div>
 
         <span slot="footer">
@@ -172,6 +176,7 @@ export default {
             widgetUrl: '',
             embedCode: '',
             primaryColor: '#18181b',
+            showCompany: true,
         }
     },
 
@@ -180,6 +185,10 @@ export default {
         const saved = localStorage.getItem('claims_widget_primary_color')
         if (saved && /^#[0-9A-Fa-f]{6}$/.test(saved)) {
             this.primaryColor = saved
+        }
+        const savedCompany = localStorage.getItem('claims_widget_show_company')
+        if (savedCompany !== null) {
+            this.showCompany = savedCompany !== 'false'
         }
     },
 
@@ -192,24 +201,27 @@ export default {
 
         // Construye la URL del widget y el snippet del script loader a partir del host actual
         buildCode() {
-            const origin    = window.location.origin   // ej: https://1.facturaloperu-pro8.oo
-            const slug      = window.location.hostname // ej: 1.facturaloperu-pro8.oo
+            const origin    = window.location.origin
+            const slug      = window.location.hostname
             const scriptUrl = `${origin}/claims/embed.js`
             const isDefault = this.primaryColor === '#18181b'
 
-            // La URL de previa incluye el color si no es el valor por defecto
-            this.widgetUrl = isDefault
-                ? `${origin}/claims/widget/${slug}`
-                : `${origin}/claims/widget/${slug}?color=${encodeURIComponent(this.primaryColor)}`
+            const params = []
+            if (!isDefault) params.push(`color=${encodeURIComponent(this.primaryColor)}`)
+            if (!this.showCompany) params.push(`show_company=0`)
+            const query = params.length ? '?' + params.join('&') : ''
 
-            // Generar el atributo data-color solo si el usuario eligió un color personalizado
-            const colorAttr = isDefault ? '' : ` data-color="${this.primaryColor}"`
+            this.widgetUrl = `${origin}/claims/widget/${slug}${query}`
 
-            // Una sola línea de script; el JS crea e inserta el iframe automáticamente
+            const colorAttr   = isDefault ? '' : ` data-color="${this.primaryColor}"`
+            const companyAttr = this.showCompany ? '' : ` data-show-company="false"`
+
             this.embedCode = [
-                `<!-- Libro de Reclamaciones — copie y pegue esta línea donde quiera mostrar el formulario -->`,
-                `<script src="${scriptUrl}"${colorAttr}><\/script>`,
+                `<!-- Libro de Reclamaciones — Copie y pegue para mostrar el formulario -->`,
+                `<script src="${scriptUrl}"${colorAttr}${companyAttr}><\/script>`,
             ].join('\n')
+
+            localStorage.setItem('claims_widget_show_company', String(this.showCompany))
         },
 
         // Restablece el color primario al valor por defecto, limpia localStorage y regenera el código

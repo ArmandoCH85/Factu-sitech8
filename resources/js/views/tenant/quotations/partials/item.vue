@@ -1583,33 +1583,27 @@ export default {
             this.form.unit_price_value = this.form.item.sale_unit_price;
 
             // aplicar precio según tipo de cliente
-            if (
-                !this.configuration.enable_list_product &&
-                this.selectedOptionPrice !== 1
-            ) {
-                if (this.form.item_unit_types.length) {
-                    let first_list = this.form.item_unit_types[0];
-
-                    let price_label_id = null;
-                    if (
-                        typeof this.selectedOptionPrice === "string" &&
-                        this.selectedOptionPrice.startsWith("price_label_")
-                    ) {
+            if (this.selectedOptionPrice !== 1 && this.form.item_unit_types.length) {
+                let price_label_id = null;
+                if (typeof this.selectedOptionPrice === "string") {
+                    if (this.selectedOptionPrice.startsWith("price_label_")) {
                         price_label_id = parseInt(
                             this.selectedOptionPrice.replace("price_label_", "")
                         );
+                    } else if (this.selectedOptionPrice.startsWith("price")) {
+                        price_label_id = parseInt(
+                            this.selectedOptionPrice.replace("price", "")
+                        );
                     }
+                }
 
-                    if (
-                        price_label_id &&
-                        first_list.prices &&
-                        Array.isArray(first_list.prices)
-                    ) {
+                if (price_label_id) {
+                    let first_list = this.form.item_unit_types[0];
+                    if (first_list.prices && Array.isArray(first_list.prices)) {
                         const priceObj = first_list.prices.find(
                             p => p.price_label_id === price_label_id
                         );
-
-                        if (priceObj && priceObj.price > 0) {
+                        if (priceObj && Number(priceObj.price) > 0) {
                             this.selectedPrice(first_list, priceObj);
                         }
                     }

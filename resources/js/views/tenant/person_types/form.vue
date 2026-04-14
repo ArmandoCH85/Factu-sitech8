@@ -91,7 +91,10 @@
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
-                            this.form = response.data
+                            this.form = {
+                                ...response.data,
+                                enabled_price: !!response.data.price_label_id
+                            }
                         })
                 }
 

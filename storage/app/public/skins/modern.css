@@ -1076,6 +1076,19 @@ html.sidebar-light .establishment-selector-container{
 .image-container-fluid:hover{
     border-color: color-mix(in srgb, #EAEEF7 90%, #000000);
 }
+.item-actions-tooltip {
+    right: 6px !important;
+}
+.item-actions-tooltip button{
+    height: 31px !important;
+    width: 47px !important;
+}
+.item-actions-tooltip button:first-child{
+    border-radius: 0 !important;
+}
+.item-actions-tooltip button:last-child{
+    border-radius: 0 6px 6px 0 !important;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

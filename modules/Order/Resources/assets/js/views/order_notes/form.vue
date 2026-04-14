@@ -990,6 +990,7 @@
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
             :customer-id="form.customer_id"
              :recordItem="recordItem"
+            :selectedOptionPrice="selected_option_price"
             @add="addRow"
         ></order-note-form-item>
 
@@ -1194,7 +1195,8 @@ export default {
                 }
             ],
             payment_destinations: [],
-            customerSearchTerm: ''
+            customerSearchTerm: '',
+            selected_option_price: 1
         };
     },
     watch: {
@@ -1351,6 +1353,10 @@ export default {
         ]),
         changeCustomer() {
             this.setAddressByCustomer();
+            let customer = _.find(this.customers, { id: this.form.customer_id });
+            this.selected_option_price = customer?.price_label_id
+                ? `price${customer.price_label_id}`
+                : 1;
         },
         setAddressByCustomer() {
             let customer = _.find(this.customers, {
@@ -1726,7 +1732,7 @@ export default {
                 .then(response => {
                     this.customers = response.data.customers;
                     this.form.customer_id = customer_id;
-                    this.setAddressByCustomer();
+                    this.changeCustomer();
                 });
         },
         setDescriptionOfItem(item) {

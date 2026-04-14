@@ -765,7 +765,8 @@ export default {
         "configuration",
         "percentageIgv",
         "permissionEditItemPrices",
-        "customerId"
+        "customerId",
+        "selectedOptionPrice"
     ],
     components: {
         ItemForm,
@@ -1338,6 +1339,28 @@ export default {
             this.item_unit_types.length > 0
                 ? (this.has_list_prices = true)
                 : (this.has_list_prices = false);
+
+            // Auto-seleccionar precio según tipo de cliente
+            if (this.selectedOptionPrice !== 1 && this.item_unit_types.length) {
+                let price_label_id = null;
+                if (typeof this.selectedOptionPrice === "string") {
+                    if (this.selectedOptionPrice.startsWith("price_label_")) {
+                        price_label_id = parseInt(this.selectedOptionPrice.replace("price_label_", ""));
+                    } else if (this.selectedOptionPrice.startsWith("price")) {
+                        price_label_id = parseInt(this.selectedOptionPrice.replace("price", ""));
+                    }
+                }
+                if (price_label_id) {
+                    let first_list = this.item_unit_types[0];
+                    if (first_list.prices && Array.isArray(first_list.prices)) {
+                        const priceObj = first_list.prices.find(p => p.price_label_id === price_label_id);
+                        if (priceObj && Number(priceObj.price) > 0) {
+                            this.selectedPrice(first_list, Number(priceObj.price));
+                        }
+                    }
+                }
+            }
+
             this.form.lots_group = this.form.item.lots_group;
 
             this.setDefaultAttributes();

@@ -7239,6 +7239,12 @@ export default {
                         customer_id,
                         this.config.enabled_point_system
                     );
+
+                    if (customer.price_label_id) {
+                        this.selected_option_price = `price_label_${customer.price_label_id}`;
+                    } else {
+                        this.selected_option_price = 1;
+                    }
                 });
         },
         changeCustomer() {

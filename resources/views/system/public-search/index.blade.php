@@ -541,9 +541,65 @@
             padding: 2px;
         }
 
+        .bg-file-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .bg-file-row label {
+            font-size: 11px;
+            color: #5a6f82;
+        }
+
+        .bg-file-row input[type="file"] {
+            width: 100%;
+            font-size: 11px;
+            color: #4a6080;
+            border: 1px solid #d4deea;
+            border-radius: 8px;
+            padding: 5px 6px;
+            background: #fff;
+        }
+
+        .bg-image-preview {
+            width: 100%;
+            height: 82px;
+            border-radius: 10px;
+            border: 1px dashed #c9d6e3;
+            background: #f8fafc;
+            margin-bottom: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .bg-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .bg-image-preview.has-image img {
+            display: block;
+        }
+
+        .bg-image-preview-empty {
+            font-size: 11px;
+            color: #7b8da2;
+        }
+
+        .bg-image-preview.has-image .bg-image-preview-empty {
+            display: none;
+        }
+
         .bg-customizer-actions {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 8px;
         }
 
@@ -634,6 +690,7 @@
         class="search-page"
         data-tenant-slug="{{ $tenantSlug ?? '' }}"
         data-bg-color="{{ $brand['bg_color'] ?? '' }}"
+        data-bg-image-url="{{ $brand['bg_image_url'] ?? '' }}"
         data-bg-update-url="{{ $backgroundUpdateUrl ?? '' }}"
         data-can-persist-bg="{{ !empty($backgroundUpdateUrl) ? '1' : '0' }}"
     >
@@ -832,13 +889,29 @@
                     <label for="bgCustomColor">Color</label>
                     <input type="color" id="bgCustomColor" value="#e4e8f0">
                 </div>
+                <div class="bg-file-row">
+                    <label for="bgImageInput">Imagen</label>
+                    <input type="file" id="bgImageInput" accept="image/png,image/jpeg,image/webp">
+                </div>
+                <div class="bg-image-preview" id="bgImagePreview">
+                    <img src="" alt="Vista previa de fondo" id="bgImagePreviewImg">
+                    <span class="bg-image-preview-empty" id="bgImagePreviewEmpty">Sin imagen seleccionada</span>
+                </div>
                 <div class="bg-customizer-status" id="bgSaveStatus"></div>
                 <div class="bg-customizer-actions">
-                    <button type="button" class="bg-btn primary" id="bgSaveBtn" title="Aplicar color">
+                    <button type="button" class="bg-btn primary" id="bgSaveBtn" title="Aplicar cambios">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                         <span class="btn-text">Aplicar</span>
+                    </button>
+                    <button type="button" class="bg-btn" id="bgRemoveImageBtn" title="Quitar imagen">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4h8v2"></path>
+                            <path d="M18 6l-1 14H7L6 6"></path>
+                        </svg>
+                        <span class="btn-text">Quitar imagen</span>
                     </button>
                     <button type="button" class="bg-btn" id="bgResetBtn" title="Restablecer">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -899,13 +972,17 @@
             var panel = document.getElementById('bgCustomizerPanel');
             var colorGrid = document.getElementById('bgColorGrid');
             var colorInput = document.getElementById('bgCustomColor');
+            var imageInput = document.getElementById('bgImageInput');
+            var imagePreview = document.getElementById('bgImagePreview');
+            var imagePreviewImg = document.getElementById('bgImagePreviewImg');
             var saveBtn = document.getElementById('bgSaveBtn');
+            var removeImageBtn = document.getElementById('bgRemoveImageBtn');
             var resetBtn = document.getElementById('bgResetBtn');
             var closeBtn = document.getElementById('bgCloseBtn');
             var saveStatus = document.getElementById('bgSaveStatus');
             var csrfInput = document.querySelector('#public-search-form input[name="_token"]');
 
-            if (!page || !toggle || !panel || !colorGrid || !colorInput || !saveBtn || !resetBtn || !closeBtn || !saveStatus) {
+            if (!page || !toggle || !panel || !colorGrid || !colorInput || !imageInput || !imagePreview || !imagePreviewImg || !saveBtn || !removeImageBtn || !resetBtn || !closeBtn || !saveStatus) {
                 return;
             }
 
@@ -915,11 +992,17 @@
             var canPersist = page.dataset.canPersistBg === '1';
             var updateUrl = page.dataset.bgUpdateUrl || '';
             var serverColor = page.dataset.bgColor || '';
+            var serverImageUrl = page.dataset.bgImageUrl || '';
             var csrfToken = csrfInput ? csrfInput.value : '';
             var palette = ['#f0f2f7', '#e9f5ff', '#fef3e8', '#f3f7ec', '#f4ecff', '#ffeef1', '#f8fafc', '#edf2ff', '#fff7d6', '#dff7f3'];
             var localColor = normalizeColor(localStorage.getItem(storageKey));
             var appliedColor = normalizeColor(serverColor) || localColor;
             var selectedColor = appliedColor;
+            var appliedImageUrl = serverImageUrl;
+            var selectedImageUrl = serverImageUrl;
+            var selectedImageFile = null;
+            var removeImageOnSave = false;
+            var previewObjectUrl = null;
 
             function setStatus(message, statusClass) {
                 saveStatus.textContent = message || '';
@@ -937,27 +1020,68 @@
                 return color.toLowerCase();
             }
 
-            function persistBackground(color) {
+            function persistBackground(color, imageFile, removeImage) {
                 if (!canPersist || !updateUrl || !csrfToken) {
-                    return Promise.resolve();
+                    return Promise.resolve({
+                        background_color: color,
+                        background_image_url: selectedImageUrl,
+                    });
+                }
+
+                var hasImagePayload = !!imageFile || !!removeImage;
+
+                if (!hasImagePayload) {
+                    return fetch(updateUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        body: JSON.stringify({
+                            background_color: color || null,
+                        }),
+                    }).then(function (response) {
+                        return response.json().catch(function () {
+                            return {};
+                        }).then(function (payload) {
+                            if (!response.ok) {
+                                throw new Error(payload.message || 'No se pudo guardar el fondo');
+                            }
+
+                            return payload;
+                        });
+                    });
+                }
+
+                var formData = new FormData();
+                formData.append('background_color', color || '');
+
+                if (imageFile) {
+                    formData.append('background_image', imageFile);
+                }
+
+                if (removeImage) {
+                    formData.append('remove_background_image', '1');
                 }
 
                 return fetch(updateUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({
-                        background_color: color || null,
-                    }),
+                    body: formData,
                 }).then(function (response) {
-                    if (!response.ok) {
-                        throw new Error('No se pudo guardar el fondo');
-                    }
+                    return response.json().catch(function () {
+                        return {};
+                    }).then(function (payload) {
+                        if (!response.ok) {
+                            throw new Error(payload.message || 'No se pudo guardar el fondo');
+                        }
 
-                    return response.json();
+                        return payload;
+                    });
                 });
             }
 
@@ -970,7 +1094,21 @@
                 localStorage.setItem(storageKey, color);
             }
 
-            function setBackground(color) {
+            function setBackground(color, imageUrl) {
+                if (imageUrl) {
+                    page.style.background = color || '#f0f2f7';
+                    page.style.backgroundImage = 'url("' + imageUrl.replace(/"/g, '\\"') + '")';
+                    page.style.backgroundRepeat = 'no-repeat';
+                    page.style.backgroundSize = 'cover';
+                    page.style.backgroundPosition = 'center';
+                    return;
+                }
+
+                page.style.backgroundImage = '';
+                page.style.backgroundRepeat = '';
+                page.style.backgroundSize = '';
+                page.style.backgroundPosition = '';
+
                 if (!color) {
                     page.style.background = 'var(--default-page-bg)';
                     return;
@@ -979,16 +1117,31 @@
                 page.style.background = color;
             }
 
-            function askResetConfirmation() {
+            function setImagePreview(imageUrl) {
+                if (imageUrl) {
+                    imagePreview.classList.add('has-image');
+                    imagePreviewImg.src = imageUrl;
+                    return;
+                }
+
+                imagePreview.classList.remove('has-image');
+                imagePreviewImg.src = '';
+            }
+
+            function resetFileInput() {
+                imageInput.value = '';
+            }
+
+            function askConfirmation(title, text, confirmText) {
                 if (typeof window.swal === 'function') {
                     return window.swal({
-                        title: 'Confirmar restablecimiento',
-                        text: 'Se perderá el color actual y se volverá al fondo por defecto. ¿Deseas continuar?',
+                        title: title,
+                        text: text,
                         type: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#e53935',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Sí, restablecer',
+                        confirmButtonText: confirmText,
                         cancelButtonText: 'Cancelar',
                         reverseButtons: true,
                     }).then(function (result) {
@@ -998,13 +1151,13 @@
 
                 if (window.Swal && typeof window.Swal.fire === 'function') {
                     return window.Swal.fire({
-                        title: 'Confirmar restablecimiento',
-                        text: 'Se perderá el color actual y se volverá al fondo por defecto. ¿Deseas continuar?',
+                        title: title,
+                        text: text,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#e53935',
                         cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Sí, restablecer',
+                        confirmButtonText: confirmText,
                         cancelButtonText: 'Cancelar',
                         reverseButtons: true,
                     }).then(function (result) {
@@ -1015,24 +1168,53 @@
                 return Promise.resolve(false);
             }
 
-            function applySelectedColor() {
+            function applySelectedBackground() {
                 var color = normalizeColor(selectedColor);
+
                 saveBtn.disabled = true;
+                removeImageBtn.disabled = true;
                 setStatus('Guardando...', 'is-pending');
 
-                return persistBackground(color)
-                    .then(function () {
+                return persistBackground(color, selectedImageFile, removeImageOnSave)
+                    .then(function (response) {
                         storeLocalBackground(color);
                         appliedColor = color;
-                        setStatus('Color guardado correctamente.', 'is-success');
+
+                        if (response && Object.prototype.hasOwnProperty.call(response, 'background_image_url')) {
+                            selectedImageUrl = response.background_image_url || '';
+                        }
+
+                        appliedImageUrl = selectedImageUrl;
+
+                        selectedImageFile = null;
+                        removeImageOnSave = false;
+                        resetFileInput();
+                        setImagePreview(selectedImageUrl);
+                        setBackground(appliedColor, selectedImageUrl);
+                        setStatus('Fondo guardado correctamente.', 'is-success');
                     })
-                    .catch(function () {
+                    .catch(function (error) {
                         storeLocalBackground(color);
-                        appliedColor = color;
-                        setStatus('No se pudo guardar en servidor. Quedó guardado en este navegador.', 'is-error');
+
+                        if (previewObjectUrl) {
+                            URL.revokeObjectURL(previewObjectUrl);
+                            previewObjectUrl = null;
+                        }
+
+                        selectedImageFile = null;
+                        removeImageOnSave = false;
+                        selectedColor = appliedColor;
+                        selectedImageUrl = appliedImageUrl;
+                        colorInput.value = appliedColor || '#e4e8f0';
+                        resetFileInput();
+                        setImagePreview(selectedImageUrl);
+                        setBackground(appliedColor, selectedImageUrl);
+                        refreshActiveSwatch(appliedColor);
+                        setStatus((error && error.message) ? error.message : 'No se pudo guardar en servidor.', 'is-error');
                     })
                     .finally(function () {
                         saveBtn.disabled = false;
+                        removeImageBtn.disabled = false;
                     });
             }
 
@@ -1053,7 +1235,7 @@
                 swatch.addEventListener('click', function () {
                     colorInput.value = color;
                     selectedColor = color;
-                    setBackground(color);
+                    setBackground(color, selectedImageUrl);
                     refreshActiveSwatch(color);
                     setStatus('Color seleccionado. Presiona Aplicar para guardar.', 'is-pending');
                 });
@@ -1062,9 +1244,14 @@
 
             if (selectedColor) {
                 colorInput.value = selectedColor;
-                setBackground(selectedColor);
             }
 
+            if (!selectedColor && colorInput.value) {
+                selectedColor = normalizeColor(colorInput.value);
+            }
+
+            setImagePreview(selectedImageUrl);
+            setBackground(selectedColor, selectedImageUrl);
             refreshActiveSwatch(selectedColor);
 
             if (canPersist && !normalizeColor(serverColor) && localColor) {
@@ -1077,7 +1264,7 @@
             });
 
             saveBtn.addEventListener('click', function () {
-                applySelectedColor();
+                applySelectedBackground();
             });
 
             closeBtn.addEventListener('click', function () {
@@ -1088,21 +1275,85 @@
             colorInput.addEventListener('input', function () {
                 var color = colorInput.value;
                 selectedColor = color;
-                setBackground(color);
+                setBackground(color, selectedImageUrl);
                 refreshActiveSwatch(color);
                 setStatus('Color seleccionado. Presiona Aplicar para guardar.', 'is-pending');
             });
 
-            resetBtn.addEventListener('click', function () {
-                askResetConfirmation().then(function (confirmed) {
+            imageInput.addEventListener('change', function () {
+                var file = imageInput.files && imageInput.files[0] ? imageInput.files[0] : null;
+                if (!file) {
+                    return;
+                }
+
+                selectedImageFile = file;
+                removeImageOnSave = false;
+
+                if (previewObjectUrl) {
+                    URL.revokeObjectURL(previewObjectUrl);
+                    previewObjectUrl = null;
+                }
+
+                previewObjectUrl = URL.createObjectURL(file);
+                selectedImageUrl = previewObjectUrl;
+                setImagePreview(selectedImageUrl);
+                setBackground(selectedColor, selectedImageUrl);
+                setStatus('Imagen seleccionada. Presiona Aplicar para guardar.', 'is-pending');
+            });
+
+            removeImageBtn.addEventListener('click', function () {
+                if (!selectedImageUrl && !selectedImageFile) {
+                    return;
+                }
+
+                askConfirmation(
+                    'Quitar imagen de fondo',
+                    'La imagen se eliminará y se usará solo el color de fondo. ¿Deseas continuar?',
+                    'Sí, quitar imagen'
+                ).then(function (confirmed) {
                     if (!confirmed) {
                         return;
                     }
 
+                    if (previewObjectUrl) {
+                        URL.revokeObjectURL(previewObjectUrl);
+                        previewObjectUrl = null;
+                    }
+
+                    selectedImageFile = null;
+                    removeImageOnSave = true;
+                    selectedImageUrl = '';
+                    resetFileInput();
+                    setImagePreview('');
+                    setBackground(selectedColor, '');
+                    setStatus('Imagen removida. Presiona Aplicar para guardar.', 'is-pending');
+                });
+            });
+
+            resetBtn.addEventListener('click', function () {
+                askConfirmation(
+                    'Confirmar restablecimiento',
+                    'Se perderán el color y la imagen actual, y se volverá al fondo por defecto. ¿Deseas continuar?',
+                    'Sí, restablecer'
+                ).then(function (confirmed) {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    if (previewObjectUrl) {
+                        URL.revokeObjectURL(previewObjectUrl);
+                        previewObjectUrl = null;
+                    }
+
                     selectedColor = '';
-                    setBackground('');
+                    selectedImageFile = null;
+                    removeImageOnSave = !!selectedImageUrl;
+                    selectedImageUrl = '';
+                    resetFileInput();
+                    setImagePreview('');
+                    setBackground('', '');
                     refreshActiveSwatch('');
-                    applySelectedColor();
+                    applySelectedBackground();
                 });
             });
 
@@ -1112,7 +1363,12 @@
                     panel.classList.remove('open');
                     panel.setAttribute('aria-hidden', 'true');
                 }
+            });
 
+            window.addEventListener('beforeunload', function () {
+                if (previewObjectUrl) {
+                    URL.revokeObjectURL(previewObjectUrl);
+                }
             });
         })();
     </script>

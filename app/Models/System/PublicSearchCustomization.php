@@ -12,5 +12,6 @@ class PublicSearchCustomization extends Model
     protected $fillable = [
         'slug',
         'background_color',
+        'background_image_path',
     ];
 }

@@ -14,6 +14,7 @@ use Hyn\Tenancy\Contracts\CurrentHostname;
 use Hyn\Tenancy\Environment;
 use Hyn\Tenancy\Models\Hostname;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PublicDocumentSearchController extends Controller
 {
@@ -90,12 +91,12 @@ class PublicDocumentSearchController extends Controller
 
     public function updateTenantBackground(Request $request)
     {
-        return $this->storeBackgroundColor($request);
+        return $this->storeBackgroundCustomization($request);
     }
 
     public function updateWidgetBackground(Request $request, string $slug)
     {
-        return $this->storeBackgroundColor($request, $this->resolveWidgetSlugOrDefault($slug));
+        return $this->storeBackgroundCustomization($request, $this->resolveWidgetSlugOrDefault($slug));
     }
 
     public function embedScript()
@@ -201,10 +202,12 @@ JS;
         ])->header('X-Frame-Options', 'ALLOWALL');
     }
 
-    private function storeBackgroundColor(Request $request, ?string $slug = null)
+    private function storeBackgroundCustomization(Request $request, ?string $slug = null)
     {
         $validated = $request->validate([
             'background_color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'],
+            'background_image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'remove_background_image' => ['nullable', 'boolean'],
         ]);
 
         $slug = $slug ?: $this->currentTenantSlug();
@@ -217,10 +220,27 @@ JS;
 
         $color = !empty($validated['background_color']) ? strtolower($validated['background_color']) : null;
 
-        PublicSearchCustomization::query()->updateOrCreate(
-            ['slug' => $slug],
-            ['background_color' => $color]
-        );
+        $customization = PublicSearchCustomization::query()->firstOrNew([
+            'slug' => $slug,
+        ]);
+
+        $customization->background_color = $color;
+
+        if ($request->boolean('remove_background_image') && !empty($customization->background_image_path)) {
+            $this->deleteBackgroundImage($customization->background_image_path);
+            $customization->background_image_path = null;
+        }
+
+        if ($request->hasFile('background_image')) {
+            if (!empty($customization->background_image_path)) {
+                $this->deleteBackgroundImage($customization->background_image_path);
+            }
+
+            $customization->background_image_path = $request->file('background_image')
+                ->store('uploads/public-search-backgrounds', 'public');
+        }
+
+        $customization->save();
 
         $client = $this->resolveClientBySlug($slug);
         if ($client && $client->hostname) {
@@ -238,6 +258,7 @@ JS;
         return response()->json([
             'success' => true,
             'background_color' => $color,
+            'background_image_url' => $this->buildBackgroundImageUrl($customization->background_image_path),
         ]);
     }
 
@@ -407,26 +428,61 @@ JS;
     private function resolveBrandingBySlug(string $slug): array
     {
         $branding = $this->resolveBranding($this->resolveClientBySlug($slug));
-        $customBackground = $this->resolveBackgroundBySlug($slug);
+        $customBackground = $this->resolveCustomizationBySlug($slug);
 
-        if (!empty($customBackground)) {
-            $branding['bg_color'] = $customBackground;
+        if (!empty($customBackground['background_color'])) {
+            $branding['bg_color'] = $customBackground['background_color'];
+        }
+
+        if (!empty($customBackground['background_image_url'])) {
+            $branding['bg_image_url'] = $customBackground['background_image_url'];
         }
 
         return $branding;
     }
 
-    private function resolveBackgroundBySlug(?string $slug): ?string
+    private function resolveCustomizationBySlug(?string $slug): array
     {
         if (empty($slug)) {
-            return null;
+            return [
+                'background_color' => null,
+                'background_image_url' => null,
+            ];
         }
 
         $customization = PublicSearchCustomization::query()
             ->where('slug', $slug)
             ->first();
 
-        return $customization ? $customization->background_color : null;
+        if (!$customization) {
+            return [
+                'background_color' => null,
+                'background_image_url' => null,
+            ];
+        }
+
+        return [
+            'background_color' => $customization->background_color,
+            'background_image_url' => $this->buildBackgroundImageUrl($customization->background_image_path),
+        ];
+    }
+
+    private function buildBackgroundImageUrl(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    }
+
+    private function deleteBackgroundImage(string $path): void
+    {
+        try {
+            Storage::disk('public')->delete($path);
+        } catch (\Throwable $e) {
+            // No detenemos el flujo de guardado por un archivo inexistente.
+        }
     }
 
     private function defaultBranding(): array
@@ -436,6 +492,7 @@ JS;
             'logo' => $this->resolveSystemLoginLogo(),
             'color' => '#0d8796',
             'bg_color' => null,
+            'bg_image_url' => null,
             'ruc' => null,
         ];
     }

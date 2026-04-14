@@ -45,7 +45,7 @@
         <!-- Panel principal -->
         <div class="card tab-content-default row-new mb-0">
             <div class="card-body">
-                <div class="btn-filter-content">
+                <div class="btn-filter-content" style="display:flex; align-items:center; justify-content:space-between;">
                     <el-button
                         type="secondary"
                         class="btn-show-filter mb-3"
@@ -54,6 +54,18 @@
                     >
                         {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
                     </el-button>
+                    <el-dropdown :hide-on-click="false" class="mb-3">
+                        <el-button type="secondary">
+                            Mostrar columnas <i class="el-icon-arrow-down el-icon--right"></i>
+                        </el-button>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item v-for="(col, key) in tableColumns" :key="key">
+                                <el-checkbox v-model="col.visible" @change="saveTableColumns">
+                                    {{ col.title }}
+                                </el-checkbox>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
                 </div>
                 <div class="row mx-0 g-2" v-if="applyFilter && isVisible">
                     <!-- Fila 1: Código · Nombre/doc · Fecha -->
@@ -144,6 +156,7 @@
                     :status-claims="tables.status_claims"
                     :loading="loading"
                     :pagination="pagination"
+                    :columns="tableColumns"
                     @status-change="onStatusChange"
                     @assign-change="onAssignChange"
                     @view="viewDetail"
@@ -242,6 +255,17 @@ import ClaimStatusChangeDialog from './partials/ClaimStatusChangeDialog.vue'
 import ClaimEmbedModal         from './partials/ClaimEmbedModal.vue'
 import ClaimsMetrics           from './components/ClaimsMetrics.vue'
 
+const CLAIMS_COLS_KEY = 'claims_table_columns'
+const defaultTableColumns = () => ({
+    tipo:        { title: 'Tipo',        visible: true  },
+    fecha:       { title: 'Fecha',       visible: true  },
+    vencimiento: { title: 'Vencimiento', visible: true  },
+    comprobante: { title: 'Comprobante', visible: true  },
+    monto:       { title: 'Monto',       visible: false },
+    canal:       { title: 'Canal',       visible: true  },
+    responsable: { title: 'Responsable', visible: true  },
+})
+
 export default {
     components: {
         StatusClaimModal,
@@ -289,6 +313,20 @@ export default {
                 claim_channels: [],
             },
 
+            // Columnas visibles de la tabla
+            tableColumns: (() => {
+                try {
+                    const saved = localStorage.getItem(CLAIMS_COLS_KEY)
+                    if (saved) {
+                        const parsed = JSON.parse(saved)
+                        const cols = defaultTableColumns()
+                        Object.keys(cols).forEach(k => { if (parsed[k] !== undefined) cols[k].visible = parsed[k].visible })
+                        return cols
+                    }
+                } catch (e) { /* */ }
+                return defaultTableColumns()
+            })(),
+
             // Control de modales
             showStatusModal:   false,
             showChannelsModal: false,
@@ -324,6 +362,12 @@ export default {
 
         toggleInformation() {
             this.isVisible = !this.isVisible;
+        },
+
+        saveTableColumns() {
+            try {
+                localStorage.setItem(CLAIMS_COLS_KEY, JSON.stringify(this.tableColumns))
+            } catch (e) { /* */ }
         },
 
         onFilterChange() {

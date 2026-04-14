@@ -1,4 +1,14 @@
 {
+  "__plugin-vue2_normalizer-b4245b45.js": {
+    "assets": [
+      "assets/element-icons-ab40a589.woff",
+      "assets/element-icons-a30f5b3b.ttf"
+    ],
+    "css": [
+      "assets/_plugin-vue2_normalizer-ceb821ee.css"
+    ],
+    "file": "assets/_plugin-vue2_normalizer-b4245b45.js"
+  },
   "__plugin-vue2_normalizer-fcd81e8a.js": {
     "assets": [
       "assets/element-icons-ab40a589.woff",
@@ -9,11 +19,20 @@
     ],
     "file": "assets/_plugin-vue2_normalizer-fcd81e8a.js"
   },
-  "_claim_form-1963affe.js": {
+  "_claim_form-5faea26e.js": {
     "css": [
-      "assets/claim_form-27f9e8f6.css"
+      "assets/claim_form-25a35b31.css"
     ],
-    "file": "assets/claim_form-1963affe.js",
+    "file": "assets/claim_form-5faea26e.js",
+    "imports": [
+      "__plugin-vue2_normalizer-b4245b45.js"
+    ]
+  },
+  "_claim_form-adbbd264.js": {
+    "css": [
+      "assets/claim_form-b7ed000c.css"
+    ],
+    "file": "assets/claim_form-adbbd264.js",
     "imports": [
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ]
@@ -22,24 +41,41 @@
     "file": "assets/_plugin-vue2_normalizer-ceb821ee.css",
     "src": "_plugin-vue2_normalizer.css"
   },
-  "_vue-clipboard-d08de05d.js": {
+  "_vue-clipboard-201dc017.js": {
     "css": [
-      "assets/vue-clipboard-c450855e.css"
+      "assets/vue-clipboard-aa33dfa0.css"
     ],
-    "file": "assets/vue-clipboard-d08de05d.js",
+    "file": "assets/vue-clipboard-201dc017.js",
     "imports": [
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ]
   },
+  "_vue-clipboard-c6940b7b.js": {
+    "css": [
+      "assets/vue-clipboard-aa33dfa0.css"
+    ],
+    "file": "assets/vue-clipboard-c6940b7b.js",
+    "imports": [
+      "__plugin-vue2_normalizer-b4245b45.js"
+    ]
+  },
   "claim_form.css": {
-    "file": "assets/claim_form-27f9e8f6.css",
+    "file": "assets/claim_form-25a35b31.css",
     "src": "claim_form.css"
   },
+  "element-icons.ttf": {
+    "file": "assets/element-icons-a30f5b3b.ttf",
+    "src": "element-icons.ttf"
+  },
+  "element-icons.woff": {
+    "file": "assets/element-icons-ab40a589.woff",
+    "src": "element-icons.woff"
+  },
   "modules/ClaimsBook/Resources/assets/js/app.js": {
-    "file": "assets/app-46e918ab.js",
+    "file": "assets/app-a5ae6d84.js",
     "imports": [
-      "__plugin-vue2_normalizer-fcd81e8a.js",
-      "_claim_form-1963affe.js"
+      "__plugin-vue2_normalizer-b4245b45.js",
+      "_claim_form-5faea26e.js"
     ],
     "isEntry": true,
     "src": "modules/ClaimsBook/Resources/assets/js/app.js"
@@ -53,40 +89,40 @@
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
   "resources/js/app.css": {
-    "file": "assets/app-9853e3c9.css",
+    "file": "assets/app-e3848bed.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-9853e3c9.css"
+      "assets/app-e3848bed.css"
     ],
-    "file": "assets/app-f230ee27.js",
+    "file": "assets/app-2ee35ae1.js",
     "imports": [
-      "_vue-clipboard-d08de05d.js",
-      "__plugin-vue2_normalizer-fcd81e8a.js",
-      "_claim_form-1963affe.js"
+      "_vue-clipboard-c6940b7b.js",
+      "__plugin-vue2_normalizer-b4245b45.js",
+      "_claim_form-5faea26e.js"
     ],
     "isEntry": true,
     "src": "resources/js/app.js"
   },
   "resources/js/system.css": {
-    "file": "assets/system-4185824b.css",
+    "file": "assets/system-cf0c3835.css",
     "src": "resources/js/system.css"
   },
   "resources/js/system.js": {
     "css": [
-      "assets/system-4185824b.css"
+      "assets/system-cf0c3835.css"
     ],
-    "file": "assets/system-feb48974.js",
+    "file": "assets/system-95255be0.js",
     "imports": [
-      "_vue-clipboard-d08de05d.js",
-      "__plugin-vue2_normalizer-fcd81e8a.js"
+      "_vue-clipboard-c6940b7b.js",
+      "__plugin-vue2_normalizer-b4245b45.js"
     ],
     "isEntry": true,
     "src": "resources/js/system.js"
   },
   "vue-clipboard.css": {
-    "file": "assets/vue-clipboard-c450855e.css",
+    "file": "assets/vue-clipboard-aa33dfa0.css",
     "src": "vue-clipboard.css"
   }
 }

@@ -247,6 +247,38 @@ JS;
     // ──────────────────────────────────────────────────────────────
 
     /**
+     * Métricas clave del libro de reclamaciones.
+     */
+    public function metrics()
+    {
+        $total    = Claim::count();
+        $closed   = Claim::where('is_closed', true)->count();
+        $open     = $total - $closed;
+        $reclamos = Claim::where('claim_type', 'reclamo')->count();
+        $quejas   = Claim::where('claim_type', 'queja')->count();
+        $overdue  = Claim::where('is_closed', false)
+                        ->whereNotNull('due_date')
+                        ->whereDate('due_date', '<', now())
+                        ->count();
+
+        $avgDays = Claim::where('is_closed', true)
+                        ->whereNotNull('closed_at')
+                        ->selectRaw('AVG(DATEDIFF(closed_at, created_at)) as avg_days')
+                        ->value('avg_days');
+
+        return response()->json([
+            'total'               => $total,
+            'open'                => $open,
+            'closed'              => $closed,
+            'reclamos'            => $reclamos,
+            'quejas'              => $quejas,
+            'overdue'             => $overdue,
+            'avg_resolution_days' => $avgDays ? round($avgDays, 1) : null,
+            'resolution_rate'     => $total > 0 ? round(($closed / $total) * 100, 1) : 0,
+        ]);
+    }
+
+    /**
      * Retorna los reclamos con paginación y filtros opcionales:
      * code, name/document, date_from, date_to, status_claim_id, claim_type.
      */
@@ -795,10 +827,10 @@ JS;
 
     /**
      * Genera el código único para un reclamo siguiendo el formato:
-     * {tipo}{MM}{YY}-{correlativo 4d}-{tracking 2d}
+     * {tipo}{MM}{YY}-{correlativo 3d}-{tracking 1d}
      *
      * Si se recibe un $previousClaim, el código se construye a partir de su parent_code:
-     * {parent_code}-{tracking_number + 1 con padding 2d}
+     * {parent_code}-{tracking_number + 1 con padding 1d}
      */
     private function generateCode(string $claimType, ?Claim $previousClaim): string
     {
@@ -813,7 +845,7 @@ JS;
 
             $nextTracking = $previousClaim->tracking_number + 1;
 
-            return $parentCode . '-' . str_pad($nextTracking, 2, '0', STR_PAD_LEFT);
+            return $parentCode . '-' . str_pad($nextTracking, 1, '0', STR_PAD_LEFT);
         }
 
         // Nuevo reclamo: calcular el siguiente correlativo para este mes/año/tipo
@@ -831,15 +863,15 @@ JS;
             $nextCorrelative = ((int) ($parts[1] ?? 0)) + 1;
         }
 
-        $correlative = str_pad($nextCorrelative, 4, '0', STR_PAD_LEFT);
+        $correlative = str_pad($nextCorrelative, 3, '0', STR_PAD_LEFT);
         $baseCode    = "{$prefix}{$month}{$year}-{$correlative}";
 
-        return $baseCode . '-00';
+        return $baseCode . '-0';
     }
 
     /**
      * Extrae el parent_code a partir del code completo.
-     * Ej: "Q032600-0001-00" → "Q032600-0001"
+     * Ej: "Q0426-008-0" → "Q0426-008"
      */
     private function extractParentCode(string $code): string
     {

@@ -39,6 +39,9 @@
             </div>
         </div>
 
+        <!-- Métricas -->
+        <claims-metrics ref="metrics"></claims-metrics>
+
         <!-- Panel principal -->
         <div class="card tab-content-default row-new mb-0">
             <div class="card-body">
@@ -237,6 +240,7 @@ import ClaimDetailModal        from './partials/claim_detail_modal.vue'
 import ClaimsDataTable         from './components/ClaimsDataTable.vue'
 import ClaimStatusChangeDialog from './partials/ClaimStatusChangeDialog.vue'
 import ClaimEmbedModal         from './partials/ClaimEmbedModal.vue'
+import ClaimsMetrics           from './components/ClaimsMetrics.vue'
 
 export default {
     components: {
@@ -246,6 +250,7 @@ export default {
         ClaimsDataTable,
         ClaimStatusChangeDialog,
         ClaimEmbedModal,
+        ClaimsMetrics,
     },
 
     props: {
@@ -454,6 +459,7 @@ export default {
                     this.savingStatus        = false
                     this.pendingStatusChange = null
                     this.loadRecords()
+                    this.$refs.metrics && this.$refs.metrics.reload()
                 })
         },
 

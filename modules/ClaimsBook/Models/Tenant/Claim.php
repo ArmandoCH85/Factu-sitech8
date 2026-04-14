@@ -94,10 +94,14 @@ class Claim extends ModelTenant
         parent::boot();
 
         static::creating(function (self $claim) {
-            // Generar código público único de 15 caracteres alfanuméricos en mayúsculas
+            // Generar código público único de 5 caracteres (alfabeto sin ambigüedades)
             if (empty($claim->public_code)) {
+                $chars = 'ACDEFGHJKMNPRTVWXYZ34679';
                 do {
-                    $code = strtoupper(Str::random(15));
+                    $code = '';
+                    for ($i = 0; $i < 5; $i++) {
+                        $code .= $chars[random_int(0, strlen($chars) - 1)];
+                    }
                 } while (static::where('public_code', $code)->exists());
 
                 $claim->public_code = $code;

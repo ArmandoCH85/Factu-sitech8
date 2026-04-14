@@ -63,6 +63,9 @@ if ($current_hostname) {
                 // Datos de tablas auxiliares (estados, canales, tipos doc, ubicaciones)
                 Route::get('/tables', 'ClaimController@tables');
 
+                // Métricas del panel de control
+                Route::get('/metrics', 'ClaimController@metrics');
+
                 // Listado paginado con filtros
                 Route::get('/records', 'ClaimController@records');
 

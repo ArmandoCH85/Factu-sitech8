@@ -29,8 +29,8 @@
                 </tr>
                 <tr v-for="row in records" :key="row.id" v-else>
                     <td>
-                        <div class="cb-code">{{ row.public_code }}</div>
-                        <small class="text-muted">{{ row.code }}</small>
+                        <div class="cb-code">{{ row.code }}</div>
+                        <small class="text-muted">{{ row.public_code }}</small>
                     </td>
                     <td>
                         <div class="cb-customer-name">{{ row.name }}</div>

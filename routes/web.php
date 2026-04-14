@@ -263,6 +263,7 @@ if ($hostname) {
 
             Route::get('consultas', 'System\PublicDocumentSearchController@tenantForm')->name('tenant.public_search.form');
             Route::post('consultas', 'System\PublicDocumentSearchController@tenantSearch')->name('tenant.public_search.form.search');
+            Route::post('consultas/background', 'System\PublicDocumentSearchController@updateTenantBackground')->name('tenant.public_search.background.update');
 
             //Persons
             Route::prefix('persons')->group(function () {
@@ -848,6 +849,7 @@ if ($hostname) {
             Route::post('consultas', 'System\PublicDocumentSearchController@search')->name('system.public_search.search');
             Route::get('consultas/widget/{slug}', 'System\PublicDocumentSearchController@widget')->name('system.public_search.widget');
             Route::post('consultas/widget/{slug}', 'System\PublicDocumentSearchController@searchWidget')->name('system.public_search.widget.search');
+            Route::post('consultas/widget/{slug}/background', 'System\PublicDocumentSearchController@updateWidgetBackground')->name('system.public_search.widget.background.update');
             Route::get('consultas/widget', 'System\PublicDocumentSearchController@widgetInternal')->name('system.public_search.widget.internal');
         });
 

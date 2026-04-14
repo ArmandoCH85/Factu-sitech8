@@ -244,6 +244,7 @@ use Illuminate\Support\Facades\Log;
             'show_logo_by_establishment',
             'global_discount_type_id',
             'shipping_time_days',
+            'public_search_bg_color',
             'url_apiruc',
             'new_validator_pagination',
             'token_apiruc',

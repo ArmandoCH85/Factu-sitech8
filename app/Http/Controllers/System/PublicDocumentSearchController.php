@@ -5,6 +5,7 @@ namespace App\Http\Controllers\System;
 use App\Http\Controllers\Controller;
 use App\Models\System\Client;
 use App\Models\System\Configuration as SystemConfiguration;
+use App\Models\System\PublicSearchCustomization;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
@@ -33,10 +34,15 @@ class PublicDocumentSearchController extends Controller
 
     public function widget(string $slug)
     {
-        $form = $this->defaultForm();
-        $form['tenant_slug'] = $slug;
+        $resolvedSlug = $this->resolveWidgetSlugOrDefault($slug);
+        if ($resolvedSlug !== $slug) {
+            return redirect()->route('system.public_search.widget', ['slug' => $resolvedSlug]);
+        }
 
-        return $this->responseView($form, null, null, null, true, $slug, $this->resolveBrandingBySlug($slug));
+        $form = $this->defaultForm();
+        $form['tenant_slug'] = $resolvedSlug;
+
+        return $this->responseView($form, null, null, null, true, $resolvedSlug, $this->resolveBrandingBySlug($resolvedSlug));
     }
 
     public function widgetInternal()
@@ -80,6 +86,16 @@ class PublicDocumentSearchController extends Controller
             $slug,
             $payload['branding']
         );
+    }
+
+    public function updateTenantBackground(Request $request)
+    {
+        return $this->storeBackgroundColor($request);
+    }
+
+    public function updateWidgetBackground(Request $request, string $slug)
+    {
+        return $this->storeBackgroundColor($request, $this->resolveWidgetSlugOrDefault($slug));
     }
 
     public function embedScript()
@@ -129,10 +145,15 @@ JS;
 
     public function searchWidget(Request $request, string $slug)
     {
-        $request->merge(['tenant_slug' => $slug]);
+        $resolvedSlug = $this->resolveWidgetSlugOrDefault($slug);
+        if ($resolvedSlug !== $slug) {
+            return redirect()->route('system.public_search.widget', ['slug' => $resolvedSlug]);
+        }
+
+        $request->merge(['tenant_slug' => $resolvedSlug]);
         $payload = $this->resolveSearch($request);
 
-        return $this->responseView($payload['validated'], $payload['result'], $payload['statusMessage'], $payload['statusType'], true, $slug, $payload['branding']);
+        return $this->responseView($payload['validated'], $payload['result'], $payload['statusMessage'], $payload['statusType'], true, $resolvedSlug, $payload['branding']);
     }
 
     public function searchApi(Request $request)
@@ -159,6 +180,13 @@ JS;
         $allowTenantCustomization = request()->routeIs('tenant.public_search.form')
             || request()->routeIs('tenant.public_search.form.search');
 
+        $backgroundUpdateUrl = null;
+        if ($allowTenantCustomization) {
+            $backgroundUpdateUrl = route('tenant.public_search.background.update');
+        } elseif (!empty($tenantSlug)) {
+            $backgroundUpdateUrl = route('system.public_search.widget.background.update', ['slug' => $tenantSlug]);
+        }
+
         return response()->view('system.public-search.index', [
             'documentTypes' => self::DOCUMENT_TYPES,
             'form' => array_merge($this->defaultForm(), $form),
@@ -169,7 +197,48 @@ JS;
             'tenantSlug' => $tenantSlug,
             'brand' => array_merge($this->defaultBranding(), $branding),
             'allowTenantCustomization' => $allowTenantCustomization,
+            'backgroundUpdateUrl' => $backgroundUpdateUrl,
         ])->header('X-Frame-Options', 'ALLOWALL');
+    }
+
+    private function storeBackgroundColor(Request $request, ?string $slug = null)
+    {
+        $validated = $request->validate([
+            'background_color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'],
+        ]);
+
+        $slug = $slug ?: $this->currentTenantSlug();
+        if (empty($slug)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo determinar el slug para guardar la personalización.',
+            ], 422);
+        }
+
+        $color = !empty($validated['background_color']) ? strtolower($validated['background_color']) : null;
+
+        PublicSearchCustomization::query()->updateOrCreate(
+            ['slug' => $slug],
+            ['background_color' => $color]
+        );
+
+        $client = $this->resolveClientBySlug($slug);
+        if ($client && $client->hostname) {
+            /** @var Environment $tenancy */
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+
+            $configuration = Configuration::first();
+            if ($configuration) {
+                $configuration->public_search_bg_color = $color;
+                $configuration->save();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'background_color' => $color,
+        ]);
     }
 
     private function resolveSearch(Request $request): array
@@ -328,12 +397,36 @@ JS;
             $branding['color'] = $configuration->login_bg_color;
         }
 
+        if (!empty($configuration->public_search_bg_color)) {
+            $branding['bg_color'] = $configuration->public_search_bg_color;
+        }
+
         return $branding;
     }
 
     private function resolveBrandingBySlug(string $slug): array
     {
-        return $this->resolveBranding($this->resolveClientBySlug($slug));
+        $branding = $this->resolveBranding($this->resolveClientBySlug($slug));
+        $customBackground = $this->resolveBackgroundBySlug($slug);
+
+        if (!empty($customBackground)) {
+            $branding['bg_color'] = $customBackground;
+        }
+
+        return $branding;
+    }
+
+    private function resolveBackgroundBySlug(?string $slug): ?string
+    {
+        if (empty($slug)) {
+            return null;
+        }
+
+        $customization = PublicSearchCustomization::query()
+            ->where('slug', $slug)
+            ->first();
+
+        return $customization ? $customization->background_color : null;
     }
 
     private function defaultBranding(): array
@@ -342,6 +435,7 @@ JS;
             'name' => 'Buscador de comprobantes',
             'logo' => $this->resolveSystemLoginLogo(),
             'color' => '#0d8796',
+            'bg_color' => null,
             'ruc' => null,
         ];
     }
@@ -370,6 +464,21 @@ JS;
         }
 
         return request()->getHost();
+    }
+
+    private function resolveWidgetSlugOrDefault(string $slug): string
+    {
+        if ($this->resolveClientBySlug($slug)) {
+            return $slug;
+        }
+
+        $defaultSlug = $this->currentTenantSlug();
+
+        if (!empty($defaultSlug)) {
+            return $defaultSlug;
+        }
+
+        return $slug;
     }
 
     private function resolveDocument(array $validated, int $customerId): ?Document

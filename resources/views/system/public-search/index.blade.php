@@ -14,12 +14,13 @@
             --text-muted: #8A9BB0;
             --radius-md: 12px;
             --radius-lg: 18px;
+            --default-page-bg: linear-gradient(160deg, #f0f2f7 0%, #e4e8f0 100%);
         }
 
         * { box-sizing: border-box; }
 
         .search-page {
-            background: linear-gradient(160deg, #f0f2f7 0%, #e4e8f0 100%);
+            background: var(--default-page-bg);
             min-height: 100vh;
             display: flex;
             align-items: flex-start;
@@ -439,6 +440,186 @@
         }
 
         .btn-dl:hover { background: #1a58e0; color: #fff; }
+
+        .bg-customizer {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .bg-customizer-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            border: 1px solid #d4deea;
+            background: #ffffff;
+            color: #0f2942;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(11,37,69,.18);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .bg-customizer-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(11,37,69,.22);
+        }
+
+        .bg-customizer-panel {
+            width: 280px;
+            border-radius: 14px;
+            border: 1px solid #dce6ef;
+            background: #ffffff;
+            box-shadow: 0 14px 32px rgba(11,37,69,.18);
+            padding: 12px;
+            display: none;
+        }
+
+        .bg-customizer-panel.open {
+            display: block;
+        }
+
+        .bg-customizer-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f2942;
+            margin: 0 0 10px;
+        }
+
+        .bg-color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .bg-swatch {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform .12s, border-color .12s;
+        }
+
+        .bg-swatch:hover {
+            transform: translateY(-1px);
+            border-color: rgba(11,37,69,.28);
+        }
+
+        .bg-swatch.active {
+            border-color: #0f2942;
+        }
+
+        .bg-customizer-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .bg-customizer-row label {
+            font-size: 11px;
+            color: #5a6f82;
+            white-space: nowrap;
+        }
+
+        .bg-customizer-row input[type="color"] {
+            width: 100%;
+            height: 32px;
+            border: 1px solid #d4deea;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .bg-customizer-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .bg-customizer-status {
+            min-height: 16px;
+            margin: 4px 0 8px;
+            font-size: 10px;
+            color: #6b7f95;
+        }
+
+        .bg-customizer-status.is-success {
+            color: #0e8b59;
+        }
+
+        .bg-customizer-status.is-error {
+            color: #c62828;
+        }
+
+        .bg-customizer-status.is-pending {
+            color: #45658a;
+        }
+
+        .bg-btn {
+            border: 1px solid #d4deea;
+            border-radius: 8px;
+            background: #fff;
+            color: #4a6080;
+            font-size: 0;
+            font-weight: 600;
+            padding: 8px 0;
+            cursor: pointer;
+            min-width: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .bg-btn:hover {
+            border-color: var(--brand-color);
+            color: var(--brand-color);
+        }
+
+        .bg-btn.primary {
+            background: var(--brand-color);
+            border-color: var(--brand-color);
+            color: #fff;
+        }
+
+        .bg-btn.primary:hover {
+            filter: brightness(.96);
+            color: #fff;
+        }
+
+        .bg-btn .btn-icon {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        .bg-btn .btn-text {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .bg-customizer {
+                right: 12px;
+                bottom: 12px;
+            }
+
+            .bg-customizer-panel {
+                width: min(280px, calc(100vw - 24px));
+            }
+        }
+
     </style>
 
     @php
@@ -449,7 +630,13 @@
                 : route('system.public_search.search'));
     @endphp
 
-    <div class="search-page">
+    <div
+        class="search-page"
+        data-tenant-slug="{{ $tenantSlug ?? '' }}"
+        data-bg-color="{{ $brand['bg_color'] ?? '' }}"
+        data-bg-update-url="{{ $backgroundUpdateUrl ?? '' }}"
+        data-can-persist-bg="{{ !empty($backgroundUpdateUrl) ? '1' : '0' }}"
+    >
         <div class="search-card">
 
             {{-- ── HEADER ─────────────────────────── --}}
@@ -601,14 +788,6 @@
                     </div>
                 </form>
 
-                {{-- Footer links --}}
-                <!-- <div class="sc-footer-links">
-                    <span>¿Tienes dudas?</span>
-                    <a href="https://www.sunat.gob.pe/comprobantes-electronicos.html" target="_blank" rel="noopener">Ver guía de uso</a>
-                    <span class="sc-footer-sep">|</span>
-                    <a href="https://www.sunat.gob.pe" target="_blank" rel="noopener">Portal SUNAT</a>
-                </div> -->
-
                 @if($statusMessage)
                     <div class="sc-alert {{ $statusType === 'warning' ? 'alert-warning' : 'alert-info' }} alert">
                         {{ $statusMessage }}
@@ -644,6 +823,48 @@
                 @endif
             </div>
         </div>
+
+        <div class="bg-customizer" id="bgCustomizer">
+            <div class="bg-customizer-panel" id="bgCustomizerPanel" aria-hidden="true">
+                <p class="bg-customizer-title">Personalizar fondo</p>
+                <div class="bg-color-grid" id="bgColorGrid"></div>
+                <div class="bg-customizer-row">
+                    <label for="bgCustomColor">Color</label>
+                    <input type="color" id="bgCustomColor" value="#e4e8f0">
+                </div>
+                <div class="bg-customizer-status" id="bgSaveStatus"></div>
+                <div class="bg-customizer-actions">
+                    <button type="button" class="bg-btn primary" id="bgSaveBtn" title="Aplicar color">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span class="btn-text">Aplicar</span>
+                    </button>
+                    <button type="button" class="bg-btn" id="bgResetBtn" title="Restablecer">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 2v6h6"></path>
+                            <path d="M21 12a9 9 0 0 1-15.5 6.36L3 16"></path>
+                            <path d="M3 12a9 9 0 0 1 15.5-6.36L21 8"></path>
+                        </svg>
+                        <span class="btn-text">Restablecer</span>
+                    </button>
+                    <button type="button" class="bg-btn" id="bgCloseBtn" title="Cerrar">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        <span class="btn-text">Cerrar</span>
+                    </button>
+                </div>
+            </div>
+            <button type="button" class="bg-customizer-toggle" id="bgCustomizerToggle" title="Personalizar fondo" aria-label="Personalizar fondo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l7 7-7 7-7-7 7-7z"></path>
+                    <path d="M5 10h14"></path>
+                    <path d="M2 21h20"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -669,6 +890,186 @@
             var first = document.querySelector('.doc-tab');
             if (first) selectDocType(first);
         }
+
+        (function initBackgroundCustomizer() {
+            var page = document.querySelector('.search-page');
+            var toggle = document.getElementById('bgCustomizerToggle');
+            var panel = document.getElementById('bgCustomizerPanel');
+            var colorGrid = document.getElementById('bgColorGrid');
+            var colorInput = document.getElementById('bgCustomColor');
+            var saveBtn = document.getElementById('bgSaveBtn');
+            var resetBtn = document.getElementById('bgResetBtn');
+            var closeBtn = document.getElementById('bgCloseBtn');
+            var saveStatus = document.getElementById('bgSaveStatus');
+            var csrfInput = document.querySelector('#public-search-form input[name="_token"]');
+
+            if (!page || !toggle || !panel || !colorGrid || !colorInput || !saveBtn || !resetBtn || !closeBtn || !saveStatus) {
+                return;
+            }
+
+            var tenantSlug = page.dataset.tenantSlug || '';
+            var pageKey = tenantSlug ? tenantSlug : window.location.pathname;
+            var storageKey = 'public-search-bg:' + pageKey;
+            var canPersist = page.dataset.canPersistBg === '1';
+            var updateUrl = page.dataset.bgUpdateUrl || '';
+            var serverColor = page.dataset.bgColor || '';
+            var csrfToken = csrfInput ? csrfInput.value : '';
+            var palette = ['#f0f2f7', '#e9f5ff', '#fef3e8', '#f3f7ec', '#f4ecff', '#ffeef1', '#f8fafc', '#edf2ff', '#fff7d6', '#dff7f3'];
+            var localColor = normalizeColor(localStorage.getItem(storageKey));
+            var appliedColor = normalizeColor(serverColor) || localColor;
+            var selectedColor = appliedColor;
+
+            function setStatus(message, statusClass) {
+                saveStatus.textContent = message || '';
+                saveStatus.classList.remove('is-success', 'is-error', 'is-pending');
+                if (statusClass) {
+                    saveStatus.classList.add(statusClass);
+                }
+            }
+
+            function normalizeColor(color) {
+                if (!color || !/^#([0-9a-fA-F]{6})$/.test(color)) {
+                    return '';
+                }
+
+                return color.toLowerCase();
+            }
+
+            function persistBackground(color) {
+                if (!canPersist || !updateUrl || !csrfToken) {
+                    return Promise.resolve();
+                }
+
+                return fetch(updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        background_color: color || null,
+                    }),
+                }).then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('No se pudo guardar el fondo');
+                    }
+
+                    return response.json();
+                });
+            }
+
+            function storeLocalBackground(color) {
+                if (!color) {
+                    localStorage.removeItem(storageKey);
+                    return;
+                }
+
+                localStorage.setItem(storageKey, color);
+            }
+
+            function setBackground(color) {
+                if (!color) {
+                    page.style.background = 'var(--default-page-bg)';
+                    return;
+                }
+
+                page.style.background = color;
+            }
+
+            function applySelectedColor() {
+                var color = normalizeColor(selectedColor);
+                saveBtn.disabled = true;
+                setStatus('Guardando...', 'is-pending');
+
+                return persistBackground(color)
+                    .then(function () {
+                        storeLocalBackground(color);
+                        appliedColor = color;
+                        setStatus('Color guardado correctamente.', 'is-success');
+                    })
+                    .catch(function () {
+                        storeLocalBackground(color);
+                        appliedColor = color;
+                        setStatus('No se pudo guardar en servidor. Quedó guardado en este navegador.', 'is-error');
+                    })
+                    .finally(function () {
+                        saveBtn.disabled = false;
+                    });
+            }
+
+            function refreshActiveSwatch(color) {
+                var swatches = colorGrid.querySelectorAll('.bg-swatch');
+                swatches.forEach(function (swatch) {
+                    swatch.classList.toggle('active', swatch.dataset.color === color);
+                });
+            }
+
+            palette.forEach(function (color) {
+                var swatch = document.createElement('button');
+                swatch.type = 'button';
+                swatch.className = 'bg-swatch';
+                swatch.style.background = color;
+                swatch.dataset.color = color;
+                swatch.title = color;
+                swatch.addEventListener('click', function () {
+                    colorInput.value = color;
+                    selectedColor = color;
+                    setBackground(color);
+                    refreshActiveSwatch(color);
+                    setStatus('Color seleccionado. Presiona Aplicar para guardar.', 'is-pending');
+                });
+                colorGrid.appendChild(swatch);
+            });
+
+            if (selectedColor) {
+                colorInput.value = selectedColor;
+                setBackground(selectedColor);
+            }
+
+            refreshActiveSwatch(selectedColor);
+
+            if (canPersist && !normalizeColor(serverColor) && localColor) {
+                setStatus('Hay un color local. Presiona Aplicar para sincronizar en todos los navegadores.', 'is-pending');
+            }
+
+            toggle.addEventListener('click', function () {
+                var isOpen = panel.classList.toggle('open');
+                panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            });
+
+            saveBtn.addEventListener('click', function () {
+                applySelectedColor();
+            });
+
+            closeBtn.addEventListener('click', function () {
+                panel.classList.remove('open');
+                panel.setAttribute('aria-hidden', 'true');
+            });
+
+            colorInput.addEventListener('input', function () {
+                var color = colorInput.value;
+                selectedColor = color;
+                setBackground(color);
+                refreshActiveSwatch(color);
+                setStatus('Color seleccionado. Presiona Aplicar para guardar.', 'is-pending');
+            });
+
+            resetBtn.addEventListener('click', function () {
+                selectedColor = '';
+                setBackground('');
+                refreshActiveSwatch('');
+                applySelectedColor();
+            });
+
+            document.addEventListener('click', function (event) {
+                var customizer = document.getElementById('bgCustomizer');
+                if (!customizer.contains(event.target)) {
+                    panel.classList.remove('open');
+                    panel.setAttribute('aria-hidden', 'true');
+                }
+            });
+        })();
     </script>
 
 @endsection

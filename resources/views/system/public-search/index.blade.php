@@ -865,8 +865,10 @@
                 </svg>
             </button>
         </div>
+
     </div>
 
+    <script src="{{ asset('porto-ecommerce/assets/js/sweetalert2.all.min.js') }}"></script>
     <script>
         function selectDocType(btn) {
             document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
@@ -977,6 +979,42 @@
                 page.style.background = color;
             }
 
+            function askResetConfirmation() {
+                if (typeof window.swal === 'function') {
+                    return window.swal({
+                        title: 'Confirmar restablecimiento',
+                        text: 'Se perderá el color actual y se volverá al fondo por defecto. ¿Deseas continuar?',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e53935',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, restablecer',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true,
+                    }).then(function (result) {
+                        return !!(result && result.value);
+                    });
+                }
+
+                if (window.Swal && typeof window.Swal.fire === 'function') {
+                    return window.Swal.fire({
+                        title: 'Confirmar restablecimiento',
+                        text: 'Se perderá el color actual y se volverá al fondo por defecto. ¿Deseas continuar?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e53935',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, restablecer',
+                        cancelButtonText: 'Cancelar',
+                        reverseButtons: true,
+                    }).then(function (result) {
+                        return !!(result && (result.isConfirmed || result.value));
+                    });
+                }
+
+                return Promise.resolve(false);
+            }
+
             function applySelectedColor() {
                 var color = normalizeColor(selectedColor);
                 saveBtn.disabled = true;
@@ -1056,10 +1094,16 @@
             });
 
             resetBtn.addEventListener('click', function () {
-                selectedColor = '';
-                setBackground('');
-                refreshActiveSwatch('');
-                applySelectedColor();
+                askResetConfirmation().then(function (confirmed) {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    selectedColor = '';
+                    setBackground('');
+                    refreshActiveSwatch('');
+                    applySelectedColor();
+                });
             });
 
             document.addEventListener('click', function (event) {
@@ -1068,6 +1112,7 @@
                     panel.classList.remove('open');
                     panel.setAttribute('aria-hidden', 'true');
                 }
+
             });
         })();
     </script>

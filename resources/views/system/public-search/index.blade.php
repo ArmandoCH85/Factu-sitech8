@@ -452,6 +452,10 @@
             gap: 10px;
         }
 
+        .bg-customizer.is-hidden {
+            display: none !important;
+        }
+
         .bg-customizer-toggle {
             width: 44px;
             height: 44px;
@@ -968,6 +972,7 @@
 
         (function initBackgroundCustomizer() {
             var page = document.querySelector('.search-page');
+            var customizer = document.getElementById('bgCustomizer');
             var toggle = document.getElementById('bgCustomizerToggle');
             var panel = document.getElementById('bgCustomizerPanel');
             var colorGrid = document.getElementById('bgColorGrid');
@@ -981,6 +986,12 @@
             var closeBtn = document.getElementById('bgCloseBtn');
             var saveStatus = document.getElementById('bgSaveStatus');
             var csrfInput = document.querySelector('#public-search-form input[name="_token"]');
+
+            var isIframeContext = window.self !== window.top;
+            if (isIframeContext && customizer) {
+                customizer.classList.add('is-hidden');
+                return;
+            }
 
             if (!page || !toggle || !panel || !colorGrid || !colorInput || !imageInput || !imagePreview || !imagePreviewImg || !saveBtn || !removeImageBtn || !resetBtn || !closeBtn || !saveStatus) {
                 return;

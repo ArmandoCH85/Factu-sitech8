@@ -18,6 +18,12 @@ class AddResellerFieldsToUsersTable extends Migration
                 $table->boolean('status')->default(true)->after('api_token');
             }
         });
+
+        // Aseguramos que el usuario principal (Master) siempre tenga status activo (1)
+        \Illuminate\Support\Facades\DB::table('users')
+            ->whereNull('reseller_id')
+            ->orWhere('id', 1)
+            ->update(['status' => 1]);
     }
 
     public function down()

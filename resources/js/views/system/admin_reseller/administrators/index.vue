@@ -57,7 +57,7 @@
                                 <td>{{ row.email }}</td>
                                 <td class="text-center">
                                     <el-tag
-                                        v-if="isMasterAdministrator(row)"
+                                        v-if="isCurrentUser(row)"
                                         type="info"
                                         size="small"
                                         class="admin-reseller-master-tag">
@@ -67,7 +67,7 @@
                                 </td>
                                 <td class="text-center">
                                     <el-tag
-                                        v-if="isMasterAdministrator(row)"
+                                        v-if="isCurrentUser(row)"
                                         type="info"
                                         size="small"
                                         class="admin-reseller-master-tag">
@@ -85,11 +85,16 @@
                                     <el-switch v-model="row.status" @change="changeStatus(row)"></el-switch>
                                 </td>
                                 <td class="text-end align-middle">
-                                    <el-button type="primary" size="small" class="me-1 mb-0" @click="openEdit(row)">
+                                    <el-button 
+                                        v-if="!isCurrentUser(row)"
+                                        type="primary" 
+                                        size="small" 
+                                        class="me-1 mb-0" 
+                                        @click="openEdit(row)">
                                         Editar
                                     </el-button>
                                     <el-button
-                                        v-if="!isMasterAdministrator(row)"
+                                        v-if="!isCurrentUser(row)"
                                         type="primary"
                                         size="small"
                                         class="mb-0"
@@ -243,6 +248,7 @@ export default {
             activeTab: 'general',
             moduleOptions: [],
             assignableClients: [],
+            auth_user_id: null,
         };
     },
     computed: {
@@ -313,8 +319,8 @@ export default {
         handleDialogClosed() {
             this.initForm();
         },
-        isMasterAdministrator(row) {
-            return !!(row && (row.is_master === true || row.is_master === 1));
+        isCurrentUser(row) {
+            return !!(row && row.id === this.auth_user_id);
         },
         moduleCountLabel(row) {
             const n = (row.module_permissions || []).length;
@@ -356,6 +362,9 @@ export default {
                 }
                 if (response.data.assignable_clients) {
                     this.assignableClients = response.data.assignable_clients;
+                }
+                if (response.data.auth_user_id) {
+                    this.auth_user_id = response.data.auth_user_id;
                 }
                 this.records = (response.data.data || []).map((item) => ({
                     ...item,

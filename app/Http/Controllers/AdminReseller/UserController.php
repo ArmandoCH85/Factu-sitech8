@@ -31,7 +31,7 @@ class UserController extends Controller
      */
     public function records()
     {
-        $resellerId = (int) auth()->user()->id;
+        $resellerId = auth()->user()->reseller_id ?? auth()->user()->id;
 
         $users = User::where('reseller_id', $resellerId)
             ->orderBy('id')
@@ -63,13 +63,14 @@ class UserController extends Controller
             'data' => $users,
             'module_definitions' => ResellerSystemAdminModules::DEFINITIONS,
             'assignable_clients' => $assignableClients,
+            'auth_user_id' => (int) auth()->user()->id,
         ]);
     }
 
     public function store(Request $request)
     {
         $allowed = ResellerSystemAdminModules::allowedKeys();
-        $resellerId = (int) auth()->user()->id;
+        $resellerId = auth()->user()->reseller_id ?? auth()->user()->id;
 
         $data = $request->validate(
             [
@@ -128,7 +129,8 @@ class UserController extends Controller
 
     public function update(Request $request, User $administrator)
     {
-        if ((int) $administrator->reseller_id !== (int) auth()->user()->id) {
+        $masterId = auth()->user()->reseller_id ?? auth()->user()->id;
+        if ((int) $administrator->reseller_id !== (int) $masterId) {
             abort(403);
         }
 
@@ -198,7 +200,8 @@ class UserController extends Controller
 
     public function destroy(User $administrator)
     {
-        if ((int) $administrator->reseller_id !== (int) auth()->user()->id) {
+        $masterId = auth()->user()->reseller_id ?? auth()->user()->id;
+        if ((int) $administrator->reseller_id !== (int) $masterId) {
             abort(403);
         }
 

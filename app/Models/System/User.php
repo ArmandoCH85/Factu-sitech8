@@ -124,6 +124,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     /**
+     * Define dinámicamente si el usuario es el Super Admin (Master).
+     */
+    public function isSystemMaster(): bool
+    {
+        return $this->reseller_id === null || $this->id === 1;
+    }
+
+    /**
      * Subadministrador reseller marcado como maestro en base de datos (columna is_master).
      */
     public function isResellerSystemMasterAdministrator(): bool
@@ -136,10 +144,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function canAccessSystemModule(string $moduleKey): bool
     {
-        if ($this->reseller_id === null) {
+        if ($this->isSystemMaster()) {
             return true;
         }
 
+        // Si se desea que el ResellerSystemMasterAdministrator tenga todo, se puede chequear acá.
+        // Pero la instrucción dice: "El sistema debe verificar si el usuario logueado tiene el módulo... 
+        // Excepción: Si la sesión es del Master (reseller_id null)" - Ya cubierto arriba.
         if ($this->isResellerSystemMasterAdministrator()) {
             return true;
         }
@@ -154,24 +165,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function canAccessSystemPath(?string $firstPathSegment): bool
     {
-        if ($this->reseller_id === null) {
+        if ($this->isSystemMaster()) {
             return true;
         }
 
         if ($this->isResellerSystemMasterAdministrator()) {
-            $firstPathSegment = $firstPathSegment ?? '';
-            if ($firstPathSegment === 'admin-reseller') {
-                return false;
-            }
-
             return true;
         }
 
         $firstPathSegment = $firstPathSegment ?? '';
-
-        if ($firstPathSegment === 'admin-reseller') {
-            return false;
-        }
 
         if ($firstPathSegment === 'dashboard' || $firstPathSegment === 'clients') {
             return $this->canAccessSystemModule('clients');

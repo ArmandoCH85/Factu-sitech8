@@ -22,6 +22,7 @@ class HotelReceptionController extends Controller
 				'rooms'   => $rooms,
 			], 200);
 		}
+        
 		$floors = HotelFloor::where('active', true)
                 ->where('establishment_id',auth()->user()->establishment_id)
 				->orderBy('description')
@@ -35,6 +36,35 @@ class HotelReceptionController extends Controller
 
 		return view('hotel::rooms.reception', compact('rooms', 'floors', 'roomStatus','userType','establishmentId','establishments'));
 	}
+
+    function data()
+    {
+        $rooms = $this->getRooms();
+
+        $floors = HotelFloor::where('active', true)
+                ->where('establishment_id',auth()->user()->establishment_id)
+				->orderBy('description')
+				->get();
+
+        $roomStatus = HotelRoom::$status;
+
+        $userType = auth()->user()->type;
+		$establishmentId = auth()->user()->establishment_id;
+        $establishments = Establishment::select('id','description')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'rooms' => $rooms,
+                'floors' => $floors,
+                'roomStatus' => $roomStatus,
+                'userType' => $userType,
+                'establishmentId' => $establishmentId,
+                'establishments' => $establishments
+            ],
+            'message'   => "Datos encontrados",
+        ], 200);
+    }
 
     /**
      * Busqueda avanzada de cuartos.

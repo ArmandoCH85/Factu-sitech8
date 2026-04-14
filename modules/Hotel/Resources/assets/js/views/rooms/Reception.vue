@@ -59,7 +59,7 @@
                             @change="searchRooms"
                         >
                             <el-option
-                                v-for="f in floors"
+                                v-for="f in floorsLocal"
                                 :key="f.id"
                                 :label="f.description"
                                 :value="f.id"
@@ -250,6 +250,7 @@ export default {
         floors: {
             type: Array,
             required: true,
+            default: [],
         },
         rooms: {
             type: Array,
@@ -281,10 +282,29 @@ export default {
             roomToExtend: {},
             openDialogExtendTimeRoom: false,
             showExportDialog: false,
+            floorsLocal: [],
         };
     },
     mounted() {
-        this.items = this.rooms;
+        // inicializar copia local de floors y items sin mutar las props
+        this.floorsLocal = this.floors ? JSON.parse(JSON.stringify(this.floors)) : [];
+        this.items = this.rooms ? JSON.parse(JSON.stringify(this.rooms)) : [];
+
+        // handler nombrado para poder removerlo luego
+        this.handleEstablishmentChanged = () => {
+            console.log("Establecimiento cambiado, recargando datos...");
+            this.getData();
+        };
+        this.$eventHub.$on("establishmentChanged", this.handleEstablishmentChanged);
+
+        // carga inicial
+        this.getData();
+    },
+
+    beforeDestroy() {
+        if (this.handleEstablishmentChanged) {
+            this.$eventHub.$off("establishmentChanged", this.handleEstablishmentChanged);
+        }
     },
     /*
     watch: {
@@ -294,6 +314,27 @@ export default {
     },
     */
     methods: {
+        getData(){
+            this.loading = true;
+            this.$http
+                .get("/hotels/reception/data")
+                .then((response) => {
+                    console.log(response.data)
+                    // soporte para estructuras { success:true, data: { ... } } o payload directo
+                    const payload = response.data && response.data.data ? response.data.data : response.data;
+                    // actualizar items (lo que se muestra)
+                    this.items = payload.rooms || [];
+                    // actualizar floors locales (no mutar prop)
+                    if (payload.floors) {
+                        this.floorsLocal = JSON.parse(JSON.stringify(payload.floors));
+                        // resetear filtro de piso para forzar actualización del select
+                        this.hotel_floor_id = null;
+                    }
+                })
+                .finally(() => {
+                    this.loading = false;
+                })
+        },
         onFinalizeClean(room) {
             const text = `Está a punto de terminar la limpieza de la habitación ${room.name}`;
             this.$confirm(text, "Atención", {

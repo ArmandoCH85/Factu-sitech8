@@ -54,6 +54,7 @@ if ($hostname) {
               */
             Route::get('', 'HotelReceptionController@index')->name('tenant.hotels.index');
             Route::post('/search', 'HotelReceptionController@searchRooms');
+            Route::get('/data', 'HotelReceptionController@data');
             Route::get('/tables', 'HotelRentController@tables');
             Route::get('/tables/customers', 'HotelRentController@searchCustomers');
             Route::get('/{roomId}/rent', 'HotelRentController@rent');

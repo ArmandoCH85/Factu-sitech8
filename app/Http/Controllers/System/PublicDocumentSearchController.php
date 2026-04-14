@@ -280,7 +280,15 @@ JS;
         $statusType = null;
 
         $client = $this->resolveClient($validated);
-        $branding = $this->resolveBranding($client);
+
+        // Mantiene personalización por slug (color/imagen) al recargar tras buscar.
+        if (!empty($validated['tenant_slug'])) {
+            $branding = $this->resolveBrandingBySlug($validated['tenant_slug']);
+        } elseif ($client && $client->hostname && !empty($client->hostname->fqdn)) {
+            $branding = $this->resolveBrandingBySlug($client->hostname->fqdn);
+        } else {
+            $branding = $this->resolveBranding($client);
+        }
 
         if (!$client || !$client->hostname) {
             $statusMessage = 'No se encontró una empresa activa con los datos ingresados.';

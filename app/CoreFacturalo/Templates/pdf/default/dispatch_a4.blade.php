@@ -590,7 +590,7 @@ foreach($document->items as $row) {
             <td class="text-left align-top">
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
-                        @if( isset($lot->has_sale) && $lot->has_sale)
+                        @if(!empty($lot->series))
                             <span style="font-size: 9px">{{ $lot->series }}</span><br>
                         @endif
                     @endforeach
@@ -681,33 +681,15 @@ foreach($document->items as $row) {
                     *** Pago Anticipado ***
                 @endif
             </td>
-            {{-- <td class="text-left">
-                @php
-                    $current_item = $items ? $items->where('item_id', $row->item_id)->first() : null;
-                @endphp
-                @if($current_item && count($current_item->item->lots) > 0)
-                    @foreach($current_item->item->lots as $lot)
-                        {{$lot->series}}
-                        @if(!$loop->first && $loop->last)
-                            -
+            <td class="text-left align-top">
+                @isset($row->item->lots)
+                    @foreach($row->item->lots as $lot)
+                        @if(!empty($lot->series))
+                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
                         @endif
                     @endforeach
-                @endif
-            </td> --}}
-            <td class="text-left">{{ $row->item->model ?? '' }}</td>
-            {{-- <td class="text-left">
-                @php
-                    $current_item = $items ? $items->where('item_id', $row->item_id)->first() : null;
-                @endphp
-                @if($current_item && count($current_item->item->lots) > 0)
-                    @foreach($current_item->item->lots as $lot)
-                        {{$lot->series}}
-                        @if(!$loop->first && $loop->last)
-                            -
-                        @endif
-                    @endforeach
-                @endif
-            </td> --}}
+                @endisset
+            </td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             @if (isset($configuration['enable_weight_in_dispatches']) &&  $configuration['enable_weight_in_dispatches'])

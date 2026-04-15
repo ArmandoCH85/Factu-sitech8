@@ -335,7 +335,7 @@ foreach($document->items as $row) {
             <td class="text-left align-top">
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
-                        @if( isset($lot->has_sale) && $lot->has_sale)
+                        @if(!empty($lot->series))
                             <span style="font-size: 9px">{{ $lot->series }}</span><br>
                         @endif
                     @endforeach

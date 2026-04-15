@@ -379,7 +379,7 @@ class DispatchInput
                         'unit_type_id' => ($row['unit_type_id'])??$item->unit_type_id,
                         'IdLoteSelected' => is_null($item_inner) ? null : Functions::valueKeyInArray($item_inner, 'IdLoteSelected', null),
                         'lot_group' => $row['lot_group'] ?? null,
-                        'lots' =>  is_null($item_inner) ? null : Functions::valueKeyInArray($item_inner, 'lots', []),
+                        'lots' =>  is_null($item_inner) ? ($row['lots'] ?? null) : Functions::valueKeyInArray($item_inner, 'lots', $row['lots'] ?? []),
                         'unit_price' =>isset($row['unit_price'])?$row['unit_price']:null,
                         'total' =>isset($row['total'])?$row['total']:null,
                         'weight' => isset($row['weight'])?$row['weight']:null,

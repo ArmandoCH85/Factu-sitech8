@@ -793,6 +793,38 @@ export default {
         this.getItems();
 
         this.filterDisabled = localStorage.getItem('filterDisabled') || 'all'
+
+        this.$eventHub.$on("establishmentChanged", () => {
+            this.loadColumnVisibility();
+            this.$store.commit("setConfiguration", this.configuration);
+            this.loadConfiguration();
+
+            if (this.config.is_pharmacy !== true) {
+                delete this.columns.sanitary;
+                delete this.columns.cod_digemid;
+            }
+            if (this.config.show_extra_info_to_item !== true) {
+                delete this.columns.extra_data;
+            }
+            if (this.type === "ZZ") {
+                this.titleTopBar = "Servicios";
+                this.title = "Listado de servicios";
+            } else {
+                this.titleTopBar = "Productos";
+                this.title = "Listado de productos";
+            }
+            this.$http.get(`/configurations/record`).then(response => {
+                this.$store.commit("setConfiguration", response.data.data);
+                //this.config = response.data.data;
+            });
+            this.canCreateProduct();
+            this.getItems();
+            this.reloadTable();
+
+            
+            this.filterDisabled = localStorage.getItem('filterDisabled') || 'all'
+        });
+
     },
     computed: {
         ...mapState([

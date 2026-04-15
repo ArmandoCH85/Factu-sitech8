@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Models\System\Configuration;
 
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
@@ -130,6 +131,8 @@ if ($hostname) {
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
             Route::post('configurations/visual/upload_skin', 'Tenant\ConfigurationController@visualUploadSkin')->name('visual_upload_skin');
             Route::post('configurations/visual/delete_skin', 'Tenant\ConfigurationController@visualDeleteSkin')->name('visual_delete_skin');
+            Route::get('configurations/public-search', 'Tenant\ConfigurationController@getPublicSearchBackground')->name('tenant.public_search.background.record');
+            Route::post('configurations/public-search', 'Tenant\ConfigurationController@storePublicSearchBackground')->name('tenant.public_search.background.update');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
             Route::get('configurations/pdf_guide_templates', 'Tenant\ConfigurationController@pdfGuideTemplates')->name('tenant.advanced.pdf_guide_templates');
             Route::get('configurations/pdf_preprinted_templates', 'Tenant\ConfigurationController@pdfPreprintedTemplates')->name('tenant.advanced.pdf_preprinted_templates');
@@ -263,7 +266,6 @@ if ($hostname) {
 
             Route::get('consultas', 'System\PublicDocumentSearchController@tenantForm')->name('tenant.public_search.form');
             Route::post('consultas', 'System\PublicDocumentSearchController@tenantSearch')->name('tenant.public_search.form.search');
-            Route::post('consultas/background', 'System\PublicDocumentSearchController@updateTenantBackground')->name('tenant.public_search.background.update');
 
             //Persons
             Route::prefix('persons')->group(function () {
@@ -849,7 +851,6 @@ if ($hostname) {
             Route::post('consultas', 'System\PublicDocumentSearchController@search')->name('system.public_search.search');
             Route::get('consultas/widget/{slug}', 'System\PublicDocumentSearchController@widget')->name('system.public_search.widget');
             Route::post('consultas/widget/{slug}', 'System\PublicDocumentSearchController@searchWidget')->name('system.public_search.widget.search');
-            Route::post('consultas/widget/{slug}/background', 'System\PublicDocumentSearchController@updateWidgetBackground')->name('system.public_search.widget.background.update');
             Route::get('consultas/widget', 'System\PublicDocumentSearchController@widgetInternal')->name('system.public_search.widget.internal');
         });
 
@@ -888,6 +889,10 @@ if ($hostname) {
                 return redirect()->route('system.dashboard');
             });
             Route::get('dashboard', 'System\HomeController@index')->name('system.dashboard');
+
+            Route::get('configurations/public-search', 'System\PublicDocumentSearchController@getMainBackground')->name('system.public_search.background.record');
+            Route::post('configurations/public-search', 'System\PublicDocumentSearchController@updateMainBackground')->name('system.public_search.background.update');
+            Route::post('consultas/widget/{slug}/background', 'System\PublicDocumentSearchController@updateWidgetBackground')->name('system.public_search.widget.background.update');
 
             //Clients
             Route::get('clients', 'System\ClientController@index')->name('system.clients.index');

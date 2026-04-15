@@ -474,6 +474,57 @@ class ConfigurationController extends Controller
         ];
     }
 
+    public function getPublicSearchBackground()
+    {
+        $configuration = Configuration::first();
+
+        return response()->json([
+            'success' => true,
+            'background_color' => $configuration->public_search_bg_color ?? null,
+            'background_image_url' => !empty($configuration->public_search_bg_image_path)
+                ? asset('storage/' . ltrim($configuration->public_search_bg_image_path, '/'))
+                : null,
+        ]);
+    }
+
+    public function storePublicSearchBackground(Request $request)
+    {
+        $validated = $request->validate([
+            'background_color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'],
+            'background_image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'remove_background_image' => ['nullable', 'boolean'],
+        ]);
+
+        $configuration = Configuration::first();
+        $configuration->public_search_bg_color = !empty($validated['background_color'])
+            ? strtolower($validated['background_color'])
+            : null;
+
+        if ($request->boolean('remove_background_image') && !empty($configuration->public_search_bg_image_path)) {
+            Storage::disk('public')->delete($configuration->public_search_bg_image_path);
+            $configuration->public_search_bg_image_path = null;
+        }
+
+        if ($request->hasFile('background_image')) {
+            if (!empty($configuration->public_search_bg_image_path)) {
+                Storage::disk('public')->delete($configuration->public_search_bg_image_path);
+            }
+
+            $configuration->public_search_bg_image_path = $request->file('background_image')
+                ->store('uploads/public-search-backgrounds', 'public');
+        }
+
+        $configuration->save();
+
+        return response()->json([
+            'success' => true,
+            'background_color' => $configuration->public_search_bg_color,
+            'background_image_url' => !empty($configuration->public_search_bg_image_path)
+                ? asset('storage/' . ltrim($configuration->public_search_bg_image_path, '/'))
+                : null,
+        ]);
+    }
+
     public function tables()
     {
         $affectation_igv_types = AffectationIgvType::whereActive()->get();

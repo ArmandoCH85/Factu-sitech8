@@ -37,6 +37,7 @@ import SystemConfigurationServerStatus from './views/system/configuration/server
 import SystemConfigurationLogin from './views/system/configuration/login.vue';
 import SystemConfigurationOtherConfiguration from './views/system/configuration/other_configuration.vue';
 import SystemConfigurationEmail from './views/system/configuration/emailConfiguration.vue';
+import PublicSearchBackgroundConfiguration from './views/shared/public_search_background.vue';
 import SystemReportLoginLockout from '@viewsModuleReport/system/report_login_lockout/index.vue';
 import SystemUserNotChangePassword from '@viewsModuleReport/system/user_not_change_password/index.vue';
 import SystemPlansIndex from './views/system/plans/index.vue';
@@ -94,6 +95,7 @@ Vue.component('system-server-status', SystemConfigurationServerStatus);
 Vue.component('system-login-settings', SystemConfigurationLogin);
 Vue.component('system-login-other-configuration', SystemConfigurationOtherConfiguration);
 Vue.component('system-email-configuration', SystemConfigurationEmail);
+Vue.component('system-public-search-configuration', PublicSearchBackgroundConfiguration);
 
 // Reports in system
 Vue.component('system-report-login-lockout-index', SystemReportLoginLockout);

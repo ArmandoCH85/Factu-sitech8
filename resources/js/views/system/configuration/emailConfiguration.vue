@@ -62,6 +62,13 @@
                 <h3 class="my-0">Buscador de documentos embebido</h3>
             </div>
             <div class="card-body">
+                    <div class="mb-4 pb-3 border-bottom">
+                        <system-public-search-configuration
+                            load-url="/configurations/public-search"
+                            save-url="/configurations/public-search"
+                        ></system-public-search-configuration>
+                    </div>
+
                     <p class="text-muted mb-3">
                         Copia este script y pégalo en la web del cliente para mostrar el buscador de comprobantes.
                     </p>

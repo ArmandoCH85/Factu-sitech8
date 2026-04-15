@@ -688,15 +688,27 @@
             : ($tenantSlug
                 ? route('system.public_search.widget.search', ['slug' => $tenantSlug])
                 : route('system.public_search.search'));
+
+        $bgColor = $brand['bg_color'] ?? '';
+        $bgImageUrl = $brand['bg_image_url'] ?? '';
+        $pageBackgroundStyle = '';
+
+        if (!empty($bgImageUrl)) {
+            $pageBackgroundStyle = "background: " . (!empty($bgColor) ? $bgColor : '#f0f2f7')
+                . "; background-image: url('{$bgImageUrl}'); background-repeat: no-repeat; background-size: cover; background-position: center;";
+        } elseif (!empty($bgColor)) {
+            $pageBackgroundStyle = "background: {$bgColor};";
+        }
     @endphp
 
     <div
         class="search-page"
+        style="{{ $pageBackgroundStyle }}"
         data-tenant-slug="{{ $tenantSlug ?? '' }}"
         data-bg-color="{{ $brand['bg_color'] ?? '' }}"
         data-bg-image-url="{{ $brand['bg_image_url'] ?? '' }}"
-        data-bg-update-url="{{ $backgroundUpdateUrl ?? '' }}"
-        data-can-persist-bg="{{ !empty($backgroundUpdateUrl) ? '1' : '0' }}"
+        data-bg-update-url=""
+        data-can-persist-bg="0"
     >
         <div class="search-card">
 
@@ -728,6 +740,7 @@
                                 id="ruc_emisor"
                                 form="public-search-form"
                                 maxlength="11"
+                                value="{{ old('ruc_emisor', $form['ruc_emisor']) }}"
                                 placeholder="Ej: 20123456789"
                                 oninput="this.value=this.value.replace(/\D/g,'')"
                             >
@@ -748,23 +761,6 @@
                     @if($tenantSlug)
                         <input type="hidden" name="tenant_slug" value="{{ $tenantSlug }}">
                     @endif
-
-                    {{-- Tipo de documento --}}
-                    <p class="sc-section-label">Tipo de Documento</p>
-                    <input type="hidden" name="document_type_id" id="document_type_id_hidden" value="{{ old('document_type_id', $form['document_type_id']) }}">
-                    <div class="doc-tabs" id="docTabs">
-                        @foreach($documentTypes as $id => $label)
-                            <button
-                                type="button"
-                                class="doc-tab {{ old('document_type_id', $form['document_type_id']) === $id ? 'active' : '' }}"
-                                data-value="{{ $id }}"
-                                onclick="selectDocType(this)"
-                            >{{ mb_strtoupper($label, 'UTF-8') }}</button>
-                        @endforeach
-                    </div>
-                    @error('document_type_id')
-                        <div class="invalid-msg" style="margin-top:-10px; margin-bottom:10px;">{{ $message }}</div>
-                    @enderror
 
                     {{-- Datos del comprobante --}}
                     <p class="sc-section-label">Datos del Comprobante</p>
@@ -867,17 +863,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>{{ $result['customer'] }}</td>
-                                    <td>{{ $result['number'] }}</td>
-                                    <td style="text-align:right">{{ $result['total'] }}</td>
-                                    <td>
-                                        <div class="download-btns">
-                                            <a href="{{ $result['download_xml'] }}" target="_blank" rel="noopener" class="btn-dl">XML</a>
-                                            <a href="{{ $result['download_pdf'] }}" target="_blank" rel="noopener" class="btn-dl">PDF</a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @foreach($result as $item)
+                                    <tr>
+                                        <td>{{ $item['customer'] }}</td>
+                                        <td>{{ $item['number'] }}</td>
+                                        <td style="text-align:right">{{ $item['total'] }}</td>
+                                        <td>
+                                            <div class="download-btns">
+                                                <a href="{{ $item['download_xml'] }}" target="_blank" rel="noopener" class="btn-dl">XML</a>
+                                                <a href="{{ $item['download_pdf'] }}" target="_blank" rel="noopener" class="btn-dl">PDF</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -885,74 +883,14 @@
             </div>
         </div>
 
-        <div class="bg-customizer" id="bgCustomizer">
-            <div class="bg-customizer-panel" id="bgCustomizerPanel" aria-hidden="true">
-                <p class="bg-customizer-title">Personalizar fondo</p>
-                <div class="bg-color-grid" id="bgColorGrid"></div>
-                <div class="bg-customizer-row">
-                    <label for="bgCustomColor">Color</label>
-                    <input type="color" id="bgCustomColor" value="#e4e8f0">
-                </div>
-                <div class="bg-file-row">
-                    <label for="bgImageInput">Imagen</label>
-                    <input type="file" id="bgImageInput" accept="image/png,image/jpeg,image/webp">
-                </div>
-                <div class="bg-image-preview" id="bgImagePreview">
-                    <img src="" alt="Vista previa de fondo" id="bgImagePreviewImg">
-                    <span class="bg-image-preview-empty" id="bgImagePreviewEmpty">Sin imagen seleccionada</span>
-                </div>
-                <div class="bg-customizer-status" id="bgSaveStatus"></div>
-                <div class="bg-customizer-actions">
-                    <button type="button" class="bg-btn primary" id="bgSaveBtn" title="Aplicar cambios">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <span class="btn-text">Aplicar</span>
-                    </button>
-                    <button type="button" class="bg-btn" id="bgRemoveImageBtn" title="Quitar imagen">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M8 6V4h8v2"></path>
-                            <path d="M18 6l-1 14H7L6 6"></path>
-                        </svg>
-                        <span class="btn-text">Quitar imagen</span>
-                    </button>
-                    <button type="button" class="bg-btn" id="bgResetBtn" title="Restablecer">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 2v6h6"></path>
-                            <path d="M21 12a9 9 0 0 1-15.5 6.36L3 16"></path>
-                            <path d="M3 12a9 9 0 0 1 15.5-6.36L21 8"></path>
-                        </svg>
-                        <span class="btn-text">Restablecer</span>
-                    </button>
-                    <button type="button" class="bg-btn" id="bgCloseBtn" title="Cerrar">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                        <span class="btn-text">Cerrar</span>
-                    </button>
-                </div>
-            </div>
-            <button type="button" class="bg-customizer-toggle" id="bgCustomizerToggle" title="Personalizar fondo" aria-label="Personalizar fondo">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3l7 7-7 7-7-7 7-7z"></path>
-                    <path d="M5 10h14"></path>
-                    <path d="M2 21h20"></path>
-                </svg>
-            </button>
-        </div>
+        @if(false)
+        <div class="bg-customizer" id="bgCustomizer"></div>
+        @endif
 
     </div>
 
     <script src="{{ asset('porto-ecommerce/assets/js/sweetalert2.all.min.js') }}"></script>
     <script>
-        function selectDocType(btn) {
-            document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('document_type_id_hidden').value = btn.dataset.value;
-        }
-
         function clearRuc() {
             document.getElementById('ruc_emisor').value = '';
             document.getElementById('ruc_emisor').focus();
@@ -965,12 +903,12 @@
             document.getElementById('total').value = '';
             document.getElementById('customer_number').value = '';
             document.getElementById('date_of_issue').value = '';
-            // Reset tab to first active
-            var first = document.querySelector('.doc-tab');
-            if (first) selectDocType(first);
         }
 
         (function initBackgroundCustomizer() {
+            // Lógica anterior desactivada: ahora el fondo proviene únicamente de Configuración Admin.
+            return;
+
             var page = document.querySelector('.search-page');
             var customizer = document.getElementById('bgCustomizer');
             var toggle = document.getElementById('bgCustomizerToggle');

@@ -15,22 +15,13 @@ use Hyn\Tenancy\Environment;
 use Hyn\Tenancy\Models\Hostname;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PublicDocumentSearchController extends Controller
 {
-    /**
-     * Catálogo de tipos permitidos para consulta pública.
-     */
-    private const DOCUMENT_TYPES = [
-        '01' => 'Factura Electrónica',
-        '03' => 'Boleta Electrónica',
-        '07' => 'Nota de Crédito',
-        '08' => 'Nota de Débito',
-    ];
-
     public function index()
     {
-        return $this->responseView($this->defaultForm(), null, null, null, false, null, $this->resolveBranding());
+        return $this->responseView($this->defaultForm(), null, null, null, false, null, $this->resolveBrandingBySlug('__main__'));
     }
 
     public function widget(string $slug)
@@ -181,15 +172,7 @@ JS;
         $allowTenantCustomization = request()->routeIs('tenant.public_search.form')
             || request()->routeIs('tenant.public_search.form.search');
 
-        $backgroundUpdateUrl = null;
-        if ($allowTenantCustomization) {
-            $backgroundUpdateUrl = route('tenant.public_search.background.update');
-        } elseif (!empty($tenantSlug)) {
-            $backgroundUpdateUrl = route('system.public_search.widget.background.update', ['slug' => $tenantSlug]);
-        }
-
         return response()->view('system.public-search.index', [
-            'documentTypes' => self::DOCUMENT_TYPES,
             'form' => array_merge($this->defaultForm(), $form),
             'result' => $result,
             'statusMessage' => $statusMessage,
@@ -198,12 +181,18 @@ JS;
             'tenantSlug' => $tenantSlug,
             'brand' => array_merge($this->defaultBranding(), $branding),
             'allowTenantCustomization' => $allowTenantCustomization,
-            'backgroundUpdateUrl' => $backgroundUpdateUrl,
         ])->header('X-Frame-Options', 'ALLOWALL');
     }
 
     private function storeBackgroundCustomization(Request $request, ?string $slug = null)
     {
+        if (!Auth::guard('admin')->check() && !Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tiene permisos para modificar esta personalización.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'background_color' => ['nullable', 'regex:/^#([A-Fa-f0-9]{6})$/'],
             'background_image' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
@@ -262,12 +251,29 @@ JS;
         ]);
     }
 
+    public function getMainBackground()
+    {
+        $customization = PublicSearchCustomization::query()
+            ->where('slug', '__main__')
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'background_color' => $customization->background_color ?? null,
+            'background_image_url' => $this->buildBackgroundImageUrl($customization->background_image_path ?? null),
+        ]);
+    }
+
+    public function updateMainBackground(Request $request)
+    {
+        return $this->storeBackgroundCustomization($request, '__main__');
+    }
+
     private function resolveSearch(Request $request): array
     {
         $validated = $request->validate([
             'tenant_slug' => ['nullable', 'string', 'max:255'],
             'ruc_emisor' => ['nullable', 'digits:11', 'required_without:tenant_slug'],
-            'document_type_id' => ['required', 'in:01,03,07,08'],
             'series' => ['required', 'string', 'max:10'],
             'number' => ['required', 'string', 'max:20'],
             'customer_number' => ['required', 'string', 'max:15'],
@@ -287,7 +293,7 @@ JS;
         } elseif ($client && $client->hostname && !empty($client->hostname->fqdn)) {
             $branding = $this->resolveBrandingBySlug($client->hostname->fqdn);
         } else {
-            $branding = $this->resolveBranding($client);
+            $branding = $this->resolveBrandingBySlug('__main__');
         }
 
         if (!$client || !$client->hostname) {
@@ -310,19 +316,21 @@ JS;
                 $statusMessage = 'El número de documento del cliente no fue encontrado.';
                 $statusType = 'warning';
             } else {
-                $document = $this->resolveDocument($validated, (int) $customer->id);
-                if (!$document) {
+                $documents = $this->resolveDocuments($validated, (int) $customer->id);
+                if ($documents->isEmpty()) {
                     $statusMessage = 'No se encontró un comprobante con los datos ingresados.';
                     $statusType = 'warning';
                 } else {
                     $baseUrl = '//' . $client->hostname->fqdn;
-                    $result = [
-                        'customer' => $document->customer->number,
-                        'number' => $document->series . '-' . $document->number,
-                        'total' => number_format((float) $document->total, 2, '.', ''),
-                        'download_xml' => $baseUrl . '/downloads/document/xml/' . $document->external_id,
-                        'download_pdf' => $baseUrl . '/downloads/document/pdf/' . $document->external_id,
-                    ];
+                    $result = $documents->map(function (Document $document) use ($baseUrl) {
+                        return [
+                            'customer' => $document->customer->number,
+                            'number' => $document->series . '-' . $document->number,
+                            'total' => number_format((float) $document->total, 2, '.', ''),
+                            'download_xml' => $baseUrl . '/downloads/document/xml/' . $document->external_id,
+                            'download_pdf' => $baseUrl . '/downloads/document/pdf/' . $document->external_id,
+                        ];
+                    })->values()->all();
                 }
             }
         }
@@ -426,17 +434,17 @@ JS;
             $branding['color'] = $configuration->login_bg_color;
         }
 
-        if (!empty($configuration->public_search_bg_color)) {
-            $branding['bg_color'] = $configuration->public_search_bg_color;
-        }
-
         return $branding;
     }
 
     private function resolveBrandingBySlug(string $slug): array
     {
-        $branding = $this->resolveBranding($this->resolveClientBySlug($slug));
-        $customBackground = $this->resolveCustomizationBySlug($slug);
+        $branding = $slug === '__main__'
+            ? $this->defaultBranding()
+            : $this->resolveBranding($this->resolveClientBySlug($slug));
+
+        // El fondo del buscador se administra solo desde Configuración (scope global __main__).
+        $customBackground = $this->resolveCustomizationBySlug('__main__');
 
         if (!empty($customBackground['background_color'])) {
             $branding['bg_color'] = $customBackground['background_color'];
@@ -461,6 +469,12 @@ JS;
         $customization = PublicSearchCustomization::query()
             ->where('slug', $slug)
             ->first();
+
+        if (!$customization && $slug !== '__main__') {
+            $customization = PublicSearchCustomization::query()
+                ->where('slug', '__main__')
+                ->first();
+        }
 
         if (!$customization) {
             return [
@@ -546,7 +560,7 @@ JS;
         return $slug;
     }
 
-    private function resolveDocument(array $validated, int $customerId): ?Document
+    private function resolveDocuments(array $validated, int $customerId)
     {
         $series = strtoupper(trim($validated['series']));
         $number = (int) $validated['number'];
@@ -554,12 +568,12 @@ JS;
 
         return Document::query()
             ->where('date_of_issue', $validated['date_of_issue'])
-            ->where('document_type_id', $validated['document_type_id'])
             ->where('series', $series)
             ->where('number', $number)
             ->whereBetween('total', [$total - 0.01, $total + 0.01])
             ->where('customer_id', $customerId)
-            ->first();
+            ->orderBy('id')
+            ->get();
     }
 
     private function defaultForm(): array
@@ -567,7 +581,6 @@ JS;
         return [
             'tenant_slug' => null,
             'ruc_emisor' => null,
-            'document_type_id' => '01',
             'date_of_issue' => now()->format('Y-m-d'),
             'series' => null,
             'number' => null,

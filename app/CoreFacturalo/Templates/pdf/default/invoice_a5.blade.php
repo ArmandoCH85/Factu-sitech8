@@ -675,6 +675,9 @@ foreach ($document->items as $row) {
     @php
         $personType = $document->person?->person_type;
     @endphp
+    <tr width="65%">
+        <td colspan="{{ $colspan_total }}" class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
+    </tr>
     @if ( $personType && $personType->enabled_description_person_type)
         <tr width="65%" >
             <td>

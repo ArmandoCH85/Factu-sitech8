@@ -59,6 +59,7 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
     'total' => true,
     'tipo_persona' => false,
     'peso_total' => false,
+    'nro_producto' => true,
 ];
 
 @endphp
@@ -1029,6 +1030,11 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
         @php
             $personType = $document->person?->person_type;
         @endphp
+        @if ($showColumns['nro_producto'] ?? false)
+        <tr width="65%">
+            <td colspan="{{ $colspan_total }}" class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
+        </tr>
+        @endif
         @if ( $personType?->enabled_description_person_type && ($showColumns['tipo_persona'] ?? false))
             <tr width="65%" >
                 <td>

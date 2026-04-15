@@ -55,6 +55,7 @@ class TemplateColumnsConfig extends ModelTenant
                     'total' => true,
                     'tipo_persona' => false,
                     'peso_total' => false,
+                    'nro_producto' => true,
                 ]
             ]
         );

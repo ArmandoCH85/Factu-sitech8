@@ -23,6 +23,7 @@
         'precio_unitario' => true,
         'descuento' => true,
         'total' => true,
+        'nro_producto' => false,
     ];
 @endphp
 <html>
@@ -351,6 +352,11 @@
     </tbody>
 </table>
 <table class="full-width">
+    @if ($showColumns['nro_producto'] ?? false)
+    <tr width="65%">
+        <td class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
+    </tr>
+    @endif
     <tr>
         <td width="65%" style="text-align: top; vertical-align: top;">
             <br>

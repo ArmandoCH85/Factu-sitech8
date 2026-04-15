@@ -36,6 +36,7 @@
         'precio_unitario' => true,
         'descuento' => true,
         'total' => true,
+        'nro_producto' => false,
     ];
 
 @endphp
@@ -484,10 +485,10 @@ foreach ($document->items as $row) {
             </tr>
         @endif
 
-        <tr>
+        {{-- <tr>
             <td colspan="{{ $colspan_total - 1 }}" class="text-left font-bold" style="white-space: nowrap;">Productos: {{ rtrim(rtrim(number_format(collect($document->items)->sum(function ($item) { return (float) data_get($item, 'quantity', 0); }), 2, '.', ''), '0'), '.') }}</td>
             <td class="text-right font-bold"></td>
-        </tr>
+        </tr> --}}
         <tr>
             <td colspan="{{ $colspan_total - 1 }}" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
@@ -506,7 +507,16 @@ foreach ($document->items as $row) {
 
     </tbody>
 </table>
+
+@if ($showColumns['nro_producto'] ?? false)
+<table>
+    <tr width="65%">
+        <td class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
+    </tr>
+</table>
+@endif
 @if(isset($configurationInPdf) && $configurationInPdf->show_bank_accounts_in_pdf)
+<br>
     <table class="full-width">
         <tr>
             <td width="65%" style="text-align: top; vertical-align: top;">

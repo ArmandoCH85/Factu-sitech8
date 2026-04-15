@@ -46,6 +46,7 @@
         'total' => true,
         'tipo_persona' => false,
         'peso_total' => false,
+        'nro_producto' => false,
     ];
 @endphp
 <html>
@@ -511,6 +512,13 @@
         </tr>
     </tbody>
 </table>
+@if ($showColumns['nro_producto'] ?? false)
+<table class="full-width">
+    <tr width="65%">
+        <td class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
+    </tr>
+</table>
+@endif
 @if ($show_weight_attribute && ($showColumns['peso_total'] ?? false))
     <table class="full-width">
         <tr>

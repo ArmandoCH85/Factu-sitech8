@@ -149,12 +149,11 @@
                         <div class="column-item">
                             <el-checkbox v-model="columns.marca">Marca</el-checkbox>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6 mb-2">
                         <div class="column-item">
                             <el-checkbox v-model="columns.lote">Lote</el-checkbox>
                         </div>
-                        
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
                         <div class="column-item">
                             <el-checkbox v-model="columns.fecha_vencimiento">Fecha de venc.</el-checkbox>
                         </div>
@@ -175,6 +174,12 @@
                         </div>
                         <div class="column-item">
                             <el-checkbox v-model="columns.peso_total">Peso total</el-checkbox>
+                        </div>
+                        <div class="column-item">
+                            <el-checkbox v-model="columns.peso_total">Peso total</el-checkbox>
+                        </div>
+                        <div class="column-item">
+                            <el-checkbox v-model="columns.nro_producto">N° de productos</el-checkbox>
                         </div>
                     </div>
                 </div>
@@ -350,7 +355,8 @@ export default {
                 descuento: true,
                 total: true,
                 tipo_persona: false,
-                peso_total: false
+                peso_total: false,
+                nro_producto: true,
             }
         }
     },

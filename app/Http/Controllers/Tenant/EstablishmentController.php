@@ -15,8 +15,9 @@ use App\Models\Tenant\Person;
 use App\Models\Tenant\User;
 use Illuminate\Http\Request;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 use Exception;
-
 
 class EstablishmentController extends Controller
 {
@@ -72,35 +73,36 @@ class EstablishmentController extends Controller
             $has_igv_31556 = ($request->input('has_igv_31556') === 'true');
             $addresses = ($request->input('addresses'))??[];
             $establishment = Establishment::firstOrNew(['id' => $id]);
-
-            // fix: mantener logo por defecto en nuevas sucursales (#47)
-            $data = $request->all();
-
             if ($request->hasFile('file') && $request->file('file')->isValid()) {
                 $request->validate(['file' => 'mimes:jpeg,png,jpg|max:1024']);
                 $file = $request->file('file');
-                $ext = $file->getClientOriginalExtension();
-                $filename = time() . '.' . $ext;
+                $basename = (string) time();
+                $ext = strtolower($file->getClientOriginalExtension());
+                $filenameForCheck = $basename . '.' . $ext;
 
-                UploadFileHelper::checkIfValidFile($filename, $file->getPathName(), true);
+                UploadFileHelper::checkIfValidFile($filenameForCheck, $file->getRealPath(), true);
 
-                $file->storeAs('public/uploads/logos', $filename);
-                $path = 'storage/uploads/logos/' . $filename;
-                $data['logo'] = $path;
-            } else {
-                // No se sobrescribi el logo actual si no se sube uno nuevo.
-                unset($data['logo']);
-            }
+                $image = Image::make($file->getRealPath());
+                $image->orientate();
+                $image->resize(450, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
 
-            // Si es sucursal nueva, por defecto tomara el logo de la sucursal principal
-            if (!$id) {
-                $defaultLogo = optional(auth()->user()->establishment)->logo;
-                if (empty($data['logo']) && !empty($defaultLogo)) {
-                    $data['logo'] = $defaultLogo;
+                if ($image->mime() === 'image/png') {
+                    $canvas = Image::canvas($image->width(), $image->height(), '#ffffff');
+                    $canvas->insert($image, 'top-left', 0, 0);
+                    $image = $canvas;
                 }
-            }
 
-            $establishment->fill($data);
+                $outputFilename = $basename . '.jpg';
+                $binary = (string) $image->encode('jpg', 70);
+
+                Storage::put('public/uploads/logos/' . $outputFilename, $binary);
+                $path = 'storage/uploads/logos/' . $outputFilename;
+                $request->merge(['logo' => $path]);
+            }
+            $establishment->fill($request->all());
             $establishment->has_igv_31556 = $has_igv_31556;
             $establishment->email = $request->email;
             $establishment->save();

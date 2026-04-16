@@ -1040,6 +1040,9 @@ export default {
 
             this.button_text = (this.form.is_update) ? 'Actualizando cliente...' : 'Creando base de datos...'
             this.loading_submit = true
+            console.log('modules', this.form.modules)
+            console.log('levels', this.form.levels)
+            console.log('form', this.form)
             await this.$http.post(`${this.resource}${(this.form.is_update ? '/update' : '')}`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -1052,6 +1055,8 @@ export default {
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
+                        console.log('422 data:', error.response.data)
+                        console.log('422 errors:', error.response.data.errors)
                         this.errors = error.response.data
                     } else if (error.response.status === 500) {
                         this.$message.error(error.response.data.message);
@@ -1087,28 +1092,41 @@ export default {
         changeModules() {
             var group = {
                 modules: [],
+                levels: [],
                 apps: [],
             };
             if(this.business == 1){
                 group.modules = this.getIds(this.group_basic);
+                group.modules.push(12);
+                group.levels = ['12-16'];
             }
             if(this.business == 2){
                 group.modules = this.getIds(this.group_pharmacy);
                 group.apps = this.getIds(this.group_pharmacy_apps);
+                group.modules.push(12);
+                group.levels = ['12-16'];
             }
             if(this.business == 3){
                 group.modules = this.getIds(this.group_hotel);
                 group.apps = this.getIds(this.group_hotel_apps);
+                group.modules.push(12);
+                group.levels = ['12-16'];
             }
             if(this.business == 4){
                 group.modules = this.getIds(this.group_restaurant);
                 group.apps = this.getIds(this.group_restaurant_apps);
+                group.modules.push(12);
+                group.levels = ['12-16'];
             }
             if(this.business == 5){
                 group.modules = this.getIds(this.modules);
                 group.apps = this.getIds(this.apps);
             }
-            this.$refs.tree.setCheckedKeys(group.modules);
+
+            this.$refs.tree.setCheckedKeys([
+                ...group.modules,
+                ...group.levels
+            ]);
             this.$refs.Apptree.setCheckedKeys(group.apps);
         },
         getIds(modules) {

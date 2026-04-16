@@ -1696,7 +1696,7 @@
                                             v-text="errors.pos_cost_price[0]"></small>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                             <!-- impresion automatica en pos -->
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
@@ -1717,10 +1717,44 @@
                                     </label>
                                     <div :class="{ 'has-danger': errors.auto_print }" class="form-group">
                                         <el-switch v-model="form.auto_print"
-                                                   @change="submit"></el-switch>
+                                                   @change="onChangeAutoPrint"></el-switch>
                                         <small v-if="errors.auto_print" class="form-control-feedback"
                                             v-text="errors.auto_print[0]"></small>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- selector de impresora para impresión automática -->
+                            <div v-if="form.auto_print" class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="">
+                                        Impresora para documentos
+                                        <el-tooltip class="item" effect="dark" placement="top-start">
+                                            <div slot="content">
+                                                Impresora que recibirá los documentos al usar la impresión automática.<br />
+                                                Si no se selecciona, se usará la impresora predeterminada registrada.
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-select
+                                        v-model="form.printer_name_documents"
+                                        clearable
+                                        placeholder="Impresora predeterminada"
+                                        class="w-100"
+                                        :loading="loadingPrinters"
+                                        @change="submit">
+                                        <el-option
+                                            v-for="p in printers"
+                                            :key="p.name"
+                                            :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                                            :value="p.name">
+                                        </el-option>
+                                    </el-select>
+                                    <small v-if="printers.length === 0 && !loadingPrinters" class="text-muted">
+                                        <i class="fa fa-info-circle"></i>
+                                        No hay impresoras registradas. Asegúrese de que BuhoPrinter esté activo.
+                                    </small>
                                 </div>
                             </div>
 
@@ -2430,6 +2464,7 @@ import ReportConfigurationsIndex from './partials/report_configurations_index.vu
 import PdfFooterImages from './partials/pdf_footer_images.vue'
 import SessionLifetime from '@viewsModuleLevelAccess/configurations/SessionLifetime.vue';
 import PriceLabelsManager from './partials/price_labels_manager.vue';
+import { buhoprinter } from '@mixins/buhoprinter';
 
 
 export default {
@@ -2448,6 +2483,7 @@ export default {
         LegendFooterSale,
         PriceLabelsManager
     },
+    mixins: [buhoprinter],
     computed: {
         ...mapState([
             'config',
@@ -2476,6 +2512,8 @@ export default {
             },
             affectation_igv_types: [],
             global_discount_types: [],
+            printers: [],
+            loadingPrinters: false,
             placeholder: '',
             activeName: 'first'
         }
@@ -2497,6 +2535,10 @@ export default {
             }
             // console.log(this.placeholder)
             this.getInventoryConfig()
+            // Si auto_print ya está activo, garantizar que haya impresoras disponibles
+            if (this.form.auto_print) {
+                this.loadOrSyncPrinters()
+            }
         });
 
         this.events()
@@ -2537,6 +2579,7 @@ export default {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.global_discount_types = response.data.global_discount_types
+                this.printers = response.data.printers || []
             })
 
         },
@@ -2660,6 +2703,7 @@ export default {
                 price1_label: 'Precio 1',
                 price2_label: 'Precio 2',
                 price3_label: 'Precio 3',
+                printer_name_documents: null,
 
                 stock_control: false,
                 generate_internal_id: false,
@@ -2726,6 +2770,43 @@ export default {
                 this.form.default_document_type_03 = false
             }
             this.submit()
+        },
+        /**
+         * Maneja el cambio del switch de impresión automática.
+         * Guarda la configuración y, si se activa, garantiza que haya impresoras disponibles.
+         */
+        async onChangeAutoPrint() {
+            this.submit()
+            if (this.form.auto_print) {
+                await this.loadOrSyncPrinters()
+            }
+        },
+        /**
+         * Carga las impresoras registradas desde el backend.
+         * Si no hay ninguna registrada, intenta conectar con BuhoPrinter,
+         * sincronizar las impresoras y volver a cargar la lista.
+         * Mismo comportamiento que la configuración de restaurante en la primera vez.
+         */
+        async loadOrSyncPrinters() {
+            if (this.printers.length > 0) return
+
+            this.loadingPrinters = true
+            try {
+                // Intenta conectar al agente BuhoPrinter (escanea puertos 8181-8484)
+                await this.startConnectionBuho()
+
+                if (this.isBuhoActive) {
+                    // Sincroniza impresoras disponibles con la BD
+                    await this.$http.post('/restaurant/printers/sync')
+                    // Recarga la lista desde el backend
+                    const { data } = await this.$http.get(`/${this.resource}/tables`)
+                    this.printers = data.printers || []
+                }
+            } catch (err) {
+                console.warn('[AutoPrint] No se pudo sincronizar impresoras:', err)
+            } finally {
+                this.loadingPrinters = false
+            }
         },
         submit() {
             this.loading_submit = true;

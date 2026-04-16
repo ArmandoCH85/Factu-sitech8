@@ -11,6 +11,8 @@ import {
     buhoPrint,
     buhoFetchAndPrint,
     getBuhoPrinters,
+    getBuhoPrintersWithDefaults,
+    getBuhoBaseUrl,
     displayError,
 } from '../utils/buhoFunctions';
 
@@ -86,9 +88,75 @@ export const buhoprinter = {
         },
 
         /**
+         * Retorna el listado de impresoras con nombre e is_default.
+         * Usado para sincronizar con el backend preservando la impresora predeterminada.
+         *
+         * @returns {Promise<Array<{name: string, is_default: boolean}>>}
+         */
+        async getBuhoPrintersWithDefaults() {
+            return getBuhoPrintersWithDefaults();
+        },
+
+        /**
+         * Retorna la URL base del agente BuhoPrinter activo (ej: https://localhost:8181).
+         * Disponible tras llamar a startConnectionBuho().
+         *
+         * @returns {string|null}
+         */
+        getBuhoBaseUrl() {
+            return getBuhoBaseUrl();
+        },
+
+        /**
          * Manejo de errores centralizado.
          * Reemplaza: displayError() global de qztray.
          */
         displayError,
+
+        /**
+         * Descarga un PDF desde una URL, lo convierte a base64 y registra una PrintOrder
+         * en el backend para que sea publicada en Redis y consumida por BuhoPrinter.
+         * Reemplaza la llamada directa al agente BuhoPrinter desde el frontend.
+         *
+         * @param {string}      url         - URL completa del PDF (usa credentials: 'include')
+         * @param {string|null} printerName - Nombre de la impresora destino. Si es null,
+         *                                    el backend asignará la impresora predeterminada.
+         */
+        async printViaBackend(url, printerName = null) {
+            try {
+                // Descarga el PDF respetando la sesión del tenant
+                const response = await fetch(url, { credentials: 'include' });
+                if (!response.ok) {
+                    throw new Error(`Error al descargar PDF: ${response.status}`);
+                }
+
+                // Convierte el blob a base64
+                const blob = await response.blob();
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror  = reject;
+                    reader.readAsDataURL(blob);
+                });
+
+                // Registra la orden de impresión — el Observer la publica en Redis automáticamente
+                const orderResponse = await this.$http.post('/restaurant/print-orders', {
+                    pdf_b64:      base64,
+                    name_printer: printerName || null,
+                });
+
+                if (orderResponse.status === 201) {
+                    this.$notify({ title: '', message: 'Impresión en proceso...', type: 'success' });
+                }
+            } catch (err) {
+                // Mostrar el mensaje del backend si es un error de validación (impresoras no configuradas)
+                const backendMessage = err?.response?.data?.message;
+                if (backendMessage) {
+                    this.$message({ message: backendMessage, type: 'warning' });
+                } else {
+                    displayError(err);
+                }
+            }
+        },
     },
 };

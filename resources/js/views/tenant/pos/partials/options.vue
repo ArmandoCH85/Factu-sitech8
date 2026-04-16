@@ -505,7 +505,8 @@ export default {
             if (!this.form || !this.form.print_ticket) return;
 
             try {
-                await this.printPdfFromUrl(this.form.print_ticket);
+                // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
+                await this.printViaBackend(this.form.print_ticket, this.configuration?.printer_name_documents);
             } catch (e) {
                 console.error('options autoPrint error', e);
             }

@@ -35,6 +35,12 @@ class RestaurantConfiguration extends ModelTenant
         'enabled_close_table_mozo',
         'enabled_server_print',
         'replace_template_mozo',
+        'printer_enabled',
+        'printer_host',
+        'printer_status',
+        'printer_name_comanda',
+        'printer_name_documents',
+        'printer_name_precuenta',
     ];
 
     public $timestamps = false;
@@ -89,6 +95,17 @@ class RestaurantConfiguration extends ModelTenant
             'enabled_close_table_mozo' => (bool)$this->enabled_close_table_mozo,
             'enabled_server_print' => (bool)$this->enabled_server_print,
             'replace_template_mozo' => (bool)$this->replace_template_mozo,
+            'printer_enabled'        => (bool)$this->printer_enabled,
+            'printer_host'           => $this->printer_host,
+            'printer_status'         => $this->printer_status,
+            'printer_name_comanda'     => $this->printer_name_comanda,
+            'printer_name_documents'   => $this->printer_name_documents,
+            'printer_name_precuenta'  => $this->printer_name_precuenta,
+            'printers'               => Printer::where('active', true)
+                ->orderByDesc('is_default')
+                ->orderBy('name')
+                ->get(['id', 'name', 'is_default'])
+                ->toArray(),
             'restaurant_tip_factor' => $restaurant_tip_factor,
             'global_discount_type' => $global_discount_type ? [
                 'id' => $global_discount_type->id,

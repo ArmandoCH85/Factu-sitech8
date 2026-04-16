@@ -554,9 +554,11 @@ export default {
 
         await this.getFormPosLocalStorage()
         // console.log(this.form.payments, this.payments)
-        if (!this.isBuhoActive && this.isPrint) {
-            this.startConnectionBuho();
-        }
+        // La conexión directa con BuhoPrinter ya no es necesaria desde el frontend.
+        // La impresión se centraliza vía PrintOrder → Redis → BuhoPrinter agent.
+        // if (!this.isBuhoActive && this.isPrint) {
+        //     this.startConnectionBuho();
+        // }
     },
     mounted() {
         // console.log(this.currencyTypeActive)
@@ -1335,7 +1337,8 @@ export default {
             await this.sleep(400);
             const url = this.printTicketUrl;
             if (url) {
-                await this.printPdfFromUrl(url);
+                // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
+                await this.printViaBackend(url, this.configuration?.printer_name_documents);
             } else {
                 console.warn('[BuhoPrinter] print_ticket URL no disponible.');
             }

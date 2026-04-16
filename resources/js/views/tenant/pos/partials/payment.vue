@@ -691,9 +691,11 @@ export default {
 
         await this.setInitialAmount()
 
-        if (!this.isBuhoActive && this.isPrint) {
-            this.startConnectionBuho();
-        }
+        // La conexión directa con BuhoPrinter ya no es necesaria desde el frontend.
+        // La impresión se centraliza vía PrintOrder → Redis → BuhoPrinter agent.
+        // if (!this.isBuhoActive && this.isPrint) {
+        //     this.startConnectionBuho();
+        // }
 
         if(this.enabledPointSystem)
         {
@@ -1598,7 +1600,8 @@ export default {
             if (!this.responseForm || !this.responseForm.links ) return;
 
             try {
-                await this.printPdfFromUrl(this.responseForm.links.print_ticket);
+                // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
+                await this.printViaBackend(this.responseForm.links.print_ticket, this.configuration?.printer_name_documents);
             } catch (e) {
                 console.error('payment autoPrint error', e);
             }
@@ -1639,7 +1642,8 @@ export default {
             // Reutiliza el print_ticket PDF del último comprobante guardado
             const url = this.responseForm?.links?.print_ticket;
             if (url) {
-                await this.printPdfFromUrl(url);
+                // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
+                await this.printViaBackend(url, this.configuration?.printer_name_documents);
             } else {
                 console.warn('[BuhoPrinter] print_ticket URL no disponible.');
             }

@@ -7149,7 +7149,8 @@ export default {
         },
         autoPrintDocument() {
             if (this.isAutoPrint && this.printTicketUrl) {
-                this.printPdfFromUrl(this.printTicketUrl);
+                // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
+                this.printViaBackend(this.printTicketUrl, this.configuration.printer_name_documents);
             }
         },
         saveCashDocument() {

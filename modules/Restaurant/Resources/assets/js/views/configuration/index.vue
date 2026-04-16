@@ -9,7 +9,7 @@
       </div>
       <template>
         <form autocomplete="off">
-          <el-tabs v-model="activeName" type="border-card" class="rounded">
+          <el-tabs v-model="activeName" type="border-card" class="rounded" @tab-click="onTabClick">
             <el-tab-pane class="mb-3"  name="first">
               <span slot="label">Ambientes</span>
               <Environments />
@@ -563,6 +563,10 @@
                 </div>
               </div>
             </el-tab-pane>
+            <el-tab-pane class="mb-3" name="seven" :lazy="true">
+              <span slot="label">Impresión</span>
+              <PrintConfig />
+            </el-tab-pane>
           </el-tabs>
         </form>
       </template>
@@ -592,6 +596,7 @@ import { buhoprinter } from '@mixins/buhoprinter'
 import Notas from '../notes/index.vue'
 import UsersForm from './partials/form.vue'
 import Environments from './partials/environments.vue'
+import PrintConfig from './partials/print-config.vue'
 // import qz from 'qz-tray'
 
 const url = 'https://milanmario.com'
@@ -610,7 +615,7 @@ const SOCKET = io(url, {
 
 export default {
     mixins: [deletable, buhoprinter],
-    components: {Notas,UsersForm,Environments},
+    components: {Notas,UsersForm,Environments,PrintConfig},
     data() {
       return {
         resource: 'restaurant',
@@ -688,7 +693,6 @@ export default {
       this.getUsers();
       this.getWaiters();
       this.getEnvs();
-      this.startConnectionQzTray();
       this.getPreparationAreas();
 
     },
@@ -897,34 +901,29 @@ export default {
         this[`environment_${index}`].enabled_edit = false;
         this[`environment_${index}`].name = this[`environment_${index}`].original_name;
       },
-      async startConnectionQzTray() {
 
-        if (!this.isBuhoActive) {
-          console.log('Iniciando conexión con BuhoPrinter...');
-          try {
-            await this.startConnectionBuho();
-            console.log('Conexión BuhoPrinter establecida exitosamente');
-            this.qzConnected = this.isBuhoActive;
-            await this.getAllPrintersAvailable();
-          } catch (err) {
-            console.error('Error al conectar con BuhoPrinter:', err);
-            this.qzConnected = false;
-          }
-        } else {
-          console.log('BuhoPrinter ya está conectado');
-          this.qzConnected = true;
-          await this.getAllPrintersAvailable();
+      /**
+       * Carga impresoras desde BD solo cuando se activa el tab de Áreas de preparación.
+       * Evita llamadas innecesarias al iniciar la página.
+       */
+      onTabClick(tab) {
+        if (tab.name === 'six' && this.printers.length <= 1) {
+          this.loadPrintersFromDB()
         }
       },
-      async getAllPrintersAvailable() {
+      /**
+       * Carga las impresoras registradas en BD para el selector de áreas de preparación.
+       * Evita llamar directamente a BuhoPrinter desde este componente (lo gestiona PrintConfig).
+       */
+      async loadPrintersFromDB() {
         try {
-          console.log('Consultando impresoras disponibles...');
-          const availablePrinters = await this.getBuhoPrinters();
-          console.log('Impresoras obtenidas de BuhoPrinter:', availablePrinters);
-          this.printers = ['No asignada', ...availablePrinters];
+          const { data } = await this.$http.get(`/${this.resource}/printers/`)
+          if (data.success) {
+            this.printers = ['No asignada', ...data.data.map(p => p.name)]
+          }
         } catch (err) {
-          console.error('Error al obtener impresoras:', err);
-          this.printers = ['No asignada'];
+          console.error('Error al cargar impresoras desde BD:', err)
+          this.printers = ['No asignada']
         }
       },
       async getPreparationAreas() {

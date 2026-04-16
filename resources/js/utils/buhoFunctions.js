@@ -68,6 +68,15 @@ export function isBuhoConnected() {
 }
 
 // --------------------------------------------------------------------------
+// getBuhoBaseUrl
+// Retorna la URL base del agente BuhoPrinter activo (ej: https://localhost:8181).
+// Retorna null si no hay conexión activa.
+// --------------------------------------------------------------------------
+export function getBuhoBaseUrl() {
+    return _buhoActive ? _baseUrl() : null;
+}
+
+// --------------------------------------------------------------------------
 // setDefaultPrinter
 // Carga la impresora por defecto del sistema desde BuhoPrinter.
 // --------------------------------------------------------------------------
@@ -104,6 +113,24 @@ export async function getBuhoPrinters() {
         const data = await res.json();
         // BuhoPrinter retorna [{ name, is_default }] → extraemos solo el nombre
         return data.map(p => (typeof p === 'object' ? p.name : p));
+    } catch (err) {
+        displayError(err);
+        return [];
+    }
+}
+
+// --------------------------------------------------------------------------
+// getBuhoPrintersWithDefaults
+// Retorna el listado completo de impresoras con nombre e is_default.
+// Usada para sincronizar con el backend preservando la impresora predeterminada.
+// --------------------------------------------------------------------------
+export async function getBuhoPrintersWithDefaults() {
+    if (!_buhoActive) return [];
+    try {
+        const res  = await fetch(`${_baseUrl()}/printers`);
+        const data = await res.json();
+        // Normaliza por si BuhoPrinter devuelve strings simples
+        return data.map(p => typeof p === 'object' ? p : { name: p, is_default: false });
     } catch (err) {
         displayError(err);
         return [];

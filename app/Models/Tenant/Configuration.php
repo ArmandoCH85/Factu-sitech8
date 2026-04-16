@@ -340,6 +340,7 @@ use Illuminate\Support\Facades\Log;
             'price2_label',
             'price3_label',
             'enable_weight_in_dispatches',
+            'printer_name_documents',
         ];
 
         protected $casts = [
@@ -490,6 +491,8 @@ use Illuminate\Support\Facades\Log;
             'enable_consigned' => 'bool',
             'enable_weight_in_dispatches' => 'bool',
         ];
+
+        // printer_name_documents es string nullable — no requiere cast adicional
 
         protected $hidden = [
             'smtp_password',
@@ -784,6 +787,7 @@ use Illuminate\Support\Facades\Log;
                 'price2_label' => $this->price2_label ?? 'Precio 2',
                 'price3_label' => $this->price3_label ?? 'Precio 3',
                 'enable_weight_in_dispatches' => $this->enable_weight_in_dispatches,
+                'printer_name_documents' => $this->printer_name_documents,
             ];
         }
 

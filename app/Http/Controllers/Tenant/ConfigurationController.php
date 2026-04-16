@@ -29,6 +29,7 @@ use App\Models\Tenant\Skin;
 use Modules\Finance\Helpers\UploadFileHelper;
 use App\Models\Tenant\ConfigurationEcommerce;
 use App\Models\Tenant\TemplateColumnsConfig;
+use Modules\Restaurant\Models\Printer;
 
 
 class ConfigurationController extends Controller
@@ -282,7 +283,7 @@ class ConfigurationController extends Controller
 
         // Verificar que el establecimiento existe en la base de datos del tenant
         $establishment = Establishment::find($request->establishment);
-        
+
         if (!$establishment) {
             return response()->json([
                 'success' => false,
@@ -313,7 +314,7 @@ class ConfigurationController extends Controller
     public function getColumnsConfig(Request $request)
     {
         $establishmentId = $request->get('establishment_id');
-        
+
         if (!$establishmentId) {
             return [
                 'success' => false,
@@ -479,7 +480,14 @@ class ConfigurationController extends Controller
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $global_discount_types = ChargeDiscountType::whereIn('id', ['02', '03'])->whereActive()->get();
 
-        return compact('affectation_igv_types', 'global_discount_types');
+        // Impresoras activas registradas por BuhoPrinter, para el selector de impresora en auto_print
+        $printers = Printer::where('active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->get(['id', 'name', 'is_default'])
+            ->toArray();
+
+        return compact('affectation_igv_types', 'global_discount_types', 'printers');
     }
 
     public function visualDefaults()
@@ -667,16 +675,16 @@ class ConfigurationController extends Controller
         $configuration->top_menu_b_id = $request->menu_b;
         $configuration->top_menu_c_id = $request->menu_c;
         $configuration->top_menu_d_id = $request->menu_d;
-        
+
         // Convertir a JSON si viene como array, si no, mantener el valor
-        $configuration->top_menu_extra_one = is_array($request->menu_extra_1) 
-            ? json_encode($request->menu_extra_1) 
+        $configuration->top_menu_extra_one = is_array($request->menu_extra_1)
+            ? json_encode($request->menu_extra_1)
             : $request->menu_extra_1;
-            
-        $configuration->top_menu_extra_two = is_array($request->menu_extra_2) 
-            ? json_encode($request->menu_extra_2) 
+
+        $configuration->top_menu_extra_two = is_array($request->menu_extra_2)
+            ? json_encode($request->menu_extra_2)
             : $request->menu_extra_2;
-            
+
         $configuration->save();
 
         return [
@@ -808,7 +816,7 @@ class ConfigurationController extends Controller
 
         return $this->generalResponse(true, 'Proceso realizado correctamente.');
     }
-    
-    
+
+
 }
 

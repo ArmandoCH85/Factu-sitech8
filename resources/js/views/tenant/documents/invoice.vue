@@ -1762,12 +1762,8 @@ export default {
             'loadConfiguration',
         ]),
         startConnectionQzTray(){
-
-            if (!this.isBuhoActive && this.isAutoPrint)
-            {
-                this.startConnectionBuho();
-            }
-
+            // La conexión directa con BuhoPrinter ya no es necesaria desde el frontend.
+            // La impresión se centraliza vía PrintOrder → Redis → BuhoPrinter agent.
         },
         async changeRowFreeAffectationIgv(row, index) {
 
@@ -3548,7 +3544,8 @@ export default {
 
             if(this.isAutoPrint && this.printTicketUrl)
             {
-                this.printPdfFromUrl(this.printTicketUrl);
+                // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
+                this.printViaBackend(this.printTicketUrl, this.configuration.printer_name_documents);
             }
 
         },

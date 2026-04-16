@@ -348,6 +348,11 @@ JS;
             $query->where('channel', $request->channel);
         }
 
+        // Ocultar cerrados por defecto; enviar show_closed=1 para incluirlos
+        if (!$request->boolean('show_closed')) {
+            $query->where('is_closed', false);
+        }
+
         $records = $query->paginate(config('tenant.items_per_page', 20));
 
         return new ClaimCollection($records);
@@ -550,7 +555,17 @@ JS;
     {
         $claim = Claim::with('statusClaim', 'district', 'identityDocumentType')->findOrFail($id);
 
-        return response()->json($claim->getDetailData());
+        $channelEstablishment = null;
+        if (!empty($claim->channel)) {
+            $channelEstablishment = Establishment::with(['district', 'province', 'department'])
+                ->whereRaw('LOWER(TRIM(description)) = ?', [mb_strtolower(trim($claim->channel))])
+                ->first();
+        }
+
+        $data = $claim->getDetailData();
+        $data['channel_establishment'] = $channelEstablishment;
+
+        return response()->json($data);
     }
 
     // ──────────────────────────────────────────────────────────────

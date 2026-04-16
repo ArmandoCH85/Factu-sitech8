@@ -163,7 +163,6 @@
 <style scoped>
 .cbm-wrap {
     margin-bottom: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
 }
 
 /* ── Primary grid ── */

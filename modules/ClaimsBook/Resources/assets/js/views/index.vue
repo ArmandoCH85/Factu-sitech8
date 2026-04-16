@@ -54,6 +54,14 @@
                     >
                         {{ isVisible ? "Ocultar filtros" : "Mostrar filtros" }}
                     </el-button>
+                    <el-button
+                        :type="highlightRows ? 'primary' : 'secondary'"
+                        class="mb-3 ms-auto me-2"
+                        @click="highlightRows = !highlightRows"
+                    >
+                        <i :class="highlightRows ? 'el-icon-magic-stick' : 'el-icon-magic-stick'"></i>
+                        {{ highlightRows ? 'Quitar resaltado' : 'Resaltar filas' }}
+                    </el-button>
                     <el-dropdown :hide-on-click="false" class="mb-3">
                         <el-button type="secondary">
                             Mostrar columnas <i class="el-icon-arrow-down el-icon--right"></i>
@@ -101,8 +109,8 @@
                             @change="onFilterChange"
                         ></el-date-picker>
                     </div>
-                    <!-- Fila 2: Estado · Tipo · Canal -->
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                    <!-- Fila 2: Estado · Tipo · Canal · Registros -->
+                    <div class="col-lg-3 col-md-4 col-sm-12 col-12">
                         <el-select
                             v-model="filters.status_claim_id"
                             placeholder="Estado"
@@ -119,7 +127,7 @@
                             ></el-option>
                         </el-select>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                         <el-select
                             v-model="filters.claim_type"
                             placeholder="Tipo"
@@ -132,7 +140,7 @@
                             <el-option value="reclamo" label="Reclamo"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
                         <el-select
                             v-model="filters.channel"
                             placeholder="Canal"
@@ -149,6 +157,18 @@
                             ></el-option>
                         </el-select>
                     </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                        <el-select
+                            v-model="showClosed"
+                            placeholder="Registros"
+                            size="small"
+                            style="width:100%"
+                            @change="onFilterChange"
+                        >
+                            <el-option :value="false" label="Ocultar cerrados"></el-option>
+                            <el-option :value="true" label="Mostrar cerrados"></el-option>
+                        </el-select>
+                    </div>
                 </div>
                 <!-- Tabla de reclamos — componente desacoplado -->
                 <claims-data-table
@@ -157,6 +177,7 @@
                     :loading="loading"
                     :pagination="pagination"
                     :columns="tableColumns"
+                    :highlight-rows="highlightRows"
                     @status-change="onStatusChange"
                     @assign-change="onAssignChange"
                     @view="viewDetail"
@@ -333,6 +354,8 @@ export default {
             showDetailModal:   false,
             showEmbedModal:    false,
             selectedClaimId:   null,
+            showClosed:        false,
+            highlightRows:     false,
 
             // Cambio de estado
             pendingStatusChange:    null,  // { row, newStatusId, oldStatusId }
@@ -395,8 +418,15 @@ export default {
                 .finally(() => { this.loading = false })
         },
 
+        toggleShowClosed() {
+            this.showClosed = !this.showClosed
+            this.pagination.current_page = 1
+            this.loadRecords()
+        },
+
         buildParams() {
             const p = { page: this.pagination.current_page }
+            if (this.showClosed)             p.show_closed    = 1
             if (this.filters.code)           p.code           = this.filters.code
             if (this.filters.search)         p.search         = this.filters.search
             if (this.filters.status_claim_id) p.status_claim_id = this.filters.status_claim_id

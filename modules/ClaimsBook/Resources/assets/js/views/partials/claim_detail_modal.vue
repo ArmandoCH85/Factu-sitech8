@@ -126,6 +126,29 @@
                             <span>{{ record.channel || '—' }}</span>
                         </div>
                     </el-col>
+
+                    <!-- Datos de la sucursal (solo cuando el canal fue sincronizado desde un establecimiento) -->
+                    <template v-if="record.channel_establishment && hasEstablishmentData(record.channel_establishment)">
+                        <el-col :span="24" v-if="buildEstablishmentAddress(record.channel_establishment)">
+                            <div class="cd-field">
+                                <label>Dirección</label>
+                                <span>{{ buildEstablishmentAddress(record.channel_establishment) }}</span>
+                            </div>
+                        </el-col>
+                        <el-col :span="12" v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-'">
+                            <div class="cd-field">
+                                <label>Teléfono</label>
+                                <span>{{ record.channel_establishment.telephone }}</span>
+                            </div>
+                        </el-col>
+                        <el-col :span="12" v-if="record.channel_establishment.email && record.channel_establishment.email !== '-'">
+                            <div class="cd-field">
+                                <label>Email</label>
+                                <span>{{ record.channel_establishment.email }}</span>
+                            </div>
+                        </el-col>
+                    </template>
+
                     <el-col :span="24">
                         <div class="cd-field">
                             <label>Detalle</label>
@@ -299,7 +322,7 @@
             Cargando detalle...
         </div>
 
-        <div slot="footer">
+        <div slot="footer" class="d-flex justify-content-end">
             <el-button size="small" @click="close" :disabled="saving">Cerrar</el-button>
             <el-button
                 v-if="record"
@@ -582,6 +605,27 @@ export default {
         fileName(path) {
             if (!path) return ''
             return path.split('/').pop()
+        },
+
+        // Verifica si el establecimiento tiene al menos un dato válido para mostrar
+        hasEstablishmentData(est) {
+            if (!est) return false
+            const addr = this.buildEstablishmentAddress(est)
+            const tel  = est.telephone && est.telephone !== '-'
+            const mail = est.email     && est.email     !== '-'
+            return !!(addr || tel || mail)
+        },
+
+        // Construye la dirección legible del establecimiento (igual que en el PDF)
+        buildEstablishmentAddress(est) {
+            if (!est) return ''
+            const parts = [
+                (est.address && est.address !== '-') ? est.address : null,
+                (est.district_id  && est.district_id  !== '-' && est.district)  ? est.district.description  : null,
+                (est.province_id  && est.province_id  !== '-' && est.province)  ? est.province.description  : null,
+                (est.department_id && est.department_id !== '-' && est.department) ? est.department.description : null,
+            ]
+            return parts.filter(Boolean).join(', ')
         },
 
         resetForm() {

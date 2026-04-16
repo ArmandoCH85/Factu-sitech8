@@ -1,6 +1,6 @@
 <template>
     <div class="table-responsive mt-3">
-        <table class="table">
+        <table class="table table-claims">
             <thead>
                 <tr>
                     <th class="text-start">Código</th>
@@ -27,7 +27,7 @@
                         No se encontraron registros
                     </td>
                 </tr>
-                <tr v-for="row in records" :key="row.id" v-else>
+                <tr v-for="row in records" :key="row.id" v-else :style="highlightRows ? getRowHighlight(row) : {}">
                     <td>
                         <div class="cb-code">{{ row.code }}</div>
                         <small class="text-muted">{{ row.public_code }}</small>
@@ -170,6 +170,10 @@ export default {
         columns: {
             type: Object,
             default: () => ({})
+        },
+        highlightRows: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -185,6 +189,23 @@ export default {
         getStatusColor(statusId) {
             const s = this.statusClaims.find(s => s.id === statusId)
             return (s && s.color) ? s.color : '#909399'
+        },
+
+        getRowHighlight(row) {
+            const hex = this.getStatusColor(row.status_claim_id)
+            // Convierte hex a rgba con opacidad baja para un color suave
+            let r = 200, g = 200, b = 200
+            const clean = hex.replace('#', '')
+            if (clean.length === 6) {
+                r = parseInt(clean.slice(0, 2), 16)
+                g = parseInt(clean.slice(2, 4), 16)
+                b = parseInt(clean.slice(4, 6), 16)
+            } else if (clean.length === 3) {
+                r = parseInt(clean[0] + clean[0], 16)
+                g = parseInt(clean[1] + clean[1], 16)
+                b = parseInt(clean[2] + clean[2], 16)
+            }
+            return { backgroundColor: `rgba(${r}, ${g}, ${b}, 0.15)` }
         },
 
         onPageChange(page) {

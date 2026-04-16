@@ -103,7 +103,14 @@
       <div v-if="previousClaim" class="cf-prev-result">
 
         <!-- Banner de estado: color dinámico según si está cerrado o en proceso -->
-        <div class="cf-alert" :class="previousClaim.is_closed ? 'cf-alert-success' : 'cf-alert-info'">
+        <div
+          class="cf-alert"
+          :class="[
+            previousClaim.is_closed ? 'cf-alert--closed' : 'cf-alert--open',
+            previousClaim.status ? 'cf-alert--' + statusSlug(previousClaim.status.description) : ''
+          ]"
+          :style="previousClaim.status && previousClaim.status.color ? statusAlertStyle(previousClaim.status.color) : {}"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -120,7 +127,8 @@
         <!-- Resolución (solo cuando está cerrado) -->
         <div v-if="previousClaim.is_closed" class="cf-resolution-box" style="margin-top:12px">
           <p class="cf-resolution-label">Resolución de la empresa</p>
-          <p class="cf-resolution-text">{{ previousClaim.resolution || 'Sin resolución registrada.' }}</p>
+          <div v-if="previousClaim.resolution" class="cf-resolution-text cf-resolution-html" v-html="previousClaim.resolution"></div>
+          <p v-else class="cf-resolution-text">Sin resolución registrada.</p>
         </div>
 
          <!-- Adjuntos de respuesta de la empresa -->
@@ -477,6 +485,7 @@
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 /* ── Variables (shadcn/ui palette) ── */
 .cf-wrapper {
   --cf-bg:          #f5f7f9;
@@ -493,7 +502,7 @@
   max-width: 680px;
   margin: 0 auto;
   padding: 32px 24px;
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   color: var(--cf-foreground);
   font-size: 14px;
   line-height: 1.5;
@@ -837,6 +846,25 @@
   margin: 0;
 }
 
+.cf-resolution-html {
+  font-size: 13px;
+  color: var(--cf-foreground);
+  line-height: 1.6;
+}
+
+.cf-resolution-html p { margin: 0 0 6px; }
+.cf-resolution-html ul,
+.cf-resolution-html ol { padding-left: 20px; margin: 0 0 6px; }
+.cf-resolution-html strong { font-weight: 600; }
+.cf-resolution-html em { font-style: italic; }
+.cf-resolution-html a { color: #2563eb; text-decoration: underline; }
+.cf-resolution-html blockquote {
+  border-left: 3px solid var(--cf-border);
+  margin: 4px 0;
+  padding-left: 10px;
+  color: var(--cf-muted-fg);
+}
+
 /* ── Switch & Checkbox rows ── */
 .cf-switch-row {
   display: flex;
@@ -983,7 +1011,7 @@
 }
 
 .cf-wrapper :deep(.el-textarea__inner) {
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   min-height: 128px !important;
   height: auto;
   line-height: 1.6;
@@ -1467,6 +1495,26 @@ export default {
         this.$message.error('No se pudo copiar automáticamente')
       }
       document.body.removeChild(el)
+    },
+
+    // Genera un slug CSS a partir del nombre del estado
+    statusSlug(description) {
+      if (!description) return ''
+      return description
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+    },
+
+    // Estilos inline derivados del color del estado
+    statusAlertStyle(color) {
+      if (!color) return {}
+      return {
+        borderColor: color,
+        backgroundColor: color + '22',
+        color: color,
+      }
     },
 
     // Enmascarar email: car****@gmail.com

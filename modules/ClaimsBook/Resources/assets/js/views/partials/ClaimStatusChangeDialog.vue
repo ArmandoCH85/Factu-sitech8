@@ -13,12 +13,12 @@
             <p class="csd-hint">
                 Este estado cierra el reclamo. Ingrese la resolución o respuesta al reclamante.
             </p>
-            <el-input
+            <vue-ckeditor
+                :editors="editors"
+                type="classic"
                 v-model="resolution"
-                type="textarea"
-                :rows="4"
-                placeholder="Describa la resolución adoptada..."
-            ></el-input>
+                :config="editorConfig"
+            />
 
             <!-- Adjuntos de respuesta (opcional) -->
             <div class="csd-upload-section">
@@ -50,12 +50,13 @@
             ></el-alert>
         </template>
 
-        <div slot="footer">
+        <div slot="footer" class="d-flex justify-content-end">
             <el-button size="small" @click="cancel">Cancelar</el-button>
             <el-button
                 size="small"
                 :type="mode === 'reopen' ? 'warning' : 'primary'"
                 :loading="loading"
+                class="ms-2"
                 @click="confirm"
             >
                 {{ confirmLabel }}
@@ -63,10 +64,20 @@
         </div>
     </el-dialog>
 </template>
+<style>
 
+</style>
 <script>
+import 'ckeditor5/ckeditor5.css';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CKEditor from 'vue-ckeditor5';
+
 export default {
     name: 'ClaimStatusChangeDialog',
+
+    components: {
+        'vue-ckeditor': CKEditor.component
+    },
 
     props: {
         // Controla la visibilidad del dialog (.sync)
@@ -89,7 +100,24 @@ export default {
 
     data() {
         return {
-            resolution: ''
+            resolution: '',
+            editors: {
+                classic: ClassicEditor
+            },
+            editorConfig: {
+                licenseKey: 'GPL',
+                toolbar: [
+                    'heading',
+                    '|',
+                    'bold', 'italic', 'link',
+                    'bulletedList', 'numberedList',
+                    '|',
+                    'blockQuote',
+                    'undo', 'redo',
+                    '|',
+                    'sourceEditing'
+                ]
+            }
         }
     },
 

@@ -5,7 +5,7 @@
                 <svg  xmlns="http://www.w3.org/2000/svg" style="margin-top: -5px;" width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-building-warehouse"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21v-13l9 -4l9 4v13" /><path d="M13 13h4v8h-10v-6h6" /><path d="M13 21v-9a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v3" /></svg>
             </a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span> Nuevo Traslado </span></li>
+                <li class="active"><span> Nuevo Trasladoo </span></li>
             </ol>
         </div>
             <div class="card tab-content tab-content-default row-new mb-0 pt-md-0">
@@ -410,14 +410,14 @@ export default {
             this.$refs.selectSearchNormal.blur()
         },
         validateAddItem() {
-            if (parseFloat(this.form_add.stock) > 0) {
+            if (parseFloat(this.form_add.stock) < 0) {
                 return {
                     success: false,
                     message: 'El stock debe ser mayor a 0.'
                 }
             }
 
-            if (this.form_add.quantity > 0) {
+            if (this.form_add.quantity < 0) {
                 return {
                     success: false,
                     message: 'La cantidad debe ser mayor a 0.'
@@ -614,7 +614,6 @@ export default {
                     })
                     .finally(() => {
                         this.loading_search = false
-
                     })
             } else {
                 await this.filterItems()

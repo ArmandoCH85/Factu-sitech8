@@ -27,15 +27,22 @@ class ClaimPdfService
             'identityDocumentType',
         ]);
 
-        // Company & establishment data
         $company       = Company::active();
         $establishment = Establishment::first();
 
+        $channelEstablishment = null;
+        if (!empty($claim->channel)) {
+            $channelEstablishment = Establishment::with(['district', 'province', 'department'])
+                ->whereRaw('LOWER(TRIM(description)) = ?', [mb_strtolower(trim($claim->channel))])
+                ->first();
+        }
+
         // Render the Blade view to HTML
         $html = view('claimsbook::pdf.claim', [
-            'claim'         => $claim,
-            'company'       => $company,
-            'establishment' => $establishment,
+            'claim'                => $claim,
+            'company'              => $company,
+            'establishment'        => $establishment,
+            'channelEstablishment' => $channelEstablishment,
         ])->render();
 
         $mpdf = new Mpdf([

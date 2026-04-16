@@ -370,6 +370,52 @@
                         <span class="field-value">{{ $claim->tracking_number ?? '0' }}</span>
                     </td>
                 </tr>
+                {{-- Datos de la sucursal (solo cuando el canal fue sincronizado desde un establecimiento) --}}
+                @if(!empty($channelEstablishment))
+                @php
+                    $estAddr = collect([
+                        ($channelEstablishment->address && $channelEstablishment->address !== '-') ? $channelEstablishment->address : null,
+                        ($channelEstablishment->district_id  && $channelEstablishment->district_id  !== '-') ? optional($channelEstablishment->district)->description  : null,
+                        ($channelEstablishment->province_id  && $channelEstablishment->province_id  !== '-') ? optional($channelEstablishment->province)->description  : null,
+                        ($channelEstablishment->department_id && $channelEstablishment->department_id !== '-') ? optional($channelEstablishment->department)->description : null,
+                    ])->filter()->implode(', ');
+                    $estTel   = (!empty($channelEstablishment->telephone) && $channelEstablishment->telephone !== '-') ? $channelEstablishment->telephone : null;
+                    $estEmail = (!empty($channelEstablishment->email)     && $channelEstablishment->email     !== '-') ? $channelEstablishment->email     : null;
+                @endphp
+                @if($estAddr || $estTel || $estEmail)                
+                @if($estAddr)
+                <tr>
+                    <td class="full" colspan="2">
+                        <span class="field-label">Dirección</span>
+                        <span class="field-value">{{ $estAddr }}</span>
+                    </td>
+                </tr>
+                @endif
+                @if($estTel || $estEmail)
+                <tr>
+                    @if($estTel)
+                    <td>
+                        <span class="field-label">Teléfono</span>
+                        <span class="field-value">{{ $estTel }}</span>
+                    </td>
+                    @endif
+                    @if($estEmail)
+                    <td @if(!$estTel) class="full" colspan="2" @endif>
+                        <span class="field-label">Email</span>
+                        <span class="field-value">{{ $estEmail }}</span>
+                    </td>
+                    @elseif($estTel)
+                    <td></td>
+                    @endif
+                </tr>
+                @endif
+                @endif
+                @endif
+                <tr>
+                    <td class="full" colspan="2" style="">
+                        <hr style="margin: 2px 0 !important;">
+                    </td>
+                </tr>
                 <tr>
                     <td class="full" colspan="2">
                         <span class="field-label">Detalle del reclamo</span>

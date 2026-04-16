@@ -7,6 +7,8 @@ namespace Modules\ClaimsBook\Services;
 use Mpdf\Mpdf;
 use Illuminate\Support\Facades\Storage;
 use Modules\ClaimsBook\Models\Tenant\Claim;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Establishment;
 
 class ClaimPdfService
 {
@@ -25,8 +27,23 @@ class ClaimPdfService
             'identityDocumentType',
         ]);
 
+        $company       = Company::active();
+        $establishment = Establishment::first();
+
+        $channelEstablishment = null;
+        if (!empty($claim->channel)) {
+            $channelEstablishment = Establishment::with(['district', 'province', 'department'])
+                ->whereRaw('LOWER(TRIM(description)) = ?', [mb_strtolower(trim($claim->channel))])
+                ->first();
+        }
+
         // Render the Blade view to HTML
-        $html = view('claimsbook::pdf.claim', ['claim' => $claim])->render();
+        $html = view('claimsbook::pdf.claim', [
+            'claim'                => $claim,
+            'company'              => $company,
+            'establishment'        => $establishment,
+            'channelEstablishment' => $channelEstablishment,
+        ])->render();
 
         $mpdf = new Mpdf([
             'mode'              => 'utf-8',

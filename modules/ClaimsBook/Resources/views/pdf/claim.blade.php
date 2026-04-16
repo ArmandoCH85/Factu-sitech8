@@ -14,7 +14,49 @@
             line-height: 1.5;
         }
 
-        /* ── Encabezado ── */
+        /* ── Encabezado empresa ── */
+        .company-header {
+            background: #f8f9fa;
+            border: 2px solid #d7d7d7;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+        }
+        .company-header table { width: 100%; border-collapse: collapse; }
+        .company-logo-cell { width: 90px; vertical-align: middle; padding-right: 14px; }
+        .company-logo-box {
+            width: 200px;
+            height: 70px;
+            border-radius: 6px;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .company-logo-box img { display: block; margin: 0 auto; }
+        .company-info-cell { vertical-align: middle; border-left: 3px solid #d7d7d7; padding-left: 12px; }
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 3px;
+            letter-spacing: .3px;
+        }
+        .company-detail {
+            font-size: 12px;
+            color: #333;
+        }
+        .badge-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .badge-nuevo { background: #16a34a; color: #fff; }
+
+        /* ── Encabezado documento ── */
         .header {
             border-bottom: 2px solid #1a1a1a;
             padding-bottom: 10px;
@@ -145,6 +187,66 @@
     </style>
 </head>
 <body>
+
+    {{-- Encabezado empresa --}}
+    <div class="company-header">
+        <table>
+            <tr>
+                {{-- Logo --}}
+                @if(!empty($company->logo) && file_exists(public_path('storage/uploads/logos/' . $company->logo)))
+                @php
+                    $logoPath = public_path('storage/uploads/logos/' . $company->logo);
+                    $maxW = 200; $maxH = 70;
+                    [$imgW, $imgH] = getimagesize($logoPath);
+                    if (($imgW / $maxW) >= ($imgH / $maxH)) {
+                        $displayW = $maxW;
+                        $displayH = (int) round($maxW * $imgH / $imgW);
+                    } else {
+                        $displayH = $maxH;
+                        $displayW = (int) round($maxH * $imgW / $imgH);
+                    }
+                @endphp
+                <td class="company-logo-cell">
+                    <div class="company-logo-box">
+                        <img src="data:{{ mime_content_type($logoPath) }};base64,{{ base64_encode(file_get_contents($logoPath)) }}"
+                             width="{{ $displayW }}" height="{{ $displayH }}" alt="{{ $company->name }}">
+                    </div>
+                </td>
+                @endif
+
+                {{-- Datos empresa --}}
+                <td class="company-info-cell">
+                    <div class="company-name">{{ $company->name }}</div>
+                    @if(!empty($company->number))
+                        <div class="company-detail" style="margin-bottom: 10px !important">RUC: {{ $company->number }}</div>                        
+                    @endif
+                    @if($establishment)
+                        @php
+                            $addr = collect([
+                                ($establishment->address !== '-') ? $establishment->address : null,
+                                ($establishment->district_id  && $establishment->district_id  !== '-') ? optional($establishment->district)->description  : null,
+                                ($establishment->province_id  && $establishment->province_id  !== '-') ? optional($establishment->province)->description  : null,
+                                ($establishment->department_id && $establishment->department_id !== '-') ? optional($establishment->department)->description : null,
+                            ])->filter()->implode(', ');
+                        @endphp
+                        @if($addr)
+                            <div class="company-detail">{{ $addr }}</div>
+                        @endif
+                        @if(!empty($establishment->telephone) && $establishment->telephone !== '-')
+                            <div class="company-detail" style="margin-top:3px;">
+                                Tel: {{ $establishment->telephone }}
+                                @if(!empty($establishment->email) && $establishment->email !== '-')
+                                    &nbsp;|&nbsp; {{ $establishment->email }}
+                                @endif
+                            </div>
+                        @elseif(!empty($establishment->email) && $establishment->email !== '-')
+                            <div class="company-detail" style="margin-top:3px;">{{ $establishment->email }}</div>
+                        @endif
+                    @endif
+                </td>
+            </tr>
+        </table>
+    </div>
 
     {{-- Encabezado --}}
     <div class="header">

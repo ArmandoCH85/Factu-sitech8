@@ -237,7 +237,7 @@
                                 clearable
                             >
                                 <el-option
-                                    v-for="u in users"
+                                    v-for="u in activeUsers"
                                     :key="u.id"
                                     :label="u.name"
                                     :value="u.id"
@@ -487,6 +487,9 @@ export default {
         maxResponseAttachmentsReached() {
             return this.record && this.record.response_attachments && this.record.response_attachments.length >= 5
         },
+        activeUsers() {
+            return this.users.filter(u => u.active)
+        }
     },
 
     watch: {

@@ -89,7 +89,7 @@
                             <label>Responsable por defecto</label>
                             <el-select v-model="status.assigned_user_id" placeholder="Seleccionar usuario" size="small">
                                 <el-option
-                                    v-for="user in users"
+                                    v-for="user in activeUsers"
                                     :key="user.id"
                                     :label="user.name"
                                     :value="user.id"
@@ -335,6 +335,12 @@ export default {
                 '#EF4444',
                 '#EC4899',
             ],
+        }
+    },
+
+    computed: {
+        activeUsers() {
+            return this.users.filter(u => u.active)
         }
     },
 

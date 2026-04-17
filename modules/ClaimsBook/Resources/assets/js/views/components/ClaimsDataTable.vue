@@ -108,7 +108,7 @@
                             @change="newVal => onAssign(row, newVal)"
                         >
                             <el-option
-                                v-for="user in users"
+                                v-for="user in activeUsers"
                                 :key="user.id"
                                 :label="user.name"
                                 :value="user.id"
@@ -182,6 +182,9 @@ export default {
             const fixed = 4 // Código, Cliente, Estado, Opciones
             const dynamic = Object.values(this.columns).filter(c => c.visible).length
             return fixed + dynamic
+        },
+        activeUsers() {
+            return this.users.filter(u => u.active)
         }
     },
 

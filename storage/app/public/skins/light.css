@@ -1369,6 +1369,26 @@ html.sidebar-light .establishment-selector-container{
 .item-actions-tooltip button:last-child{
     border-radius: 0 4px 4px 0 !important;
 }
+.btn-outline-success{
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+    background-color: #fff !important;
+}
+.btn-outline-success:hover{
+    border-color: var(--success) !important;
+    background-color: var(--success) !important;
+    color: #fff !important;
+}
+.btn-outline-info{
+    border-color: var(--info) !important;
+    color: var(--info) !important;
+    background-color: #fff !important;
+}
+.btn-outline-info:hover{
+    border-color: var(--info) !important;
+    background-color: var(--info) !important;
+    color: #fff !important;
+}
 @media only screen and (min-width: 767px) {
     html.no-overflowscrolling .nano {
     height: calc(100% - 66px) !important;

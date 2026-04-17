@@ -63,6 +63,13 @@ if ($current_hostname) {
                 // Datos de tablas auxiliares (estados, canales, tipos doc, ubicaciones)
                 Route::get('/tables', 'ClaimController@tables');
 
+                // Configuración del widget embed
+                Route::get('/widget-settings', 'ClaimController@getWidgetSettings');
+                Route::put('/widget-settings', 'ClaimController@updateWidgetSettings');
+
+                // PDF aviso del libro de reclamaciones con QR
+                Route::get('/complaints-book-notice', 'ClaimController@avisoPdf');
+
                 // Métricas del panel de control
                 Route::get('/metrics', 'ClaimController@metrics');
 

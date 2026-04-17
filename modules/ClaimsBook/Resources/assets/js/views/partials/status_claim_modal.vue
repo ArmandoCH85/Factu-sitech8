@@ -13,14 +13,29 @@
 
         <!-- Lista de estados via collapse -->
         <el-collapse v-model="activePanel" accordion class="sc-collapse">
-            <el-collapse-item
+            <div
                 v-for="(status, index) in statuses"
                 :key="status.id"
+                class="sc-drag-wrapper"
+                :class="{ 'sc-dragging-ghost': status.id === draggedId }"
+                @dragover.prevent="onDragOver(index)"
+                @drop.prevent="onDrop()"
+                @dragend="onDragEnd"
+            >
+            <el-collapse-item
                 :name="String(status.id)"
+                class="sc-collapse-item"
             >
                 <!-- Cabecera del ítem colapsado -->
                 <template slot="title">
                     <div class="sc-item-header">
+                        <span
+                            class="sc-drag-handle"
+                            draggable="true"
+                            @dragstart="onDragStart(index, $event)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-grip-vertical"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M8 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M8 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M14 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M14 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M14 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        </span>
                         <!-- Dot de color -->
                         <span
                             class="sc-color-dot"
@@ -43,26 +58,12 @@
                                 Final
                             </el-tag>
                         </span>
-                        <!-- Botones de reorden -->
-                        <span class="sc-order-btns" @click.stop>
-                            <el-button
-                                size="mini"
-                                icon="el-icon-top"
-                                :disabled="index === 0"
-                                @click.stop="moveUp(index)"
-                            ></el-button>
-                            <el-button
-                                size="mini"
-                                icon="el-icon-bottom"
-                                :disabled="index === statuses.length - 1"
-                                @click.stop="moveDown(index)"
-                            ></el-button>
-                        </span>
+
                     </div>
                 </template>
 
                 <!-- Contenido expandido: formulario de edición -->
-                <div class="sc-form">
+                <div class="sc-form px-3">
                     <!-- Nombre del estado -->
                     <div class="sc-field">
                         <label>Nombre del estado</label>
@@ -148,6 +149,7 @@
                     </div>
                 </div>
             </el-collapse-item>
+            </div>
         </el-collapse>
 
         <!-- Pie del dialog: agregar nuevo estado -->
@@ -221,11 +223,11 @@
 .sc-chip--gray {
     color: #909399 !important;
 }
-.sc-order-btns {
-    display: flex;
-    gap: 4px;
-    flex-shrink: 0;
-    margin-left: auto;
+.sc-drag-wrapper {
+    position: relative;
+}
+.sc-dragging-ghost {
+    opacity: 0.4;
 }
 .sc-form {
     padding: 4px 0 0;
@@ -293,8 +295,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 8px;
-    border-top: 1px solid #ebeef5;
+    padding: 8px 0 16px 0;
+    border-bottom: 1px solid #ebeef5;
     margin-top: 4px;
 }
 .sc-footer {
@@ -303,8 +305,26 @@
     gap: 10px;
     justify-content: flex-end;
 }
+.sc-drag-handle {
+    cursor: move;
+    color: #909399;
+    user-select: none;
+}
+.sc-drag-handle:active {
+    cursor: grabbing;
+}
+.el-collapse.sc-collapse {
+    border: none !important;
+}
 </style>
-
+<style>
+.sc-collapse-item .el-collapse-item__header{
+    border: none !important;
+}
+.sc-collapse-item .el-collapse-item__content {
+    padding-bottom: 5px !important;
+}
+</style>
 <script>
 export default {
     props: {
@@ -322,6 +342,9 @@ export default {
             storing: false,
             saving: null,
             users: [],
+            draggedId: null,
+            originalStatuses: null,
+            dropped: false,
 
             // Paleta de colores predefinidos
             colorPalette: [
@@ -444,20 +467,43 @@ export default {
             }).catch(() => {})
         },
 
-        moveUp(index) {
-            if (index === 0) return
+        onDragStart(index, event) {
+            const id = this.statuses[index].id
+            this.originalStatuses = [...this.statuses]
+            this.dropped = false
+            event.dataTransfer.effectAllowed = 'move'
+            event.dataTransfer.setData('text/plain', String(index))
+            const wrapper = event.target.closest('.sc-drag-wrapper')
+            if (wrapper) event.dataTransfer.setDragImage(wrapper, 20, 20)
+            // Set after ghost is captured so the native drag image looks fully opaque
+            requestAnimationFrame(() => { this.draggedId = id })
+        },
+
+        onDragOver(index) {
+            if (this.draggedId === null) return
+            const currentIndex = this.statuses.findIndex(s => s.id === this.draggedId)
+            if (currentIndex === -1 || currentIndex === index) return
             const list = [...this.statuses]
-            ;[list[index - 1], list[index]] = [list[index], list[index - 1]]
+            const [moved] = list.splice(currentIndex, 1)
+            list.splice(index, 0, moved)
             this.statuses = list
+        },
+
+        onDrop() {
+            if (this.draggedId === null) return
+            this.dropped = true
+            this.draggedId = null
+            this.originalStatuses = null
             this.persistOrder()
         },
 
-        moveDown(index) {
-            if (index === this.statuses.length - 1) return
-            const list = [...this.statuses]
-            ;[list[index], list[index + 1]] = [list[index + 1], list[index]]
-            this.statuses = list
-            this.persistOrder()
+        onDragEnd() {
+            if (!this.dropped && this.originalStatuses) {
+                this.statuses = [...this.originalStatuses]
+            }
+            this.draggedId = null
+            this.originalStatuses = null
+            this.dropped = false
         },
 
         // Persiste el nuevo sort_order en el backend

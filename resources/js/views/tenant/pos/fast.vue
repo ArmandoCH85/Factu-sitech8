@@ -578,7 +578,9 @@
                     <div class="row py-1 border-bottom m-0 p-0">
                         <div class="col-12">
                             <table class="table table-sm table-borderless mb-0 pos-list-items">
-                                <template v-for="(item, index) in form.items">
+                                <template
+                                    v-for="(item, index) in form.items"
+                                >
                                     <tr :key="index">
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                             {{ item.unit_type_id }}

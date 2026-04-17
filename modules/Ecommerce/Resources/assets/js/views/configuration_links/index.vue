@@ -46,7 +46,15 @@
               <div class="col-md-3">
                 <div class="form-group" :class="{'has-danger': errors.publicidad_color_fondo}">
                   <label class="control-label">Color de Fondo</label><br>
-                  <el-color-picker v-model="form.publicidad_color_fondo"></el-color-picker>
+                  <div class="d-flex align-items-center">
+                    <input 
+                      type="color" 
+                      v-model="form.publicidad_color_fondo" 
+                      class="form-control form-control-color" 
+                      style="width: 80px; height: 40px; padding: 2px; cursor: pointer; border: 1px solid #dcdfe6;"
+                    >
+                    <span class="ms-2 text-muted" style="font-family: monospace;">{{ form.publicidad_color_fondo }}</span>
+                  </div>
                   <small
                     class="form-control-feedback"
                     v-if="errors.publicidad_color_fondo"

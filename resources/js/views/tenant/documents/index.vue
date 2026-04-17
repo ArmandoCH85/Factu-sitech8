@@ -345,7 +345,7 @@
                         </td>
                         <td v-if="columns.notes.visible">
                             <template v-for="(row, index) in row.notes">
-                                <label class="d-block"
+                                <label class="d-block :key="index"
                                     >{{ row.note_type_description }}:
                                     {{ row.description }}</label
                                 >
@@ -362,9 +362,9 @@
                         </td> -->
 
                         <td v-if="columns.dispatch.visible">
-                            <template v-for="(row, index) in row.dispatches">
-                                <label class="d-block">{{
-                                    row.description
+                            <template v-for="(dispatch, index) in row.dispatches">
+                                <label class="d-block" :key="index">{{
+                                    dispatch.description
                                 }}</label>
                             </template>
                         </td>
@@ -378,10 +378,10 @@
                         </td> -->
                         
                         <td v-if="columns.sales_note.visible">
-                            <template v-for="(row, index) in row.sales_note">
-                                <label class="d-block"
-                                    >{{ row.number_full }} ({{
-                                        row.state_type_description
+                            <template v-for="(salesNote, index) in row.sales_note">
+                                <label class="d-block" :key="index"
+                                    >{{ salesNote.number_full }} ({{
+                                        salesNote.state_type_description
                                     }})</label
                                 >
                             </template>

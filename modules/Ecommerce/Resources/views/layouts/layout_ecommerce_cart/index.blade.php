@@ -80,6 +80,7 @@
 
 </head>
 <body>
+    @include('ecommerce::layouts.partials_ecommerce.announcement_bar')
     <div class="page-wrapper">
         @include('ecommerce::layouts.partials_ecommerce.header')
         @include('ecommerce::layouts.partials_ecommerce.header_bottom_sticky')

@@ -563,7 +563,7 @@
                 </div>
               </div>
             </el-tab-pane>
-            <el-tab-pane class="mb-3" name="seven" :lazy="true">
+            <el-tab-pane class="mb-3" name="seven" :lazy="true" v-if="currentUserType === 'admin'">
               <span slot="label">Impresión</span>
               <PrintConfig />
             </el-tab-pane>
@@ -708,6 +708,7 @@ export default {
             this.info.ruc = infoData.ruc
             this.info.userEmail = infoData.userEmail
             this.info.socketServer = infoData.socketServer
+            this.currentUserType = infoData.userType
           }
         });
         this.$http.get(`/${this.resource}/get-roles`).then(response => {

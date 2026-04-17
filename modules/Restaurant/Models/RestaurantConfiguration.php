@@ -38,9 +38,16 @@ class RestaurantConfiguration extends ModelTenant
         'printer_enabled',
         'printer_host',
         'printer_status',
+        'printer_public_ip',
+        'print_local_enabled',
         'printer_name_comanda',
         'printer_name_documents',
         'printer_name_precuenta',
+    ];
+
+    protected $casts = [
+        'print_local_enabled' => 'boolean',
+        'printer_enabled'     => 'boolean',
     ];
 
     public $timestamps = false;

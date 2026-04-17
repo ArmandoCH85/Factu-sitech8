@@ -12,9 +12,9 @@
       </div>
     </div>
 
-    <div class="row align-items-end mb-4">
+    <div class="row align-items-end mb-4" v-loading="loading">
       <!-- Switch de activación -->
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="control-label d-block">Activar impresión con BuhoPrinter</label>
         <el-switch
           v-model="form.printer_enabled"
@@ -22,6 +22,27 @@
           inactive-text="Inactivo"
           @change="onTogglePrinterEnabled">
         </el-switch>
+      </div>
+
+      <!-- Switch de impresión local -->
+      <div class="col-md-6" v-if="form.printer_enabled">
+        <label class="control-label d-block">
+          Impresión local
+          <el-tooltip
+            content="Al activar, solo se podrán enviar órdenes de impresión desde la misma red pública donde está instalado BuhoPrinter."
+            effect="dark"
+            placement="top">
+            <i class="fa fa-info-circle text-muted ml-1"></i>
+          </el-tooltip>
+        </label>
+        <el-switch
+          v-model="form.print_local_enabled"
+          active-text="Activo"
+          inactive-text="Inactivo">
+        </el-switch>
+        <!-- <small v-if="form.printer_public_ip" class="d-block text-muted mt-1">
+          IP registrada: <b>{{ form.printer_public_ip }}</b>
+        </small> -->
       </div>
     </div>
 
@@ -184,12 +205,16 @@
     <!-- Botones de acción -->
     <div class="row mt-4">
       <div class="col-md-12">
-        <el-button type="success" :loading="saving" @click="saveConfig">Guardar configuración</el-button>
+        <el-button
+          type="success"
+          :loading="saving"
+          :disabled="loading"
+          @click="saveConfig">Guardar configuración</el-button>
         <el-button
           type="primary"
           class="ms-2"
           :loading="checking"
-          :disabled="!form.printer_enabled"
+          :disabled="!form.printer_enabled || loading"
           @click="checkAndSync">Verificar y actualizar</el-button>
       </div>
     </div>
@@ -219,6 +244,8 @@ export default {
       form: {
         printer_enabled:         false,
         printer_status:          null,
+        printer_public_ip:       null,
+        print_local_enabled:     false,
         printer_name_comanda:    null,
         printer_name_documents:  null,
         printer_name_precuenta:  null,
@@ -229,6 +256,7 @@ export default {
       liveStatus: null,
       checking: false,
       saving: false,
+      loading: false,
     }
   },
 
@@ -258,27 +286,28 @@ export default {
   methods: {
     /**
      * Carga la configuración de impresión desde el backend.
-     * Si la impresión ya está activa, también intenta verificar el estado de BuhoPrinter.
      */
     async loadConfig() {
+      this.loading = true
+
       try {
         const { data } = await this.$http.get(`/${this.resource}/printers/config`)
         if (data.success) {
           const d = data.data
           this.form.printer_enabled        = d.printer_enabled
           this.form.printer_status         = d.printer_status
+          this.form.printer_public_ip      = d.printer_public_ip
+          this.form.print_local_enabled    = d.print_local_enabled
           this.form.printer_name_comanda   = d.printer_name_comanda
           this.form.printer_name_documents  = d.printer_name_documents
           this.form.printer_name_precuenta  = d.printer_name_precuenta
           this.printers                    = d.printers || []
-
-          // si ya está activo al entrar al tab, actualiza la lista de impresoras en background (silencioso)
-          if (this.form.printer_enabled) {
-            this.checkAndSync(true)
-          }
         }
       } catch (error) {
         console.error('Error al cargar config de impresión:', error)
+        this.loading = false
+      } finally {
+        this.loading = false
       }
     },
 
@@ -316,9 +345,14 @@ export default {
 
         this.liveStatus = 'connected'
 
-        // 2. Registrar estado exitoso en BD (solo informativo)
-        await this.$http.post(`/${this.resource}/printers/status`, { printer_status: 'connected' })
-        this.form.printer_status = 'connected'
+        // 2. Registrar estado exitoso en BD e IP pública del cliente
+        const clientPublicIp = await this.fetchClientPublicIp()
+        await this.$http.post(`/${this.resource}/printers/status`, {
+          printer_status:    'connected',
+          printer_public_ip: clientPublicIp || null,
+        })
+        this.form.printer_status    = 'connected'
+        this.form.printer_public_ip = clientPublicIp || null
 
         // 3. Enviar el host descubierto al backend para que persista printer_host y devuelva
         //    el payload de configuración con datos sensibles (Redis, fqdn, api_token).
@@ -380,6 +414,7 @@ export default {
       try {
         const res = await this.$http.post(`/${this.resource}/printers/config`, {
           printer_enabled:         this.form.printer_enabled,
+          print_local_enabled:     this.form.print_local_enabled,
           printer_name_comanda:   this.form.printer_name_comanda,
           printer_name_documents:  this.form.printer_name_documents,
           printer_name_precuenta:  this.form.printer_name_precuenta,

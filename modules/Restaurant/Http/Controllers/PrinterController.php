@@ -31,6 +31,8 @@ class PrinterController extends Controller
                 'printer_enabled'        => (bool) ($config->printer_enabled ?? false),
                 'printer_host'           => $config->printer_host ?? '',
                 'printer_status'         => $config->printer_status ?? null,
+                'printer_public_ip'      => $config->printer_public_ip ?? null,
+                'print_local_enabled'    => (bool) ($config->print_local_enabled ?? false),
                 'printer_name_comanda'    => $config->printer_name_comanda ?? null,
                 'printer_name_documents'  => $config->printer_name_documents ?? null,
                 'printer_name_precuenta'  => $config->printer_name_precuenta ?? null,
@@ -47,6 +49,7 @@ class PrinterController extends Controller
     {
         $data = $request->validate([
             'printer_enabled'        => 'nullable|boolean',
+            'print_local_enabled'    => 'nullable|boolean',
             'printer_name_comanda'    => 'nullable|string|max:255',
             'printer_name_documents'  => 'nullable|string|max:255',
             'printer_name_precuenta'  => 'nullable|string|max:255',
@@ -71,11 +74,18 @@ class PrinterController extends Controller
     public function updateStatus(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'printer_status' => 'required|string|in:connected,disconnected',
+            'printer_status'    => 'required|string|in:connected,disconnected',
+            'printer_public_ip' => 'nullable|ip',
         ]);
 
         $config = RestaurantConfiguration::firstOrNew([]);
         $config->printer_status = $data['printer_status'];
+
+        // Registrar la IP pública del cliente solo cuando la conexión es exitosa
+        if ($data['printer_status'] === 'connected' && !empty($data['printer_public_ip'])) {
+            $config->printer_public_ip = $data['printer_public_ip'];
+        }
+
         $config->save();
 
         return response()->json([

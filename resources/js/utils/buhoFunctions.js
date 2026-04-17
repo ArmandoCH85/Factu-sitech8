@@ -3,14 +3,16 @@
  * Lógica pura de integración con el agente BuhoPrinter (localhost HTTP).
  * Sin dependencias de Vue — testeable en aislamiento.
  */
+import { publicIpv4 } from 'public-ip';
 
 // Puertos en los que puede estar escuchando BuhoPrinter
 const BUHO_PORTS = [8181, 8282, 8383, 8484];
 
 // Estado interno del módulo
-let _buhoPort   = null;
-let _buhoActive = false;
-let _printerName = null;
+let _buhoPort        = null;
+let _buhoActive      = false;
+let _printerName     = null;
+let _clientPublicIp  = null;
 
 // --------------------------------------------------------------------------
 // Utilitaria interna: construye la URL base según el puerto activo
@@ -35,6 +37,31 @@ async function _pingPort(port) {
     } finally {
         clearTimeout(timer);
     }
+}
+
+// --------------------------------------------------------------------------
+// fetchClientPublicIp
+// Consulta la IP pública del cliente usando el paquete public-ip.
+// Almacena el resultado en caché para evitar llamadas repetidas.
+// --------------------------------------------------------------------------
+export async function fetchClientPublicIp() {
+    if (_clientPublicIp) return _clientPublicIp;
+    try {
+        _clientPublicIp = await publicIpv4();
+    } catch (err) {
+        console.warn('[BuhoPrinter] No se pudo obtener la IP pública del cliente:', err);
+        _clientPublicIp = null;
+    }
+    return _clientPublicIp;
+}
+
+// --------------------------------------------------------------------------
+// getClientPublicIp
+// Retorna la IP pública del cliente previamente obtenida (puede ser null
+// si fetchClientPublicIp() aún no fue llamada o falló).
+// --------------------------------------------------------------------------
+export function getClientPublicIp() {
+    return _clientPublicIp;
 }
 
 // --------------------------------------------------------------------------

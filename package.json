@@ -30,6 +30,7 @@
         "jqwidgets-scripts": "^10.1.5",
         "moment": "^2.22.2",
         "popper": "^1.0.1",
+        "public-ip": "^7.0.1",
         "query-string": "^9.2.2",
         "qz-tray": "^2.2.1",
         "socket.io-client": "^4.5.4",

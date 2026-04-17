@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Restaurant\Models\PrintOrder;
 use Modules\Restaurant\Models\Printer;
+use Modules\Restaurant\Models\RestaurantConfiguration;
 
 class PrintOrderController extends Controller
 {
@@ -19,9 +20,27 @@ class PrintOrderController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name_printer' => 'nullable|string|max:255',
-            'pdf_b64'      => 'nullable|string',
+            'name_printer'      => 'nullable|string|max:255',
+            'pdf_b64'           => 'nullable|string',
+            'client_public_ip'  => 'nullable|ip',
         ]);
+
+        // Validar impresión local: solo permite órdenes desde la misma red que BuhoPrinter
+        $config = RestaurantConfiguration::first();
+        if (
+            $config &&
+            $config->print_local_enabled &&
+            $config->printer_public_ip
+        ) {
+            $clientIp = $data['client_public_ip'] ?? null;
+
+            if ($clientIp !== $config->printer_public_ip) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Impresión local activa: esta terminal no está en la red del servicio de impresión.',
+                ], 403);
+            }
+        }
 
         // Resolver impresora: usar la enviada o buscar la predeterminada
         if (empty($data['name_printer'])) {

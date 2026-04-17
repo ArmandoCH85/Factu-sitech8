@@ -13,6 +13,8 @@ import {
     getBuhoPrinters,
     getBuhoPrintersWithDefaults,
     getBuhoBaseUrl,
+    fetchClientPublicIp,
+    getClientPublicIp,
     displayError,
 } from '../utils/buhoFunctions';
 
@@ -108,6 +110,26 @@ export const buhoprinter = {
         },
 
         /**
+         * Consulta la IP pública del cliente mediante el paquete public-ip.
+         * El resultado se cachea en módulo; llamadas subsiguientes retornan el valor almacenado.
+         *
+         * @returns {Promise<string|null>}
+         */
+        async fetchClientPublicIp() {
+            return fetchClientPublicIp();
+        },
+
+        /**
+         * Retorna la IP pública del cliente previamente obtenida.
+         * Retorna null si fetchClientPublicIp() aún no fue llamada o falló.
+         *
+         * @returns {string|null}
+         */
+        getClientPublicIp() {
+            return getClientPublicIp();
+        },
+
+        /**
          * Manejo de errores centralizado.
          * Reemplaza: displayError() global de qztray.
          */
@@ -139,10 +161,14 @@ export const buhoprinter = {
                     reader.readAsDataURL(blob);
                 });
 
+                // Obtiene la IP pública del cliente (cacheada tras la primera llamada)
+                const clientPublicIp = await fetchClientPublicIp();
+
                 // Registra la orden de impresión — el Observer la publica en Redis automáticamente
                 const orderResponse = await this.$http.post('/restaurant/print-orders', {
-                    pdf_b64:      base64,
-                    name_printer: printerName || null,
+                    pdf_b64:          base64,
+                    name_printer:     printerName || null,
+                    client_public_ip: clientPublicIp || null,
                 });
 
                 if (orderResponse.status === 201) {

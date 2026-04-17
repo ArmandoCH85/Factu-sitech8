@@ -50,4 +50,6 @@ return [
     'internal_dispatch' => env('INTERNAL_DISPATCH', false),
 
     'ubigeo_default_invoice_import' => env('UBIGEO_DEFAULT_INVOICE_IMPORT', '150101'),
+
+    'redis_tls_port' => env('REDIS_TLS_PORT', 6380),
 ];

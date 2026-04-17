@@ -44,13 +44,24 @@
                 </div>
             </div>
             <div class="row">
-
-                <div v-if="!locked_emission.success"
+            
+                <template v-if="failsInSend">
+                    <div 
                      class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold">
-                    <el-alert :title="locked_emission.message"
+                        <el-alert :title="failsMessage"
                               show-icon
                               type="warning"></el-alert>
-                </div>
+                    </div>
+
+                </template>
+                <template v-else>
+                    <div v-if="!locked_emission.success"
+                     class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold">
+                        <el-alert :title="locked_emission.message"
+                              show-icon
+                              type="warning"></el-alert>
+                    </div>
+                </template>
             </div>
 
             <div class="row" v-if="form.send_to_pse">
@@ -229,7 +240,7 @@ import QrApi from '@viewsModuleQrApi/QrApiTemplate.vue'
 import QrChatWsapp from '@viewsModuleQrChatBuho/ButtonSend.vue'
 
 export default {
-    props: ['showDialog', 'recordId', 'showClose', 'isContingency', 'generatDispatch', 'dispatchId', 'isUpdate', 'configuration', 'table'],
+    props: ['showDialog', 'recordId', 'showClose', 'isContingency', 'generatDispatch', 'dispatchId', 'isUpdate', 'configuration', 'table', 'failsInSend', 'failsMessage'],
     components: {
         Keypress,
         QrApi,
@@ -349,6 +360,10 @@ export default {
         },
         async create() {
 
+        console.log(this.failsInSend);
+        console.log(this.failsMessage);
+        
+        
             await this.getCompany()
             await this.getRecord()
 

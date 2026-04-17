@@ -1025,24 +1025,29 @@ class DocumentController extends Controller
 
     public function send($document_id)
     {
-        $document = Document::find($document_id);
 
-        $fact = DB::connection('tenant')->transaction(function () use ($document) {
-            $facturalo = new Facturalo();
-            $facturalo->setDocument($document);
-            $facturalo->loadXmlSigned();
-            $hasSendPse = $facturalo->hasPseSend() ? '200' : null;
-            $facturalo->onlySenderXmlSignedBill($hasSendPse);
-            return $facturalo;
-        });
+        try {
+            $document = Document::find($document_id);
 
-        $response = $fact->getResponse();
+            $fact = DB::connection('tenant')->transaction(function () use ($document) {
+                $facturalo = new Facturalo();
+                $facturalo->setDocument($document);
+                $facturalo->loadXmlSigned();
+                $hasSendPse = $facturalo->hasPseSend() ? '200' : null;
+                $facturalo->onlySenderXmlSignedBill($hasSendPse);
+                return $facturalo;
+            });
 
-        return [
-            'success' => true,
-            'response' => $response,
-            'message' => $response['description'],
-        ];
+            $response = $fact->getResponse();
+
+            return [
+                'success' => true,
+                'response' => $response,
+                'message' => $response['description'],
+            ];
+        } catch (\Throwable $th) {
+            return $this->generalResponse(false, "Ya se genero el documento, pero hubo un problema en el envio. En el listado por favor, volver a reenviar.");
+        }
     }
 
     public function consultCdr($document_id)

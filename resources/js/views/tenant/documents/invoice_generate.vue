@@ -3688,6 +3688,8 @@
             :recordId="documentNewId"
             :table="table"
             :showClose="false"
+            :failsInSend="failSendDocument"
+            :failsMessage='failsMessage'
             :showDialog.sync="showDialogOptions"
         ></document-options>
 
@@ -4034,6 +4036,8 @@ export default {
             showDialogNewPerson: false,
             editPerson: false,
             showDialogOptions: false,
+            failSendDocument: false,
+            failsMessage: '',
             loading_submit: false,
             loading_form: false,
             errors: {},
@@ -7100,6 +7104,13 @@ export default {
 
                         this.$eventHub.$emit("reloadDataItems", null);
                         this.resetForm();
+
+                        console.log(response_sent.data);
+                        if (!response_sent.data.success) {
+                            this.failSendDocument = true;
+                            
+                            this.failsMessage = response_sent.data.message;
+                        }
 
                         this.showOptionsDialog(response_sent);
 

@@ -68,6 +68,44 @@
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('porto-light/css/styles_ecommerce.css') }}" />
+
+    <style>
+        .announcement-bar {
+            position: sticky;
+            top: 0;
+            z-index: 10001; /* Higher than header */
+            color: white;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            width: 100%;
+        }
+        .announcement-link {
+            color: white !important;
+            text-decoration: none;
+            display: block;
+        }
+        .announcement-link:hover {
+            text-decoration: underline;
+        }
+        .close-announcement {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        .close-announcement:focus {
+            outline: none;
+        }
+    </style>
 </head>
 
 <body data-company-title="{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') }}">
@@ -81,6 +119,25 @@
         $waText = rawurlencode('Hola, tengo una consulta desde la tienda online');
         $waLink = $waPhone ? "https://wa.me/{$waPhone}?text={$waText}" : '';
     ?>
+
+<body>
+    @php
+        $config_publicidad = \App\Models\Tenant\ConfigurationEcommerce::first();
+    @endphp
+
+    @if($config_publicidad && $config_publicidad->publicidad_activa)
+        <div id="announcement-bar" class="announcement-bar" style="background-color: {{ $config_publicidad->publicidad_color_fondo }};">
+            <div class="container text-center position-relative">
+                <a href="{{ $config_publicidad->publicidad_link ?? '#' }}" target="_blank" class="announcement-link">
+                    {{ $config_publicidad->publicidad_texto }}
+                </a>
+                <button type="button" class="close-announcement" aria-label="Close" onclick="closeAnnouncementBar()">
+                    <span>&times;</span>
+                </button>
+            </div>
+        </div>
+    @endif
+
     <div class="page-wrapper">
 
         @include('ecommerce::layouts.partials_ecommerce.header')
@@ -137,6 +194,23 @@
     <script src="{{ asset('porto-ecommerce/assets/js/main.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
     @stack('scripts')
+    
+    <script>
+        function closeAnnouncementBar() {
+            const bar = document.getElementById('announcement-bar');
+            if (bar) {
+                bar.style.display = 'none';
+                localStorage.setItem('hide_announcement_bar', 'true');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const bar = document.getElementById('announcement-bar');
+            if (bar && !localStorage.getItem('hide_announcement_bar')) {
+                bar.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:54 GMT -->

@@ -48,6 +48,10 @@ class ConfigurationEcommerceResource extends JsonResource
             'enable_yape'                   => (bool) $this->enable_yape,
             'enable_transfer'               => (bool) $this->enable_transfer,
             'delivery_no_coverage_message' => $this->delivery_no_coverage_message,
+            'publicidad_activa' => (bool) $this->publicidad_activa,
+            'publicidad_texto' => $this->publicidad_texto,
+            'publicidad_color_fondo' => $this->publicidad_color_fondo,
+            'publicidad_link' => $this->publicidad_link
         ];
     }
 }

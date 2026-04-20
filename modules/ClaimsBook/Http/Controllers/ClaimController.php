@@ -107,8 +107,24 @@ class ClaimController extends Controller
         $hostname = app(CurrentHostname::class);
         $slug     = $hostname ? $hostname->fqdn : request()->getHost();
 
+        $primaryColor = ClaimSetting::getValue('primary_color', '#18181b');
+        $showCompany  = ClaimSetting::getValue('show_company', '1') !== '0';
+
+        // Convertir hex a OKLCH para que el widget lo use con prioridad sobre localStorage
+        $colorL = null; $colorC = null; $colorH = null;
+        if ($primaryColor && preg_match('/^#[0-9A-Fa-f]{6}$/', $primaryColor)) {
+            [$colorL, $colorC, $colorH] = $this->hexToOklch($primaryColor);
+        }
+
         return response()
-            ->view('claimsbook::widget', ['tenant_slug' => $slug])
+            ->view('claimsbook::widget', [
+                'tenant_slug'   => $slug,
+                'color_l'       => $colorL,
+                'color_c'       => $colorC,
+                'color_h'       => $colorH,
+                'primary_color' => $primaryColor,
+                'show_company'  => $showCompany,
+            ])
             ->header('X-Frame-Options', 'ALLOWALL');
     }
 
@@ -157,14 +173,25 @@ class ClaimController extends Controller
     var iframe = document.createElement('iframe');
     iframe.src         = iframeSrc;
     iframe.width       = '100%';
-    iframe.height      = '720';
     iframe.frameBorder = '0';
-    iframe.scrolling   = 'auto';
+    iframe.scrolling   = 'no';
     iframe.setAttribute('allow', 'fullscreen');
-    iframe.style.cssText = 'border:none;min-height:720px;width:100%;display:block;';
+    iframe.style.cssText = 'border:none;width:100%;display:block;overflow:hidden;height:0;';
 
     wrap.appendChild(iframe);
     script.parentNode.insertBefore(wrap, script.nextSibling);
+
+    // Ajustar altura dinámicamente via postMessage (funciona cross-origin)
+    window.addEventListener('message', function (e) {
+        if (
+            e.data &&
+            e.data.type === 'claims-resize' &&
+            typeof e.data.height === 'number' &&
+            e.data.height > 0
+        ) {
+            iframe.style.height = e.data.height + 'px';
+        }
+    });
 }());
 JS;
 
@@ -1069,5 +1096,34 @@ JS;
         }
 
         return $locations;
+    }
+
+    /**
+     * Convierte un color hex (#rrggbb) a OKLCH.
+     * Devuelve [l, c, h] redondeados.
+     */
+    private function hexToOklch(string $hex): array
+    {
+        $r = hexdec(substr($hex, 1, 2)) / 255;
+        $g = hexdec(substr($hex, 3, 2)) / 255;
+        $b = hexdec(substr($hex, 5, 2)) / 255;
+
+        $toLinear = fn($c) => $c <= 0.04045 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
+        $lr = $toLinear($r); $lg = $toLinear($g); $lb = $toLinear($b);
+
+        $l = 0.4122214708*$lr + 0.5363325363*$lg + 0.0514459929*$lb;
+        $m = 0.2119034982*$lr + 0.6806995451*$lg + 0.1073969566*$lb;
+        $s = 0.0883024619*$lr + 0.2817188376*$lg + 0.6299787005*$lb;
+
+        $l_ = $l ** (1/3); $m_ = $m ** (1/3); $s_ = $s ** (1/3);
+
+        $L  = 0.2104542553*$l_ + 0.7936177850*$m_ - 0.0040720468*$s_;
+        $a  = 1.9779984951*$l_ - 2.4285922050*$m_ + 0.4505937099*$s_;
+        $bv = 0.0259040371*$l_ + 0.7827717662*$m_ - 0.8086757660*$s_;
+
+        $C = sqrt($a*$a + $bv*$bv);
+        $H = fmod((rad2deg(atan2($bv, $a)) + 360), 360);
+
+        return [round($L, 4), round($C, 4), round($H, 2)];
     }
 }

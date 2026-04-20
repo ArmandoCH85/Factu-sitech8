@@ -116,4 +116,7 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
 Route::middleware(['locked.tenant'])->group(function() {
     // ecommerce
     Route::get('/ecommerce/{name?}', 'EcommerceController@index');
+
+    // Libro de Reclamaciones embebido en el layout del ecommerce
+    Route::get('/libro-de-reclamaciones', 'EcommerceController@claimsBook')->name('tenant.ecommerce.claims_book');
 });

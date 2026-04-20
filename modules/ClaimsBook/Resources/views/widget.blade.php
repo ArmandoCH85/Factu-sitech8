@@ -72,5 +72,25 @@
             :show-company="widgetShowCompany"
         ></tenant-claims-book-form>
     </div>
+
+    <script>
+    (function () {
+        function sendHeight() {
+            var h = Math.max(
+                document.body.scrollHeight,
+                document.documentElement.scrollHeight
+            );
+            window.parent.postMessage({ type: 'claims-resize', height: h }, '*');
+        }
+
+        window.addEventListener('load', sendHeight);
+
+        if (window.ResizeObserver) {
+            new ResizeObserver(sendHeight).observe(document.body);
+        } else {
+            setInterval(sendHeight, 400);
+        }
+    }());
+    <\/script>
 </body>
 </html>

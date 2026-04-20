@@ -957,6 +957,12 @@ class EcommerceController extends Controller
         return view('ecommerce::pages_fields.about_us', compact('about_us', 'categories'));
     }
 
+    public function claimsBook()
+    {
+        $categories = \Modules\Item\Models\Category::get();
+        return view('ecommerce::pages_fields.claims_book', compact('categories'));
+    }
+
     /**
      * Verifica si una dirección tiene cobertura de delivery y retorna la zona aplicable.
      * Lógica de matching en orden de prioridad (más específico primero):

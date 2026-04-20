@@ -327,7 +327,7 @@
                         <li>
                             <div style="text-align: center">
                                 <span class="fci-label">Libro de Reclamaciones</span>
-                                <a class="pt-4" style="display: block" href="/ecommerce/libro-de-reclamaciones"><img src="{{ asset('porto-ecommerce/assets/images/libro-de-reclamaciones.png') }}" style="margin: auto" width="96px" alt="Libro de Reclamaciones"></a>
+                                <a class="pt-4" style="display: block" href="{{ route('tenant.ecommerce.claims_book') }}"><img src="{{ asset('porto-ecommerce/assets/images/libro-de-reclamaciones.png') }}" style="margin: auto" width="96px" alt="Libro de Reclamaciones"></a>
                             </div>
                         </li>
                 </ul>

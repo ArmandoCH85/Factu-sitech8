@@ -46,7 +46,7 @@
                                             <th>Factor</th>
 
                                             <template v-for="pl in price_labels">
-                                                <th>{{ pl.label }}</th>
+                                                <th v-if="pl.is_active !== false">{{ pl.label }}</th>
                                             </template>
                                         </tr>
                                     </thead>
@@ -58,9 +58,11 @@
                                             <th>{{ row.unit_type_id }}</th>
                                             <th>{{ row.description }}</th>
                                             <th>{{ row.quantity_unit }}</th>
-                                                <th v-for="price in row.prices">
+                                            <template v-for="(price, priceIndex) in row.prices">
+                                                <th v-if="price_labels[priceIndex] && price_labels[priceIndex].is_active !== false">
                                                     {{ price.price }}
                                                 </th>
+                                            </template>
                                         </tr>
                                     </tbody>
                                 </table>

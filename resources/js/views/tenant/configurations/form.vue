@@ -1698,7 +1698,7 @@
                                 </div>
                             </div>
                             <!-- impresion automatica en pos -->
-                            <div class="col-md-6 mt-4">
+                            <div class="col-md-6 mt-4 d-block">
                                 <div class="form-group">
                                     <label class="">
                                         Impresión de PDF automática
@@ -1722,41 +1722,45 @@
                                             v-text="errors.auto_print[0]"></small>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- selector de impresora para impresión automática -->
-                            <div v-if="form.auto_print" class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label class="">
-                                        Impresora para documentos
-                                        <el-tooltip class="item" effect="dark" placement="top-start">
-                                            <div slot="content">
-                                                Impresora que recibirá los documentos al usar la impresión automática.<br />
-                                                Si no se selecciona, se usará la impresora predeterminada registrada.
-                                            </div>
+                                <!-- selector de impresora para impresión automática -->
+                                <div class="row" v-if="form.auto_print">
+                                    <div class="form-group col-6">
+                                        <label class="">
+                                            Impresora para documentos
+                                            <el-tooltip class="item" effect="dark" placement="top-start">
+                                                <div slot="content">
+                                                    Impresora que recibirá los documentos al usar la impresión automática.<br />
+                                                    Si no se selecciona, se usará la impresora predeterminada registrada.
+                                                </div>
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <el-select
+                                            v-model="form.printer_name_documents"
+                                            clearable
+                                            placeholder="Impresora predeterminada"
+                                            class="w-100"
+                                            :loading="loadingPrinters"
+                                            @change="submit">
+                                            <el-option
+                                                v-for="p in printers"
+                                                :key="p.name"
+                                                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                                                :value="p.name">
+                                            </el-option>
+                                        </el-select>
+                                        <small v-if="printers.length === 0 && !loadingPrinters" class="text-muted">
                                             <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-select
-                                        v-model="form.printer_name_documents"
-                                        clearable
-                                        placeholder="Impresora predeterminada"
-                                        class="w-100"
-                                        :loading="loadingPrinters"
-                                        @change="submit">
-                                        <el-option
-                                            v-for="p in printers"
-                                            :key="p.name"
-                                            :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
-                                            :value="p.name">
-                                        </el-option>
-                                    </el-select>
-                                    <small v-if="printers.length === 0 && !loadingPrinters" class="text-muted">
-                                        <i class="fa fa-info-circle"></i>
-                                        No hay impresoras registradas. Asegúrese de que BuhoPrinter esté activo.
-                                    </small>
+                                            No hay impresoras registradas. Asegúrese de que BuhoPrinter esté activo.
+                                        </small>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <el-button type="primary" @click.prevent="loadOrSyncPrinters">Cargar Impresoras</el-button>
+                                    </div>
                                 </div>
                             </div>
+
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
@@ -2794,10 +2798,13 @@ export default {
             try {
                 // Intenta conectar al agente BuhoPrinter (escanea puertos 8181-8484)
                 await this.startConnectionBuho()
+                const rawPrinters = await this.getBuhoPrintersWithDefaults()
 
                 if (this.isBuhoActive) {
                     // Sincroniza impresoras disponibles con la BD
-                    await this.$http.post('/restaurant/printers/sync')
+                    await this.$http.post('/restaurant/printers/sync', {
+                        printers: rawPrinters
+                    })
                     // Recarga la lista desde el backend
                     const { data } = await this.$http.get(`/${this.resource}/tables`)
                     this.printers = data.printers || []

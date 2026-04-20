@@ -33,7 +33,7 @@
                     <div class="cem-option-row cem-option-row--last">
                         <span class="cem-option-label">Datos de la empresa</span>
                         <div class="cem-option-control">
-                            <el-switch v-model="showCompany" active-color="#18181b" @change="buildCode"></el-switch>
+                            <el-switch v-model="showCompany" active-color="#18181b" @change="onShowCompanyChange"></el-switch>
                             <span class="cem-color-hint">
                                 {{ showCompany ? 'Logo, razón social y RUC visibles' : 'Se mostrará el ícono del libro' }}
                             </span>
@@ -370,20 +370,65 @@ export default {
     },
 
     methods: {
+        hexToOklch(hex) {
+            const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255
+            const toLinear = c => c <= 0.04045 ? c/12.92 : ((c+0.055)/1.055)**2.4
+            const lr = toLinear(r), lg = toLinear(g), lb = toLinear(b)
+            const l = 0.4122214708*lr + 0.5363325363*lg + 0.0514459929*lb
+            const m = 0.2119034982*lr + 0.6806995451*lg + 0.1073969566*lb
+            const s = 0.0883024619*lr + 0.2817188376*lg + 0.6299787005*lb
+            const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s)
+            const L  = 0.2104542553*l_ + 0.7936177850*m_ - 0.0040720468*s_
+            const a  = 1.9779984951*l_ - 2.4285922050*m_ + 0.4505937099*s_
+            const bv = 0.0259040371*l_ + 0.7827717662*m_ - 0.8086757660*s_
+            const C  = Math.sqrt(a*a + bv*bv)
+            let   H  = Math.atan2(bv, a) * 180 / Math.PI
+            if (H < 0) H += 360
+            return { l: +L.toFixed(4), c: +C.toFixed(4), h: +H.toFixed(2) }
+        },
+
+        oklchToHex(l, c, h) {
+            const hRad = h * Math.PI / 180
+            const a = c * Math.cos(hRad), bv = c * Math.sin(hRad)
+            const l_ = l + 0.3963377774*a + 0.2158037573*bv
+            const m_ = l - 0.1055613458*a - 0.0638541728*bv
+            const s_ = l - 0.0894841775*a - 1.2914855480*bv
+            const lv = l_**3, mv = m_**3, sv = s_**3
+            const r  = +4.0767416621*lv - 3.3077115913*mv + 0.2309699292*sv
+            const g  = -1.2684380046*lv + 2.6097574011*mv - 0.3413193965*sv
+            const b  = -0.0041960863*lv - 0.7034186147*mv + 1.7076147010*sv
+            const toSrgb = v => { const cl = Math.max(0, Math.min(1, v)); return cl <= 0.0031308 ? 12.92*cl : 1.055*cl**(1/2.4) - 0.055 }
+            const toHex  = v => Math.round(toSrgb(v) * 255).toString(16).padStart(2, '0')
+            return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+        },
+
         async onOpen() {
-            const saved = localStorage.getItem('claims_widget_primary_color')
-            if (saved && /^#[0-9A-Fa-f]{6}$/.test(saved)) this.primaryColor = saved
-
-            const savedCompany = localStorage.getItem('claims_widget_show_company')
-            if (savedCompany !== null) this.showCompany = savedCompany !== 'false'
-
             try {
                 const { data } = await this.$http.get('/claims/widget-settings')
                 this.customUrl    = data.widget_custom_url || ''
                 this.useCustomUrl = !!data.widget_custom_url_active
+                if (data.primary_color && /^#[0-9A-Fa-f]{6}$/.test(data.primary_color)) {
+                    this.primaryColor = data.primary_color
+                }
+                if (data.show_company !== undefined) {
+                    this.showCompany = !!data.show_company
+                }
             } catch {
-                this.customUrl   = ''
+                this.customUrl    = ''
                 this.useCustomUrl = false
+                // Fallback a localStorage si la API falla
+                const savedOklch = localStorage.getItem('claims_widget_primary_oklch')
+                if (savedOklch) {
+                    try {
+                        const { l, c, h } = JSON.parse(savedOklch)
+                        this.primaryColor = this.oklchToHex(l, c, h)
+                    } catch {}
+                } else {
+                    const saved = localStorage.getItem('claims_widget_primary_color')
+                    if (saved && /^#[0-9A-Fa-f]{6}$/.test(saved)) this.primaryColor = saved
+                }
+                const savedCompany = localStorage.getItem('claims_widget_show_company')
+                if (savedCompany !== null) this.showCompany = savedCompany !== 'false'
             }
 
             this.buildCode()
@@ -408,13 +453,27 @@ export default {
             }
         },
 
-        // Persiste el color en localStorage y regenera el código
-        onColorChange() {
-            localStorage.setItem('claims_widget_primary_color', this.primaryColor)
+        async onShowCompanyChange() {
             this.buildCode()
+            try {
+                await this.$http.put('/claims/widget-settings', { show_company: this.showCompany })
+            } catch {
+                this.$message.error('No se pudo guardar la configuración')
+            }
         },
 
-        // Construye la URL del widget y el snippet del script loader a partir del host actual
+        async onColorChange() {
+            const oklch = this.hexToOklch(this.primaryColor)
+            localStorage.setItem('claims_widget_primary_oklch', JSON.stringify(oklch))
+            localStorage.setItem('claims_widget_primary_color', this.primaryColor)
+            this.buildCode()
+            try {
+                await this.$http.put('/claims/widget-settings', { primary_color: this.primaryColor })
+            } catch {
+                this.$message.error('No se pudo guardar el color')
+            }
+        },
+
         buildCode() {
             const origin    = window.location.origin
             const slug      = window.location.hostname
@@ -422,13 +481,17 @@ export default {
             const isDefault = this.primaryColor === '#18181b'
 
             const params = []
-            if (!isDefault) params.push(`color=${encodeURIComponent(this.primaryColor)}`)
+            let colorAttrs = ''
+            if (!isDefault) {
+                const { l, c, h } = this.hexToOklch(this.primaryColor)
+                colorAttrs = ` data-color-l="${l}" data-color-c="${c}" data-color-h="${h}"`
+                params.push(`color_l=${l}`, `color_c=${c}`, `color_h=${h}`)
+            }
             if (!this.showCompany) params.push(`show_company=0`)
             const query = params.length ? '?' + params.join('&') : ''
 
             this.widgetUrl = `${origin}/claims/widget/${slug}${query}`
 
-            const colorAttr   = isDefault ? '' : ` data-color="${this.primaryColor}"`
             const companyAttr = this.showCompany ? '' : ` data-show-company="false"`
             const urlAttr     = (this.useCustomUrl && this.customUrl.trim())
                 ? ` data-url="${this.customUrl.trim()}"`
@@ -436,7 +499,7 @@ export default {
 
             this.embedCode = [
                 `<!-- Libro de Reclamaciones — Copie y pegue para mostrar el formulario -->`,
-                `<script src="${scriptUrl}"${colorAttr}${companyAttr}${urlAttr}><\/script>`,
+                `<script src="${scriptUrl}"${colorAttrs}${companyAttr}${urlAttr}><\/script>`,
             ].join('\n')
 
             localStorage.setItem('claims_widget_show_company', String(this.showCompany))
@@ -482,11 +545,16 @@ export default {
             }
         },
 
-        // Restablece el color primario al valor por defecto, limpia localStorage y regenera el código
-        resetColor() {
+        async resetColor() {
             this.primaryColor = '#18181b'
             localStorage.removeItem('claims_widget_primary_color')
+            localStorage.removeItem('claims_widget_primary_oklch')
             this.buildCode()
+            try {
+                await this.$http.put('/claims/widget-settings', { primary_color: '#18181b' })
+            } catch {
+                this.$message.error('No se pudo restablecer el color')
+            }
         },
 
         // Copia el código al portapapeles del usuario

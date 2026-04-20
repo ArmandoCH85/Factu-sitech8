@@ -38,7 +38,7 @@
       <div v-if="showPrevCodeForm" class="cf-inline" style="margin-top:12px;">
         <el-input v-model="form.previous_code" placeholder="Ej: RJL76KQ2WO37U" size="small"
           :disabled="lookingUp"></el-input>
-        <button class="cf-btn cf-btn-outline" :disabled="lookingUp" @click="lookupPreviousCode">
+        <button class="cf-btn cf-btn-primary" :disabled="lookingUp" @click="lookupPreviousCode">
           <span v-if="lookingUp" class="cf-spinner"></span>
           <span v-else>Verificar</span>
         </button>
@@ -486,18 +486,27 @@
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
-/* ── Variables (shadcn/ui palette) ── */
+/* ── Variables ── */
 .cf-wrapper {
-  --cf-bg:          #f5f7f9;
-  --cf-border:      #e2e8f0;
-  --cf-ring:        #a1a1aa;
-  --cf-foreground:  #09090b;
-  --cf-muted:       #f4f4f5;
-  --cf-muted-fg:    #71717a;
-  --cf-primary:     #18181b;
-  --cf-primary-fg:  #fafafa;
-  --cf-radius:      0.5rem;
-  --cf-shadow:      0 1px 3px 0 rgb(0 0 0/.08), 0 1px 2px -1px rgb(0 0 0/.08);
+  /* Color base */
+  --base-l: 0.2103;
+  --base-c: 0.0059;
+  --base-h: 285.89;
+
+  --_l: clamp(0.22, var(--base-l), 0.50);
+  --_c: min(var(--base-c), 0.18);
+
+  --cf-primary:    oklch(var(--base-l) var(--base-c) var(--base-h));
+  --cf-bg:         oklch(0.978 calc(var(--_c) * 0.08) var(--base-h));
+  --cf-border:     oklch(0.872 calc(var(--_c) * 0.14) var(--base-h) / 0.45);
+  --cf-ring:       oklch(calc(var(--_l) + 0.14) calc(var(--_c) * 0.85) var(--base-h));
+  --cf-foreground: oklch(0.145 calc(var(--_c) * 0.04) var(--base-h));
+  --cf-muted:      oklch(0.960 calc(var(--_c) * 0.07) var(--base-h) / 0.55);
+  --cf-muted-fg:   oklch(0.510 calc(var(--_c) * 0.22) var(--base-h));
+  --cf-primary-fg: oklch(0.970 0.003 var(--base-h));
+
+  --cf-radius:     0.5rem;
+  --cf-shadow:     0 1px 3px 0 rgb(0 0 0/.08), 0 1px 2px -1px rgb(0 0 0/.08);
 
   max-width: 680px;
   margin: 0 auto;
@@ -1078,6 +1087,21 @@
 <script>
 import ClaimResultDialog from './partials/ClaimResultDialog.vue'
 
+function hexToOklch(hex) {
+  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255
+  const toLinear = c => c <= 0.04045 ? c/12.92 : ((c+0.055)/1.055)**2.4
+  const lr = toLinear(r), lg = toLinear(g), lb = toLinear(b)
+  const l = 0.4122214708*lr + 0.5363325363*lg + 0.0514459929*lb
+  const m = 0.2119034982*lr + 0.6806995451*lg + 0.1073969566*lb
+  const s = 0.0883024619*lr + 0.2817188376*lg + 0.6299787005*lb
+  const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s)
+  const L  = 0.2104542553*l_ + 0.7936177850*m_ - 0.0040720468*s_
+  const a  = 1.9779984951*l_ - 2.4285922050*m_ + 0.4505937099*s_
+  const bv = 0.0259040371*l_ + 0.7827717662*m_ - 0.8086757660*s_
+  const H = ((Math.atan2(bv,a)*180/Math.PI) % 360 + 360) % 360
+  return { l: +L.toFixed(4), c: +Math.sqrt(a*a+bv*bv).toFixed(4), h: +H.toFixed(2) }
+}
+
 export default {
   components: { ClaimResultDialog },
 
@@ -1092,11 +1116,13 @@ export default {
       type: String,
       default: ''
     },
-    // Color primario del widget (hex, ej: "#409EFF") — personalizable sin BD
     primaryColor: {
       type: String,
       default: ''
     },
+    colorL: { type: [Number, String], default: null },
+    colorC: { type: [Number, String], default: null },
+    colorH: { type: [Number, String], default: null },
     // Mostrar u ocultar los datos de la empresa en el encabezado
     showCompany: {
       type: Boolean,
@@ -1213,9 +1239,15 @@ export default {
   },
 
   mounted() {
-    // Aplicar el color primario personalizado como variable CSS sobre el wrapper
-    if (this.primaryColor && /^#[0-9A-Fa-f]{6}$/.test(this.primaryColor)) {
-      this.$el.style.setProperty('--cf-primary', this.primaryColor)
+    let l = this.colorL, c = this.colorC, h = this.colorH
+    if (l === null && this.primaryColor && /^#[0-9A-Fa-f]{6}$/.test(this.primaryColor)) {
+      const ok = hexToOklch(this.primaryColor)
+      l = ok.l; c = ok.c; h = ok.h
+    }
+    if (l !== null && c !== null && h !== null) {
+      this.$el.style.setProperty('--base-l', l)
+      this.$el.style.setProperty('--base-c', c)
+      this.$el.style.setProperty('--base-h', h)
     }
   },
 

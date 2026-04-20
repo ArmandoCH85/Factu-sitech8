@@ -20,6 +20,7 @@ use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
 use Hyn\Tenancy\Environment;
 use Modules\ClaimsBook\Models\Tenant\Claim;
+use Modules\ClaimsBook\Models\Tenant\ClaimSetting;
 use Modules\ClaimsBook\Models\Tenant\StatusClaim;
 use Modules\ClaimsBook\Models\Tenant\ClaimChannel;
 use Modules\ClaimsBook\Http\Resources\ClaimCollection;
@@ -73,10 +74,14 @@ class ClaimController extends Controller
      */
     public function widget($slug)
     {
-        // Leer y sanitizar el color primario (solo hex de 6 dígitos permitido)
-        $color = request()->query('color', '#18181b');
-        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
-            $color = '#18181b';
+        // Leer color en formato OKLCH (nuevo) o hex (backward compat)
+        $colorL = is_numeric(request()->query('color_l')) ? (float) request()->query('color_l') : null;
+        $colorC = is_numeric(request()->query('color_c')) ? (float) request()->query('color_c') : null;
+        $colorH = is_numeric(request()->query('color_h')) ? (float) request()->query('color_h') : null;
+
+        $colorHex = request()->query('color', '#18181b');
+        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $colorHex)) {
+            $colorHex = '#18181b';
         }
 
         $showCompany = request()->query('show_company', '1') !== '0';
@@ -84,7 +89,10 @@ class ClaimController extends Controller
         return response()
             ->view('claimsbook::widget', [
                 'tenant_slug'   => $slug,
-                'primary_color' => $color,
+                'color_l'       => $colorL,
+                'color_c'       => $colorC,
+                'color_h'       => $colorH,
+                'primary_color' => $colorHex,
                 'show_company'  => $showCompany,
             ])
             ->header('X-Frame-Options', 'ALLOWALL');
@@ -124,7 +132,10 @@ class ClaimController extends Controller
     var slug   = (new URL(src)).hostname;
 
     // Leer atributos de configuración del script (opcionales)
-    var color       = script.getAttribute('data-color') || '';
+    var colorL      = script.getAttribute('data-color-l') || '';
+    var colorC      = script.getAttribute('data-color-c') || '';
+    var colorH      = script.getAttribute('data-color-h') || '';
+    var colorHex    = script.getAttribute('data-color') || '';  // backward compat
     var showCompany = script.getAttribute('data-show-company');
 
     // Crear el contenedor
@@ -133,7 +144,13 @@ class ClaimController extends Controller
 
     // Construir URL del iframe con los parámetros activos
     var params = [];
-    if (color) { params.push('color=' + encodeURIComponent(color)); }
+    if (colorL && colorC && colorH) {
+        params.push('color_l=' + encodeURIComponent(colorL));
+        params.push('color_c=' + encodeURIComponent(colorC));
+        params.push('color_h=' + encodeURIComponent(colorH));
+    } else if (colorHex) {
+        params.push('color=' + encodeURIComponent(colorHex));
+    }
     if (showCompany === 'false') { params.push('show_company=0'); }
     var iframeSrc = origin + '/claims/widget/' + slug + (params.length ? '?' + params.join('&') : '');
 
@@ -298,6 +315,8 @@ JS;
         return response()->json([
             'widget_custom_url'        => $company ? $company->claims_widget_custom_url : null,
             'widget_custom_url_active' => $company ? (bool) $company->claims_widget_custom_url_active : false,
+            'primary_color'            => ClaimSetting::getValue('primary_color', '#18181b'),
+            'show_company'             => ClaimSetting::getValue('show_company', '1') !== '0',
         ]);
     }
 
@@ -306,6 +325,8 @@ JS;
         $request->validate([
             'widget_custom_url'        => 'nullable|string|max:255',
             'widget_custom_url_active' => 'boolean',
+            'primary_color'            => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'show_company'             => 'boolean',
         ]);
 
         $company = Company::withOut(['identity_document_type'])->first();
@@ -321,6 +342,13 @@ JS;
             $company->claims_widget_custom_url_active = $request->widget_custom_url_active;
         }
         $company->save();
+
+        if ($request->has('primary_color')) {
+            ClaimSetting::setValue('primary_color', $request->primary_color ?: '#18181b');
+        }
+        if ($request->has('show_company')) {
+            ClaimSetting::setValue('show_company', $request->boolean('show_company') ? '1' : '0');
+        }
 
         return response()->json(['message' => 'Configuración guardada correctamente']);
     }

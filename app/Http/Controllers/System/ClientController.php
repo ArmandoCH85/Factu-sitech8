@@ -845,7 +845,7 @@ use App\Models\System\PlanPeriod;
             \Log::info('Series insertadas');
 
             \Log::info('Insertando usuario...');
-            $user_id = DB::connection('tenant')->table('users')->insert([
+                $user_id = DB::connection('tenant')->table('users')->insertGetId([
                 'name' => 'Administrador',
                 'email' => $request->input('email'),
                 'password' => bcrypt($request->input('password')),
@@ -895,7 +895,8 @@ use App\Models\System\PlanPeriod;
             \Log::info('=== CLIENTE REGISTRADO EXITOSAMENTE ===', ['timestamp' => now()]);
             return [
                 'success' => true,
-                'message' => 'Cliente Registrado satisfactoriamente'
+                'message' => 'Cliente Registrado satisfactoriamente',
+                'guest_register' => $this->runGuestRegister($from_guest_register, $user_id, $request->email, $client->id)
             ];
 
         } catch (Exception $e) {
@@ -908,6 +909,23 @@ use App\Models\System\PlanPeriod;
             ];
         }
     }
+
+        private function runGuestRegister($from_guest_register, $user_id, $email, $client_id)
+        {
+            if($from_guest_register)
+            {
+                $helper = new GuestRegisterHelper();
+                $encrypt_client_id = $helper->encryptValue($client_id);
+                $helper->sendEmail($user_id, $email, $encrypt_client_id);
+
+                return [
+                    'user_id' => (string) $user_id,
+                    'key' => $encrypt_client_id,
+                ];
+            }
+
+            return [];
+        }
 
         public function validateWebsite($uuid, $website)
         {

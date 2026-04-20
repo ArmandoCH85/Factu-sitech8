@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
+use Throwable;
 
 class GuestRegisterHelper
 {
@@ -41,7 +42,9 @@ class GuestRegisterHelper
             Config::set('mail.password', $config->mail_password);
             Config::set('mail.encryption', $config->mail_encryption);
 
-            $class->setUsernmae($config->mail_username);
+            if (is_string($config->mail_username) && $config->mail_username !== '') {
+                $class->setUsernmae($config->mail_username);
+            }
 
             Mail::to($email)->send($class);
 
@@ -49,7 +52,7 @@ class GuestRegisterHelper
                 'success' => true,
                 'message' => 'Correo reenviado correctamente.'
             ];
-        } catch(Exception $e) {
+        } catch(Throwable $e) {
             $this->writeErrorLog($e, 'Ocurrió un error al enviar el email de verificación (creación de cuenta invitado)');
             
             return [

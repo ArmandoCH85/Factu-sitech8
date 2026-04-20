@@ -14462,7 +14462,7 @@ html.ie11 .scroll-to-top {
     padding: 0 37px 0 0;
     overflow-x: hidden;
     overflow-y: scroll;
-    outline: none;
+    a: none;
 }
 
 .scrollable .scrollable-content::-webkit-scrollbar {
@@ -22139,6 +22139,26 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 }
 .table-claims tbody tr td{
     background-color: transparent !important;
+}
+.btn-outline-success{
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+    background-color: #fff !important;
+}
+.btn-outline-success:hover{
+    border-color: var(--success) !important;
+    background-color: var(--success) !important;
+    color: #fff !important;
+}
+.btn-outline-info{
+    border-color: var(--info) !important;
+    color: var(--info) !important;
+    background-color: #fff !important;
+}
+.btn-outline-info:hover{
+    border-color: var(--info) !important;
+    background-color: var(--info) !important;
+    color: #fff !important;
 }
 @media (max-width: 768px) {
     .support-sidebar {

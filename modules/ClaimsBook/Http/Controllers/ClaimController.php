@@ -233,13 +233,96 @@ JS;
         $locations = $this->buildLocationCascade();
         $company   = $this->getCompanyData();
 
+        $companyRow              = Company::withOut(['identity_document_type'])->first();
+        $widget_custom_url       = $companyRow ? $companyRow->claims_widget_custom_url : null;
+
         return response()->json(compact(
             'status_claims',
             'claim_channels',
             'identity_document_types',
             'locations',
-            'company'
+            'company',
+            'widget_custom_url'
         ));
+    }
+
+    public function avisoPdf()
+    {
+        $company = Company::withOut(['identity_document_type'])->first();
+
+        $useCustom  = $company && $company->claims_widget_custom_url_active && $company->claims_widget_custom_url;
+        $widgetUrl  = $useCustom
+            ? $company->claims_widget_custom_url
+            : $this->buildDefaultWidgetUrl();
+
+        $companyName = $company ? $company->name : config('app.name');
+
+        $bookPath    = public_path('porto-ecommerce/assets/images/book-claim.png');
+        $bookImageSrc = file_exists($bookPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($bookPath))
+            : '';
+
+        $html = view('claimsbook::pdf.complaints-book-notice', compact('widgetUrl', 'companyName', 'bookImageSrc'))->render();
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode'         => 'utf-8',
+            'format'       => 'A4',
+            'margin_top'   => 20,
+            'margin_bottom'=> 20,
+            'margin_left'  => 20,
+            'margin_right' => 20,
+            'tempDir'      => sys_get_temp_dir(),
+        ]);
+
+        $mpdf->SetTitle('Aviso — Libro de Reclamaciones');
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('aviso_libro_reclamaciones.pdf', 'S'), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="aviso_libro_reclamaciones.pdf"');
+    }
+
+    private function buildDefaultWidgetUrl(): string
+    {
+        $hostname = app(CurrentHostname::class);
+        $slug     = $hostname ? $hostname->fqdn : request()->getHost();
+        $protocol = config('tenant.force_https', false) ? 'https' : request()->getScheme();
+
+        return "{$protocol}://{$slug}/claims/widget/{$slug}";
+    }
+
+    public function getWidgetSettings()
+    {
+        $company = Company::withOut(['identity_document_type'])->first();
+
+        return response()->json([
+            'widget_custom_url'        => $company ? $company->claims_widget_custom_url : null,
+            'widget_custom_url_active' => $company ? (bool) $company->claims_widget_custom_url_active : false,
+        ]);
+    }
+
+    public function updateWidgetSettings(Request $request)
+    {
+        $request->validate([
+            'widget_custom_url'        => 'nullable|string|max:255',
+            'widget_custom_url_active' => 'boolean',
+        ]);
+
+        $company = Company::withOut(['identity_document_type'])->first();
+
+        if (! $company) {
+            return response()->json(['message' => 'Empresa no encontrada'], 404);
+        }
+
+        if ($request->has('widget_custom_url')) {
+            $company->claims_widget_custom_url = $request->widget_custom_url ?: null;
+        }
+        if ($request->has('widget_custom_url_active')) {
+            $company->claims_widget_custom_url_active = $request->widget_custom_url_active;
+        }
+        $company->save();
+
+        return response()->json(['message' => 'Configuración guardada correctamente']);
     }
 
     // ──────────────────────────────────────────────────────────────

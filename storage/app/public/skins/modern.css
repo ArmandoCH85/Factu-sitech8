@@ -1089,6 +1089,26 @@ html.sidebar-light .establishment-selector-container{
 .item-actions-tooltip button:last-child{
     border-radius: 0 6px 6px 0 !important;
 }
+.btn-outline-success{
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+    background-color: #fff !important;
+}
+.btn-outline-success:hover{
+    border-color: var(--success) !important;
+    background-color: var(--success) !important;
+    color: #fff !important;
+}
+.btn-outline-info{
+    border-color: var(--info) !important;
+    color: var(--info) !important;
+    background-color: #fff !important;
+}
+.btn-outline-info:hover{
+    border-color: var(--info) !important;
+    background-color: var(--info) !important;
+    color: #fff !important;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

@@ -2722,6 +2722,26 @@ div.welcome-card .welcome-subtitle{
 .item-actions-tooltip button:last-child{
     border-radius: 0 8px 8px 0 !important;
 }
+.btn-outline-success{
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+    background-color: #fff !important;
+}
+.btn-outline-success:hover{
+    border-color: var(--success) !important;
+    background-color: var(--success) !important;
+    color: #fff !important;
+}
+.btn-outline-info{
+    border-color: var(--info) !important;
+    color: var(--info) !important;
+    background-color: #fff !important;
+}
+.btn-outline-info:hover{
+    border-color: var(--info) !important;
+    background-color: var(--info) !important;
+    color: #fff !important;
+}
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {
     background-color: var(--black-bg-dark) !important;

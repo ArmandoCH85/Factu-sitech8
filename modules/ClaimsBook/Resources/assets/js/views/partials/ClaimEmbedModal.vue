@@ -1,4 +1,5 @@
 <template>
+    <div>
     <el-dialog
         title="Código de integración — Libro de Reclamaciones"
         :visible.sync="visible"
@@ -42,102 +43,139 @@
                 </div>
             </div>
 
-            <!-- 2. Código de integración -->
-            <div class="cem-section">
-                <div class="cem-section-header">
-                    <i class="el-icon-s-platform cem-section-icon"></i>
-                    <span class="cem-section-title">Código de integración</span>
-                </div>
-                <div class="cem-section-body">
-                    <p class="cem-description">
-                        Copia y pega el siguiente tag <code>&lt;script&gt;</code> en tu sitio web externo.
-                        El formulario de reclamos se insertará automáticamente en esa posición.
-                    </p>
-                    <div class="cem-code-block">
-                        <pre ref="codeBlock" class="cem-pre">{{ embedCode }}</pre>
-                        <el-button
-                            size="mini"
-                            type="primary"
-                            icon="el-icon-document-copy"
-                            class="cem-copy-btn btn btn-sm"
-                            @click="copyCode"
-                        >Copiar</el-button>
-                    </div>
-                </div>
-            </div>
+            <template>
+                <form autocomplete="off">
+                    <el-tabs v-model="activeName" type="border-card" class="rounded">
+                        <el-tab-pane class="mb-3" name="first">
+                            <span slot="label">URL pública del libro</span>
+                            <div class="row">
+                                <div class="cem-url-row">
+                                    <span class="cem-url-label">Enlace público</span>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span class="cem-url-text">{{ activeWidgetUrl }}</span>                                        
+                                        <div class="d-flex align-items-center justify-content-start gap-2 mt-2 w-100">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" @click="copyWidgetUrl">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-copy" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667l0 -8.666" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
+                                                Copiar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-info"
+                                                @click="openWidgetUrl"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-external-link" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>
+                                                Abrir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
 
-            <!-- 3. URL pública -->
-            <div class="cem-section">
-                <div class="cem-section-header">
-                    <i class="el-icon-link cem-section-icon"></i>
-                    <span class="cem-section-title">URL pública del libro</span>
-                </div>
-                <div class="cem-section-body">
-                    <!-- URL activa (default o personalizada) -->
-                    <div class="cem-url-row">
-                        <span class="cem-url-label">Enlace público</span>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="cem-url-text">{{ activeWidgetUrl }}</span>
-                            <el-button size="mini" icon="el-icon-document-copy" class="btn btn-sm" @click="copyWidgetUrl">
-                                Copiar
-                            </el-button>
-                        </div>
-                    </div>
+                        <el-tab-pane class="mb-3" name="second">
+                            <span slot="label">Código de integración</span>
+                            <div class="row">
+                                <div class="cem-section-body">
+                                    <p class="cem-description">
+                                        Copia y pega el siguiente tag <code>&lt;script&gt;</code> en tu sitio web externo.
+                                        El formulario de reclamos se insertará automáticamente en esa posición.
+                                    </p>
+                                    <div class="cem-code-block">
+                                        <pre ref="codeBlock" class="cem-pre">{{ embedCode }}</pre>
+                                        <el-button
+                                            size="mini"
+                                            type="primary"
+                                            icon="el-icon-document-copy"
+                                            class="cem-copy-btn btn btn-sm"
+                                            @click="copyCode"
+                                        >Copiar</el-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
 
-                    <!-- Descargar aviso PDF -->
-                    <div class="d-flex align-items-center justify-content-start gap-2 mt-2">
-                        <button
-                            class="btn btn-sm btn-outline-info"
-                            @click="openWidgetUrl"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-external-link" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg>
-                            Abrir
-                        </button>
-                        <button
-                            class="btn btn-sm btn-outline-success"
-                            @click="downloadAvisoPdf"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-text" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg>
-                            Imprimir aviso
-                        </button>
-                    </div>
+                        <el-tab-pane class="mb-3" name="third">
+                            <span slot="label">Aviso</span>
+                            <div class="row">
+                                <div>
+                                    <div class="d-flex align-items-center justify-content-start gap-2 mt-2">                                        
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-success"
+                                            @click="downloadAvisoPdf"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-file-text" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" /><path d="M9 9l1 0" /><path d="M9 13l6 0" /><path d="M9 17l6 0" /></svg>
+                                            Imprimir aviso
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-info"
+                                            @click="showQrModal = true"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-qrcode" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M7 17l0 .01" /><path d="M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M7 7l0 .01" /><path d="M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M17 7l0 .01" /><path d="M14 14l3 0" /><path d="M20 14l0 .01" /><path d="M14 14l0 3" /><path d="M14 20l3 0" /><path d="M17 17l3 0" /><path d="M20 17l0 3" /></svg>
+                                            Ver QR
+                                        </button>
+                                    </div>
+                                
+                                    <!-- Toggle URL personalizada -->
+                                    <div class="cem-option-row cem-option-row--last" style="margin-top:10px;">
+                                        <div>
+                                            <span class="cem-option-label">Usar URL personalizada</span>
+                                            <p class="cem-url-hint">Si tu sitio web está en otro dominio, indica su URL para que el widget cargue correctamente.</p>
+                                        </div>
+                                        <el-switch v-model="useCustomUrl" active-color="#18181b" @change="onCustomUrlToggle"></el-switch>
+                                    </div>
 
-                    <!-- Toggle URL personalizada -->
-                    <div class="cem-option-row cem-option-row--last" style="margin-top:10px;">
-                        <div>
-                            <span class="cem-option-label">Usar URL personalizada</span>
-                            <p class="cem-url-hint">Si tu sitio web está en otro dominio, indica su URL para que el widget cargue correctamente.</p>
-                        </div>
-                        <el-switch v-model="useCustomUrl" active-color="#18181b" @change="onCustomUrlToggle"></el-switch>
-                    </div>
-
-                    <!-- Input URL personalizada -->
-                    <div v-if="useCustomUrl" class="cem-custom-url-input">
-                        <el-input
-                            v-model="customUrl"
-                            size="small"
-                            placeholder="https://miempresa.com"
-                            prefix-icon="el-icon-link"
-                            clearable
-                            @input="buildCode"
-                        ></el-input>
-                        <div class="cem-save-row">
-                            <el-button
-                                size="mini"
-                                type="primary"
-                                :loading="savingUrl"
-                                @click="saveWidgetSettings"
-                            >Guardar</el-button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                    <!-- Input URL personalizada -->
+                                    <div v-if="useCustomUrl" class="cem-custom-url-input">
+                                        <el-input
+                                            v-model="customUrl"
+                                            size="small"
+                                            placeholder="https://miempresa.com"
+                                            prefix-icon="el-icon-link"
+                                            clearable
+                                            @input="buildCode"
+                                        ></el-input>
+                                        <div class="cem-save-row">
+                                            <el-button
+                                                size="mini"
+                                                type="primary"
+                                                :loading="savingUrl"
+                                                @click="saveWidgetSettings"
+                                            >Guardar</el-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
+                </form>
+            </template>
         </div>
 
         <span slot="footer">
             <el-button size="small" class="ms-auto" @click="$emit('update:visible', false)">Cerrar</el-button>
         </span>
     </el-dialog>
+
+    <!-- Modal QR -->
+    <el-dialog
+        title="Código QR — Libro de Reclamaciones"
+        :visible.sync="showQrModal"
+        width="380px"
+        append-to-body
+        :close-on-click-modal="true"
+    >
+        <div class="qr-modal-body">
+            <img :src="qrImageUrl" alt="Código QR" class="qr-image" />
+            <p class="qr-url-hint">{{ activeWidgetUrl }}</p>
+        </div>
+        <span slot="footer" class="d-flex align-items-end justify-content-end gap-2">
+            <el-button size="small" @click="showQrModal = false">Cerrar</el-button>
+            <el-button size="small" type="primary" @click="downloadQr">Descargar</el-button>
+        </span>
+    </el-dialog>
+    </div>
 </template>
 
 <style scoped>
@@ -336,6 +374,32 @@
     top: 8px;
     right: 8px;
 }
+
+.qr-modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.qr-image {
+    width: 260px;
+    height: 260px;
+    border: 1px solid #e4e7ed;
+    border-radius: 8px;
+    padding: 8px;
+    background: #fff;
+}
+
+.qr-url-hint {
+    font-size: 11px;
+    color: #909399;
+    word-break: break-all;
+    text-align: center;
+    margin: 0;
+    max-width: 280px;
+}
 </style>
 
 <script>
@@ -351,6 +415,7 @@ export default {
 
     data() {
         return {
+            activeName: 'first',
             widgetUrl: '',
             embedCode: '',
             primaryColor: '#18181b',
@@ -358,6 +423,7 @@ export default {
             useCustomUrl: false,
             customUrl: '',
             savingUrl: false,
+            showQrModal: false,
         }
     },
 
@@ -366,6 +432,11 @@ export default {
             return this.useCustomUrl && this.customUrl.trim()
                 ? this.customUrl.trim()
                 : this.widgetUrl
+        },
+
+        qrImageUrl() {
+            const url = encodeURIComponent(this.activeWidgetUrl)
+            return `https://api.qrserver.com/v1/create-qr-code/?size=260x260&ecc=M&data=${url}`
         },
     },
 
@@ -568,6 +639,14 @@ export default {
             } else {
                 this.fallbackCopy()
             }
+        },
+
+        downloadQr() {
+            const a = document.createElement('a')
+            a.href = this.qrImageUrl
+            a.download = 'qr-libro-reclamaciones.png'
+            a.target = '_blank'
+            a.click()
         },
 
         // Fallback para entornos sin Clipboard API

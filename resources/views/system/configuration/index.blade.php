@@ -21,6 +21,7 @@
         </div>
         <div class="col-lg-6 col-md-12">
             <system-configuration-culqi></system-configuration-culqi>
+            <system-configuration-izipay></system-configuration-izipay>
             <system-configuration-token></system-configuration-token>
             <system-configuration-apk-url></system-configuration-apk-url>
             <system-support-configuration></system-support-configuration>

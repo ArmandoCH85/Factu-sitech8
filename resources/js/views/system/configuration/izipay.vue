@@ -1,66 +1,73 @@
-
- <template>
+<template>
     <div class="card">
       <div class="card-header bg-info bg-info-customer-admin">
-        <h3 class="my-0">Culqi</h3>
+        <h3 class="my-0">Izipay</h3>
       </div>
       <div class="card-body">
         <form autocomplete="off" @submit.prevent="submit">
           <div class="form-body">
             <div class="row">
               <div class="col-md-12">
-
                 <div>
-                    <div :class="{'has-danger': errors.enabled_culqi}"
+                    <div :class="{'has-danger': errors.enabled_izipay}"
                                     class="form-group">
                       <label>
                         Habilitar
                         </label>
                         <div>
-                                <el-switch v-model="form.enabled_culqi"
+                                <el-switch v-model="form.enabled_izipay"
                                             active-text="Si"
                                             inactive-text="No"></el-switch>
-                                <small v-if="errors.enabled_culqi"
+                                <small v-if="errors.enabled_izipay"
                                         class="form-control-feedback"
-                                        v-text="errors.enabled_culqi[0]"></small>
+                                        v-text="errors.enabled_izipay[0]"></small>
 
                         </div>
                     </div>
 
                 </div>
-                <div class="form-group" :class="{'has-danger': errors.token_public_culqui}">
+                <div class="form-group" :class="{'has-danger': errors.username_izipay}">
                   <label class="control-label">
-                    Token Público
-                    <el-tooltip placement="right-start">
-                      <div slot="content">
-                        Token Público.
-                        <a href="#" @click="openCulqi">Culqi</a>
-                      </div>
-                      <i class="fa fa-info-circle"></i>
-                    </el-tooltip>
+                    Usuario
                   </label>
-                  <el-input v-model="form.token_public_culqui"></el-input>
+                  <el-input v-model="form.username_izipay"></el-input>
                   <small
                     class="form-control-feedback"
-                    v-if="errors.token_public_culqui"
-                    v-text="errors.token_public_culqui[0]"
+                    v-if="errors.username_izipay"
+                    v-text="errors.username_izipay[0]"
                   ></small>
                 </div>
               </div>
               <div class="col-md-12">
-                <div class="form-group" :class="{'has-danger': errors.token_private_culqui}">
-                  <label class="control-label">Token Privado  <el-tooltip placement="right-start">
-                      <div slot="content">
-                        Token Privado.
-                        <a href="#" @click="openCulqi">Culqi</a>
-                      </div>
-                      <i class="fa fa-info-circle"></i>
-                    </el-tooltip></label>
-                  <el-input v-model="form.token_private_culqui"></el-input>
+                <div class="form-group" :class="{'has-danger': errors.password_izipay}">
+                  <label class="control-label">Contraseña</label>
+                  <el-input v-model="form.password_izipay"></el-input>
                   <small
                     class="form-control-feedback"
-                    v-if="errors.token_private_culqui"
-                    v-text="errors.token_private_culqui[0]"
+                    v-if="errors.password_izipay"
+                    v-text="errors.password_izipay[0]"
+                  ></small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group" :class="{'has-danger': errors.publickey_izipay}">
+                  <label class="control-label">Public Key</label>
+                  <el-input v-model="form.publickey_izipay"></el-input>
+                  <small
+                    class="form-control-feedback"
+                    v-if="errors.publickey_izipay"
+                    v-text="errors.publickey_izipay[0]"
+                  ></small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group" :class="{'has-danger': errors.sha256key_izipay}">
+                  <label class="control-label">SHA256 Key</label>
+                  <el-input v-model="form.sha256key_izipay"></el-input>
+                  <small
+                    class="form-control-feedback"
+                    v-if="errors.sha256key_izipay"
+                    v-text="errors.sha256key_izipay[0]"
                   ></small>
                 </div>
               </div>
@@ -94,21 +101,22 @@ export default {
     await this.initForm();
 
     await this.$http.get(`/${this.resource}/record`).then(response => {
-        this.form.enabled_culqi = response.data.enabled_culqi;
-        this.form.token_public_culqui = response.data.token_public_culqui;
-        this.form.token_private_culqui = response.data.token_private_culqui;
+      this.form.enabled_izipay = response.data.enabled_izipay;
+      this.form.username_izipay = response.data.username_izipay;
+      this.form.password_izipay = response.data.password_izipay;
+      this.form.publickey_izipay = response.data.publickey_izipay;
+      this.form.sha256key_izipay = response.data.sha256key_izipay;
     });
   },
   methods: {
-    openCulqi() {
-      window.open("https://www.culqi.com");
-    },
     initForm() {
       this.errors = {};
       this.form = {
-        enabled_culqi: false,
-        token_public_culqui: null,
-        token_private_culqui: null
+        username_izipay: null,
+        enabled_izipay: false,
+        password_izipay: null,
+        publickey_izipay: null,
+        sha256key_izipay: null
       };
     },
     submit() {

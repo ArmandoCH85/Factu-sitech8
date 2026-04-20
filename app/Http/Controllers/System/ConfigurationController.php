@@ -28,6 +28,12 @@ class ConfigurationController extends Controller
         return [
             'token_public_culqui' => $configuration->token_public_culqui,
             'token_private_culqui' => $configuration->token_private_culqui,
+            'enabled_culqi' => $configuration->enabled_culqi,
+            'enabled_izipay' => $configuration->enabled_izipay,
+            'username_izipay' => $configuration->username_izipay,
+            'password_izipay' => $configuration->password_izipay,
+            'publickey_izipay' => $configuration->publickey_izipay,
+            'sha256key_izipay' => $configuration->sha256key_izipay
         ];
     }
 
@@ -35,6 +41,18 @@ class ConfigurationController extends Controller
     public function store(Request $request)
     {
         $configuration = Configuration::first();
+
+        if ($configuration->enabled_culqi === true && $request->enabled_izipay === true) {
+            return [
+                'success' => false,
+                'message' => 'No se puede habilitar Izipay si Culqi está habilitado'
+            ];
+        } else if ($configuration->enabled_izipay === true && $request->enabled_culqi === true) {
+            return [
+                'success' => false,
+                'message' => 'No se puede habilitar Culqi si Izipay está habilitado'
+            ];
+        }
 
         if($request->token_public_culqui)
         {

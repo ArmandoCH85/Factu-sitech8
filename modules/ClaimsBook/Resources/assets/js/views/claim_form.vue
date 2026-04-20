@@ -1259,11 +1259,10 @@ export default {
     // Carga los datos auxiliares desde el endpoint correspondiente
     loadTables() {
       if (this.embedded && this.tenantSlug) {
-        // Widget: endpoint público con tenant_slug
-        this.$http.get(`/claims/remote/tables/${this.tenantSlug}`)
-          .then(response => {
-            this.tables = response.data
-          })
+        // Widget: endpoint público con tenant_slug — usar URL absoluta
+        const remoteBase = window.location.protocol + '//' + this.tenantSlug
+        this.$http.get(remoteBase + '/claims/remote/tables/' + encodeURIComponent(this.tenantSlug))
+          .then(response => { this.tables = response.data })
       } else if (!this.embedded) {
         // Panel admin: endpoint autenticado
         this.$http.get('/claims/tables')
@@ -1420,9 +1419,9 @@ export default {
         this.submitting = true
         const fd = this.buildFormData()
 
-        // Seleccionar endpoint según modo
+        // Seleccionar endpoint según modo. Cuando está embebido, usar URL absoluta
         const url = this.embedded
-          ? '/claims/remote/store'
+          ? (window.location.protocol + '//' + this.tenantSlug + '/api/claims/remote/store')
           : '/claims/store'
 
         this.$http.post(url, fd, {

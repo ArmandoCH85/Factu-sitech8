@@ -32,6 +32,7 @@ if ($current_hostname) {
 
         // Registro de reclamo desde el widget (rate limiting: 60 peticiones/minuto por IP)
         Route::middleware('throttle:60,1')
+            ->withoutMiddleware(['auth', 'VerifyCsrfToken'])
             ->post('/claims/remote/store', 'ClaimController@publicStore');
 
         // Canales públicos del tenant (para el selector del widget)

@@ -1,18 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
-// Route::middleware('auth:api')->get('/claimsbook', function (Request $request) {
-//     return $request->user();
-// });
+if ($hostname) {
+    Route::domain($hostname->fqdn)->group(function () {
+        // Registro de reclamo desde el widget (rate limiting: 10 peticiones/minuto por IP)
+        Route::middleware('throttle:10,1')
+            ->post('/claims/remote/store', 'ClaimController@publicStore');
+    });
+}

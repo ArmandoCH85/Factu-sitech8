@@ -484,7 +484,7 @@ JS;
     /**
      * Endpoint público para registrar reclamos desde el widget embebido.
      * Resuelve el tenant por el campo tenant_slug del payload.
-     * Rate limiting aplicado en la definición de la ruta (60/min por IP).
+     * Rate limiting aplicado en la definición de la ruta (10/min por IP).
      */
     public function publicStore(Request $request)
     {

@@ -8,30 +8,26 @@ v1.4.2
  └────── MAJOR: cambios que rompen compatibilidad
 ```
 
-## Commit donde se soluciona un error
+## Estructura de los commits 
 
 ```bash
 git commit -n "fix(module) : Bug"
                     │         │
                     │         └────── Mensaje descriptivo sobre la solución que hace el commit
                     └────── Modulo afectado de la solución de los bugs
+```
 
-git tag v8.2.{x}
-git push origin main
+## PATCH, Intervalo cada 2 semanas a 3 semanas respecto a la catnidad de issues que haya
+
+```bash
+git tag -a v8.0.{x}
 git push origin v8.2.{x}
 ```
 
-## Commit que tiene una nueva funcionalidad
+## RELEASE, Commit que tiene una nueva funcionalidad
 
 ```bash
-git commit -n "feat(module) : Feature"
-                    │           │
-                    │           └────── Mensaje descriptivo de la nueva característica que se ha agregado
-                    └────── Modulo afectado de la solución de los bugs
-
-git tag -a v8.{y}.{x} -m "Release v8.{y}.{x} {Descripción sobre la nueva release}"
-
-git push origin main
+git tag -a v8.{y}.0
 git push origin v8.{y}.{x}
 ```
 

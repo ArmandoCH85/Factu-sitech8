@@ -15,10 +15,16 @@ class PrinterController extends Controller
     /**
      * Devuelve la configuración de impresión guardada en BD.
      * Incluye la lista de impresoras activas y los campos de configuración.
+     *
+     * Se usa firstOrNew() en lugar de first() para evitar que crashee en PHP 8
+     * cuando el tenant aún no tiene registro en restaurant_configurations.
+     * Con first() + $config->propiedad el resultado era un fatal error (null object),
+     * el frontend lo veía como 500 silencioso y el panel siempre arrancaba en blanco.
+     * firstOrNew() devuelve un modelo vacío (sin persistir) que permite aplicar ?? normalmente.
      */
     public function getConfig(): JsonResponse
     {
-        $config = RestaurantConfiguration::first();
+        $config = RestaurantConfiguration::firstOrNew([]);
 
         $printers = Printer::where('active', true)
             ->orderByDesc('is_default')

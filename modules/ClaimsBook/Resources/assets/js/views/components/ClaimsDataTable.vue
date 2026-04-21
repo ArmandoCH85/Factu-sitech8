@@ -42,7 +42,7 @@
                     <td v-if="columns.tipo.visible" class="text-start">
                         <span
                             class="badge"
-                            :class="row.claim_type === 'reclamo' ? 'bg-danger' : 'bg-warning text-dark'"
+                            :class="row.claim_type === 'reclamo' ? 'bg-danger' : 'bg-warning'"
                             style="text-transform: capitalize"
                         >
                             {{ row.claim_type }}

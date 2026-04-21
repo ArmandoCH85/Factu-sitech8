@@ -1092,7 +1092,7 @@ html.sidebar-light .establishment-selector-container{
 .btn-outline-success{
     border-color: var(--success) !important;
     color: var(--success) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-success:hover{
     border-color: var(--success) !important;
@@ -1102,7 +1102,7 @@ html.sidebar-light .establishment-selector-container{
 .btn-outline-info{
     border-color: var(--info) !important;
     color: var(--info) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-info:hover{
     border-color: var(--info) !important;
@@ -1474,11 +1474,25 @@ html.dark .table-list-prices .btn-dropdown-toggle:focus,
 html.dark .table-list-prices .btn-dropdown-toggle:active {
     background-color: var(--md-input-dark);
 }
-html.dark .contain-icon-establishment{
+html.dark .contain-icon-establishment,
+html.dark .cbm-card__label,
+html.dark .cbm-stat__label,
+html.dark .cbm-stat__icon,
+html.dark .cem-option-label,
+html.dark .cd-field>span {
     color: #d0d2d6;
 }
+html.dark .cbm-stat__value,
+html.dark .cbm-card__value,
+html.dark .cem-section-title,
+html.dark .cem-url-text,
+html.dark .cd-section-title {
+    color: #f5f5f5;
+}
 html.dark .establishment-dropdown,
-html.dark .establishment-dropdown-header {
+html.dark .establishment-dropdown-header,
+html.dark .cbm-card,
+html.dark .cbm-secondary-grid {
     background-color: var(--md-content-dark) !important;
     border-color: var(--md-border-dark) !important;
     color: #fff !important;
@@ -1486,11 +1500,38 @@ html.dark .establishment-dropdown-header {
 html.dark .ck.ck-editor__main>.ck-editor__editable{
     background-color: var(--md-input-dark);
 }
-html.dark .image-container-fluid{
+html.dark .image-container-fluid,
+html.dark .cbm-stat,
+html.dark .sc-panel-actions,
+html.dark .el-table td.el-table__cell, 
+html.dark .el-table th.el-table__cell.is-leaf,
+html.dark .cem-section,
+html.dark .cem-option-row,
+html.dark .cd-section,
+html.dark .cd-section-title {
     border-color: var(--md-border-dark);
 }
 html.dark .image-container-fluid:hover{
     border-color: color-mix(in srgb, var(--md-border-dark) 90%, #ffffff);
+}
+html.dark .sc-action-item,
+html.dark .cem-section-header{
+    background-color: var(--md-input-dark);
+    border-color: var(--md-border-dark);
+}
+html.dark .el-table tr,
+html.dark .el-table th.el-table__cell,
+html.dark .el-table, html.dark .el-table__expanded-cell,
+html.dark .el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell {
+    background-color: transparent !important;
+}
+html.dark .el-divider,
+html.dark .el-table--border:after, html.dark .el-table--group:after, html.dark .el-table:before {
+    background-color: var(--md-border-dark);
+}
+html.dark .el-alert--info.is-light{
+    background-color: var(--md-input-dark);
+    color: #bfcbe3;
 }
 @media only screen and (max-width: 991px){
     .d-lg-block{

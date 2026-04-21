@@ -163,7 +163,7 @@ class HelperFacturalo
             $pdf->AddPageByArray([
                 'orientation' => 'L',
                 'newformat' => [
-                    ($base_height + $calculated_height + $additional) - 200,
+                    $base_height + $calculated_height + $additional,
                     $width,
                 ],
                 'mgt' => 0,

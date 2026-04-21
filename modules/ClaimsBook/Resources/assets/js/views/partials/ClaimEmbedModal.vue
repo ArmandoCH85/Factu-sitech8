@@ -51,7 +51,7 @@
                             <div class="row">
                                 <div class="cem-url-row">
                                     <span class="cem-url-label">Enlace público</span>
-                                    <div class="d-flex flex-column align-items-center">
+                                    <div class="d-flex flex-column align-items-start">
                                         <span class="cem-url-text">{{ activeWidgetUrl }}</span>                                        
                                         <div class="d-flex align-items-center justify-content-start gap-2 mt-2 w-100">
                                             <button type="button" class="btn btn-sm btn-outline-primary" @click="copyWidgetUrl">
@@ -561,7 +561,7 @@ export default {
             if (!this.showCompany) params.push(`show_company=0`)
             const query = params.length ? '?' + params.join('&') : ''
 
-            this.widgetUrl = `${origin}/claims/widget/${slug}${query}`
+            this.widgetUrl = `${origin}/claims/widget`
 
             const companyAttr = this.showCompany ? '' : ` data-show-company="false"`
             const urlAttr     = (this.useCustomUrl && this.customUrl.trim())

@@ -920,7 +920,59 @@ export default {
             if (this.form.plan_id) {
                 let plan = this.plans.find(p => p.id === this.form.plan_id);
                 this.form.price = plan.pricing;
+
+                 if (plan.module_permissions) {
+                    if (this.form.is_update) {
+                        this.$confirm('El plan seleccionado tiene una configuración de módulos sugerida. ¿Deseas sobreescribir los módulos actuales con los de este plan?', 'Atención', {
+                            confirmButtonText: 'Sí, sobreescribir',
+                            cancelButtonText: 'No, mantener actuales',
+                            type: 'warning'
+                        }).then(() => {
+                            this.applyPlanModules(plan.module_permissions);
+                        }).catch(() => {
+                            // no sobreescribir
+                        });
+                    } else {
+                        this.applyPlanModules(plan.module_permissions);
+                    }
+                }
             }
+        },
+        applyPlanModules(permissions) {
+            this.business = permissions.business || null;
+            const preSelecteds = [];
+            const preAppSelecteds = [];
+            
+            const preSelectedsModules = permissions.modules || [];
+            const preSelectedsApps = permissions.apps || [];
+            const preSelectedsLevels = permissions.levels || [];
+            
+            this.modules.map(m => {
+                if (preSelectedsModules.includes(m.id)) {
+                    preSelecteds.push(m.id);
+                }
+                m.childrens.map(c => {
+                    const idArray = c.id.split('-');
+                    if (preSelectedsLevels.includes(parseInt(idArray[1])) || preSelectedsLevels.includes(idArray[1].toString())) {
+                        preSelecteds.push(c.id);
+                    }
+                })
+            });
+
+            this.apps.map(m => {
+                if (preSelectedsApps.includes(m.id)) {
+                    preAppSelecteds.push(m.id);
+                }
+                m.childrens.map(c => {
+                    const idArray = c.id.split('-');
+                    if (preSelectedsLevels.includes(parseInt(idArray[1])) || preSelectedsLevels.includes(idArray[1].toString())) {
+                        preAppSelecteds.push(c.id);
+                    }
+                })
+            });
+
+            if (this.$refs.tree) this.$refs.tree.setCheckedKeys(preSelecteds);
+            if (this.$refs.Apptree) this.$refs.Apptree.setCheckedKeys(preAppSelecteds);
         },
         create() {
             if (this.recordId) {

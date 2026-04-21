@@ -24,6 +24,7 @@ class Plan extends Model
         'sales_unlimited', 
         'include_sale_notes_sales_limit', 
         'include_sale_notes_limit_documents', 
+        'module_permissions',
     ];
 
 
@@ -34,6 +35,7 @@ class Plan extends Model
         'sales_limit' => 'float',
         'include_sale_notes_sales_limit' => 'boolean',
         'include_sale_notes_limit_documents' => 'boolean',
+        'module_permissions' => 'array',
     ];
 
 

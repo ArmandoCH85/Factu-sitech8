@@ -23,10 +23,8 @@ class ClaimChannelController extends Controller
      */
     public function records()
     {
-        $channels = ClaimChannel::orderBy('name')->get();
-
         return response()->json(
-            $channels->map->getCollectionData()->values()
+            $this->buildEnrichedChannels()->values()
         );
     }
 
@@ -44,10 +42,8 @@ class ClaimChannelController extends Controller
 
         app(Environment::class)->tenant($hostname->website);
 
-        $channels = ClaimChannel::orderBy('name')->get();
-
         return response()->json(
-            $channels->map->getCollectionData()->values()
+            $this->buildEnrichedChannels()->values()
         );
     }
 
@@ -57,11 +53,13 @@ class ClaimChannelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100',
+            'name'        => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
         ]);
 
         $channel = ClaimChannel::create([
-            'name' => trim($request->name),
+            'name'        => trim($request->name),
+            'description' => $request->description ? trim($request->description) : null,
         ]);
 
         return response()->json([
@@ -130,5 +128,27 @@ class ClaimChannelController extends Controller
                 ? "{$created} canal(es) sincronizado(s) correctamente"
                 : 'Los canales ya están sincronizados con los establecimientos',
         ]);
+    }
+
+    private function buildEnrichedChannels(): \Illuminate\Support\Collection
+    {
+        $estMap = [];
+        foreach (Establishment::all() as $est) {
+            $parts = array_filter([
+                ($est->address && $est->address !== '-') ? $est->address : null,
+                optional($est->department)->description,
+                optional($est->province)->description,
+                optional($est->district)->description,
+            ]);
+            $estMap[strtolower(trim($est->description))] = [
+                'address'   => $parts ? implode(', ', $parts) : null,
+                'telephone' => ($est->telephone && $est->telephone !== '-') ? $est->telephone : null,
+                'email'     => ($est->email && $est->email !== '-') ? $est->email : null,
+            ];
+        }
+
+        return ClaimChannel::orderBy('name')->get()->map(function ($ch) use ($estMap) {
+            return $ch->getCollectionData($estMap);
+        });
     }
 }

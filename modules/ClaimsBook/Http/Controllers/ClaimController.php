@@ -244,7 +244,7 @@ JS;
 
         app(Environment::class)->tenant($hostname->website);
 
-        $claim_channels          = ClaimChannel::orderBy('name')->get(['id', 'name']);
+        $claim_channels          = $this->buildEnrichedChannels();
         $identity_document_types = IdentityDocumentType::where('active', true)
             ->orderBy('description')
             ->get(['id', 'description']);
@@ -270,7 +270,7 @@ JS;
     public function tables()
     {
         $status_claims       = StatusClaim::orderBy('sort_order')->get()->map->getCollectionData();
-        $claim_channels      = ClaimChannel::orderBy('name')->get()->map->getCollectionData();
+        $claim_channels      = $this->buildEnrichedChannels();
         $identity_document_types = IdentityDocumentType::where('active', true)
             ->orderBy('description')
             ->get(['id', 'description']);
@@ -1125,5 +1125,27 @@ JS;
         $H = fmod((rad2deg(atan2($bv, $a)) + 360), 360);
 
         return [round($L, 4), round($C, 4), round($H, 2)];
+    }
+
+    private function buildEnrichedChannels(): \Illuminate\Support\Collection
+    {
+        $estMap = [];
+        foreach (Establishment::all() as $est) {
+            $parts = array_filter([
+                ($est->address && $est->address !== '-') ? $est->address : null,
+                optional($est->department)->description,
+                optional($est->province)->description,
+                optional($est->district)->description,
+            ]);
+            $estMap[strtolower(trim($est->description))] = [
+                'address'   => $parts ? implode(', ', $parts) : null,
+                'telephone' => ($est->telephone && $est->telephone !== '-') ? $est->telephone : null,
+                'email'     => ($est->email && $est->email !== '-') ? $est->email : null,
+            ];
+        }
+
+        return ClaimChannel::orderBy('name')->get()->map(function ($ch) use ($estMap) {
+            return $ch->getCollectionData($estMap);
+        });
     }
 }

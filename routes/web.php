@@ -650,6 +650,7 @@ if ($hostname) {
             Route::post('sale-notes/getUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSite');
             Route::post('sale-notes/urlUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSiteUrl');
             Route::post('sale-notes/duplicate', 'Tenant\SaleNoteController@duplicate');
+            Route::post('sale-notes/custom-fields/update', 'Tenant\SaleNoteController@updateCustomFields');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');
             Route::get('sale-notes/record/{salenote}', 'Tenant\SaleNoteController@record');

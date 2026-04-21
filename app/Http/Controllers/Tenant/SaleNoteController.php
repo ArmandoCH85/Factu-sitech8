@@ -62,7 +62,6 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use App\Models\Tenant\DispatchSaleNote;
 use App\Http\Resources\Tenant\DispatchSaleNoteCollection;
-
 use Modules\Finance\Traits\FilePaymentTrait;
 // use App\Http\Resources\Tenant\SaleNoteGenerateDocumentResource;
 // use App\Models\Tenant\Warehouse;
@@ -616,6 +615,23 @@ class SaleNoteController extends Controller
         $record = new SaleNoteResource2(SaleNote::findOrFail($id));
 
         return $record;
+    }
+
+    public function updateCustomFields(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'custom_fields_data' => 'nullable|array'
+        ]);
+
+        $saleNote = SaleNote::findOrFail($request->input('id'));
+        $saleNote->custom_fields_data = $request->input('custom_fields_data', []);
+        $saleNote->save();
+
+        return [
+            'success' => true,
+            'data' => $saleNote->custom_fields_data
+        ];
     }
 
     public function store(SaleNoteRequest $request)

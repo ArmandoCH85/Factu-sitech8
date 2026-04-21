@@ -800,7 +800,7 @@
                 $child_number= $child->number;
             }
             $person = $this->person;
-            $mails = $person->getCollectionData();
+            $mails = $person ? $person->getCollectionData() : ['optional_email_send' => null];
             $customer_email=  $mails['optional_email_send'];
 
             /*
@@ -918,7 +918,7 @@
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
                 'payments' => $this->payments,
-
+                'custom_fields_data' => $this->custom_fields_data,
                 'total_discount' => $this->generalApplyNumberFormat($this->total_discount),
                 'items_for_report' => $this->getItemsforReport(),
 

@@ -40,7 +40,7 @@
             <div class="form-group">
                 <label for="password" class="label-password">
                     Contraseña
-                    <a class="forgot-password d-none" href="{{ url('password/reset') }}" tabindex="5">¿Olvidaste tu contraseña?</a>
+                    <a class="forgot-password d-none" href="{{ route('password.request') }}" tabindex="5">¿Olvidaste tu contraseña?</a>
                 </label>
                 <div class="position-relative">
                     <input type="password" name="password" id="password" placeholder="********" class="form-control hide-password {{ $errors->has('password') ? 'is-invalid' : '' }}">
@@ -58,7 +58,7 @@
                     <input name="remember" id="RememberMe" type="checkbox" {{ old('remember') ? 'checked' : '' }}>
                     <label class="m-0" for="RememberMe">Recordarme</label>
                 </div>
-                <a class="forgot-password-modern d-none" href="{{ url('password/reset') }}" tabindex="5">¿Olvidaste tu contraseña?</a>
+                <a class="forgot-password-modern d-none" href="{{ route('password.request') }}" tabindex="5">¿Olvidaste tu contraseña?</a>
             </div>
 
             <button type="submit" class="btn btn-signin btn-block">
@@ -66,7 +66,7 @@
                 iniciar sesión
             </button>
             <div class="text-center p-4 password-down">
-                <a href="{{ url('password/reset') }}" tabindex="5">¿Has olvidado tu contraseña?</a>
+                <<a href="{{ route('password.request') }}" tabindex="5">¿Has olvidado tu contraseña?</a>
             </div>
             @include('tenant.auth.partials.socials')
         </form>

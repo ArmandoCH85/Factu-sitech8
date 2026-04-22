@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            $table->boolean('ticket_single_shipment')->default(false)->change();
+            $table->boolean('ticket_single_shipment')->default(true)->change();
         });
     }
 };

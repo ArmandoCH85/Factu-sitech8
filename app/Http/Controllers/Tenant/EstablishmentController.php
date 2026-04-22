@@ -102,7 +102,11 @@ class EstablishmentController extends Controller
                 $path = 'storage/uploads/logos/' . $outputFilename;
                 $request->merge(['logo' => $path]);
             }
-            $establishment->fill($request->all());
+            if ($request->hasFile('file')) {
+                $establishment->fill($request->all());
+            } else {
+                $establishment->fill($request->except('logo'));
+            }
             $establishment->has_igv_31556 = $has_igv_31556;
             $establishment->email = $request->email;
             $establishment->save();

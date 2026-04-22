@@ -244,6 +244,32 @@ class CompanyController extends Controller
 
             $company->save();
 
+            if ($type === 'logo') {
+                $establishment = \App\Models\Tenant\Establishment::withOut(['country', 'department', 'province', 'district'])
+                    ->where('code', '0000')
+                    ->first();
+
+                if ($establishment) {
+                    $logoActual = $establishment->getRawOriginal('logo');
+
+                    $esCopiaPropia = $logoActual && str_contains(basename($logoActual), 'establishment_0000_');
+
+                    if (!$esCopiaPropia) {
+                        $sourcePath = 'public/uploads/logos/' . $name;
+
+                        if (Storage::exists($sourcePath)) {
+                            $newName = 'establishment_0000_' . time() . '_' . $name;
+
+                            Storage::copy($sourcePath, 'public/uploads/logos/' . $newName);
+
+                            $establishment->logo = 'storage/uploads/logos/' . $newName;
+                            $establishment->save();
+                        }
+                    }
+              
+                }
+            }
+
             return [
                 'success' => true,
                 'message' => __('app.actions.upload.success'),

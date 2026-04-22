@@ -19,16 +19,30 @@ class ClaimChannel extends ModelTenant
 
     protected $fillable = [
         'name',
+        'description',
+        'address',
+        'telephone',
+        'email',
     ];
 
     /**
      * Retorna los datos formateados para respuestas de API.
+     * $estMap: mapa opcional [nombre_lowercase => array] para enriquecer
+     *          canales sincronizados con los datos de contacto del establecimiento.
      */
-    public function getCollectionData(): array
+    public function getCollectionData(array $estMap = []): array
     {
+        $est = $estMap[strtolower($this->name)] ?? null;
+
         return [
-            'id'   => $this->id,
-            'name' => $this->name,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'description' => $this->description,
+            'address'     => $est['address']   ?? null,
+            'telephone'   => $est['telephone'] ?? null,
+            'email'       => $est['email']     ?? null,
         ];
     }
+
+
 }

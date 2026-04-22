@@ -2,7 +2,7 @@
     <el-dialog
         title="Canales de atención"
         :visible.sync="showDialog"
-        width="520px"
+        width="600px"
         @open="loadEstablishments"
         @close="close"
     >
@@ -16,86 +16,130 @@
         ></el-alert>
 
         <!-- Establecimientos del sistema con indicador de sincronización -->
-        <el-table
-            :data="establishments"
-            v-loading="loading"
-            size="small"
-            style="width: 100%"
-            class="ch-table"
-        >
-            <el-table-column label="#" width="50" type="index" align="center"></el-table-column>
-            <el-table-column prop="code" label="Código" width="100"></el-table-column>
-            <el-table-column prop="description" label="Establecimiento" min-width="200"></el-table-column>
-            <el-table-column label="Canal registrado" width="130" align="center">
-                <template slot-scope="{ row }">
-                    <el-tag
-                        v-if="isSynced(row)"
-                        type="success"
-                        size="mini"
-                        effect="plain"
-                    >
-                        <i class="el-icon-check"></i> Activo
-                    </el-tag>
-                    <span v-else class="ch-pending">—</span>
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <el-divider class="ch-divider"></el-divider>
-
-        <!-- Canales registrados: incluye los sincronizados y los extras manuales -->
-        <div class="ch-channels-header">
-            <span class="ch-section-title">Canales registrados</span>
-        </div>
-        <el-table
-            :data="channels"
-            size="small"
-            style="width: 100%"
-            class="ch-table"
-        >
-            <el-table-column prop="name" label="Canal"></el-table-column>
-            <el-table-column width="70" align="center">
-                <template slot-scope="{ row }">
-                    <el-button
-                        size="mini"
-                        type="danger"
-                        icon="el-icon-delete"
-                        plain
-                        @click="destroy(row)"
-                    ></el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <!-- Agregar canal extra manualmente -->
-        <div class="ch-add-section">
-            <el-input
-                v-model="newName"
-                placeholder="Nombre del canal extra..."
-                size="small"
-                @keyup.enter.native="store"
-            ></el-input>
+        <div class="ch-section-header d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold">Sucursales del sistema</h5>
             <el-button
-                type="primary"
-                size="small"
-                :loading="storing"
-                @click="store"
-            >
-                <i class="el-icon-plus"></i> Agregar
-            </el-button>
-        </div>
-
-        <div slot="footer" class="ch-footer">
-            <el-button size="small" @click="close">Cerrar</el-button>
-            <el-button
-                size="small"
+                class="btn btn-sm"
                 type="primary"
                 plain
                 :loading="syncing"
                 @click="syncChannels"
             >
-                <i class="el-icon-refresh"></i> Sincronizar sucursales
-            </el-button>            
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-refresh" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+                Sincronizar sucursales
+            </el-button>
+        </div>
+        <div class="table-responsive ch-table">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width:45px">#</th>
+                        <th style="width:80px">Código</th>
+                        <th>Establecimiento</th>
+                        <th class="text-center" style="width:115px">Sincronizado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="loading">
+                        <td colspan="4" class="text-center py-3">
+                            <i class="el-icon-loading"></i> Cargando...
+                        </td>
+                    </tr>
+                    <tr v-else-if="establishments.length === 0">
+                        <td colspan="4" class="text-center py-3 text-muted">Sin registros</td>
+                    </tr>
+                    <tr v-for="(row, index) in establishments" :key="row.id" v-else>
+                        <td class="text-center">{{ index + 1 }}</td>
+                        <td>{{ row.code }}</td>
+                        <td>{{ row.description }}</td>
+                        <td class="text-center">
+                            <span v-if="isSynced(row)" class="badge bg-success-lt">
+                                <i class="el-icon-check"></i> Activo
+                            </span>
+                            <span v-else class="ch-pending">—</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Canales registrados -->
+        <div class="ch-section-header mt-2">
+            <h5 class="fw-bold">Canales registrados</h5>
+            <el-tag type="info" size="mini" effect="plain">{{ channels.length }}</el-tag>
+        </div>
+        <div class="table-responsive ch-table">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th style="width:160px">Canal</th>
+                        <th>Descripción</th>
+                        <th class="text-end" style="width:60px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="channels.length === 0">
+                        <td colspan="3" class="text-center py-3 text-muted">Sin canales registrados</td>
+                    </tr>
+                    <tr v-for="row in channels" :key="row.id" v-else>
+                        <td>{{ row.name }}</td>
+                        <td>
+                            <span v-if="channelContactInfo(row)" class="text-muted">{{ channelContactInfo(row) }}</span>
+                            <span v-else-if="row.description" class="text-muted">{{ row.description }}</span>
+                            <span v-else class="ch-pending">—</span>
+                        </td>
+                        <td class="text-end">
+                            <el-button
+                                size="mini"
+                                type="danger"
+                                class="btn btn-sm"
+                                plain
+                                @click="destroy(row)"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                            </el-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Agregar canal extra manualmente -->
+        <div class="ch-section-header">
+            <h5 class="fw-bold">Agregar canal manualmente</h5>
+        </div>
+        <div class="row mx-0">
+            <div class="col-md-5">
+                <label class="control-label">Nombre <span class="text-danger">*</span></label>
+                <el-input
+                    v-model="newName"
+                    placeholder="Nombre del canal"
+                    size="small"
+                    @keyup.enter.native="store"
+                ></el-input>
+            </div>
+            <div class="col-md-7">
+                <label class="control-label">Descripción (opcional)</label>
+                <el-input
+                    v-model="newDescription"
+                    placeholder="Descripción del canal"
+                    size="small"
+                    @keyup.enter.native="store"
+                ></el-input>
+            </div>
+        </div>
+        <el-button
+            type="primary"
+            class="mt-2 ms-auto me-1 btn btn-sm"
+            :loading="storing"
+            @click="store"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+            Agregar
+        </el-button>
+
+        <div slot="footer" class="ch-footer ">
+            <el-button size="small" @click="close">Cerrar</el-button>
         </div>
     </el-dialog>
 </template>
@@ -106,15 +150,23 @@
 }
 .ch-table {
     margin-top: 4px;
+    margin-bottom: 0;
 }
 .ch-pending {
     color: #c0c4cc;
     font-size: 13px;
 }
+.ch-desc-text {
+    color: #909399;
+    font-size: 12px;
+}
 .ch-divider {
     margin: 16px 0 10px;
 }
-.ch-channels-header {
+.ch-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 6px;
 }
 .ch-section-title {
@@ -122,15 +174,31 @@
     font-weight: 600;
     color: #606266;
 }
-.ch-add-section {
+.ch-add-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 1px solid #ebeef5;
+    border-radius: 4px;
+    background: #fafafa;
+}
+.ch-add-header {
+    margin-bottom: 10px;
+}
+.ch-add-fields {
     display: flex;
     gap: 10px;
-    align-items: center;
-    margin-top: 12px;
+}
+.ch-add-fields .el-input {
+    flex: 1;
+}
+.ch-add-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
 }
 .ch-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     align-items: center;
 }
 </style>
@@ -156,7 +224,18 @@ export default {
             syncing: false,
             storing: false,
             newName: '',
+            newDescription: '',
         }
+    },
+
+    computed: {
+        estByName() {
+            const map = {}
+            this.establishments.forEach(e => {
+                map[e.description.toLowerCase()] = e
+            })
+            return map
+        },
     },
 
     methods: {
@@ -178,17 +257,25 @@ export default {
             return this.syncedNames.includes(establishment.description.toLowerCase())
         },
 
+        channelContactInfo(channel) {
+            const est = this.estByName[channel.name.toLowerCase()]
+            if (!est) return null
+            const parts = [est.address, est.telephone, est.email].filter(Boolean)
+            return parts.length ? parts.join(' · ') : null
+        },
+
         // Agrega un canal extra manualmente
         store() {
             if (!this.newName.trim())
                 return this.$message.error('Ingrese un nombre para el canal')
 
             this.storing = true
-            this.$http.post('/claimChannels/store', { name: this.newName })
+            this.$http.post('/claimChannels/store', { name: this.newName, description: this.newDescription })
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.newName = ''
+                        this.newDescription = ''
                         this.refreshChannels()
                     }
                 })

@@ -650,6 +650,7 @@ if ($hostname) {
             Route::post('sale-notes/getUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSite');
             Route::post('sale-notes/urlUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSiteUrl');
             Route::post('sale-notes/duplicate', 'Tenant\SaleNoteController@duplicate');
+            Route::post('sale-notes/custom-fields/update', 'Tenant\SaleNoteController@updateCustomFields');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');
             Route::get('sale-notes/record/{salenote}', 'Tenant\SaleNoteController@record');
@@ -844,6 +845,13 @@ if ($hostname) {
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
+        // --- RUTAS NUEVAS PARA RECUPERACIÓN (ADMIN) ---
+        // Recuperación de Contraseña (ADMIN)
+        Route::get('password/reset', 'System\Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+        Route::post('password/email', 'System\Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+        Route::get('password/reset/{token}', 'System\Auth\ResetPasswordController@showResetForm')->name('password.reset');
+        Route::post('password/reset', 'System\Auth\ResetPasswordController@reset')->name('password.update');
+        // ----------------------------------------------
         Route::get('phone', 'System\UserController@getPhone');
 
         Route::middleware('throttle:30,1')->group(function () {

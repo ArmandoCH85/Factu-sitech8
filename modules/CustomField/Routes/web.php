@@ -11,6 +11,7 @@ if ($current_hostname) {
                 Route::get('/', 'CustomFieldController@index')->name('tenant.custom-fields.index');
                 Route::post('columns', 'CustomFieldController@columns');
                 Route::post('records', 'CustomFieldController@records');
+                Route::get('sale-notes', 'CustomFieldController@saleNotes');
                 Route::get('record/{id}', 'CustomFieldController@record');
                 Route::post('store', 'CustomFieldController@store');
                 Route::delete('destroy/{id}', 'CustomFieldController@destroy');

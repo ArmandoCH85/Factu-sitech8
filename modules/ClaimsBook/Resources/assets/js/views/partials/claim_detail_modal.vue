@@ -201,7 +201,7 @@
             </div>
 
             <!-- Sección 4: Formulario de gestión -->
-            <div class="cd-section cd-form-section">
+            <div class="cd-section">
                 <div class="cd-section-title">
                     <i class="el-icon-edit"></i> Gestión del reclamo
                 </div>

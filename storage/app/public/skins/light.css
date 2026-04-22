@@ -927,6 +927,16 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
     background-color: var(--primary-color);
     color: var(--light-color);
 }
+.el-tag.el-tag--danger{
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff00) !important;
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+}
+.el-tag.el-tag--warning{
+    background-color: color-mix(in srgb, var(--warning) 10%, #ffffff00) !important;
+    border-color: var(--warning) !important;
+    color: var(--warning) !important;
+}
 /* style editor de etiquetas */
 .container-tag-editor .btn-icon-tags{
     background-color: transparent;
@@ -1372,7 +1382,7 @@ html.sidebar-light .establishment-selector-container{
 .btn-outline-success{
     border-color: var(--success) !important;
     color: var(--success) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-success:hover{
     border-color: var(--success) !important;
@@ -1382,7 +1392,7 @@ html.sidebar-light .establishment-selector-container{
 .btn-outline-info{
     border-color: var(--info) !important;
     color: var(--info) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-info:hover{
     border-color: var(--info) !important;
@@ -1403,6 +1413,9 @@ html.sidebar-light .establishment-selector-container{
     html.no-overflowscrolling.sidebar-left-collapsed .sidebar-left.show-both-selectors .nano {
         height: calc(100% - 116px) !important;
     }
+}
+.cbm-wrap{
+    margin: -18px -18px 28px -18px !important;
 }
 /* modo oscuro */
 html.dark .table-responsive.payment {
@@ -1821,14 +1834,22 @@ html.dark .border-bottom-dashed,
 html.dark .border-top-dashed,
 html.dark .table-list-prices,
 html.dark .table-list-prices tbody tr,
-html.dark .establishment-selector-container {
+html.dark .establishment-selector-container,
+html.dark .cbm-stat,
+html.dark .cem-option-row {
     border-color: var(--borders-dark);
 }
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
 }
 html.dark .table-list-prices .btn-dropdown-toggle,
-html.dark .btn.barcode {
+html.dark .btn.barcode,
+html.dark .cbm-stat__value,
+html.dark .cbm-card__value,
+html.dark .cem-section-title,
+html.dark .cem-url-text,
+html.dark .cd-section-title,
+html.dark .cd-field>span {
     color: var(--light-color);
 }
 html.dark .table-list-prices .btn-dropdown-toggle:hover,
@@ -1836,8 +1857,23 @@ html.dark .table-list-prices .btn-dropdown-toggle:focus,
 html.dark .table-list-prices .btn-dropdown-toggle:active {
     background-color: var(--inputs-dark);
 }
-html.dark .contain-icon-establishment{
+html.dark .contain-icon-establishment,
+html.dark .cbm-card__label,
+html.dark .cbm-stat__label,
+html.dark .cbm-stat__icon,
+html.dark .cem-option-label {
     color: var(--accent-color);
+}
+html.dark .cbm-card,
+html.dark .cbm-secondary-grid,
+html.dark .cd-form-section{
+    background-color: var(--contents-dark);
+    border-color: var(--borders-dark);
+}
+html.dark .sc-action-item,
+html.dark .cem-section-header{
+    background-color: var(--inputs-dark);
+    border-color: var(--borders-dark);
 }
 html.dark .establishment-dropdown,
 html.dark .establishment-dropdown-header {
@@ -1848,11 +1884,23 @@ html.dark .establishment-dropdown-header {
 html.dark .ck.ck-editor__main>.ck-editor__editable{
     background-color: var(--inputs-dark);
 }
-html.dark .image-container-fluid{
+html.dark .image-container-fluid,
+html.dark .sc-panel-actions,
+html.dark .cem-section,
+html.dark .cd-section,
+html.dark .cd-section-title {
     border-color: var(--borders-dark);
 }
 html.dark .image-container-fluid:hover{
     border-color: color-mix(in srgb, var(--borders-dark) 90%, #ffffff);
+}
+html.dark .ch-divider{
+    background-color: var(--borders-dark);
+}
+html.dark .el-alert--info.is-light,
+html.dark .cd-text-block {
+    background-color: var(--inputs-dark);
+    color: var(--accent-color);
 }
 @media only screen and (min-width: 391px){
     .card-body-invoice div .row .filter-invoice{

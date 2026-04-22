@@ -1,7 +1,6 @@
 <template>
     <div>
         <el-button type="primary" @click.prevent="submit">Pagar con Culqi</el-button>
-        <script src="https://js.culqi.com/checkout-js"></script>
     </div>
 </template>
 <script>

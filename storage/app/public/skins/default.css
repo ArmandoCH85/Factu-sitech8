@@ -2381,7 +2381,7 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .btn-outline-success{
     border-color: var(--success) !important;
     color: var(--success) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-success:hover{
     border-color: var(--success) !important;
@@ -2391,12 +2391,15 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .btn-outline-info{
     border-color: var(--info) !important;
     color: var(--info) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-info:hover{
     border-color: var(--info) !important;
     background-color: var(--info) !important;
     color: #fff !important;
+}
+.cbm-wrap{
+    margin: -20px -25px 30px -25px !important;
 }
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {
@@ -3563,32 +3566,65 @@ html.dark .add-row-table:hover{
 html.dark .border-bottom-dashed,
 html.dark .border-top-dashed,
 html.dark .table-list-prices,
-html.dark .table-list-prices tbody tr{
+html.dark .table-list-prices tbody tr,
+html.dark .sc-action-item,
+html.dark .sc-panel-actions,
+html.dark .cem-section,
+html.dark .cd-section,
+html.dark .cd-section-title,
+html.dark .cem-option-row {
+    border-color: var(--borders-dark);
+}
+html.dark .el-alert--info.is-light,
+html.dark .cd-text-block{
+    background-color: var(--inputs-dark);
+    color: var(--accent-color);
+}
+html.dark .el-divider{
+    background-color: var(--borders-dark);
+}
+html.dark .cem-section-header {
+    background-color: var(--inputs-dark);
     border-color: var(--borders-dark);
 }
 html.dark .payment-container-pos {
     border-top: 3px dashed var(--borders-dark);
 }
 html.dark .table-list-prices .btn-dropdown-toggle,
-html.dark .btn.barcode {
+html.dark .btn.barcode,
+html.dark .cem-section-title,
+html.dark .cem-url-text,
+html.dark .cd-section-title,
+html.dark .cd-field>span {
     color: var(--light-color);
 }
 html.dark .table-list-prices .btn-dropdown-toggle:hover,
 html.dark .table-list-prices .btn-dropdown-toggle:focus,
-html.dark .table-list-prices .btn-dropdown-toggle:active {
+html.dark .table-list-prices .btn-dropdown-toggle:active,
+html.dark .sc-action-item {
     background-color: var(--inputs-dark);
 }
-html.dark label.control-label {
+html.dark label.control-label,
+html.dark .cbm-card__label,
+html.dark .cbm-stat__label,
+html.dark .cbm-stat__icon,
+html.dark .cem-option-label {
     color: var(--accent-color);
 }
-html.dark .establishment-selector-container{
+html.dark .establishment-selector-container,
+html.dark .cd-form-section {
     background-color: var(--contents-dark);
 }
-html.dark .contain-icon-establishment{
+html.dark .contain-icon-establishment,
+html.dark .cbm-stat__value,
+html.dark .cbm-card__value {
     color: var(--light-color);
 }
 html.dark .establishment-dropdown,
-html.dark .establishment-dropdown-header {
+html.dark .establishment-dropdown-header,
+html.dark .cbm-card,
+html.dark .cbm-stat,
+html.dark .cbm-secondary-grid {
     background-color: var(--contents-dark) !important;
     border-color: var(--borders-dark) !important;
     color: var(--light-color) !important;

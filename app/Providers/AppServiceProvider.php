@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Modules\LevelAccess\Helpers\SessionLifetimeHelper;
+// ── AGREGADO (RECIENTE) ──────────────────────────────────────
+// Importamos las fachadas necesarias para la configuración dinámica de correo
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
+use App\Models\System\Configuration;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -25,9 +30,62 @@ class AppServiceProvider extends ServiceProvider
 			URL::forceScheme('https');
 		}
 		Document::observe(DocumentObserver::class);
+
+		// ── AGREGADO (RECIENTE) ──────────────────────────────────────
+        // Se movió este método desde ForgotPasswordController para centralizar
+        // la configuración de correo en el arranque de la aplicación.
+        $this->configurarCorreoDesdeDB();
 	}
 
 	public function register()
 	{
 	}
+
+	/**
+     * Configura el correo dinámicamente usando los datos de Configuration
+     */
+    private function configurarCorreoDesdeDB(): void
+    {
+        $config = Configuration::first();
+        if (!$config) {
+            return; // Si no hay configuración, salimos sin alterar nada
+        }
+
+        $encryption = $config->mail_encryption;
+        $host = $config->mail_host;
+
+        if ($encryption === 'none' || $encryption === '') {
+            $encryption = null;
+        }
+
+        if (str_starts_with($host, 'ssl://')) {
+            $host = str_replace('ssl://', '', $host);
+        }
+
+        Config::set('mail.driver', 'smtp');
+        Config::set('mail.host', $host);
+        Config::set('mail.port', (int) $config->mail_port);
+        Config::set('mail.encryption', $encryption);
+        Config::set('mail.username', $config->mail_username);
+        Config::set('mail.password', $config->mail_password);
+
+        Config::set('mail.from.address', $config->mail_username);
+        Config::set('mail.from.name', config('app.name'));
+
+        // Opciones del Stream SSL
+        $options = [
+            'ssl' => [
+                'allow_self_signed' => true,
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+            ],
+        ];
+
+        Config::set('mail.stream', $options);
+
+        // Limpiar instancias para que tome la nueva configuración
+        app()->forgetInstance('mail.manager');
+        app()->forgetInstance('mailer');
+        Mail::purge();
+    }
 }

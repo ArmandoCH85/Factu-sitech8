@@ -762,6 +762,7 @@ use App\Models\System\PlanPeriod;
                 'send_auto' => true,
                 'locked_emission' => $request->input('locked_emission'),
                 'enable_list_product' => $request->input('enable_list_product'),
+                'ticket_single_shipment' => true,
                 'locked_tenant' => false,
                 'locked_users' => false,
                 'limit_documents' => $plan->limit_documents,

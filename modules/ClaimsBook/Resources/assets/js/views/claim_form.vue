@@ -400,6 +400,9 @@
                 <el-option v-for="ch in tables.claim_channels" :key="ch.id" :label="ch.name"
                   :value="ch.name"></el-option>
               </el-select>
+              <div v-if="selectedChannelInfo" class="cf-channel-info">
+                {{ selectedChannelInfo }}
+              </div>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -486,6 +489,12 @@
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+.cf-channel-info {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.4;
+}
 /* ── Variables ── */
 .cf-wrapper {
   /* Color base */
@@ -1220,6 +1229,15 @@ export default {
   },
 
   computed: {
+    selectedChannelInfo() {
+      if (!this.form.channel) return null
+      const ch = this.tables.claim_channels.find(c => c.name === this.form.channel)
+      if (!ch) return null
+      const parts = [ch.address, ch.telephone, ch.email].filter(Boolean)
+      if (parts.length) return parts.join(' · ')
+      return ch.description || null
+    },
+
     // Determina la URL base de los endpoints según el modo (widget o panel)
     baseUrl() {
       return this.embedded ? '' : ''

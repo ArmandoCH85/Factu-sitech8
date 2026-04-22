@@ -2725,7 +2725,7 @@ div.welcome-card .welcome-subtitle{
 .btn-outline-success{
     border-color: var(--success) !important;
     color: var(--success) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-success:hover{
     border-color: var(--success) !important;
@@ -2735,7 +2735,7 @@ div.welcome-card .welcome-subtitle{
 .btn-outline-info{
     border-color: var(--info) !important;
     color: var(--info) !important;
-    background-color: #fff !important;
+    background-color: transparent !important;
 }
 .btn-outline-info:hover{
     border-color: var(--info) !important;
@@ -3506,7 +3506,8 @@ html.dark .add-row-table:hover{
     color: var(--black-light);
 }
 html.dark .border-bottom-dashed,
-html.dark .border-top-dashed{
+html.dark .border-top-dashed,
+html.dark .cem-section{
     border-color: var(--black-border-dark);
 }
 html.dark .establishment-dropdown,
@@ -3515,23 +3516,57 @@ html.dark .establishment-dropdown-header {
     border-color: var(--black-border-dark) !important;
     color: var(--black-light) !important;
 }
-html.dark .contain-icon-establishment {
+html.dark .contain-icon-establishment,
+html.dark .cbm-stat__value,
+html.dark .cbm-card__value,
+html.dark .cem-section-title,
+html.dark .cem-url-text,
+html.dark .cd-section-title,
+html.dark .cd-field>span,
+html.dark .cd-text-block {
     color: var(--black-light) !important;
 }
 html.dark .contain-icon-establishment:hover,
 html.dark .contain-icon-establishment.active {
     background: var(--black-content-dark) !important;
 }
-html.dark .ck.ck-editor__main>.ck-editor__editable{
+html.dark .ck.ck-editor__main>.ck-editor__editable,
+html.dark .cd-text-block{
     background-color: var(--black-input-dark);
 }
 html.dark .pos-list-items>:not(caption)>*>*{
     color: var(--black-light) !important;
     background-color: transparent;
 }
-html.dark .image-container-fluid{
+html.dark .image-container-fluid,
+html.dark .sc-panel-actions,
+html.dark .el-table td.el-table__cell, html.dark .el-table th.el-table__cell.is-leaf,
+html.dark .cem-option-row,
+html.dark .cd-section,
+html.dark .cd-section-title {
     border-color: var(--black-border-dark);
 }
 html.dark .image-container-fluid:hover{
     border-color: color-mix(in srgb, var(--black-border-dark) 90%, #ffffff);
+}
+html.dark .cbm-card__label,
+html.dark .cbm-stat__label,
+html.dark .cbm-stat__icon,
+html.dark .cem-option-label {
+    color: var(--black-accent);
+}
+html.dark .cbm-card,
+html.dark .cbm-stat,
+html.dark .cbm-secondary-grid {
+    background-color: var(--black-bg-dark);
+    border-color: var(--black-border-dark);
+}
+html.dark .sc-action-item,
+html.dark .cem-section-header {
+    background-color: var(--black-input-dark);
+    border-color: var(--black-border-dark);
+}
+html.dark .el-divider,
+html.dark .el-table--border:after, html.dark .el-table--group:after, html.dark .el-table:before {
+    background-color: var(--black-border-dark);
 }

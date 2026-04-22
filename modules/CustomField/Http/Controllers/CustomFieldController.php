@@ -59,6 +59,22 @@ class CustomFieldController extends Controller
     }
 
     /**
+     * Obtener campos personalizados habilitados para notas de venta
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function saleNotes()
+    {
+        $records = CustomField::where('enabled_for_sale_notes', true)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        return response()->json([
+            'data' => CustomFieldResource::collection($records),
+        ]);
+    }
+
+    /**
      * Obtener un campo personalizado específico
      *
      * @param int $id

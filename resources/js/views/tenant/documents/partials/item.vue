@@ -283,10 +283,9 @@
                             <el-input-number
                                 ref="inputQuantity"
                                 v-model="form.quantity"
-                                @change="onQuantityChange"
+                                @change="calculateTotal"
                                 :disabled="form.item.calculate_quantity"
-                                :min="getMinQuantity()"
-                                :step="quantityStep"
+                                :min="0.01"
                             ></el-input-number>
                             <small
                                 v-if="errors.quantity"
@@ -1246,16 +1245,6 @@ export default {
 
             return false;
         },
-        isWeightUnitKgm() {
-            return (
-                this.form &&
-                this.form.item &&
-                String(this.form.item.unit_type_id || "").toUpperCase() === "KGM"
-            );
-        },
-        quantityStep() {
-            return this.isWeightUnitKgm ? 0.01 : 1;
-        },
         configShowLastPriceSale() {
             return _.has(this.configuration, "show_last_price_sale")
                 ? this.configuration.show_last_price_sale
@@ -1367,20 +1356,6 @@ export default {
                 }
             }
             return this.can_add_new_product;
-        },
-        normalizeDecimal(value) {
-            if (value === null || value === undefined || value === "") {
-                return value;
-            }
-
-            const normalized = String(value).replace(",", ".");
-            const parsed = Number.parseFloat(normalized);
-
-            return Number.isNaN(parsed) ? value : parsed;
-        },
-        onQuantityChange(value) {
-            this.form.quantity = this.normalizeDecimal(value);
-            this.calculateTotal();
         },
         validateQuantity() {
             if (!this.form.quantity) {
@@ -1630,7 +1605,7 @@ export default {
                 } else {
                     this.various_item = false;
                 }
-                this.form.quantity = this.normalizeDecimal(this.recordItem.quantity);
+                this.form.quantity = this.recordItem.quantity;
                 this.form.unit_price_value = this.recordItem.input_unit_price_value;
                 this.form.has_plastic_bag_taxes =
                     this.recordItem.total_plastic_bag_taxes > 0 ? true : false;
@@ -1695,11 +1670,20 @@ export default {
             this.$refs.selectSearchNormal.$el
                 .getElementsByTagName("input")[0]
                 .focus();
+            this.$refs.inputQuantity.$el.querySelector('input')
+                .addEventListener('input', this.calculateQuantityTotal)
         },
         setPresentationEditItem() {
             if (!_.isEmpty(this.recordItem.item.presentation)) {
                 this.selectedPrice(this.recordItem.item.presentation);
                 this.getSelectedClass(this.recordItem.item.presentation);
+            }
+        },
+        calculateQuantityTotal(event) {
+            let value = parseFloat(event.target.value)
+            if (!isNaN(value)) {
+               this.form.quantity = value
+               this.calculateTotal()
             }
         },
         async regularizeLots() {

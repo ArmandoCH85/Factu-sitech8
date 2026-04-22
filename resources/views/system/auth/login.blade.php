@@ -63,9 +63,16 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-8">
-                                <div class="checkbox-custom checkbox-default">
-                                    <input name="remember" id="RememberMe" type="checkbox" {{ old('remember') ? 'checked' : '' }}>
-                                    <label for="RememberMe">Recordarme</label>
+                                {{-- Contenedor con un margen superior de 2 (mt-2) para separar el link de los campos de arriba --}}
+                                <div class="mt-2">
+                                    {{-- 
+                                    Cambiamos 'url' por 'route' para llamar a la ruta por su nombre 'password.request'.
+                                        'text-primary' le da el color azul y 'font-weight-bold' pone la letra en negrita.
+                                    --}}
+                                    <a href="{{ route('password.request') }}" class="text-primary font-weight-bold">
+                                    {{-- Texto que verá el usuario en la pantalla --}}
+                                    ¿Olvidaste tu contraseña?
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-sm-4 text-right">

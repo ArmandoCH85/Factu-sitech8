@@ -845,6 +845,13 @@ if ($hostname) {
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
+        // --- RUTAS NUEVAS PARA RECUPERACIÓN (ADMIN) ---
+        // Recuperación de Contraseña (ADMIN)
+        Route::get('password/reset', 'System\Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+        Route::post('password/email', 'System\Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+        Route::get('password/reset/{token}', 'System\Auth\ResetPasswordController@showResetForm')->name('password.reset');
+        Route::post('password/reset', 'System\Auth\ResetPasswordController@reset')->name('password.update');
+        // ----------------------------------------------
         Route::get('phone', 'System\UserController@getPhone');
 
         Route::middleware('throttle:30,1')->group(function () {

@@ -2611,7 +2611,7 @@ export default {
                 enabled_remember_change_password: false,
                 quantity_month_remember_change_password: 0,
 
-                ticket_single_shipment: false,
+                ticket_single_shipment: true,
                 hide_pdf_view_documents: false,
 
                 dashboard_sales: true,

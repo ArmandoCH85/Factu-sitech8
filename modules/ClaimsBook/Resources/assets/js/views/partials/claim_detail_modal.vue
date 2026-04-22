@@ -121,33 +121,32 @@
                         </div>
                     </el-col>
                     <el-col :span="12">
+                        <div class="cd-field" v-if="record.channel_establishment && hasEstablishmentData(record.channel_establishment)">
+                            <label>Datos de la sucursal</label>
+                            <div class="cd-establishment-info">
+                                <span v-if="buildEstablishmentAddress(record.channel_establishment)" class="cd-establishment-line">
+                                    {{ buildEstablishmentAddress(record.channel_establishment) }}
+                                </span>
+                                <small style="margin-top: -8px;" v-if="(record.channel_establishment.telephone && record.channel_establishment.telephone !== '-') || (record.channel_establishment.email && record.channel_establishment.email !== '-')">
+                                    <template v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-'">{{ record.channel_establishment.telephone }}</template>
+                                    <template v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-' && record.channel_establishment.email && record.channel_establishment.email !== '-'"> · </template>
+                                    <template v-if="record.channel_establishment.email && record.channel_establishment.email !== '-'">{{ record.channel_establishment.email }}</template>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="cd-field" v-else-if="record.channel_description">
+                            <label>Descripción del canal</label>
+                            <div>
+                                <span>{{ record.channel_description }}</span>
+                            </div>
+                        </div>
+                    </el-col>
+                    <el-col :span="(record.channel_establishment && hasEstablishmentData(record.channel_establishment)) || record.channel_description ? 24 : 12">
                         <div class="cd-field">
                             <label>Canal de atención</label>
                             <span>{{ record.channel || '—' }}</span>
                         </div>
                     </el-col>
-
-                    <!-- Datos de la sucursal (solo cuando el canal fue sincronizado desde un establecimiento) -->
-                    <template v-if="record.channel_establishment && hasEstablishmentData(record.channel_establishment)">
-                        <el-col :span="24" v-if="buildEstablishmentAddress(record.channel_establishment)">
-                            <div class="cd-field">
-                                <label>Dirección</label>
-                                <span>{{ buildEstablishmentAddress(record.channel_establishment) }}</span>
-                            </div>
-                        </el-col>
-                        <el-col :span="12" v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-'">
-                            <div class="cd-field">
-                                <label>Teléfono</label>
-                                <span>{{ record.channel_establishment.telephone }}</span>
-                            </div>
-                        </el-col>
-                        <el-col :span="12" v-if="record.channel_establishment.email && record.channel_establishment.email !== '-'">
-                            <div class="cd-field">
-                                <label>Email</label>
-                                <span>{{ record.channel_establishment.email }}</span>
-                            </div>
-                        </el-col>
-                    </template>
 
                     <el-col :span="24">
                         <div class="cd-field">
@@ -432,6 +431,11 @@
     font-size: 12px;
     color: #c0c4cc;
     margin-bottom: 8px;
+}
+.cd-establishment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 .mb-2 {
     margin-bottom: 8px;

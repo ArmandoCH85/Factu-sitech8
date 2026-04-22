@@ -700,8 +700,15 @@ JS;
                 ->first();
         }
 
+        $channelDescription = null;
+        if (!empty($claim->channel) && !$channelEstablishment) {
+            $claimChannel = ClaimChannel::whereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower(trim($claim->channel))])->first();
+            $channelDescription = $claimChannel ? $claimChannel->description : null;
+        }
+
         $data = $claim->getDetailData();
         $data['channel_establishment'] = $channelEstablishment;
+        $data['channel_description']   = $channelDescription;
 
         return response()->json($data);
     }

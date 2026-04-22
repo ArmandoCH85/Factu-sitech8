@@ -16,11 +16,8 @@
 
         /* ── Encabezado empresa ── */
         .company-header {
-            background: #f8f9fa;
-            border: 2px solid #d7d7d7;
             border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 18px;
+            margin-bottom: 0px;
         }
         .company-header table { width: 100%; border-collapse: collapse; }
         .company-logo-cell { width: 90px; vertical-align: middle; padding-right: 14px; }
@@ -33,7 +30,7 @@
             vertical-align: middle;
         }
         .company-logo-box img { display: block; margin: 0 auto; }
-        .company-info-cell { vertical-align: middle; border-left: 3px solid #d7d7d7; padding-left: 12px; }
+        .company-info-cell { vertical-align: middle; }
         .company-name {
             font-size: 18px;
             font-weight: bold;
@@ -57,11 +54,6 @@
         .badge-nuevo { background: #16a34a; color: #fff; }
 
         /* ── Encabezado documento ── */
-        .header {
-            border-bottom: 2px solid #1a1a1a;
-            padding-bottom: 10px;
-            margin-bottom: 16px;
-        }
         .header-title {
             font-size: 17px;
             font-weight: bold;
@@ -90,8 +82,8 @@
             text-transform: uppercase;
             letter-spacing: .5px;
         }
-        .badge-reclamo { background: #fee2e2; color: #991b1b; }
-        .badge-queja   { background: #fef3c7; color: #92400e; }
+        .badge-reclamo { color: #991b1b; }
+        .badge-queja   { color: #92400e; }
 
         /* ── Secciones ── */
         .section {
@@ -248,6 +240,8 @@
         </table>
     </div>
 
+    <hr>
+
     {{-- Encabezado --}}
     <div class="header">
         <div class="header-title">Libro de Reclamaciones — Constancia</div>
@@ -263,6 +257,8 @@
             </span>
         </div>
     </div>
+
+    <hr style="margin: 12px 0">
 
     {{-- Código público de consulta --}}
     @if($claim->public_code)
@@ -442,7 +438,7 @@
                         <span class="field-label">Estado actual</span>
                         <span class="field-value">
                             @if($claim->statusClaim)
-                                <span class="status-pill" style="background:{{ $claim->statusClaim->color ?? '#e5e7eb' }};color:#1a1a1a;">
+                                <span class="status-pill" style="color:{{ $claim->statusClaim->color ?? '#e5e7eb' }};">
                                     {{ $claim->statusClaim->description }}
                                 </span>
                             @else

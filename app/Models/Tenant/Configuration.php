@@ -342,6 +342,7 @@ use Illuminate\Support\Facades\Log;
             'price2_label',
             'price3_label',
             'enable_weight_in_dispatches',
+            'auto_send_pdf_email',
         ];
 
         protected $casts = [
@@ -491,6 +492,7 @@ use Illuminate\Support\Facades\Log;
             'was_verified_guest_user' => 'bool',
             'enable_consigned' => 'bool',
             'enable_weight_in_dispatches' => 'bool',
+            'auto_send_pdf_email' => 'bool',
         ];
 
         protected $hidden = [
@@ -786,6 +788,7 @@ use Illuminate\Support\Facades\Log;
                 'price2_label' => $this->price2_label ?? 'Precio 2',
                 'price3_label' => $this->price3_label ?? 'Precio 3',
                 'enable_weight_in_dispatches' => $this->enable_weight_in_dispatches,
+                'auto_send_pdf_email' => (bool)$this->auto_send_pdf_email,
             ];
         }
 

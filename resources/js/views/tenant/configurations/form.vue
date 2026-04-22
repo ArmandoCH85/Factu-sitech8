@@ -1696,7 +1696,7 @@
                                             v-text="errors.pos_cost_price[0]"></small>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                             <!-- impresion automatica en pos -->
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
@@ -1704,20 +1704,18 @@
                                         Impresión de PDF automática
                                         <el-tooltip class="item" effect="dark" placement="top-start">
                                             <div slot="content">
-
                                                 <b>Disponible en POS y Nuevo CPE</b><br /><br />
                                                 <b>POS:</b> Al realizar un pago se envía el documento a la impresora,
                                                 seguir documentación para un funcionamiento correcto.<br />
                                                 <b>Nuevo CPE:</b> Al finalizar el registro del comprobante se envía a la
                                                 impresora
-
                                             </div>
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
                                     <div :class="{ 'has-danger': errors.auto_print }" class="form-group">
                                         <el-switch v-model="form.auto_print"
-                                                   @change="submit"></el-switch>
+                                                   @change="onAutoPrintChange"></el-switch>
                                         <small v-if="errors.auto_print" class="form-control-feedback"
                                             v-text="errors.auto_print[0]"></small>
                                     </div>
@@ -1740,6 +1738,28 @@
                                                     @change="submit"></el-switch>
                                         <small v-if="errors.hide_pdf_view_documents" class="form-control-feedback"
                                             v-text="errors.hide_pdf_view_documents[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- envio automatico de pdf al correo del cliente -->
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="">
+                                        Enviar PDF automático al correo del cliente
+                                        <el-tooltip class="item" effect="dark" placement="top-start">
+                                            <div slot="content">
+                                                Envía el comprobante al correo del cliente al finalizar la venta.<br />
+                                                <b>Disponible en POS y Nuevo CPE</b>
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{ 'has-danger': errors.auto_send_pdf_email }" class="form-group">
+                                        <el-switch v-model="form.auto_send_pdf_email"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.auto_send_pdf_email" class="form-control-feedback"
+                                            v-text="errors.auto_send_pdf_email[0]"></small>
                                     </div>
                                 </div>
                             </div>
@@ -2613,6 +2633,7 @@ export default {
 
                 ticket_single_shipment: true,
                 hide_pdf_view_documents: false,
+                auto_send_pdf_email: false,
 
                 dashboard_sales: true,
                 dashboard_products: false,
@@ -2711,6 +2732,13 @@ export default {
                 this.form.validate_stock_add_item = false
             }
             this.submitInventoryConfig()
+        },
+        onAutoPrintChange() {
+            // Al activar impresión automática, también se oculta la vista previa del PDF
+            if (this.form.auto_print) {
+                this.form.hide_pdf_view_documents = true;
+            }
+            this.submit();
         },
         changeDefaultDocumentType03() {
 

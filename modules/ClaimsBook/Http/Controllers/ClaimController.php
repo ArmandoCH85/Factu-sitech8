@@ -572,10 +572,13 @@ JS;
         // Resolver el estado inicial para el nuevo reclamo
         $initialStatus = StatusClaim::where('is_initial', true)->first();
 
-        // Verificar si hay un reclamo previo para encadenar
+        // Verificar si hay un reclamo previo para encadenar.
+        // El usuario ingresa su public_code (código de seguimiento), no el code interno.
         $previousClaim = null;
         if ($request->filled('previous_code')) {
-            $previousClaim = Claim::where('code', $request->previous_code)->first();
+            $previousClaim = Claim::where('public_code', $request->previous_code)
+                ->orWhere('code', $request->previous_code)
+                ->first();
         }
 
         // Generar código y persistir dentro de una transacción sobre la conexión del tenant.

@@ -70,14 +70,14 @@
     "src": "resources/js/app.js"
   },
   "resources/js/system.css": {
-    "file": "assets/system-b97062ef.css",
+    "file": "assets/system-63933bac.css",
     "src": "resources/js/system.css"
   },
   "resources/js/system.js": {
     "css": [
-      "assets/system-b97062ef.css"
+      "assets/system-63933bac.css"
     ],
-    "file": "assets/system-c072de45.js",
+    "file": "assets/system-fb1a87c3.js",
     "imports": [
       "_vue-clipboard-efa06c4d.js",
       "__plugin-vue2_normalizer-fcd81e8a.js"

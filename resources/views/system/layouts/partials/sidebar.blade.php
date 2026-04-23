@@ -30,6 +30,10 @@
                         </a>
                     </li>
                     @endif
+                </ul>
+            </nav>
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
                     @if($sysAdmin && $sysAdmin->canAccessSystemModule('payment-orders'))
                     <li class="{{ ($path[0] === 'payment-orders')?'nav-active':'' }}">
                         <a class="nav-link" href="{{route('system.payments.index')}}">

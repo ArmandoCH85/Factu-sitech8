@@ -74,7 +74,7 @@ class EstablishmentController extends Controller
             $addresses = ($request->input('addresses'))??[];
             $establishment = Establishment::firstOrNew(['id' => $id]);
             if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                $request->validate(['file' => 'mimes:jpeg,png,jpg|max:1024']);
+                $request->validate(['file' => 'mimes:jpeg,png,jpg,webp|max:1024']);
                 $file = $request->file('file');
                 $basename = (string) time();
                 $ext = strtolower($file->getClientOriginalExtension());

@@ -518,6 +518,7 @@ if ($hostname) {
             Route::get('unit_types/record/{code}', 'Tenant\UnitTypeController@record');
             Route::post('unit_types', 'Tenant\UnitTypeController@store');
             Route::delete('unit_types/{code}', 'Tenant\UnitTypeController@destroy');
+            Route::post('unit_types/active', 'Tenant\UnitTypeController@active');
 
             //Transfer Reason Types
             Route::get('transfer-reason-types/records', 'Tenant\TransferReasonTypeController@records');

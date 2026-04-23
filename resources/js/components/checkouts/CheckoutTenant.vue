@@ -1,7 +1,7 @@
 <template>
     <div>
-        <tenant-checkout-izipay :isTenant="true" :form="_form" v-if="type === 'izipay' && up" />
-        <tenant-checkout-culqi :isTenant="true" :form="_form" v-else-if="type === 'culqi' && up" />
+        <tenant-checkout-izipay @submit="submitChild" :isTenant="true" :form="_form" :disabled="disabled" v-if="type === 'izipay' && up" />
+        <tenant-checkout-culqi @submit="submitChild" :isTenant="true" :form="_form" :disabled="disabled" v-else-if="type === 'culqi' && up" />
     </div>
 
 </template>
@@ -45,40 +45,27 @@ export default {
             type: Object,
             required: true
         },
+        disabled: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
             resource: '/payment-gateway',
             type: null,
-            _form: {},
             up: false,
             isTenant: false
         }
     },
-    created() {
-        this.enabledCheckout();
-        this.transform();
-    },
-    methods: {
-        enabledCheckout(){
-            this.$http.get(`${this.resource}/enabled-checkout?isTenant=true`)
-                .then( response => {
-                    console.log(response.data);
-                    this.type = response.data.checkout
-                    this.isTenant = response.data.is_tenant
-
-                    this.transform();
-                    this.up = true;
-                })
-        }, 
-        transform() {
-
-            
+    computed: {
+        _form() {
             if (this.type === 'izipay') {
-                this._form = {
+                return {
                     amount: this.form.amount,
                     currency: this.form.currency,
                     orderId: this.form.order_id,
+                    _customer: this.form.customer,
                     customer: {
                         email: this.form.customer.email,
                         billingDetails: {
@@ -89,16 +76,33 @@ export default {
                     },
                 }
             } else if (this.type === 'culqi') {
-                this._form = {
+                return {
                     amount: this.form.amount,
+                    _customer: this.form.customer,
                     currency: this.form.currency,
                     title: this.form.description,
                     email: this.form.customer.email,
                     order: this.form.order_id
                 }
             }
+            return {}
         }
-
+    },
+    created() {
+        this.enabledCheckout();
+    },
+    methods: {
+        enabledCheckout(){
+            this.$http.get(`${this.resource}/enabled-checkout?isTenant=true`)
+                .then( response => {
+                    this.type = response.data.checkout
+                    this.isTenant = response.data.is_tenant
+                    this.up = true;
+                })
+        },
+        submitChild(data) {
+            this.$emit('submit', data);
+        },
     }
 }
 </script>

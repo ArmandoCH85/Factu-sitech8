@@ -442,6 +442,10 @@
             if (!$currencyType) $currencyType = CurrencyType::find('PEN');
 
             $items = $this->items->transform(function ($item) use ($currencyType) {
+                if (is_array($item))
+                {
+                    return (new ItemRelSuscriptionPlan)->fill($item);
+                }
                 return $item->getCollectionData($currencyType);
             });
             $data = [
@@ -455,6 +459,7 @@
                 'periods' => $this->cat_period->period,
                 'unlimited' => (bool)$this->unlimited,
                 'subscribers' => count(UserRelSuscriptionPlan::where('suscription_plan_id', $this->id)->get()),
+                'url_client' => route('tenant.suscription.plans.client', ['plan_id' => $this->id])
             ];
             $data['hasSuscription'] = (bool)count(UserRelSuscriptionPlan::where('suscription_plan_id', $this->id)->get()) > 0;
             $data = array_merge($data, $this->toArray());

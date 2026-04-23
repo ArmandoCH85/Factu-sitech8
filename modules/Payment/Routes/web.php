@@ -48,7 +48,7 @@ if($hostname) {
                 Route::get('enabled-checkout', 'PaymentGatewayController@enabledCheckouts')->name('system.enabled.checkouts');
 
                 Route::prefix('culqi')->group(function() {
-                    Route::get('record', 'PaymentGatewayController@culqiRecord')->name('tenant.culqi.configuration');
+                    Route::get('record', 'PaymentGatewayController@culqiRecord')->name('tenant.culqi.configuration')->withoutMiddleware(['locked.tenant', 'auth', 'web', 'redirect.level']);
                     Route::post('charge', 'PaymentGatewayController@culqiCreateCharge');
                     Route::post('webhook', 'PaymentGatewayController@webhook');
                 });

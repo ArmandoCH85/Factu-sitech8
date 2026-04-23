@@ -24,7 +24,7 @@ class UploadFileHelper
      * @param  bool $is_image
      * @return array
      */
-    public static function validateUploadFile($request, $column = 'file', $mimes = 'jpg,jpeg,png,gif,svg,pdf,xlsx', $is_image = true)
+    public static function validateUploadFile($request, $column = 'file', $mimes = 'jpg,jpeg,png,gif,svg,webp,pdf,xlsx', $is_image = true)
     {
         
         $validator = Validator::make($request->all(), [
@@ -97,7 +97,7 @@ class UploadFileHelper
      * @param  string $prefix
      * @return string
      */
-    public static function uploadFileFromTempFile($folder, $old_filename, $temp_path, $id, $prefix = null, $mimes = 'jpg,jpeg,png,svg', $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'])
+    public static function uploadFileFromTempFile($folder, $old_filename, $temp_path, $id, $prefix = null, $mimes = 'jpg,jpeg,png,svg,webp', $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg', 'image/webp'])
     {
 
         $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
@@ -128,7 +128,7 @@ class UploadFileHelper
      * @param  array $allowed_file_types
      * @return string
      */
-    public static function uploadImageFromTempFile($folder, $old_filename, $temp_path, $name, $file_get_contents, $suffix = null, $mimes = 'jpg,jpeg,png,svg', $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg'])
+    public static function uploadImageFromTempFile($folder, $old_filename, $temp_path, $name, $file_get_contents, $suffix = null, $mimes = 'jpg,jpeg,png,svg,webp', $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg', 'image/webp'])
     {
         
         $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR;
@@ -370,7 +370,7 @@ class UploadFileHelper
      */
     public static function getGeneralMimes()
     {
-        return 'jpg,jpeg,png,gif,svg';
+        return 'jpg,jpeg,png,gif,svg,webp';
     }
 
 
@@ -380,7 +380,7 @@ class UploadFileHelper
      */
     public static function getGeneralAllowedFileTypes()
     {
-        return ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg'];
+        return ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/webp'];
     }
 
     

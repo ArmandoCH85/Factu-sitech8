@@ -277,7 +277,7 @@
                                         @change="onGeneratePreview($event, 'favicon')"
                                         ref="inputFavicon"
                                         class="hidden"
-                                        accept="image/png"
+                                        accept="image/png, image/webp"
                                     />
                                     <div class="sub-title text-muted mt-2"><small>Se recomienda una imagen con fondo transparente y cuadrada en PNG</small></div>
                                 </div>

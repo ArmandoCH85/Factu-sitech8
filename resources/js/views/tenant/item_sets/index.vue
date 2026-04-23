@@ -106,6 +106,26 @@
                                         @click.prevent="clickDelete(row.id)">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                                 </button>
+                                <button
+                                    v-if="row.active"
+                                    class="btn btn-xs btn-danger btn-shad"
+                                    title="Inhabilitar"
+                                    @click.prevent="clickDisable(row.id)"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path d="M367.2 412.5L99.5 144.8c-22.4 31.4-35.5 69.8-35.5 111.2 0 106 86 192 192 192 41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3c22.4-31.4 35.5-69.8 35.5-111.2 0-106-86-192-192-192-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0 256 256 0 1 1 -512 0z"/>
+                                    </svg>
+                                </button>
+                                <button
+                                    v-else
+                                    class="btn btn-xs btn-primary btn-shad"
+                                    title="Habilitar"
+                                    @click.prevent="clickEnable(row.id)"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zm0-464a208 208 0 1 0 0 416 208 208 0 1 0 0-416zm70.7 121.9c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L243.4 366.1c-4.1 5.7-10.5 9.3-17.5 9.8-7 .5-13.9-2-18.8-6.9l-55.9-55.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l36 36 105.6-145.2z"/>
+                                    </svg>
+                                </button>
                             </template>
                         </td>
                     </tr>
@@ -221,6 +241,15 @@ export default {
 
     },
     methods: {
+        clickDisable(id) {
+            this.disable(`/items/disable/${id}`)
+                .then(() => this.$eventHub.$emit("reloadData"));
+        },
+
+        clickEnable(id) {
+            this.enable(`/items/enable/${id}`)
+                .then(() => this.$eventHub.$emit("reloadData"));
+        },
         saveColumnVisibility() {
             localStorage.setItem('columnVisibilityItemsets', JSON.stringify(this.columns));
         },

@@ -500,7 +500,11 @@
                 </div>
               </div>
             </el-tab-pane>
-            <el-tab-pane class="mb-3"  name="six">
+            <el-tab-pane class="mb-3" name="seven" :lazy="true" v-if="currentUserType === 'admin'">
+              <span slot="label">Impresión</span>
+              <PrintConfig />
+            </el-tab-pane>
+            <el-tab-pane class="mb-3" name="six" v-if="form.printer_areas_enabled">
               <span slot="label">Áreas de preparación</span>
               <div class="row">
                 <div class="col-md-4">
@@ -562,10 +566,6 @@
                   </div>
                 </div>
               </div>
-            </el-tab-pane>
-            <el-tab-pane class="mb-3" name="seven" :lazy="true" v-if="currentUserType === 'admin'">
-              <span slot="label">Impresión</span>
-              <PrintConfig />
             </el-tab-pane>
           </el-tabs>
         </form>
@@ -688,6 +688,10 @@ export default {
     created() {
       this.$eventHub.$on('reloadData', () => {
           this.getUsers()
+      })
+      // Escucha cuando PrintConfig activa/desactiva las áreas de impresión
+      this.$eventHub.$on('printerAreasEnabledChanged', (value) => {
+        this.$set(this.form, 'printer_areas_enabled', value)
       })
       this.getRecords();
       this.getUsers();

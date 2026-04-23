@@ -43,11 +43,13 @@ class RestaurantConfiguration extends ModelTenant
         'printer_name_comanda',
         'printer_name_documents',
         'printer_name_precuenta',
+        'printer_areas_enabled',
     ];
 
     protected $casts = [
-        'print_local_enabled' => 'boolean',
-        'printer_enabled'     => 'boolean',
+        'print_local_enabled'    => 'boolean',
+        'printer_enabled'        => 'boolean',
+        'printer_areas_enabled'  => 'boolean',
     ];
 
     public $timestamps = false;
@@ -107,7 +109,8 @@ class RestaurantConfiguration extends ModelTenant
             'printer_status'         => $this->printer_status,
             'printer_name_comanda'     => $this->printer_name_comanda,
             'printer_name_documents'   => $this->printer_name_documents,
-            'printer_name_precuenta'  => $this->printer_name_precuenta,
+            'printer_name_precuenta'   => $this->printer_name_precuenta,
+            'printer_areas_enabled'    => (bool) $this->printer_areas_enabled,
             'printers'               => Printer::where('active', true)
                 ->orderByDesc('is_default')
                 ->orderBy('name')

@@ -93,7 +93,8 @@
               v-model="form.printer_name_comanda"
               clearable
               placeholder="Seleccionar impresora"
-              class="w-100">
+              class="w-100"
+              :disabled="form.printer_areas_enabled">
               <el-option
                 v-for="p in printers"
                 :key="p.name"
@@ -101,6 +102,22 @@
                 :value="p.name">
               </el-option>
             </el-select>
+
+            <!-- Switch para habilitar áreas de impresión -->
+            <div class="mt-2 d-flex align-items-center">
+              <el-switch
+                v-model="form.printer_areas_enabled"
+                active-text="Habilitar áreas de impresión"
+                @change="onTogglePrinterAreas">
+              </el-switch>
+              <el-tooltip
+                content="No se utilizará la impresora de comanda una vez activada esta opción"
+                effect="dark"
+                placement="top">
+                <i class="fa fa-info-circle text-muted ml-2"></i>
+              </el-tooltip>
+            </div>
+
           </div>
         </div>
 
@@ -249,6 +266,7 @@ export default {
         printer_name_comanda:    null,
         printer_name_documents:  null,
         printer_name_precuenta:  null,
+        printer_areas_enabled:   false,
       },
       // impresoras registradas en BD
       printers: [],
@@ -301,7 +319,10 @@ export default {
           this.form.printer_name_comanda   = d.printer_name_comanda
           this.form.printer_name_documents  = d.printer_name_documents
           this.form.printer_name_precuenta  = d.printer_name_precuenta
+          this.form.printer_areas_enabled   = d.printer_areas_enabled || false
           this.printers                    = d.printers || []
+          // Notificar al padre (index.vue) el estado actual de áreas de impresión
+          this.$eventHub.$emit('printerAreasEnabledChanged', this.form.printer_areas_enabled)
         }
       } catch (error) {
         console.error('Error al cargar config de impresión:', error)
@@ -409,15 +430,25 @@ export default {
      * Persiste la configuración de impresión en el backend.
      * @param {boolean} showMessage - mostrar o no el mensaje de éxito
      */
+    /**
+     * Maneja el cambio del switch de áreas de impresión.
+     * Guarda la configuración y notifica a index.vue para mostrar/ocultar el tab.
+     */
+    async onTogglePrinterAreas(value) {
+      await this.saveConfig(false)
+      this.$eventHub.$emit('printerAreasEnabledChanged', value)
+    },
+
     async saveConfig(showMessage = true) {
       this.saving = true
       try {
         const res = await this.$http.post(`/${this.resource}/printers/config`, {
           printer_enabled:         this.form.printer_enabled,
           print_local_enabled:     this.form.print_local_enabled,
-          printer_name_comanda:   this.form.printer_name_comanda,
+          printer_name_comanda:    this.form.printer_name_comanda,
           printer_name_documents:  this.form.printer_name_documents,
           printer_name_precuenta:  this.form.printer_name_precuenta,
+          printer_areas_enabled:   this.form.printer_areas_enabled,
         })
 
         if (res.data.success && showMessage) {

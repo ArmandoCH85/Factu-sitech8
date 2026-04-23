@@ -19,5 +19,3 @@
       :is-print="{{json_encode($configuration->auto_print)}}">
     </tenant-pos-garage>
 @endsection
-
-@endpush

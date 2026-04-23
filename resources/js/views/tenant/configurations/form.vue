@@ -2786,28 +2786,34 @@ export default {
             }
         },
         /**
-         * Carga las impresoras registradas desde el backend.
-         * Si no hay ninguna registrada, intenta conectar con BuhoPrinter,
-         * sincronizar las impresoras y volver a cargar la lista.
-         * Mismo comportamiento que la configuración de restaurante en la primera vez.
+         * Carga las impresoras desde el backend al activar impresión automática.
+         *
+         * Si no hay impresoras registradas aún, intenta detectar BuhoPrinter en
+         * localhost (puertos 8181-8484), obtiene la lista con getBuhoPrintersWithDefaults()
+         * y la sincroniza vía POST /restaurant/printers/sync.
+         *
+         * IMPORTANTE: el endpoint /printers/sync requiere el campo `printers` (array).
+         * Antes no se enviaba ese campo y el backend respondía 422, dejando el selector
+         * de impresora vacío aunque BuhoPrinter estuviera activo.
+         * La respuesta del sync ya trae la lista actualizada — no hay que hacer un GET extra.
          */
         async loadOrSyncPrinters() {
             if (this.printers.length > 0) return
 
             this.loadingPrinters = true
             try {
-                // Intenta conectar al agente BuhoPrinter (escanea puertos 8181-8484)
+                // Escanea localhost buscando el agente BuhoPrinter en puertos 8181-8484
                 await this.startConnectionBuho()
                 const rawPrinters = await this.getBuhoPrintersWithDefaults()
 
                 if (this.isBuhoActive) {
-                    // Sincroniza impresoras disponibles con la BD
-                    await this.$http.post('/restaurant/printers/sync', {
-                        printers: rawPrinters
-                    })
-                    // Recarga la lista desde el backend
-                    const { data } = await this.$http.get(`/${this.resource}/tables`)
-                    this.printers = data.printers || []
+                    // Obtiene impresoras con su flag is_default desde el agente local
+                    const rawPrinters = await this.getBuhoPrintersWithDefaults()
+                    // Sincroniza en BD y recibe la lista ya persistida
+                    const syncRes = await this.$http.post('/restaurant/printers/sync', { printers: rawPrinters })
+                    if (syncRes.data.success) {
+                        this.printers = syncRes.data.printers || []
+                    }
                 }
             } catch (err) {
                 console.warn('[AutoPrint] No se pudo sincronizar impresoras:', err)

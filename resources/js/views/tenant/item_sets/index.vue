@@ -80,7 +80,10 @@
                         <th class="text-start">Tiene Igv</th>
                         <th class="text-end">Acciones</th>
                     <tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr
+                        slot-scope="{ index, row }"
+                        :class="{ disable_color: !row.active }"
+                    >
                         <!-- <td>{{ index }}</td> -->
                         <td class="text-end">{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
@@ -112,8 +115,9 @@
                                     title="Inhabilitar"
                                     @click.prevent="clickDisable(row.id)"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                        <path d="M367.2 412.5L99.5 144.8c-22.4 31.4-35.5 69.8-35.5 111.2 0 106 86 192 192 192 41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3c22.4-31.4 35.5-69.8 35.5-111.2 0-106-86-192-192-192-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0 256 256 0 1 1 -512 0z"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <line x1="5" y1="5" x2="19" y2="19"/>
                                     </svg>
                                 </button>
                                 <button
@@ -122,8 +126,8 @@
                                     title="Habilitar"
                                     @click.prevent="clickEnable(row.id)"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                        <path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zm0-464a208 208 0 1 0 0 416 208 208 0 1 0 0-416zm70.7 121.9c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L243.4 366.1c-4.1 5.7-10.5 9.3-17.5 9.8-7 .5-13.9-2-18.8-6.9l-55.9-55.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l36 36 105.6-145.2z"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03l5-5-1.414-1.414L6.97 8.202 5.354 6.586 3.94 8l3.03 3.03z"/>
                                     </svg>
                                 </button>
                             </template>

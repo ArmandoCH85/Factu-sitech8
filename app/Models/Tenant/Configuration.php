@@ -343,6 +343,7 @@ use Illuminate\Support\Facades\Log;
             'price3_label',
             'enable_weight_in_dispatches',
             'auto_send_pdf_email',
+            'printer_name_documents',
         ];
 
         protected $casts = [
@@ -494,6 +495,8 @@ use Illuminate\Support\Facades\Log;
             'enable_weight_in_dispatches' => 'bool',
             'auto_send_pdf_email' => 'bool',
         ];
+
+        // printer_name_documents es string nullable — no requiere cast adicional
 
         protected $hidden = [
             'smtp_password',
@@ -789,6 +792,7 @@ use Illuminate\Support\Facades\Log;
                 'price3_label' => $this->price3_label ?? 'Precio 3',
                 'enable_weight_in_dispatches' => $this->enable_weight_in_dispatches,
                 'auto_send_pdf_email' => (bool)$this->auto_send_pdf_email,
+                'printer_name_documents' => $this->printer_name_documents,
             ];
         }
 

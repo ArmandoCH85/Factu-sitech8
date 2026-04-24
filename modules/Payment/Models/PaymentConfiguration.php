@@ -139,4 +139,19 @@ class PaymentConfiguration extends ModelTenant
         return 'culqi';
     }
 
+    public function scopeGetPublicKey($query)
+    {
+        $record = $query->where('enabled_mp', true)
+            ->orWhere('enabled_culqi', true)
+            ->orWhere('enabled_izipay', true)
+            ->first();
+
+        if (!$record) return null;
+
+        if ($record->enabled_mp) return $record->public_key_mp;
+        if ($record->enabled_culqi) return $record->publickey_culqi;
+        if ($record->enabled_izipay) return $record->publickey_izipay;
+
+    }
+
 }

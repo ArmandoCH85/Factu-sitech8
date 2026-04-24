@@ -9,7 +9,7 @@
       </div>
       <template>
         <form autocomplete="off">
-          <el-tabs v-model="activeName" type="border-card" class="rounded">
+          <el-tabs v-model="activeName" type="border-card" class="rounded" @tab-click="onTabClick">
             <el-tab-pane class="mb-3"  name="first">
               <span slot="label">Ambientes</span>
               <Environments />
@@ -500,7 +500,11 @@
                 </div>
               </div>
             </el-tab-pane>
-            <el-tab-pane class="mb-3"  name="six">
+            <el-tab-pane class="mb-3" name="seven" :lazy="true" v-if="currentUserType === 'admin'">
+              <span slot="label">Impresión</span>
+              <PrintConfig />
+            </el-tab-pane>
+            <el-tab-pane class="mb-3" name="six" v-if="form.printer_areas_enabled">
               <span slot="label">Áreas de preparación</span>
               <div class="row">
                 <div class="col-md-4">
@@ -588,9 +592,11 @@
 <script>
 import { io } from 'socket.io-client'
 import {deletable} from '@mixins/deletable'
+import { buhoprinter } from '@mixins/buhoprinter'
 import Notas from '../notes/index.vue'
 import UsersForm from './partials/form.vue'
 import Environments from './partials/environments.vue'
+import PrintConfig from './partials/print-config.vue'
 // import qz from 'qz-tray'
 
 const url = 'https://milanmario.com'
@@ -608,8 +614,8 @@ const SOCKET = io(url, {
 //  }
 
 export default {
-    mixins: [deletable],
-    components: {Notas,UsersForm,Environments},
+    mixins: [deletable, buhoprinter],
+    components: {Notas,UsersForm,Environments,PrintConfig},
     data() {
       return {
         resource: 'restaurant',
@@ -683,11 +689,14 @@ export default {
       this.$eventHub.$on('reloadData', () => {
           this.getUsers()
       })
+      // Escucha cuando PrintConfig activa/desactiva las áreas de impresión
+      this.$eventHub.$on('printerAreasEnabledChanged', (value) => {
+        this.$set(this.form, 'printer_areas_enabled', value)
+      })
       this.getRecords();
       this.getUsers();
       this.getWaiters();
       this.getEnvs();
-      this.startConnectionQzTray();
       this.getPreparationAreas();
 
     },
@@ -703,6 +712,7 @@ export default {
             this.info.ruc = infoData.ruc
             this.info.userEmail = infoData.userEmail
             this.info.socketServer = infoData.socketServer
+            this.currentUserType = infoData.userType
           }
         });
         this.$http.get(`/${this.resource}/get-roles`).then(response => {
@@ -896,40 +906,29 @@ export default {
         this[`environment_${index}`].enabled_edit = false;
         this[`environment_${index}`].name = this[`environment_${index}`].original_name;
       },
-      async startConnectionQzTray() {
 
-        if (!qz.websocket.isActive()) {
-          console.log('Iniciando conexión con QZ Tray...');
-          try {
-            await qz.websocket.connect();
-            console.log('Conexión QZ Tray establecida exitosamente');
-            this.qzConnected = qz.websocket.isActive();
-            // Ahora que la conexión está establecida, consultar impresoras
-            await this.getAllPrintersAvailable();
-          } catch (err) {
-            console.error('Error al conectar con QZ Tray:', err);
-            this.qzConnected = false;
-          }
-        } else {
-          console.log('QZ Tray ya está conectado');
-          this.qzConnected = true;
-          await this.getAllPrintersAvailable();
+      /**
+       * Carga impresoras desde BD solo cuando se activa el tab de Áreas de preparación.
+       * Evita llamadas innecesarias al iniciar la página.
+       */
+      onTabClick(tab) {
+        if (tab.name === 'six' && this.printers.length <= 1) {
+          this.loadPrintersFromDB()
         }
       },
-      async getAllPrintersAvailable() {
-        qz.printers.find("Microsoft Print to PDF").then(function(found) {
-          console.log("Printer: " + found);
-        });
+      /**
+       * Carga las impresoras registradas en BD para el selector de áreas de preparación.
+       * Evita llamar directamente a BuhoPrinter desde este componente (lo gestiona PrintConfig).
+       */
+      async loadPrintersFromDB() {
         try {
-          console.log('Consultando impresoras disponibles...');
-          const availablePrinters = await qz.printers.find();
-          console.log('Impresoras obtenidas de QZ Tray:', availablePrinters);
-          console.log('Total de impresoras:', availablePrinters.length);
-          this.printers = ['No asignada', ...availablePrinters];
-          console.log('Impresoras asignadas a Vue:', this.printers);
+          const { data } = await this.$http.get(`/${this.resource}/printers/`)
+          if (data.success) {
+            this.printers = ['No asignada', ...data.data.map(p => p.name)]
+          }
         } catch (err) {
-          console.error('Error al obtener impresoras:', err);
-          this.printers = ['No asignada'];
+          console.error('Error al cargar impresoras desde BD:', err)
+          this.printers = ['No asignada']
         }
       },
       async getPreparationAreas() {

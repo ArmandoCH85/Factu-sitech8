@@ -1,7 +1,7 @@
 <template>
     <div v-loading="loading_submit">
         <div class="row ">
-            <div class="col-md-12 col-lg-12 col-xl-12 filter-container" v-if="applyFilter">
+            <div class="col-md-12 col-lg-12 col-xl-12 filter-container" v-if="applyFilter && !hideFilter">
                 <div class="btn-filter-content d-flex">
                     <el-button
                         type="secondary"
@@ -118,7 +118,6 @@
 </template>
 
 <script>
-import queryString from "query-string";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
@@ -144,6 +143,10 @@ export default {
             required: false
         },
         pharmacy: Boolean,
+        hideFilter: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -224,7 +227,7 @@ export default {
                         response.data.meta.per_page
                     );
                 })
-                .catch(error => {
+                .catch(() => {
                 })
                 .then(() => {
                     this.loading_submit = false;

@@ -42,7 +42,12 @@ class RestaurantConfigurationController extends Controller
         return [
             'success' => true,
             'data' => $configurations->getCollectionData(),
-            'info' => ['ruc' => $company->number, 'userEmail' => $user->email, 'socketServer' => config('tenant.socket_server') ?? 'http://localhost:8070'],
+            'info' => [
+                'ruc' => $company->number,
+                'userEmail' => $user->email,
+                'socketServer' => config('tenant.socket_server') ?? 'http://localhost:8070',
+                'userType' => $user->type,
+            ],
         ];
     }
 

@@ -84,9 +84,8 @@
                             <div :class="{'has-danger': errors.name}"
                                  class="form-group">
                                 <label class="control-label">Descripción</label>
-                                <el-input :value="stripHtml(form.name)"
-                                          dusk="name"
-                                          @input="form.name = $event"></el-input>
+                                <el-input v-model="form.name"
+                                          dusk="name"></el-input>
                                 <small v-if="errors.name"
                                        class="form-control-feedback"
                                        v-text="errors.name[0]"></small>
@@ -1861,83 +1860,82 @@ this.activeName =  'first'
         },
         async submit() {
 
-            const stock = parseInt(this.form.stock);
-            if(isNaN(stock)){
-                 return this.$message.error('Stock Inicial debe ser un número entero.');
+            const payload = {
+                ...this.form,
+                name: this.stripHtml(this.form.name)
             }
 
-            if (this.validateItemUnitTypes() > 0) return this.$message.error('El campo factor no puede ser menor a 0.0001');
+            const stock = parseInt(payload.stock);
+            if (isNaN(stock)) {
+                return this.$message.error('Stock Inicial debe ser un número entero.');
+            }
+
+            if (this.validateItemUnitTypes() > 0)
+                return this.$message.error('El campo factor no puede ser menor a 0.0001');
 
             if (this.fromPharmacy === true) {
-                if (this.form.cod_digemid === null) {
+                if (!payload.cod_digemid)
                     return this.$message.error('Debe haber un codigo DIGEMID');
-                }
-                if (this.form.sanitary === null) {
+
+                if (!payload.sanitary)
                     return this.$message.error('Debe haber un Registro Sanitario');
-                }
             }
-            if (this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
 
-            if (this.form.lots_enabled && stock > 0) {
+            if (payload.has_perception && !payload.percentage_perception)
+                return this.$message.error('Ingrese un porcentaje');
 
-                if (!this.form.lot_code)
+            if (payload.lots_enabled && stock > 0) {
+                if (!payload.lot_code)
                     return this.$message.error('Código de lote es requerido');
 
-                if (!this.form.date_of_due)
+                if (!payload.date_of_due)
                     return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
             }
 
-            if (!this.recordId && this.form.series_enabled) {
-
-                if (this.form.lots.length > this.form.stock)
+            if (!this.recordId && payload.series_enabled) {
+                if (payload.lots.length > payload.stock)
                     return this.$message.error('La cantidad de series registradas es superior al stock');
 
-                if (this.form.lots.length != this.form.stock)
+                if (payload.lots.length != payload.stock)
                     return this.$message.error('La cantidad de series registradas son diferentes al stock');
             }
 
-            if (this.form.has_isc) {
-                if (this.form.percentage_isc <= 0)
-                    return this.$message.error('El porcentaje isc debe ser mayor a 0');
-            }
+            if (payload.has_isc && payload.percentage_isc <= 0)
+                return this.$message.error('El porcentaje isc debe ser mayor a 0');
 
-            if (this.form.purchase_has_isc) {
-                if (this.form.purchase_percentage_isc <= 0)
-                    return this.$message.error('El porcentaje isc debe ser mayor a 0 (Compras)');
-            }
+            if (payload.purchase_has_isc && payload.purchase_percentage_isc <= 0)
+                return this.$message.error('El porcentaje isc debe ser mayor a 0 (Compras)');
 
-            this.loading_submit = true
+            this.loading_submit = true;
 
+            try {
+                const response = await this.$http.post(`/${this.resource}`, payload);
 
-            await this.$http.post(`/${this.resource}`, this.form)
-                .then(response => {
-                    if (response.data.success) {
-                        this.$message.success(response.data.message)
-                        if (!this.recordId && response.data.id && this.inventory_configuration && this.inventory_configuration.generate_internal_id) {
-                            const nextNum = parseInt(response.data.id) + 1;
-                            this.next_internal_id = String(nextNum).padStart(5, '0');
-                        }
-                        if (this.external) {
-                            this.$eventHub.$emit('reloadDataItems', response.data.id)
-                        } else {
-                            this.$eventHub.$emit('reloadData')
-                        }
-                        this.close()
-                    } else {
-                        this.$message.error(response.data.message)
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+
+                    if (!this.recordId && response.data.id && this.inventory_configuration?.generate_internal_id) {
+                        const nextNum = parseInt(response.data.id) + 1;
+                        this.next_internal_id = String(nextNum).padStart(5, '0');
                     }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data
-                    } else {
-                        console.log(error)
-                        this.$message.error(error.response.data.message)
-                    }
-                })
-                .then(() => {
-                    this.loading_submit = false
-                })
+
+                    this.$eventHub.$emit(this.external ? 'reloadDataItems' : 'reloadData', response.data.id);
+                    this.close();
+
+                } else {
+                    this.$message.error(response.data.message);
+                }
+
+            } catch (error) {
+                if (error.response?.status === 422) {
+                    this.errors = error.response.data;
+                } else {
+                    console.log(error);
+                    this.$message.error(error.response?.data?.message);
+                }
+            } finally {
+                this.loading_submit = false;
+            }
         },
         close() {
             this.$emit('update:showDialog', false)

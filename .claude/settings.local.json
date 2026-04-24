@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -r \"buscar\\\\|comprobante\\\\|document_search\\\\|search_document\" /Users/deyvis/Sites/pro71/modules/Ecommerce/ --include=*.php -l)",
-      "Bash(grep -r buscar /Users/deyvis/Sites/pro71/modules/ --include=*.php -n)",
-      "Bash(grep -r \"buscar\\\\|url_cpe\\\\|cpe\" /Users/deyvis/Sites/pro71/routes/ --include=*.php -n)"
-    ]
-  }
-}

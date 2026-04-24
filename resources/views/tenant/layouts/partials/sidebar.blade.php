@@ -1383,6 +1383,23 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                         Planes
                                     </a>
                                 </li>
+                                @if(in_array('suscription_app_pending_payments', $vc_module_levels))
+                                <li
+                                    class="{{ (($firstLevel === 'full-suscription') && ($secondLevel === 'pending-payments')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('tenant.full_suscription.pending-payments.index') }}">
+                                        Pagos pendientes
+                                    </a>
+                                </li>
+                                @endif
+
+                                @if(in_array('suscription_app_payment_reminders', $vc_module_levels))
+                                <li
+                                    class="{{ (($firstLevel === 'full-suscription') && ($secondLevel === 'payment-reminders')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('tenant.full_suscription.payment-reminders.index') }}">
+                                        Recordatorios de pago
+                                    </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                     @endif
@@ -1475,6 +1492,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                         Grados y Secciones
                                     </a>
                                 </li>
+
                             </ul>
                         </li>
                     @endif

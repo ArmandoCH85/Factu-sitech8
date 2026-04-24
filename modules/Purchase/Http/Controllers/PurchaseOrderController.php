@@ -192,11 +192,11 @@ class PurchaseOrderController extends Controller
                 $file_content = file_get_contents($temp_path);
 
                 // validaciones archivos
-                $allowed_file_types_images = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg'];
+                $allowed_file_types_images = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/webp'];
                 $is_image = UploadFileHelper::getIsImage($temp_path, $allowed_file_types_images);
 
-                $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg', 'application/pdf'];
-                UploadFileHelper::checkIfValidFile($file_name, $temp_path, $is_image, 'jpg,jpeg,png,gif,svg,pdf', $allowed_file_types);
+                $allowed_file_types = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif', 'image/svg', 'image/webp', 'application/pdf'];
+                UploadFileHelper::checkIfValidFile($file_name, $temp_path, $is_image, 'jpg,jpeg,png,gif,svg,webp,pdf', $allowed_file_types);
                 // validaciones archivos
 
                 Storage::disk('tenant')->put('purchase_order_attached'.DIRECTORY_SEPARATOR.$file_name, $file_content);
@@ -467,7 +467,7 @@ class PurchaseOrderController extends Controller
     public function uploadAttached(Request $request)
     {
 
-        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,pdf', false);
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,webp,pdf', false);
 
         if(!$validate_upload['success']){
             return $validate_upload;

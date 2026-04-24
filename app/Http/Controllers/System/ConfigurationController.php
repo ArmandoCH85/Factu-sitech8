@@ -143,7 +143,7 @@ class ConfigurationController extends Controller
     public function storeBgLogin()
     {
         request()->validate([
-            'image' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
         ]);
 
         $config = Configuration::first();
@@ -326,7 +326,7 @@ class ConfigurationController extends Controller
             $ext = $file->getClientOriginalExtension();
             $name = 'tenant_image_ads_'.date('YmdHis').'.'.$ext;
 
-            request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+            request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:2048']);
             UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
             $file->storeAs('public/uploads/system_ads', $name);
 

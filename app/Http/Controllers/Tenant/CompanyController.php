@@ -120,7 +120,7 @@ class CompanyController extends Controller
 
 
             if (($type === 'logo')) {
-                $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+                $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:2048']);
 
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
 
@@ -165,7 +165,7 @@ class CompanyController extends Controller
             }
 
             if (($type === 'logo_dark')) {
-                $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+                $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
                 $absolutePath = $file->getPathname();
                 $mime = mime_content_type($absolutePath) ?: '';
@@ -210,11 +210,11 @@ class CompanyController extends Controller
             // }
 
             if (($type === 'favicon')) {
-                request()->validate(['file' => 'required|image|mimes:png|max:1024']);
+                request()->validate(['file' => 'required|image|mimes:png,webp|max:1024']);
                 $filename = time() . '.' . $ext;
                 $name = 'storage/uploads/favicons/' . $filename;
 
-                UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true, 'png', ['image/png']);
+                UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true, 'png,webp', ['image/png', 'image/webp']);
 
                 $stream = fopen($file->getPathname(), 'r');
                 Storage::put('public/uploads/favicons/'.$filename, $stream);
@@ -222,7 +222,7 @@ class CompanyController extends Controller
             }
 
             if (($type === 'app_logo')) {
-                request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+                request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg,webp|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
                 $stream = fopen($file->getPathname(), 'r');
                 Storage::put('public/uploads/logos/'.$name, $stream);
@@ -231,7 +231,7 @@ class CompanyController extends Controller
 
 
             if (($type === 'img_firm')) {
-                request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+                request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
                 $stream = fopen($file->getPathname(), 'r');
                 Storage::put('public/uploads/firms/'.$name, $stream);

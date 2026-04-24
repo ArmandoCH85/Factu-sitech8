@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button type="primary" @click.prevent="submit">Pagar con Culqi</el-button>
+        <el-button type="primary" :disabled="disabled" @click.prevent="submit">Pagar con Culqi</el-button>
     </div>
 </template>
 <script>
@@ -29,7 +29,11 @@ export default {
         isTenant: {
             type: Boolean,
             default: false
-        }
+        },
+        disabled: {
+            type: Boolean,
+            default: false
+        },
     },
     created() {
         if (!window.Culqi) {
@@ -101,8 +105,12 @@ export default {
             const Culqi = new CulqiCheckout(this.publicKey, config);
 
             Culqi.culqi = () =>  {
+                console.log(Culqi);
+                
                 if (Culqi.token) {
-                const token = Culqi.token.id;
+                    this.form.email = Culqi.token.email ? Culqi.token.email : this.form.email;
+
+                    const token = Culqi.token.id;
                     this.$http.post(`${this.resource}/charge`, {
                         source_id: token,
                         installments: this.form.installments,
@@ -111,24 +119,68 @@ export default {
                         email: this.form.email,
                         currency_code: this.form.currency,
                     }).then(response => {
-                        if (response.data.success) {
-                            Culqi.close();
-                            this.$message.success('Pago realizado con éxito');
-                        } else {
-                            this.$message.error('Error en el pago: ' + response.data.message);
-                        }
+                        const data = response.data
+                        this.$emit('submit', {
+                            paid: data.paid,
+                            customer: this.form._customer
+                        });
+                        Culqi.close();
                     }).catch(error => {
-                        this.$message.error('Error en el pago: ' + response.data.message);
+                        const msg = error.response?.data?.user_message
+                            || 'Error al procesar el pago. Intente nuevamente.';
+                        this.showCulqiError(msg);
                     });
                 } else if (Culqi.order) {
-                    const order = Culqi.order;
+                    // orden pendiente, sin acción por ahora
                 } else {
-                    console.log('Errorrr : ', Culqi.error);
+                    const culqiErr = Culqi.error;
+                    const msg = culqiErr?.user_message
+                        || culqiErr?.merchant_message
+                        || 'Ocurrió un error en el proceso de pago.';
+                    this.$message.error(msg);
                 }
-                
             }
             Culqi.open();
 
+        },
+        showCulqiError(msg) {
+            document.querySelector('.culqi-inline-error')?.remove();
+
+            const el = document.createElement('div');
+            el.className = 'culqi-inline-error';
+            el.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="flex-shrink:0;">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 9v4m0 4h.01"/>
+                    <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.871l-8.106 -13.534a1.914 1.914 0 0 0 -3.274 0z"/>
+                </svg>
+                <span>${msg}</span>
+            `;
+            el.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, calc(-50% - 140px));
+                background: #fff1f0;
+                border: 1px solid #ffa39e;
+                color: #a8071a;
+                padding: 12px 18px;
+                border-radius: 8px;
+                z-index: 2147483647;
+                font-size: 13px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+                max-width: 340px;
+                width: max-content;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                line-height: 1.4;
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 6000);
         },
         loadConfiguration() {
             this.$http.get(`${this.resource}/record?isTenant=${this.isTenant}`)

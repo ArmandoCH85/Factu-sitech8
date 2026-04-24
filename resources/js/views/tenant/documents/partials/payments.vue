@@ -2,7 +2,7 @@
     <el-dialog :title="title" :visible="showDialog" @close="close" @open="getData" width="80%">
         <div class="form-body">
             <div class="row">
-                <div class="col-md-12" v-if="records.length > 0">
+                <div class="col-md-12" v-if="records && records.length >= 0">
                     <!--<div class="right-wrapper pull-right">
                         <button type="button" @click.prevent="clickDownloadReport()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fas fa-money-bill-wave-alt"></i> Reporte</button>
                     </div>-->
@@ -296,6 +296,11 @@
 
         },
         methods: {
+            watch: {
+                records(val) {
+                    console.log('RECORDS CAMBIÓ:', val)
+                }
+            },
             events(){
                 this.$eventHub.$on('reloadDataPayments', ()=>{
                     this.getData()
@@ -374,6 +379,7 @@
                 this.showAddButton = true;
             },
             async getData() {
+                if (this.records.some(r => !r.id)) return;
                 this.initForm();
                 await this.$http.get(`/${this.resource}/document/${this.documentId}`)
                     .then(response => {

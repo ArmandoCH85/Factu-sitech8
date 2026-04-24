@@ -190,7 +190,30 @@
             $customers = SearchCustomerController::getSuscriptionCustomers($request);
 
             return ['customers' => $customers];
+        }
 
+        public function noSendLink($id): array
+        {
+            $record               = UserRelSuscriptionPlan::findOrFail($id);
+            $record->no_send_link = true;
+            $record->save();
+
+            return [
+                'success' => true,
+                'message' => 'Configuración actualizada. El link de suscripción dejará de ser reenviado al cliente.',
+            ];
+        }
+
+        public function changeStatus($id, Request $request): array
+        {
+            $record                    = UserRelSuscriptionPlan::findOrFail($id);
+            $record->subscription_status = $request->input('status');
+            $record->save();
+
+            return [
+                'success' => true,
+                'message' => 'Estado de suscripción actualizado con éxito',
+            ];
         }
 
         /**

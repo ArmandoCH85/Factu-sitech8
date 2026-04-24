@@ -3952,6 +3952,7 @@ import SetTip from "@components/SetTip.vue";
 
 import LotsForm from "./partials/lots.vue";
 import { editableRowItems } from "@mixins/editable-row-items";
+import { buhoprinter } from "@mixins/buhoprinter";
 import ItemSearchQuickSale from "@components/items/ItemSearchQuickSale.vue";
 import PackItemDescription from "@components/items/PackItemDescription.vue";
 // import ItemDetailForm from '@views/items/form.vue'
@@ -3996,7 +3997,8 @@ export default {
         pointSystemFunctions,
         fnRestrictSaleItemsCpe,
         editableRowItems,
-        fnItemSearchQuickSale
+        fnItemSearchQuickSale,
+        buhoprinter,
     ],
     data() {
         return {
@@ -4064,6 +4066,7 @@ export default {
             currency_type: {},
             documentNewId: null,
             customerCurrent: null,
+            printTicketUrl: null,
             prepayment_deduction: false,
             activePanel: 0,
             total_global_discount: 0,
@@ -4720,8 +4723,8 @@ export default {
             this.$eventHub.$emit("eventInitTip");
         },
         startConnectionQzTray() {
-            if (!qz.websocket.isActive() && this.isAutoPrint) {
-                startConnection();
+            if (!this.isBuhoActive && this.isAutoPrint) {
+                this.startConnectionBuho();
             }
         },
         changeRowExchangePoints(row, index) {
@@ -7099,6 +7102,7 @@ export default {
                     if (response.data.success) {
                         let response_sent = response
                         this.documentNewId = response.data.data.id;
+                        this.printTicketUrl = response.data?.links?.print_ticket ?? null;
 
                         if(this.config.send_auto && this.form.document_type_id === '01') {
                             response_sent = await this.sendDocument(this.documentNewId);
@@ -7161,15 +7165,8 @@ export default {
             }
         },
         autoPrintDocument() {
-            if (this.isAutoPrint) {
-                this.$http
-                    .get(`/printticket/document/${this.documentNewId}/ticket`)
-                    .then(response => {
-                        this.printTicket(response.data);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
+            if (this.isAutoPrint && this.printTicketUrl) {
+                this.printViaBackend(this.printTicketUrl, this.configuration.printer_name_documents);
             }
         },
         async autoSendPdfMail() {
@@ -7199,31 +7196,6 @@ export default {
                         this.$message.error(error.response.data.message)
                     }
                 })
-        },
-        printTicket(html_pdf) {
-            if (html_pdf.length > 0) {
-                const config = getUpdatedConfig();
-                const opts = getUpdatedConfig();
-
-                const printData = [
-                    {
-                        type: "html",
-                        format: "plain",
-                        data: html_pdf,
-                        options: opts
-                    }
-                ];
-
-                qz.print(config, printData)
-                    .then(() => {
-                        this.$notify({
-                            title: "",
-                            message: "Impresión en proceso...",
-                            type: "success"
-                        });
-                    })
-                    .catch(displayError);
-            }
         },
         saveCashDocument() {
             this.$http

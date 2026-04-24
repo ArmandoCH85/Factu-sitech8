@@ -76,6 +76,8 @@
         }
     </style>
 
+    @stack('styles')
+
 </head>
 <body>
     <div class="page-wrapper">

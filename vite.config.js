@@ -18,6 +18,7 @@ export default defineConfig({
         'resources/js/system.js',
         'resources/js/app.js',
         'modules/ClaimsBook/Resources/assets/js/app.js',
+        'modules/Ecommerce/Resources/assets/js/frontend/cart-app.js',
         // 'resources/sass/style.scss',
         // 'resources/sass/auth.scss'
       ],

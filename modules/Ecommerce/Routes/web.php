@@ -90,6 +90,16 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
         Route::delete('/{id}', 'DeliveryZoneController@destroy');
     });
 
+    // Sucursales de recojo en tienda
+    Route::prefix('pickup-branches')->group(function () {
+        Route::get('/records', 'PickupBranchController@records');
+        Route::get('/public', 'PickupBranchController@publicRecords');
+        Route::post('/', 'PickupBranchController@store');
+        Route::post('/sync', 'PickupBranchController@sync');
+        Route::post('/{id}/status', 'PickupBranchController@updateStatus');
+        Route::delete('/{id}', 'PickupBranchController@destroy');
+    });
+
     Route::prefix('item-sets')->group(function() {
 
         Route::get('', 'ItemSetController@index')->name('tenant.ecommerce.item_sets.index')->middleware('redirect.level');

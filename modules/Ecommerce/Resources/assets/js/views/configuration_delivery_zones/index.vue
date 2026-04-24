@@ -154,7 +154,7 @@
                   </svg>
                 </button>
               </td>
-              <td class="text-end" style="white-space: nowrap;">                
+              <td class="text-end" style="white-space: nowrap;">
                 <!-- Guardar -->
                 <button class="btn btn-xs btn-success btn-shad me-1" type="button" title="Guardar"
                   :disabled="row._saving" @click.prevent="saveRow(row)">
@@ -314,8 +314,6 @@ export default {
       this.pagination.current_page = page;
       this.getRecords();
     },
-
-
     async loadConfigMessage() {
       try {
         const res = await this.$http.get('/ecommerce/record');

@@ -35,10 +35,18 @@ class ConfigurationEcommerce extends ModelTenant
         'privacy_policy',
         'about_us',
         'delivery_no_coverage_message',
+        'enable_electronic_documents',
+        'enable_store_pickup',
+        'enable_yape',
+        'enable_transfer',
     ];
 
     protected $casts = [
-        'preferences' => 'array'
+        'preferences'                  => 'array',
+        'enable_electronic_documents'  => 'boolean',
+        'enable_store_pickup'          => 'boolean',
+        'enable_yape'                  => 'boolean',
+        'enable_transfer'              => 'boolean',
     ];
     /**
      * Devuelve los enlaces personalizados para el header

@@ -46,7 +46,7 @@
                     <section class="card card-dashboard">
                         <div class="card-body pt-2 pb-0">
                             <div class="row border-bottom mb-2 no-gutters">
-                                <small class="col-12 text-center txt-dark">Filtrar datos históricos</small>
+                                <small class="col-12 text-center">Filtrar datos históricos</small>
                             </div>
                             <div class="row">
                                 <div :class="filterColumnClass" class="form-group">

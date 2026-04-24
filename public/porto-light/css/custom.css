@@ -152,7 +152,8 @@ width: 100%;
 width: 100%;
 padding-left: 0px;
 padding-right: 0px;
-background: transparent;
+background: #fff;
+color: #606266;
 }
 
 #custom-select .el-input-group__prepend .el-select {

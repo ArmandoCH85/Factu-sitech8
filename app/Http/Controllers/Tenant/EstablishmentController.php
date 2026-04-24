@@ -74,7 +74,7 @@ class EstablishmentController extends Controller
             $addresses = ($request->input('addresses'))??[];
             $establishment = Establishment::firstOrNew(['id' => $id]);
             if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                $request->validate(['file' => 'mimes:jpeg,png,jpg|max:1024']);
+                $request->validate(['file' => 'mimes:jpeg,png,jpg,webp|max:1024']);
                 $file = $request->file('file');
                 $basename = (string) time();
                 $ext = strtolower($file->getClientOriginalExtension());
@@ -102,7 +102,11 @@ class EstablishmentController extends Controller
                 $path = 'storage/uploads/logos/' . $outputFilename;
                 $request->merge(['logo' => $path]);
             }
-            $establishment->fill($request->all());
+            if ($request->hasFile('file')) {
+                $establishment->fill($request->all());
+            } else {
+                $establishment->fill($request->except('logo'));
+            }
             $establishment->has_igv_31556 = $has_igv_31556;
             $establishment->email = $request->email;
             $establishment->save();

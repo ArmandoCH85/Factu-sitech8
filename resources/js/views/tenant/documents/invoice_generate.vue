@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                         </div>
-                    </header>                    
+                    </header>
                     <div class="card-body card-body-invoice no-gutters border-0 shadow-none p-0 py-1 py-md-2 px-md-2">
                         <div class="row inputs-container mx-1">
                             <div class="col-md-5 col-lg-4 align-self-end invoice-type">
@@ -3952,6 +3952,7 @@ import SetTip from "@components/SetTip.vue";
 
 import LotsForm from "./partials/lots.vue";
 import { editableRowItems } from "@mixins/editable-row-items";
+import { buhoprinter } from "@mixins/buhoprinter";
 import ItemSearchQuickSale from "@components/items/ItemSearchQuickSale.vue";
 import PackItemDescription from "@components/items/PackItemDescription.vue";
 // import ItemDetailForm from '@views/items/form.vue'
@@ -3996,7 +3997,8 @@ export default {
         pointSystemFunctions,
         fnRestrictSaleItemsCpe,
         editableRowItems,
-        fnItemSearchQuickSale
+        fnItemSearchQuickSale,
+        buhoprinter,
     ],
     data() {
         return {
@@ -4063,6 +4065,8 @@ export default {
             prepayment_documents: [],
             currency_type: {},
             documentNewId: null,
+            customerCurrent: null,
+            printTicketUrl: null,
             prepayment_deduction: false,
             activePanel: 0,
             total_global_discount: 0,
@@ -4162,7 +4166,7 @@ export default {
             }
             return this.configuration.global_discount_type_id === "02" ;
         },
-        ...mapState(["config", "series", "all_series"]), 
+        ...mapState(["config", "series", "all_series"]),
         credit_payment_metod: function() {
             return _.filter(this.payment_method_types, { is_credit: true });
         },
@@ -4575,7 +4579,7 @@ export default {
                 const response = await this.$http.get('/price-labels/active');
                 const labels = response.data.data || [];
 
-                
+
                 const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
                 this.price_options = [
                     {
@@ -4719,8 +4723,8 @@ export default {
             this.$eventHub.$emit("eventInitTip");
         },
         startConnectionQzTray() {
-            if (!qz.websocket.isActive() && this.isAutoPrint) {
-                startConnection();
+            if (!this.isBuhoActive && this.isAutoPrint) {
+                this.startConnectionBuho();
             }
         },
         changeRowExchangePoints(row, index) {
@@ -6616,7 +6620,7 @@ export default {
 
             if (this.form.has_retention ) {
                 this.changeRetention();
-            } 
+            }
 
             this.setTotalDefaultPayment();
             this.setPendingAmount();
@@ -6966,7 +6970,7 @@ export default {
             // validar monto total y cliente_id para "Clientes varios"
             const monto = parseFloat(this.form.total) || 0;
             const clienteId = this.form.customer_id;
-            
+
             // Si monto > 700 y cliente_id = 1 (Clientes varios)
             if (monto > 700 && clienteId === 1) {
                 this.$alert('Ventas mayores a S/ 700 requieren un cliente con DNI registrado.', 'Cliente Requerido', {
@@ -6980,7 +6984,7 @@ export default {
                 this.$message.warning(
                     "El comprobante no cumple con el monto mínimo para aplicar retención o el cliente no es sujeto de retención"
                 );
-                return false;    
+                return false;
             }
 
             //Validando las series seleccionadas
@@ -7079,6 +7083,9 @@ export default {
                     );
             }
 
+            // Capturar el cliente antes del submit, ya que resetForm() limpia el customer
+            this.customerCurrent = this.getCustomer;
+
             this.loading_submit = true;
             this.is_consumption_charge = false;
             let path = `/${this.resource}`;
@@ -7095,6 +7102,7 @@ export default {
                     if (response.data.success) {
                         let response_sent = response
                         this.documentNewId = response.data.data.id;
+                        this.printTicketUrl = response.data?.links?.print_ticket ?? null;
 
                         if(this.config.send_auto && this.form.document_type_id === '01') {
                             response_sent = await this.sendDocument(this.documentNewId);
@@ -7108,7 +7116,7 @@ export default {
                         console.log(response_sent.data);
                         if (!response_sent.data.success) {
                             this.failSendDocument = true;
-                            
+
                             this.failsMessage = response_sent.data.message;
                         }
 
@@ -7121,6 +7129,7 @@ export default {
                         this.saveCashDocument();
 
                         this.autoPrintDocument();
+                        await this.autoSendPdfMail();
                     } else {
                         this.$message.error(response.data.message);
                     }
@@ -7135,6 +7144,7 @@ export default {
                 })
                 .finally(() => {
                     this.loading_submit = false;
+                    this.customerCurrent = null;
                     this.setDefaultDocumentType();
                     this.selectDefaultCustomer()
                 });
@@ -7155,41 +7165,37 @@ export default {
             }
         },
         autoPrintDocument() {
-            if (this.isAutoPrint) {
-                this.$http
-                    .get(`/printticket/document/${this.documentNewId}/ticket`)
-                    .then(response => {
-                        this.printTicket(response.data);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
+            if (this.isAutoPrint && this.printTicketUrl) {
+                this.printViaBackend(this.printTicketUrl, this.configuration.printer_name_documents);
             }
         },
-        printTicket(html_pdf) {
-            if (html_pdf.length > 0) {
-                const config = getUpdatedConfig();
-                const opts = getUpdatedConfig();
+        async autoSendPdfMail() {
+            if(!this.config.auto_send_pdf_email) return;
 
-                const printData = [
-                    {
-                        type: "html",
-                        format: "plain",
-                        data: html_pdf,
-                        options: opts
-                    }
-                ];
-
-                qz.print(config, printData)
-                    .then(() => {
-                        this.$notify({
-                            title: "",
-                            message: "Impresión en proceso...",
-                            type: "success"
-                        });
-                    })
-                    .catch(displayError);
+            const customer = this.customerCurrent;
+            if(!customer || !customer.email) {
+                this.$message.warning('El cliente no tiene un correo electrónico registrado. No se pudo enviar el comprobante por correo.')
+                return;
             }
+
+            this.$http.post(`/${this.resource}/email`, {
+                customer_email: customer.email,
+                id: this.documentNewId
+            })
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success('El correo fue enviado satisfactoriamente')
+                    } else {
+                        this.$message.error('Error al enviar el correo')
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.errors
+                    } else {
+                        this.$message.error(error.response.data.message)
+                    }
+                })
         },
         saveCashDocument() {
             this.$http

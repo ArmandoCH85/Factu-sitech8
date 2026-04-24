@@ -1631,7 +1631,6 @@ ul.contact-info li a:hover {
 .footer {
     color: var(--title-color);
     border-top: 1px solid #f1f2f4;
-    margin-top:3rem;
     background: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 5%));
 }
 .copy-text{

@@ -3,6 +3,7 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
+    $sysAdmin = auth()->guard('admin')->user();
 @endphp
 <aside id="sidebar-left" class="sidebar-left mt-0" style="z-index: 900">
     <div class="nano px-2">
@@ -10,24 +11,40 @@
             <nav id="menu" class="nav-main pt-1" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ (in_array($path[0], ['clients', 'dashboard']))?'nav-active':'' }}">
+                        @if($sysAdmin && ($sysAdmin->reseller_id === null || $sysAdmin->canAccessSystemModule('clients')))
                         <a class="nav-link" href="{{route('system.dashboard')}}">
                             <svg  xmlns="http://www.w3.org/2000/svg"  width="30"  height="30"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-layout-dashboard"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M5 16h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /><path d="M15 12h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M15 4h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /></svg>
                             <span>Dashboard</span>
                         </a>
+                        @endif
                     </li>
                 </ul>
             </nav>
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
+                    @if($sysAdmin && $sysAdmin->canAccessSystemModule('admin-reseller'))
+                    <li class="{{ ($path[0] === 'admin-reseller')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{ route('system.admin_reseller.administrators.index') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-shield"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 21v-2a4 4 0 0 1 4 -4h2" /><path d="M22 16c0 4 -2.5 6 -3.5 6s-3.5 -2 -3.5 -6c1 0 2.5 -.5 3.5 -1.5c1 1 2.5 1.5 3.5 1.5z" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /></svg>
+                            <span>Administradores</span>
+                        </a>
+                    </li>
+                    @endif
+                </ul>
+            </nav>
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    @if($sysAdmin && $sysAdmin->canAccessSystemModule('payment-orders'))
                     <li class="{{ ($path[0] === 'payment-orders')?'nav-active':'' }}">
                         <a class="nav-link" href="{{route('system.payments.index')}}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 5m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /><path d="M3 10l18 0" /><path d="M7 15l.01 0" /><path d="M11 15l2 0" /></svg>
                             <span>Pagos</span>
                         </a>
                     </li>
+                    @endif
                 </ul>
             </nav>
-            @if(config('configuration.multi_user_enabled'))
+            @if(config('configuration.multi_user_enabled') && $sysAdmin && $sysAdmin->canAccessSystemModule('multi-users'))
                 <nav id="menu" class="nav-main" role="navigation">
                     <ul class="nav nav-main">
                         <li class="{{ ($path[0] === 'multi-users')?'nav-active':'' }}">
@@ -40,6 +57,7 @@
                 </nav>
             @endif
 
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('plans'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'plans')?'nav-active':'' }}">
@@ -50,7 +68,9 @@
                     </li>
                 </ul>
             </nav>
+            @endif
 
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('massive-invoice'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'massive-invoice')?'nav-active':'' }}">
@@ -62,6 +82,9 @@
                 </ul>
             </nav>
             {{-- 
+            @endif
+
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('accounting'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'accounting')?'nav-active':'' }}">
@@ -73,6 +96,9 @@
                 </ul>
             </nav>
             --}}
+            @endif
+            
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('auto-update'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'auto-update')?'nav-active':'' }}">
@@ -83,6 +109,8 @@
                     </li>
                 </ul>
             </nav>
+            @endif
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('backup'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'backup')?'nav-active':'' }}">
@@ -93,6 +121,8 @@
                     </li>
                 </ul>
             </nav>
+            @endif
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('information'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'information')?'nav-active':'' }}">
@@ -103,6 +133,8 @@
                     </li>
                 </ul>
             </nav>
+            @endif
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('logs'))
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="">
@@ -113,7 +145,9 @@
                     </li>
                 </ul>
             </nav>
+            @endif
 
+            @if($sysAdmin && $sysAdmin->canAccessSystemModule('reports'))
             <nav id="menu" class="nav-main pb-2" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'reports')?'nav-active':'' }}">
@@ -124,6 +158,7 @@
                     </li>
                 </ul>
             </nav>
+            @endif
         </div>
         <script>
             // Maintain Scroll Position
@@ -161,6 +196,7 @@
         </script>
 
     </div>
+    @if($sysAdmin && ($sysAdmin->reseller_id === null || $sysAdmin->canAccessSystemModule('configurations')))
     <nav id="menu" class="nav-main configuration-nav pt-0 px-2" role="navigation">
         <ul class="nav nav-main">
             <li class="{{ ($path[0] === 'configurations')?'nav-active':'' }}">
@@ -171,5 +207,6 @@
             </li>
         </ul>
     </nav>
+    @endif
 
 </aside>

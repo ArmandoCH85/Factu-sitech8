@@ -44,9 +44,9 @@
                 </div>
             </div>
             <div class="row">
-            
+
                 <template v-if="failsInSend">
-                    <div 
+                    <div
                      class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold">
                         <el-alert :title="failsMessage"
                               show-icon
@@ -122,7 +122,7 @@
                                    class="btn btn-lg btn-info waves-effect waves-light w-100"
                                    type="button"
                                    @click="clickPrint('ticket_50')">
-                            50MM                     
+                            50MM
                         </el-button>
                     </el-popover>
                 </div>
@@ -150,7 +150,7 @@
                         <el-button slot="append"
                                    :loading="loading"
                                    icon="el-icon-message"
-                                   @click="clickSendEmail">Enviar 
+                                   @click="clickSendEmail">Enviar
                         </el-button>
                     </el-input>
                     <small v-if="errors.customer_email"
@@ -184,7 +184,7 @@
                     :wsFile="form.pdf_a4_filename"
                     :wsDocument="form.number"
                     :wsMessage="form.message_text"/>
-                    <QrApi 
+                    <QrApi
                         v-else-if="config.qr_api_enable_ws"
                         colClass="col-12"
                         :wsPhone="form.customer_telephone"
@@ -360,10 +360,10 @@ export default {
         },
         async create() {
 
-        console.log(this.failsInSend);
-        console.log(this.failsMessage);
-        
-        
+            console.error(this.failsInSend);
+            console.error(this.failsMessage);
+
+
             await this.getCompany()
             await this.getRecord()
 

@@ -132,7 +132,7 @@
                                     <td>
                                         {{ setDescriptionOfItem(row.item) }}
                                         {{
-                                            row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''
+                                            (row.item && row.item.presentation && row.item.presentation.hasOwnProperty('description')) ? row.item.presentation.description : ''
                                         }}<br/><small>{{ row.affectation_igv_type.description }}</small>
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -443,7 +443,7 @@ export default {
             let data = this.fakeForm;
             // console.dir(data)
             this.$http.post(`/full_suscription/${this.resource}`, data)
-                .then(response => {
+                .then(() => {
                     this.$eventHub.$emit('reloadData')
                     // this.EmitEvent('reloadData')
                     this.close()

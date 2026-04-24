@@ -242,7 +242,6 @@
     <script src="{{ asset('js/sign-message.js') }}"></script>
     <script src="{{ asset('js/sha-256.min.js') }}"></script>
     <script src="{{ asset('js/rsvp-3.1.0.min.js') }}"></script>
-    <script src="{{ asset('js/qz-tray.js') }}"></script>
     {{-- <script src="{{ asset('js/vendor.js') }}"></script> --}}
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>

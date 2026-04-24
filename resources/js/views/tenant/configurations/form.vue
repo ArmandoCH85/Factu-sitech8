@@ -1696,33 +1696,69 @@
                                             v-text="errors.pos_cost_price[0]"></small>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                             <!-- impresion automatica en pos -->
-                            <div class="col-md-6 mt-4">
+                            <div class="col-md-6 mt-4 d-block">
                                 <div class="form-group">
                                     <label class="">
                                         Impresión de PDF automática
                                         <el-tooltip class="item" effect="dark" placement="top-start">
                                             <div slot="content">
-
                                                 <b>Disponible en POS y Nuevo CPE</b><br /><br />
                                                 <b>POS:</b> Al realizar un pago se envía el documento a la impresora,
                                                 seguir documentación para un funcionamiento correcto.<br />
                                                 <b>Nuevo CPE:</b> Al finalizar el registro del comprobante se envía a la
                                                 impresora
-
                                             </div>
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
                                     <div :class="{ 'has-danger': errors.auto_print }" class="form-group">
                                         <el-switch v-model="form.auto_print"
-                                                   @change="submit"></el-switch>
+                                                   @change="onChangeAutoPrint"></el-switch>
                                         <small v-if="errors.auto_print" class="form-control-feedback"
                                             v-text="errors.auto_print[0]"></small>
                                     </div>
                                 </div>
+
+                                <!-- selector de impresora para impresión automática -->
+                                <div class="row" v-if="form.auto_print">
+                                    <div class="form-group col-6">
+                                        <label class="">
+                                            Impresora para documentos
+                                            <el-tooltip class="item" effect="dark" placement="top-start">
+                                                <div slot="content">
+                                                    Impresora que recibirá los documentos al usar la impresión automática.<br />
+                                                    Si no se selecciona, se usará la impresora predeterminada registrada.
+                                                </div>
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <el-select
+                                            v-model="form.printer_name_documents"
+                                            clearable
+                                            placeholder="Impresora predeterminada"
+                                            class="w-100"
+                                            :loading="loadingPrinters"
+                                            @change="submit">
+                                            <el-option
+                                                v-for="p in printers"
+                                                :key="p.name"
+                                                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                                                :value="p.name">
+                                            </el-option>
+                                        </el-select>
+                                        <small v-if="printers.length === 0 && !loadingPrinters" class="text-muted">
+                                            <i class="fa fa-info-circle"></i>
+                                            No hay impresoras registradas. Asegúrese de que BuhoPrinter esté activo.
+                                        </small>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <el-button type="primary" @click.prevent="loadOrSyncPrinters">Cargar Impresoras</el-button>
+                                    </div>
+                                </div>
                             </div>
+
 
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
@@ -1740,6 +1776,28 @@
                                                     @change="submit"></el-switch>
                                         <small v-if="errors.hide_pdf_view_documents" class="form-control-feedback"
                                             v-text="errors.hide_pdf_view_documents[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- envio automatico de pdf al correo del cliente -->
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="">
+                                        Enviar PDF automático al correo del cliente
+                                        <el-tooltip class="item" effect="dark" placement="top-start">
+                                            <div slot="content">
+                                                Envía el comprobante al correo del cliente al finalizar la venta.<br />
+                                                <b>Disponible en POS y Nuevo CPE</b>
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{ 'has-danger': errors.auto_send_pdf_email }" class="form-group">
+                                        <el-switch v-model="form.auto_send_pdf_email"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.auto_send_pdf_email" class="form-control-feedback"
+                                            v-text="errors.auto_send_pdf_email[0]"></small>
                                     </div>
                                 </div>
                             </div>
@@ -2430,6 +2488,7 @@ import ReportConfigurationsIndex from './partials/report_configurations_index.vu
 import PdfFooterImages from './partials/pdf_footer_images.vue'
 import SessionLifetime from '@viewsModuleLevelAccess/configurations/SessionLifetime.vue';
 import PriceLabelsManager from './partials/price_labels_manager.vue';
+import { buhoprinter } from '@mixins/buhoprinter';
 
 
 export default {
@@ -2448,6 +2507,7 @@ export default {
         LegendFooterSale,
         PriceLabelsManager
     },
+    mixins: [buhoprinter],
     computed: {
         ...mapState([
             'config',
@@ -2476,6 +2536,8 @@ export default {
             },
             affectation_igv_types: [],
             global_discount_types: [],
+            printers: [],
+            loadingPrinters: false,
             placeholder: '',
             activeName: 'first'
         }
@@ -2497,6 +2559,10 @@ export default {
             }
             // console.log(this.placeholder)
             this.getInventoryConfig()
+            // Si auto_print ya está activo, garantizar que haya impresoras disponibles
+            if (this.form.auto_print) {
+                this.loadOrSyncPrinters()
+            }
         });
 
         this.events()
@@ -2537,6 +2603,7 @@ export default {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.global_discount_types = response.data.global_discount_types
+                this.printers = response.data.printers || []
             })
 
         },
@@ -2613,6 +2680,7 @@ export default {
 
                 ticket_single_shipment: true,
                 hide_pdf_view_documents: false,
+                auto_send_pdf_email: false,
 
                 dashboard_sales: true,
                 dashboard_products: false,
@@ -2660,6 +2728,7 @@ export default {
                 price1_label: 'Precio 1',
                 price2_label: 'Precio 2',
                 price3_label: 'Precio 3',
+                printer_name_documents: null,
 
                 stock_control: false,
                 generate_internal_id: false,
@@ -2726,6 +2795,52 @@ export default {
                 this.form.default_document_type_03 = false
             }
             this.submit()
+        },
+        /**
+         * Maneja el cambio del switch de impresión automática.
+         * Guarda la configuración y, si se activa, garantiza que haya impresoras disponibles.
+         */
+        async onChangeAutoPrint() {
+            this.submit()
+            if (this.form.auto_print) {
+                await this.loadOrSyncPrinters()
+            }
+        },
+        /**
+         * Carga las impresoras desde el backend al activar impresión automática.
+         *
+         * Si no hay impresoras registradas aún, intenta detectar BuhoPrinter en
+         * localhost (puertos 8181-8484), obtiene la lista con getBuhoPrintersWithDefaults()
+         * y la sincroniza vía POST /restaurant/printers/sync.
+         *
+         * IMPORTANTE: el endpoint /printers/sync requiere el campo `printers` (array).
+         * Antes no se enviaba ese campo y el backend respondía 422, dejando el selector
+         * de impresora vacío aunque BuhoPrinter estuviera activo.
+         * La respuesta del sync ya trae la lista actualizada — no hay que hacer un GET extra.
+         */
+        async loadOrSyncPrinters() {
+            if (this.printers.length > 0) return
+
+            this.loadingPrinters = true
+            try {
+                // Escanea localhost buscando el agente BuhoPrinter en puertos 8181-8484
+                await this.startConnectionBuho()
+                const rawPrinters = await this.getBuhoPrintersWithDefaults()
+
+                if (this.isBuhoActive) {
+                    // Obtiene impresoras con su flag is_default desde el agente local
+                    const rawPrinters = await this.getBuhoPrintersWithDefaults()
+                    // Sincroniza en BD y recibe la lista ya persistida
+                    const syncRes = await this.$http.post('/restaurant/printers/sync', { printers: rawPrinters })
+                    if (syncRes.data.success) {
+                        this.printers = syncRes.data.printers || []
+                    }
+                }
+            } catch (err) {
+                console.warn('[AutoPrint] No se pudo sincronizar impresoras:', err)
+            } finally {
+                this.loadingPrinters = false
+            }
         },
         submit() {
             this.loading_submit = true;

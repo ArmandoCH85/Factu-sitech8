@@ -47,11 +47,11 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
 
 
     // Página de términos y condiciones
-    Route::get('terms_conditions', 'EcommerceController@termsConditions')->name('tenant_ecommerce_terms_conditions');
+    Route::get('terminos-y-condiciones', 'EcommerceController@termsConditions')->name('tenant_ecommerce_terms_conditions');
     // Página de política de privacidad
-    Route::get('privacy_policy', 'EcommerceController@privacyPolicy')->name('tenant_ecommerce_privacy_policy');
+    Route::get('politica-de-privacidad', 'EcommerceController@privacyPolicy')->name('tenant_ecommerce_privacy_policy');
     // Página de sobre nosotros
-    Route::get('about_us', 'EcommerceController@aboutUs')->name('tenant_ecommerce_about_us');
+    Route::get('nosotros', 'EcommerceController@aboutUs')->name('tenant_ecommerce_about_us');
 
     Route::get('configuration', 'ConfigurationController@index')->middleware('redirect.module')->name('tenant_ecommerce_configuration');
     Route::post('configuration', 'ConfigurationController@store_configuration');

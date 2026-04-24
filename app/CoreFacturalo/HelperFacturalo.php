@@ -154,6 +154,7 @@ class HelperFacturalo
     private function addPage(&$pdf, $additional_data, $document, $company, $template_name, $base_height)
     {
         list($template, $base_pdf_template, $width, $calculated_height) = $additional_data;
+        $isNotLandscape = isset($additional_data[4]) ? $additional_data[4] : false;
         $html_dispatch_ticket = $template->pdfWithoutFormat($base_pdf_template, $template_name, $company, $document);
         $additional = 0;
 
@@ -161,9 +162,9 @@ class HelperFacturalo
 
         // if(!$document->is_individual) {
             $pdf->AddPageByArray([
-                'orientation' => 'L',
+                'orientation' => $isNotLandscape ? 'P' : 'L',
                 'newformat' => [
-                    ($base_height + $calculated_height + $additional) - 200,
+                    $base_height + $calculated_height + $additional,
                     $width,
                 ],
                 'mgt' => 0,

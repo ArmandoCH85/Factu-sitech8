@@ -80,6 +80,21 @@ Route::prefix('restaurant')->middleware(['auth','check.email.verified'])->group(
         Route::delete('{id}', 'PreparationAreaController@destroy');
     });
 
+    // Printers (configuración de impresoras BuhoPrinter)
+    Route::prefix('printers')->group(function () {
+        Route::get('config', 'PrinterController@getConfig');
+        Route::post('config', 'PrinterController@saveConfig');
+        Route::post('status', 'PrinterController@updateStatus');
+        Route::post('sync', 'PrinterController@syncPrinters');
+        Route::post('configure', 'PrinterController@configure');
+        Route::get('/', 'PrinterController@index');
+    });
+
+    // Print orders — consumidos por BuhoPrinter vía Redis (Observer)
+    Route::prefix('print-orders')->group(function () {
+        Route::post('/', 'PrintOrderController@store');
+    });
+
     //Promotion
     Route::prefix('promotions')->group(function() {
 

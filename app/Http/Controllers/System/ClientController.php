@@ -28,6 +28,7 @@
     use Illuminate\Support\Facades\Cache;
     use App\Helpers\GuestRegisterHelper;
 use App\Models\System\PlanPeriod;
+use App\Models\System\User as SystemUser;
 
     class ClientController extends Controller
     {
@@ -434,7 +435,6 @@ use App\Models\System\PlanPeriod;
                 return [
                     'line' => $line,
                     'total_documents' => 0,
-                    'error' => 'Error al cargar los datos del gráfico'
                 ];
             }
         }
@@ -653,6 +653,14 @@ use App\Models\System\PlanPeriod;
             ini_set('memory_limit', '2048M');
             \Log::info('=== INICIO STORE CLIENT ===', ['timestamp' => now()]);
 
+            $authAdmin = auth('admin')->user();
+            if ($authAdmin instanceof SystemUser && $authAdmin->reseller_id !== null && ! $authAdmin->canCreateClients()) {
+                return [
+                    'success' => false,
+                    'message' => 'No tiene permiso para crear nuevos clientes.',
+                ];
+            }
+
             $hostname = new Hostname();
             $website = new Website();
 
@@ -710,6 +718,7 @@ use App\Models\System\PlanPeriod;
 
                 \Log::info('Creando cliente...');
                 $client = Client::query()->create([
+                    'created_by_user_id' => auth('admin')->check() ? auth('admin')->id() : null,
                     'hostname_id' => $hostname->id,
                     'token' => $token,
                     'email' => strtolower($request->input('email')),
@@ -1077,7 +1086,7 @@ use App\Models\System\PlanPeriod;
          */
         public function destroy($id, $input_validate)
         {
-            $client = Client::find($id);
+            $client = Client::findOrFail($id);
 
             $check_input_validate_delete = $this->checkInputValidateDelete($client, $input_validate);
             if(!$check_input_validate_delete['success']) return $check_input_validate_delete;
@@ -1103,7 +1112,7 @@ use App\Models\System\PlanPeriod;
 
         public function password($id)
         {
-            $client = Client::find($id);
+            $client = Client::findOrFail($id);
             $website = Website::find($client->hostname->website_id);
             $tenancy = app(Environment::class);
             $tenancy->tenant($website);
@@ -1216,9 +1225,10 @@ use App\Models\System\PlanPeriod;
         {
             $query = $request->input('query');
 
-            $clients = Client::where('name', 'like', "%{$query}%")
-                        ->orWhere('number', 'like', "%{$query}%")
-                        ->get();
+            $clients = Client::where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('number', 'like', "%{$query}%");
+            })->get();
 
             $clients = $clients->transform(function($row) {
                 return [
@@ -1232,6 +1242,10 @@ use App\Models\System\PlanPeriod;
 
         public function confirmLimitReseller(Request $request)
         {
+            if ($this->resellerSystemAdminLacksPlansModule()) {
+                return $this->generalResponse(true, 'Sin evaluación de cupo de suscripción');
+            }
+
             $limiteClientes = (int) config('app.limite_reseller' , 999);
             $totalClientes = Client::count();
 
@@ -1240,5 +1254,17 @@ use App\Models\System\PlanPeriod;
             }
 
             return $this->generalResponse(true, 'Aun puede registrar más clientes');
+        }
+
+        /**
+         * Sin permiso "plans" no se conoce el contexto del cupo de la suscripción; no aplicar aviso de límite.
+         */
+        protected function resellerSystemAdminLacksPlansModule(): bool
+        {
+            $user = auth('admin')->user();
+
+            return $user instanceof SystemUser
+                && $user->reseller_id !== null
+                && ! $user->canAccessSystemModule('plans');
         }
     }

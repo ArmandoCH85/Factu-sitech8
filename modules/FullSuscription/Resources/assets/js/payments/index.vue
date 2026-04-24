@@ -63,7 +63,7 @@
                         <!-- Ciclos -->
                         <td class="text-center">
                             <span v-if="row.plan.unlimited" class="text-muted" style="font-size:12px;">Ilimitado</span>
-                            <span v-else class="ciclos-badge">{{ row.quantity_period }}</span>
+                            <span v-else class="ciclos-badge"> {{ row.orders_created }}/{{ row.quantity_period }}</span>
                         </td>
 
                         <!-- Últ. Vencimiento -->
@@ -80,12 +80,28 @@
 
                         <!-- Acciones -->
                         <td class="text-end">
-                            <button
-                                class="btn waves-effect waves-light btn-xs btn-info"
-                                type="button"
-                                @click.prevent="clickShowPlan(row)">
-                                Ver
-                            </button>
+                            <el-dropdown v-if="row.status !== 'cancelada'" trigger="click" @command="handleCommand($event, row)">
+                                <el-button class="btn-dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </el-button>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item command="edit">
+                                            Editar
+                                        </el-dropdown-item>
+                                        <el-dropdown-item command="authorized" v-if="row.status === 'pausada'">
+                                            Activar
+                                        </el-dropdown-item>
+                                        <el-dropdown-item command="cancelled">
+                                            Finalizar
+                                        </el-dropdown-item>
+                                        <el-dropdown-item divided></el-dropdown-item>
+                                        <el-dropdown-item command="paused" v-if="row.status === 'activa'">
+                                            Suspender
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
                         </td>
                     </tr>
                 </data-table>
@@ -258,13 +274,54 @@ export default {
 
         },
 
-        clickDelete(id) {
-            console.log('no debe hacer nada')
-            this.destroy(`/${this.resource}/${id}`).then(() =>
-                this.$eventHub.$emit('reloadData')
-            )
+        changeStatus(id, status) {
+            this.$http.post(`/full_suscription/payments/${id}/change-status`, { status })
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit('reloadData');
+                    }
+                })
         },
-        clearsuscriptionid(data) {
+        handleCommand(command, row) {
+            if (command === 'edit') {
+                this.clickShowPlan(row);
+                return;
+            }
+            if (command === 'cancelled') {
+                this.$confirm(
+                    '¿Estás seguro de que deseas finalizar esta suscripción? Esta acción no se puede deshacer.',
+                    'Confirmar finalización',
+                    {
+                        confirmButtonText: 'Sí, finalizar',
+                        cancelButtonText: 'Cancelar',
+                        type: 'warning',
+                    }
+                ).then(() => {
+                    this.changeStatus(row.id, command);
+                }).catch(() => {});
+                return;
+            }
+            if (command === 'paused') {
+                this.$confirm(
+                    'Al suspender la suscripción se seguirán generando nuevos cobros. Si no deseas más cobros, debes finalizarla.',
+                    'Suspender suscripción',
+                    {
+                        confirmButtonText: 'Solo suspender',
+                        cancelButtonText: 'Finalizar',
+                        distinguishCancelAndClose: true,
+                        type: 'warning',
+                    }
+                ).then(() => {
+                    this.changeStatus(row.id, 'paused');
+                }).catch(action => {
+                    if (action === 'cancel') this.changeStatus(row.id, 'cancelled');
+                });
+                return;
+            }
+            this.changeStatus(row.id, command);
+        },
+        clearsuscriptionid() {
             this.suscriptionId = null;
         },
 

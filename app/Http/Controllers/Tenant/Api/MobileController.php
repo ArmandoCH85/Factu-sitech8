@@ -639,7 +639,7 @@ class MobileController extends Controller
     public function upload(Request $request)
     {
 
-        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,webp');
 
         if(!$validate_upload['success']){
             return $validate_upload;
@@ -779,7 +779,20 @@ class MobileController extends Controller
             'data' => $labels->map->getCollectionData(),
             'label_default' => (Configuration::first()->price1_label) ? Configuration::first()->price1_label : 'Precio principal'
         ]);
+    }
 
+    public function destroyItem($id)
+    {
+        $item = \App\Models\Tenant\Item::findOrFail($id);
+
+        \DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=0;');
+        $item->delete();
+        \DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        return [
+            'success' => true,
+            'message' => '¡Producto eliminado con éxito.!'
+        ];
     }
 }
 

@@ -86,6 +86,7 @@
                                 :value="row.status_claim_id"
                                 size="mini"
                                 style="width: 100%; min-width: 150px"
+                                :class="{ 'select-white': highlightRows }"
                                 @change="newVal => $emit('status-change', row, newVal)"
                             >
                                 <el-option
@@ -105,6 +106,7 @@
                             v-model="row.assigned_user_id"
                             size="mini"
                             style="width: 100%; min-width: 150px"
+                            :class="{ 'select-white': highlightRows }"
                             @change="newVal => onAssign(row, newVal)"
                         >
                             <el-option
@@ -118,11 +120,19 @@
                     <td class="text-end">
                         <button
                             type="button"
-                            class="btn waves-effect waves-light btn-xs btn-info"
+                            class="btn btn-xs btn-primary"
                             @click="$emit('view', row)"
-                            title="Ver detalle"
+                            title="Abrir detalle del reclamo"
                         >
-                            <i class="el-icon-view"></i> Ver
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align:-2px; margin-right:3px;">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+                                <path d="M9 17h6"/><path d="M9 13h6"/><path d="M9 9h1"/>
+                            </svg>
+                            Abrir
                         </button>
                     </td>
                 </tr>
@@ -139,6 +149,12 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+.select-white >>> .el-input__inner {
+    background-color: #fff !important;
+}
+</style>
 
 <script>
 export default {

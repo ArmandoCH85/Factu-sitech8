@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Models\System\Configuration;
+use App\Http\Controllers\AdminReseller\UserController as AdminResellerUserController;
 
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
@@ -518,6 +519,7 @@ if ($hostname) {
             Route::get('unit_types/record/{code}', 'Tenant\UnitTypeController@record');
             Route::post('unit_types', 'Tenant\UnitTypeController@store');
             Route::delete('unit_types/{code}', 'Tenant\UnitTypeController@destroy');
+            Route::post('unit_types/active', 'Tenant\UnitTypeController@active');
 
             //Transfer Reason Types
             Route::get('transfer-reason-types/records', 'Tenant\TransferReasonTypeController@records');
@@ -891,7 +893,7 @@ if ($hostname) {
         //     }
         // });
 
-        Route::middleware('auth:admin')->group(function () {
+        Route::middleware(['auth:admin', 'reseller.system.admin'])->group(function () {
             Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
             Route::get('/', function () {
                 return redirect()->route('system.dashboard');
@@ -906,6 +908,18 @@ if ($hostname) {
             Route::get('clients', 'System\ClientController@index')->name('system.clients.index');
             Route::get('clients/records', 'System\ClientController@records');
             Route::get('clients/record/{client}', 'System\ClientController@record');
+
+            // Admin Reseller - Administradores
+            // Nota: se usa [AdminResellerUserController::class, ...] para evitar errores de resolución de clase
+            // con el namespace del RouteServiceProvider. Parámetro {administrator} + User tipado evita
+            // colisiones de route-model-binding con rutas tenant que usan {user}.
+            Route::prefix('admin-reseller/administrators')->group(function () {
+                Route::get('/', [AdminResellerUserController::class, 'index'])->name('system.admin_reseller.administrators.index');
+                Route::get('/records', [AdminResellerUserController::class, 'records']);
+                Route::post('/', [AdminResellerUserController::class, 'store']);
+                Route::put('/{administrator}', [AdminResellerUserController::class, 'update']);
+                Route::delete('/{administrator}', [AdminResellerUserController::class, 'destroy']);
+            });
 
             Route::get('clients/create', 'System\ClientController@create');
             Route::get('clients/tables', 'System\ClientController@tables');

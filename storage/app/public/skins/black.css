@@ -778,6 +778,7 @@ ul.nav-main li.nav-description {
 .table td {
     border-top: unset;
     line-height: 1;
+    vertical-align: middle;
 }
 html.sidebar-light ul.nav-main > li > a {
     margin: 0 8px;
@@ -1270,6 +1271,7 @@ html.sidebar-white ul.nav-main li.nav-active:not(.nav-parent)>a {
 .table th,
 .table td {
     padding: 0.5rem;
+    vertical-align: middle;
 }
 .btn.barcode{
     margin: 0;
@@ -1386,34 +1388,40 @@ html body .text-primary {
     padding: 0.3rem 1.5rem;
 }
 .bg-secondary {
-    background-color: hsl(0, 0%, 93%) !important;
-    color: var(--black-dark) !important;
-    border: 1px solid hsl(0, 0%, 83%) !important;
+    --_h: 220; --_s: 9%;
+    background-color: hsl(var(--_h), var(--_s), 95%) !important;
+    border: 1px solid hsl(var(--_h), var(--_s), calc(95% - 12%)) !important;
+    color: hsl(var(--_h), var(--_s), calc(95% - 70%)) !important;
     border-radius: 8px !important;
 }
-.bg-success{
-    background-color: hsl(167, 82%, 96%) !important;
-    border: 1px solid hsl(168, 88%, 77%) !important;
-    color: hsl(175, 61%, 19%) !important;
+.bg-success {
+    --_h: 142; --_s: 72%;
+    background-color: hsl(var(--_h), var(--_s), 95%) !important;
+    border: 1px solid hsl(var(--_h), var(--_s), calc(95% - 17%)) !important;
+    color: hsl(var(--_h), var(--_s), calc(95% - 74%)) !important;
 }
-.bg-warning{
-    background-color: hsl(358, 100%, 95%) !important;
-    border: 1px solid hsl(357, 81%, 89%) !important;
-    color: hsl(358, 100%, 45%) !important;
+.bg-warning {
+    --_h: 38; --_s: 95%;
+    background-color: hsl(var(--_h), var(--_s), 95%) !important;
+    border: 1px solid hsl(var(--_h), var(--_s), calc(95% - 18%)) !important;
+    color: hsl(var(--_h), var(--_s), calc(95% - 67%)) !important;
 }
-.bg-info{
-    background-color: hsl(200, 86%, 95%) !important;
-    border: 1px solid hsl(198, 100%, 73%) !important;
-    color: hsl(201, 95%, 23%) !important;
+.bg-info {
+    --_h: 199; --_s: 89%;
+    background-color: hsl(var(--_h), var(--_s), 95%) !important;
+    border: 1px solid hsl(var(--_h), var(--_s), calc(95% - 20%)) !important;
+    color: hsl(var(--_h), var(--_s), calc(95% - 73%)) !important;
 }
 .bg-danger {
-    background-color: hsl(0, 100%, 95%) !important;
-    border: 1px solid hsl(0, 80%, 85%) !important;
-    color: hsl(0, 80%, 40%) !important;
+    --_h: 0; --_s: 86%;
+    background-color: hsl(var(--_h), var(--_s), 95%) !important;
+    border: 1px solid hsl(var(--_h), var(--_s), calc(95% - 13%)) !important;
+    color: hsl(var(--_h), var(--_s), calc(95% - 57%)) !important;
 }
 .bg-dark {
-    background-color: hsl(240, 4%, 40%) !important;
-    border: 1px solid hsl(240, 4%, 35%) !important;
+    --_h: 240; --_s: 5%;
+    background-color: hsl(var(--_h), var(--_s), 22%) !important;
+    border: 1px solid hsl(var(--_h), var(--_s), calc(22% - 5%)) !important;
     color: hsl(0, 0%, 100%) !important;
 }
 .el-collapse a {

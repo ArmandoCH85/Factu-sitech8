@@ -16,10 +16,14 @@
 
             <!-- Sección 1: Identificación del reclamante -->
             <div class="cd-section">
-                <div class="cd-section-title">
-                    <i class="el-icon-user"></i> Datos del reclamante
+                <div class="cd-section-title" @click="collapsed.reclamante = !collapsed.reclamante">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-section-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"/></svg>
+                        Datos del reclamante
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-chevron" :class="{ 'cd-chevron--up': !collapsed.reclamante }"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6"/></svg>
                 </div>
-                <el-row :gutter="16">
+                <el-row v-show="!collapsed.reclamante" :gutter="16">
                     <el-col :span="12">
                         <div class="cd-field">
                             <label>Tipo de documento</label>
@@ -67,10 +71,14 @@
 
             <!-- Sección 2: Bien contratado -->
             <div class="cd-section">
-                <div class="cd-section-title">
-                    <i class="el-icon-goods"></i> Bien contratado
+                <div class="cd-section-title" @click="collapsed.bien = !collapsed.bien">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-section-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9l8 -4.5"/><path d="M12 12l8 -4.5"/><path d="M12 12v9"/><path d="M12 12l-8 -4.5"/></svg>
+                        Bien contratado
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-chevron" :class="{ 'cd-chevron--up': !collapsed.bien }"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6"/></svg>
                 </div>
-                <el-row :gutter="16">
+                <el-row v-show="!collapsed.bien" :gutter="16">
                     <el-col :span="12">
                         <div class="cd-field">
                             <label>Tipo de bien</label>
@@ -108,10 +116,14 @@
 
             <!-- Sección 3: Detalle del reclamo + adjuntos del reclamante -->
             <div class="cd-section">
-                <div class="cd-section-title">
-                    <i class="el-icon-document"></i> Detalle del reclamo
+                <div class="cd-section-title" @click="collapsed.detalle = !collapsed.detalle">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-section-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/><path d="M9 17h6"/><path d="M9 13h6"/></svg>
+                        Detalle del reclamo
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-chevron" :class="{ 'cd-chevron--up': !collapsed.detalle }"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6"/></svg>
                 </div>
-                <el-row :gutter="16">
+                <el-row v-show="!collapsed.detalle" :gutter="16">
                     <el-col :span="12">
                         <div class="cd-field">
                             <label>Tipo</label>
@@ -121,33 +133,32 @@
                         </div>
                     </el-col>
                     <el-col :span="12">
+                        <div class="cd-field" v-if="record.channel_establishment && hasEstablishmentData(record.channel_establishment)">
+                            <label>Datos de la sucursal</label>
+                            <div class="cd-establishment-info">
+                                <span v-if="buildEstablishmentAddress(record.channel_establishment)" class="cd-establishment-line">
+                                    {{ buildEstablishmentAddress(record.channel_establishment) }}
+                                </span>
+                                <small style="margin-top: -8px;" v-if="(record.channel_establishment.telephone && record.channel_establishment.telephone !== '-') || (record.channel_establishment.email && record.channel_establishment.email !== '-')">
+                                    <template v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-'">{{ record.channel_establishment.telephone }}</template>
+                                    <template v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-' && record.channel_establishment.email && record.channel_establishment.email !== '-'"> · </template>
+                                    <template v-if="record.channel_establishment.email && record.channel_establishment.email !== '-'">{{ record.channel_establishment.email }}</template>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="cd-field" v-else-if="record.channel_description">
+                            <label>Descripción del canal</label>
+                            <div>
+                                <span>{{ record.channel_description }}</span>
+                            </div>
+                        </div>
+                    </el-col>
+                    <el-col :span="(record.channel_establishment && hasEstablishmentData(record.channel_establishment)) || record.channel_description ? 24 : 12">
                         <div class="cd-field">
                             <label>Canal de atención</label>
                             <span>{{ record.channel || '—' }}</span>
                         </div>
                     </el-col>
-
-                    <!-- Datos de la sucursal (solo cuando el canal fue sincronizado desde un establecimiento) -->
-                    <template v-if="record.channel_establishment && hasEstablishmentData(record.channel_establishment)">
-                        <el-col :span="24" v-if="buildEstablishmentAddress(record.channel_establishment)">
-                            <div class="cd-field">
-                                <label>Dirección</label>
-                                <span>{{ buildEstablishmentAddress(record.channel_establishment) }}</span>
-                            </div>
-                        </el-col>
-                        <el-col :span="12" v-if="record.channel_establishment.telephone && record.channel_establishment.telephone !== '-'">
-                            <div class="cd-field">
-                                <label>Teléfono</label>
-                                <span>{{ record.channel_establishment.telephone }}</span>
-                            </div>
-                        </el-col>
-                        <el-col :span="12" v-if="record.channel_establishment.email && record.channel_establishment.email !== '-'">
-                            <div class="cd-field">
-                                <label>Email</label>
-                                <span>{{ record.channel_establishment.email }}</span>
-                            </div>
-                        </el-col>
-                    </template>
 
                     <el-col :span="24">
                         <div class="cd-field">
@@ -202,10 +213,14 @@
 
             <!-- Sección 4: Formulario de gestión -->
             <div class="cd-section">
-                <div class="cd-section-title">
-                    <i class="el-icon-edit"></i> Gestión del reclamo
+                <div class="cd-section-title" @click="collapsed.gestion = !collapsed.gestion">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-section-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/><path d="M16 5l3 3"/></svg>
+                        Gestión del reclamo
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-chevron" :class="{ 'cd-chevron--up': !collapsed.gestion }"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6"/></svg>
                 </div>
-                <el-row :gutter="16">
+                <el-row v-show="!collapsed.gestion" :gutter="16">
                     <el-col :span="12">
                         <div class="cd-field">
                             <label>Estado</label>
@@ -277,11 +292,16 @@
 
             <!-- Sección 5: Archivos de respuesta -->
             <div class="cd-section">
-                <div class="cd-section-title">
-                    <i class="el-icon-paperclip"></i> Archivos de respuesta
+                <div class="cd-section-title" @click="collapsed.archivos = !collapsed.archivos">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-section-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 7l-6.5 6.5a1.5 1.5 0 0 0 3 3l6.5 -6.5a3 3 0 0 0 -6 -6l-6.5 6.5a4.5 4.5 0 0 0 9 9l6.5 -6.5"/></svg>
+                        Archivos de respuesta
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cd-chevron" :class="{ 'cd-chevron--up': !collapsed.archivos }"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6"/></svg>
                 </div>
 
                 <!-- Archivos de respuesta ya guardados -->
+                <div v-show="!collapsed.archivos">
                 <div v-if="record.response_attachments && record.response_attachments.length" class="cd-attachments-list mb-2">
                     <a
                         v-for="(path, idx) in record.response_attachments"
@@ -315,8 +335,9 @@
                         PDF, PNG, JPG, MP4 · máx. 32 MB por archivo · máx. 5 archivos
                     </div>
                 </el-upload>
-            </div>
-        </div>
+                </div><!-- /v-show archivos -->
+            </div><!-- /cd-section archivos -->
+        </div><!-- /v-if record -->
 
         <div v-else-if="loading" class="cd-loading-placeholder">
             Cargando detalle...
@@ -355,6 +376,31 @@
     margin-bottom: 12px;
     padding-bottom: 8px;
     border-bottom: 1px solid #ebeef5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+.cd-section-title:hover {
+    color: #409EFF;
+}
+.cd-section-title > span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.cd-section-icon {
+    flex-shrink: 0;
+    opacity: .7;
+}
+.cd-chevron {
+    flex-shrink: 0;
+    transition: transform .2s ease;
+    transform: rotate(0deg);
+}
+.cd-chevron--up {
+    transform: rotate(180deg);
 }
 .cd-field {
     margin-bottom: 10px;
@@ -433,6 +479,11 @@
     color: #c0c4cc;
     margin-bottom: 8px;
 }
+.cd-establishment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 .mb-2 {
     margin-bottom: 8px;
 }
@@ -462,6 +513,15 @@ export default {
             loading: false,
             saving: false,
             users: [],
+
+            // Estado colapsado de cada sección
+            collapsed: {
+                reclamante: false,
+                bien:       false,
+                detalle:    false,
+                gestion:    false,
+                archivos:   false,
+            },
 
             // Formulario de gestión editable
             form: {

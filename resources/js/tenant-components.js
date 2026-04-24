@@ -311,6 +311,7 @@ import TenantSuscriptionClientIndex from '../../modules/Suscription/Resources/as
 import TenantSuscriptionPlansIndex from '../../modules/Suscription/Resources/assets/js/plans/index.vue'
 import TenantSuscriptionPaymentsIndex from '../../modules/Suscription/Resources/assets/js/payments/index.vue'
 import DataTablePaymentReceipt from '../js/components/DataTablePaymentReceipt.vue'
+import DataTablePaymentReceiptOrder from '../js/components/DataTablePaymentReceiptOrder.vue'
 import TenantIndexPaymentReceipt from '../../modules/Suscription/Resources/assets/js/payment_receipt/index.vue'
 
 // Suscription - extras
@@ -322,6 +323,10 @@ import TenantFullSuscriptionClientIndex from '../../modules/FullSuscription/Reso
 import TenantFullSuscriptionPlansIndex from '../../modules/FullSuscription/Resources/assets/js/plans/index.vue'
 import TenantFullSuscriptionPaymentsIndex from '../../modules/FullSuscription/Resources/assets/js/payments/index.vue'
 import TenantFullSuscriptionIndexPaymentReceipt from '../../modules/FullSuscription/Resources/assets/js/payment_receipt/index.vue'
+import FullSuscriptionPaymentReminders from '../../modules/FullSuscription/Resources/assets/js/payment-reminders/index.vue'
+import FullSuscriptionPendingPayments from '../../modules/FullSuscription/Resources/assets/js/pending_payments/index.vue'
+import FullSuscriptionPendingPaymentsViewOrder from '../../modules/FullSuscription/Resources/assets/js/pending_payments/view-order.vue'
+import FullSuscriptionPlansClient from '../../modules/FullSuscription/Resources/assets/js/plans/client.vue'
 
 // Bank loans
 import TenantBankloansIndex from '../../modules/Expense/Resources/assets/js/views/bank_loans/index.vue'
@@ -707,6 +712,7 @@ Vue.component('tenant-suscription-client-index', TenantSuscriptionClientIndex)
 Vue.component('tenant-suscription-plans-index', TenantSuscriptionPlansIndex)
 Vue.component('tenant-suscription-payments-index', TenantSuscriptionPaymentsIndex)
 Vue.component('data-table-payment-receipt', DataTablePaymentReceipt)
+Vue.component('data-table-payment-receipt-order', DataTablePaymentReceiptOrder)
 Vue.component('tenant-index-payment-receipt', TenantIndexPaymentReceipt)
 
 // Suscription extras
@@ -718,6 +724,10 @@ Vue.component('tenant-full-suscription-client-index', TenantFullSuscriptionClien
 Vue.component('tenant-full-suscription-plans-index', TenantFullSuscriptionPlansIndex)
 Vue.component('tenant-full-suscription-payments-index', TenantFullSuscriptionPaymentsIndex)
 Vue.component('tenant-full-suscription-index-payment-receipt', TenantFullSuscriptionIndexPaymentReceipt)
+Vue.component('full-suscription-payment-reminders', FullSuscriptionPaymentReminders)
+Vue.component('full-suscription-pending-payments', FullSuscriptionPendingPayments)
+Vue.component('full-suscription-pending-payments-view-order', FullSuscriptionPendingPaymentsViewOrder)
+Vue.component('full-suscription-plans-client', FullSuscriptionPlansClient)
 
 // Bank loans
 Vue.component('tenant-bankloans-index', TenantBankloansIndex)

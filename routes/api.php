@@ -27,6 +27,7 @@ if ($hostname) {
             Route::get('sale-note/lists', 'Tenant\Api\SaleNoteController@lists');
             Route::post('item', 'Tenant\Api\MobileController@item');
             Route::post('items/{id}/update', 'Tenant\Api\MobileController@updateItem');
+            Route::get('item/destroy/{item}', 'Tenant\Api\MobileController@destroyItem');
             Route::get('configuration-web', 'Tenant\Api\MobileController@configWeb');
             Route::post('item/upload', 'Tenant\Api\MobileController@upload');
             Route::post('person', 'Tenant\Api\MobileController@person');

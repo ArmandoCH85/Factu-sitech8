@@ -17,7 +17,7 @@
                     <div
                         class="col-md-7 col-lg-7 col-xl-7 product-model position-relative"
                     >
-                        <div class="tooltips-container" style="top: 46px;" v-show="hasSelectedItem">
+                        <div class="tooltips-container item-actions-tooltip" style="top: 46px;" v-show="hasSelectedItem">
                             <el-tooltip
                                 slot="append"
                                 :disabled="isUpdateItem"

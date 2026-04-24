@@ -359,9 +359,8 @@
             $supportUser = $systemUser::first();
             $hasSupportContact = $supportUser && ($supportUser->phone || $supportUser->whatsapp_number || $supportUser->address_contact);
         @endphp
-
+        <span class="separator show-left"></span>
         @if($hasSupportContact)
-        <span class="separator"></span>
         <ul class="notifications">
             <li class="m-0">
             <a role="menuitem"  class="notification-icon text-secondary"  onclick="toggleSupportSidebar()" title="Soporte" data-toggle="tooltip">
@@ -375,8 +374,8 @@
             </a>
             </li>
         </ul>
-        @endif
         <span class="separator"></span>
+        @endif
         <ul class="notifications">
             <li>
                 <a href="{{ route('tenant_orders_index') }}" class="notification-icon text-secondary"

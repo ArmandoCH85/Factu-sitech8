@@ -1060,39 +1060,14 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         try {
             if (isset($item->presentation)) {
-                if (is_object($item->presentation) && isset($item->presentation->quantity_unit)) return (float)$item->presentation->quantity_unit;
-                if (is_array($item->presentation) && isset($item->presentation['quantity_unit'])) return (float)$item->presentation['quantity_unit'];
-            }
-
-            if (isset($item->item_unit_types) && count($item->item_unit_types) > 0) {
-                $first = null;
-                if (is_array($item->item_unit_types)) {
-                    $first = $item->item_unit_types[0] ?? null;
-                } elseif (method_exists($item->item_unit_types, 'first')) {
-                    $first = $item->item_unit_types->first();
-                } else {
-                    $first = $item->item_unit_types[0] ?? null;
+                if (is_object($item->presentation) && isset($item->presentation->quantity_unit)) {
+                    return (float)$item->presentation->quantity_unit;
                 }
-                if ($first) {
-                    if (is_object($first) && isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                    if (is_array($first) && isset($first['quantity_unit'])) return (float)$first['quantity_unit'];
+                if (is_array($item->presentation) && isset($item->presentation['quantity_unit'])) {
+                    return (float)$item->presentation['quantity_unit'];
                 }
             }
 
-            if (isset($item->unit_type) && count($item->unit_type) > 0) {
-                $first = null;
-                if (is_array($item->unit_type)) {
-                    $first = $item->unit_type[0] ?? null;
-                } elseif (method_exists($item->unit_type, 'first')) {
-                    $first = $item->unit_type->first();
-                } else {
-                    $first = $item->unit_type[0] ?? null;
-                }
-                if ($first) {
-                    if (is_object($first) && isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                    if (is_array($first) && isset($first['quantity_unit'])) return (float)$first['quantity_unit'];
-                }
-            }
             // Si no encontramos presentación en el objeto proporcionado, intentar cargar el Item desde la base de datos
             $itemId = null;
             if (is_object($item) && isset($item->id)) $itemId = $item->id;
@@ -1102,17 +1077,12 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             if ($itemId) {
                 try {
-                    $dbItem = Item::with(['presentation','item_unit_types','unit_type'])->find($itemId);
+                    $dbItem = Item::with(['presentation'])->find($itemId);
                     if ($dbItem) {
-                        if (isset($dbItem->presentation) && isset($dbItem->presentation->quantity_unit)) return (float)$dbItem->presentation->quantity_unit;
-                        if (isset($dbItem->item_unit_types) && count($dbItem->item_unit_types) > 0) {
-                            $first = $dbItem->item_unit_types[0];
-                            if (isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                        }
-                        if (isset($dbItem->unit_type) && is_array($dbItem->unit_type) && count($dbItem->unit_type) > 0) {
-                            $first = $dbItem->unit_type[0];
-                            if (isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                        }
+
+                        $presentation = $dbItem->presentation->firstWhere('id', $item->presentation->id);
+                        if (isset($presentation) && isset($presentation->quantity_unit)) return (float)$presentation->quantity_unit;
+
                     }
                 } catch (\Exception $e) {
                     // ignore and return default below

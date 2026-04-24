@@ -22,7 +22,7 @@
                 >
                 <br />
             </div>
-            <div v-if="typeUser != 'integrator'" class="p-3 body-visual">
+            <div v-if="typeUser != 'integrator'" class="p-3">
                 <div class="visual-bg-container" style="background-color: #283046;">
                     <a
                         v-if="visuals.bg == 'white'"
@@ -134,7 +134,7 @@
                 </div>
 
                 <div v-if="!isBlackSkinSelected" class="pt-3 sidebar-compact-selector-container d-none d-md-block">
-                    <label class="control-label">Menú lateral contraído</label>
+                    <h5>Menú lateral contraído</h5>
                     <div :class="{ 'has-danger': errors.compact_sidebar }">
                         <el-switch
                             v-model="form.compact_sidebar"
@@ -244,7 +244,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <label class="control-label">Mostrar panel de bienvenida en el dashboard</label>
+                    <h5>Mostrar panel de bienvenida en el dashboard</h5>
                     <div>
                         <el-switch
                             v-model="showWelcome"
@@ -257,7 +257,7 @@
                 </div>
 
                 <div class="mt-3">
-                    <label class="control-label">Permitir cambiar de empresa y sucursal desde el sidebar</label>
+                    <h5>Permitir cambiar de empresa y sucursal desde el sidebar</h5>
                     <div>
                         <el-switch
                             v-model="branchSelectorInSidebar"

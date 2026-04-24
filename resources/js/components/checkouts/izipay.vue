@@ -1,6 +1,6 @@
 <template>
     <div class="kr-izipay-container">
-        <el-button type="primary" :loading="loading" @click.prevent="submit">Pagar con izipay</el-button>
+        <el-button type="primary" :loading="loading" :disabled="disabled" @click.prevent="submit">Pagar con izipay</el-button>
         <div class="kr-izipay-container-inner" >
 
         </div>
@@ -39,6 +39,10 @@ export default {
             required: true
         },
         isTenant: {
+            type: Boolean,
+            default: false
+        },
+        disabled: {
             type: Boolean,
             default: false
         }
@@ -141,9 +145,16 @@ export default {
 
                 this.$http.post(`${this.resource}/transaction`, { uuid: uuid })
                     .then(response => {
+                        console.log(response.data);
+                        console.log(this.form);
+                        
+                        // this.$emit('submit', response.data.paid)
                         if (response.data.success) {
+                            this.$emit('submit', {
+                                paid: response.data.paid,
+                                customer: this.form._customer
+                            });
                             this.$message.success('Pago realizado con éxito');
-
                             KR.closePopin();
                         } else {
                             this.$message.error('No se pudo verificar el pago');

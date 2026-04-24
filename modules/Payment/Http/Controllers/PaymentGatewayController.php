@@ -35,27 +35,53 @@ class PaymentGatewayController extends Controller
     {
         $is_tenant = $request->boolean('isTenant', false);
         $validated = $request->validate([
-            'amount' => 'required|numeric',
+            'amount'        => 'required|numeric',
             'currency_code' => 'required|string',
-            'email' => 'required|email',
-            'source_id' => 'required|string',
+            'email'         => 'nullable|email',
+            'source_id'     => 'required|string',
         ]);
 
         $privateKey = $this->culqiCredentials($is_tenant);
-        $charge = $this->charge([
-            'private_key' => $privateKey
-        ], [
-            'amount' => $validated['amount'],
-            'currency_code' => $validated['currency_code'],
-            'email' => $validated['email'],
-            'source_id' => $validated['source_id'],
-        ]);
 
-        return [
-            'success' => $charge ? true : false,
-            'charge' => $charge
-        ];
+        try {
+            $charge = $this->charge(
+                ['private_key' => $privateKey],
+                [
+                    'amount'        => $validated['amount'],
+                    'currency_code' => $validated['currency_code'],
+                    'email'         => $validated['email'] ?? 'admin@gmail.com',
+                    'source_id'     => $validated['source_id'],
+                    'capture'       => true,
+                ]
+            );
 
+            $paid = $charge && $charge->outcome->type === 'venta_exitosa';
+
+            return response()->json([
+                'success' => true,
+                'paid'    => $paid,
+            ]);
+
+        } catch (\Culqi\Error\UnhandledError $e) {
+            $error = json_decode($e->getMessage());
+            Log::error('Culqi charge error', ['body' => $e->getMessage()]);
+
+            return response()->json([
+                'success'          => false,
+                'paid'             => false,
+                'merchant_message' => $error->merchant_message ?? 'Error al procesar el cobro',
+                'user_message'     => $error->user_message     ?? 'La compra no pudo ser procesada',
+            ], 400);
+
+        } catch (\Culqi\Error\CulqiException $e) {
+            Log::error('Culqi exception', ['message' => $e->getMessage()]);
+
+            return response()->json([
+                'success'      => false,
+                'paid'         => false,
+                'user_message' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     public function culqiRecord(Request $request)
@@ -157,7 +183,6 @@ class PaymentGatewayController extends Controller
         return [
             'success' => $result ? true : false,
             'paid' => $paid,
-            'result' => $result
         ];
     }
 }

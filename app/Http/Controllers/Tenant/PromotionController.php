@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tenant\PromotionRequest;
 use App\Http\Resources\Tenant\PromotionCollection;
 use App\Http\Resources\Tenant\PromotionResource;
@@ -243,10 +244,28 @@ class PromotionController extends Controller
     
     public function destroy($id)
     {
-        //return 'sd';
-        $item = Promotion::findOrFail($id);
-        $item->status = 0;
-        $item->save();
+        DB::connection('tenant')->transaction(function () use ($id) {
+            $item = Promotion::findOrFail($id);
+            $image = $item->image;
+
+            $item->status = 0;
+            $item->save();
+
+            // Eliminar archivo solo si ya no existe otro banner activo usando la misma imagen.
+            if ($image && $image !== 'imagen-no-disponible.jpg') {
+                $inUse = Promotion::where('status', 1)
+                    ->where('apply_restaurant', $item->apply_restaurant)
+                    ->where('image', $image)
+                    ->exists();
+
+                if (!$inUse) {
+                    $path = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'promotions'.DIRECTORY_SEPARATOR.$image;
+                    if (Storage::exists($path)) {
+                        Storage::delete($path);
+                    }
+                }
+            }
+        });
 
         return [
             'success' => true,

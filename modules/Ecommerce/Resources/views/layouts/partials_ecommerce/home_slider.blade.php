@@ -1,9 +1,10 @@
-{{-- 
+{{--
     - vista slider promociones
     - var items definida en Modules\Ecommerce\Http\ViewComposers\PromotionsViewComposer
 --}}
 @php
-    $banners = $items->filter(fn($i) => $i->type !== 'spots');
+    // Los items ya llegan filtrados desde el ViewComposer.
+    $banners = $items;
 @endphp
 
 @if($banners->isNotEmpty())
@@ -22,10 +23,14 @@
                 @endphp
 
                 @if($bannerHref)
-                    <a href="{{ $bannerHref }}" class="banner-slide-link" aria-label="Ver producto">
+                    <a href="{{ $bannerHref }}" class="banner-slide-link" title="Ver producto">
                 @endif
 
-                <div class="owl-lazy slide-bg" data-src="{{ asset('storage/uploads/promotions/'.$item->image) }}"></div>
+                @php
+                    $bannerVersion = optional($item->updated_at)->timestamp ?: time();
+                    $bannerSrc = asset('storage/uploads/promotions/'.$item->image).'?v='.$bannerVersion;
+                @endphp
+                <div class="owl-lazy slide-bg" data-src="{{ $bannerSrc }}"></div>
                 <div class="home-slide-content text-white">
                     {{-- <h1>{{ $item->name }}</h1>
                     <p>{{ $item->description }}</p>

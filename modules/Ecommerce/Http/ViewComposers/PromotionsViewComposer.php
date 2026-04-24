@@ -10,7 +10,15 @@ class PromotionsViewComposer
 {
     public function compose($view)
     {
-        $view->items = Promotion::where('apply_restaurant', 0)->with('item')->get();
+        // El slider principal debe mostrar solo banners (o registros legacy sin type).
+        $view->items = Promotion::where('apply_restaurant', 0)
+            ->where(function ($query) {
+                $query->whereNull('type')
+                    ->orWhere('type', 'banners');
+            })
+            ->with('item')
+            ->orderByDesc('updated_at')
+            ->get();
         
         $config = ConfigurationEcommerce::first();
         $preferences = $config && $config->preferences ? $config->preferences : [];

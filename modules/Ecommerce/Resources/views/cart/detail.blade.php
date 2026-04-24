@@ -37,6 +37,16 @@
     #addressModal .close:hover {
         opacity: 1;
     }
+
+    .btn-input-group {
+        height: 26.6px !important;
+        border-radius: 0px !important;
+        min-width: 32px !important;
+    }
+
+    .card-body-h-auto {
+        min-height: auto !important;
+    }
 </style>
 @endpush
 
@@ -52,69 +62,316 @@
     $googleMapsApiKey = app(Modules\Ecommerce\Http\Controllers\EcommerceController::class)->getGoogleMaps();
     $globalDiscountTypeId = $global_discount_type_id ?? null;
 @endphp
-<h1 class="my-4" style="font-weight: 900;">TU CARRITO</h1>
+<h2 class="my-4" style="font-weight: 900;">Finalizar compra</h2>
 <div class="row" id="app">
     <div class="col-md-8 mb-3">
-        <div class="table-cart-container">
-            <table class="table-cart w-100">
-                <tbody>
-                    <tr v-for="(row, index) in records" class="product-row">
-                        <td class="product-col">
-                            <figure class="product-image-container m-0">
-                                <a href="#" class="product-image">
-                                    <img class="image-product" :src="(row.image && row.image !== 'imagen-no-disponible.jpg') ? '{{ $itemsBasePath }}' + '/' + row.image : '{{ $defaultImagePath }}'" :alt="row.description || 'Producto sin imagen'">
-                                </a>
-                            </figure>
-                        </td>
-                        <td class="text-left w-100">
-                            <div class="d-flex flex-column justify-content-between align-items-start h-100 py-3">
-                                <h2 class="product-title m-0">
-                                    <a href="#">@{{ row.description }}</a>
-                                </h2>
-                                <span class="price">
-                                    @{{ row.currency_type_symbol }} @{{ row.sale_unit_price }}
-                                </span>
-                            </div>
-                        </td>
-                        <!-- <td>S/ @{{ row.sub_total }}</td> -->
-                        <td class="text-right">
-                            <div class="d-flex flex-column justify-content-between align-items-end h-100 py-3">
-                                <button type="button" @click="deleteItem(row.id, index)"
-                                class="btn btn-sm btn-clean-product">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                            </button>
-                            <div class="quantity-container d-flex align-items-center">
-                                <button @click.stop.prevent="decrementQuantity(row)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-minus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /></svg>
-                                </button>
-                                <input class="input-quantity text-center" style="font-size: 14px;" :data-product="row.id" type="number" v-model.number="row.cantidad">
-                                <button @click.stop.prevent="incrementQuantity(row)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                                </button>
-                            </div>
-                            </div>
-                        </td>
-                    </tr>
+        <div class="card">
+            <button type="button" class="btn btn-link btn-block text-left p-0" data-toggle="collapse" data-target="#cartCollapse" style="text-decoration: none; display: block;">
+                <div class="card-header d-flex align-items-center bg-white border-bottom-0" style="cursor: pointer;">
+                    <svg clip-rule="evenodd"
+                        fill-rule="evenodd"
+                        height="24"
+                        stroke-linejoin="round"
+                        stroke-miterlimit="2"
+                        viewBox="0 0 512 512" width="24" xmlns="http://www.w3.org/2000/svg" id="fi_4893746">
+                        <path d="m211.892 383.468c24.344 0 44.108 19.764 44.108 44.108s-19.764 44.108-44.108 44.108-44.108-19.764-44.108-44.108 19.764-44.108 44.108-44.108zm176.22 0c24.344 0 44.108 19.764 44.108 44.108s-19.764 44.108-44.108 44.108-44.108-19.764-44.108-44.108 19.764-44.108 44.108-44.108zm-288.464-273.226s63.534 222.705 63.534 222.705c6.591 23.103 27.703 39.034 51.727 39.034h157.478c33.502 0 61.98-24.47 67.023-57.59 4.821-31.664 11.838-77.75 17.065-112.081 2.869-18.84-2.626-37.994-15.046-52.449-12.42-14.454-30.529-22.769-49.586-22.769h-235.394l-8.72-30.567c-7.633-26.757-32.085-45.209-59.91-45.209-23.033 0-51.825 0-51.825 0-13.798 0-25 11.202-25 25s11.202 25 25 25h51.825c5.494 0 10.321 3.643 11.829 8.926zm71.066 66.85h221.129c4.482 0 8.741 1.956 11.663 5.355 2.921 3.4 4.213 7.905 3.539 12.337 0 0-17.066 112.081-17.066 112.081-1.323 8.693-8.798 15.116-17.592 15.116h-157.478c-1.693 0-3.181-1.122-3.645-2.751 0 0-40.55-142.138-40.55-142.138z"/>
+                    </svg>
+                    <span class="ml-2 font-weight-bold">Tu carrito</span>
+                </div>
+            </button>
 
-                </tbody>
+            <div id="cartCollapse" class="collapse show">
+                <div class="card-body border-top card-body-h-auto">
+                    <div class="row" v-if="records.length > 0">
+                        <div v-for="(row, index) in records" class="col-12" :key="row.id">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <figure class="product-image-container m-0">
+                                        <a href="#" class="product-image">
+                                            <img class="image-product w-100" :src="(row.image && row.image !== 'imagen-no-disponible.jpg') ? '{{ $itemsBasePath }}' + '/' + row.image : '{{ $defaultImagePath }}'" :alt="row.description || 'Producto sin imagen'">
+                                        </a>
+                                    </figure>
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="product-title m-0">
+                                        <a href="#">@{{ row.description }}</a>
+                                    </h5>
+                                    <span class="price text-muted">
+                                        @{{ row.currency_type_symbol }} @{{ row.sale_unit_price }}
+                                    </span>
+                                </div>
+                                <div class="col-md-3 text-right">
+                                    <button type="button" @click="deleteItem(row.id, index)" class="btn btn-sm btn-link text-muted px-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                    </button>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary btn-input-group" type="button" @click.stop.prevent="decrementQuantity(row)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /></svg>
+                                            </button>
+                                        </div>
+                                        <input class="input-quantity form-control text-center" :data-product="row.id" type="number" v-model.number="row.cantidad">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary btn-input-group" type="button" @click.stop.prevent="incrementQuantity(row)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <strong>@{{ row.currency_type_symbol }} @{{ (row.sale_unit_price * row.cantidad).toFixed(2) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="alert alert-info mb-0">
+                        Tu carrito está vacío
+                    </div>
+                </div>
 
-                <tfoot>
-                    <tr>
-                        <td colspan="3" class="clearfix py-2">
-                            <div class="float-left">
-                                <a href="/ecommerce" class="btn btn-outline-secondary py-2 px-3">Continuar Comprando</a>
-                            </div><!-- End .float-left -->
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="/ecommerce" class="btn btn-light btn-sm text-muted text-capitalize">
+                                <i class="fa fa-arrow-left"></i>
+                                Continuar Comprando
+                            </a>
+                        </div>
+                        <div class="col-6 text-right" v-if="records.length > 0">
+                            <a href="#" @click="clearShoppingCart" class="btn btn-light btn-sm text-danger text-capitalize">Limpiar Carrito</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <div class="float-right">
-                                <a href="#" @click="clearShoppingCart"
-                                    class="btn btn-outline-secondary btn-clear-cart py-2 px-3">Limpiar Carrito</a>
-                                <!--<a href="#" class="btn btn-outline-secondary btn-update-cart">Update Shopping Cart</a> -->
-                            </div><!-- End .float-right -->
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div><!-- End .cart-table-container -->
+        <div class="card" v-if="records.length > 0">
+            <button type="button" class="btn btn-link btn-block text-left p-0" data-toggle="collapse" data-target="#deliveryCollapse" style="text-decoration: none; display: block;">
+                <div class="card-header d-flex align-items-center bg-white border-bottom-0" style="cursor: pointer;">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#2b2b2b"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        >
+                        <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        <path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />
+                        <path d="M3 9l4 0" />
+                    </svg>
+                    <span class="ml-2 font-weight-bold">Datos de envio</span>
+                </div>
+            </button>
+            <div id="deliveryCollapse" class="collapse show">
+                <div class="card-body border-top card-body-h-auto">
+                    <div class="row">
+                        <template v-if="records.length > 0">
+                            {{-- Switch: Recojo en tienda (solo si está habilitado en configuración) --}}
+                            <div class="col-6 mb-2" v-if="enableStorePickup">
+                                <div class="d-flex align-items-center">
+                                    <label class="mb-0 mr-2 font-weight-bold" style="cursor:pointer;" @click="togglePickupMode">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="mr-1" style="vertical-align:middle;"><path d="M3 9l9 -7 9 7v11a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                        Recojo en tienda
+                                    </label>
+                                    <div
+                                        @click="togglePickupMode"
+                                        style="cursor:pointer; display:inline-flex; align-items:center; width:44px; height:24px; border-radius:12px; padding:2px; transition:background 0.2s;"
+                                        :style="isPickupMode ? 'background:#ff6600;' : 'background:#ccc;'"
+                                    >
+                                        <div style="width:20px; height:20px; border-radius:50%; background:#fff; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"
+                                            :style="isPickupMode ? 'transform:translateX(20px);' : 'transform:translateX(0);'"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 text-right">
+                                <button class="btn btn-light btn-sm text-muted text-capitalize" @click="openAddressModal">@{{ form_contact.address ? 'Cambiar dirección' : 'Agregar dirección' }}</button>
+                            </div>
+
+                            {{-- Modo recojo en tienda: radio buttons de sucursales --}}
+                            <div class="col-12" v-if="isPickupMode">
+                                <div v-if="pickupBranches.length === 0" class="alert alert-info py-2 mb-0">
+                                    No hay sucursales de recojo configuradas.
+                                </div>
+                                <div v-else>
+                                    <label class="font-weight-bold d-block mb-1">Selecciona una sucursal:</label>
+                                    <div
+                                        v-for="branch in pickupBranches"
+                                        :key="branch.id"
+                                        class="d-flex align-items-start border rounded px-3 py-2 mb-1"
+                                        :style="selectedPickupBranch && selectedPickupBranch.id === branch.id ? 'border-color:#ff6600 !important; background:#fff8f4;' : ''"
+                                        @click="selectPickupBranch(branch)"
+                                        style="cursor:pointer;"
+                                    >
+                                        <input
+                                            type="radio"
+                                            :value="branch.id"
+                                            :checked="selectedPickupBranch && selectedPickupBranch.id === branch.id"
+                                            @change="selectPickupBranch(branch)"
+                                            class="mt-1 mr-2"
+                                            style="cursor:pointer; accent-color:#ff6600; flex-shrink:0;"
+                                        >
+                                        <div>
+                                            <strong>@{{ branch.name }}</strong>
+                                            <div class="text-muted" style="font-size:0.875rem;" v-if="branch.address">@{{ branch.address }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div class="col-6">
+                            <label class="font-weight-bold mb-1" style="">
+                                Teléfono de contacto
+                            </label>
+                            <input
+                                type="tel"
+                                v-model="form_contact.telephone"
+                                class="form-control form-control-sm"
+                                placeholder="Ej: 987654321"
+                                maxlength="15"
+                                required
+                            >
+                        </div>
+
+                        {{-- Modo delivery normal --}}
+                        <template v-if="!isPickupMode">
+                            <div class="col-8">
+                                <label class="font-weight-bold mb-1" v-if="form_contact.address">
+                                    Dirección
+                                </label>
+                                <ul class="mb-0">
+                                    <li>@{{ form_contact.address }}</li>
+                                    <li>@{{ ubigeoLabel }} </li>
+                                </ul>
+                            </div>
+                            <div class="col-12">
+                                <!-- Mensaje sin cobertura de delivery -->
+                                <div v-if="deliveryMessage != ''" class="alert alert-warning text-left py-2 px-3 mb-0" role="alert">
+                                    <strong>&#9888; Sin cobertura:</strong> @{{ deliveryMessage }}
+                                </div>
+
+                                <!-- Opciones de envío: mostrar cuando hay múltiples zonas disponibles -->
+                                <div v-if="availableDeliveryZones.length > 1" class="mt-2">
+                                    <label class="font-weight-bold d-block mb-1">Opciones de envío:</label>
+                                    <div
+                                        v-for="zone in availableDeliveryZones"
+                                        :key="zone.id"
+                                        class="d-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1"
+                                        :style="deliveryZone && deliveryZone.id === zone.id ? 'border-color:#ff6600 !important; background:#fff8f4;' : 'cursor:pointer;'"
+                                        @click="selectDeliveryZone(zone)"
+                                        style="cursor:pointer;"
+                                    >
+                                        <div class="d-flex align-items-center">
+                                            <input
+                                                type="radio"
+                                                :value="zone.id"
+                                                :checked="deliveryZone && deliveryZone.id === zone.id"
+                                                @change="selectDeliveryZone(zone)"
+                                                class="mr-2"
+                                                style="cursor:pointer; accent-color:#ff6600;"
+                                            >
+                                            <span>@{{ zone.name }}</span>
+                                        </div>
+                                        <strong class="text-dark">S/ @{{ parseFloat(zone.price).toFixed(2) }}</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Una sola zona disponible: mostrar informativo -->
+                                <div v-else-if="availableDeliveryZones.length === 1 && deliveryZone" class="mt-2">
+                                    <small class="text-success">
+                                        <i class="fa fa-check-circle"></i>
+                                        Envío disponible: <strong>@{{ deliveryZone.name }}</strong> &mdash; S/ @{{ parseFloat(deliveryZone.price).toFixed(2) }}
+                                    </small>
+                                </div>
+                            </div>
+                        </template>
+                        {{-- fin modo delivery --}}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if($enable_electronic_documents)
+            {{-- Modo documentos electrónicos: solo lectura, tipo inferido del número del usuario --}}
+            <div class="card">
+                <button type="button" class="btn btn-link btn-block text-left p-0" data-toggle="collapse" data-target="#documentyCollapse" style="text-decoration: none; display: block;">
+                    <div class="card-header d-flex align-items-center bg-white border-bottom-0" style="cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2b2b2b" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                            <path d="M9 17h6" />
+                            <path d="M9 13h6" />
+                        </svg>
+                        <span class="ml-2 font-weight-bold">Datos del comprobante</span>
+                    </div>
+                </button>
+                <div id="documentyCollapse" class="collapse show">
+                    <div class="card-body border-top card-body-h-auto">
+                        <ul class="list-unstyled mb-0">
+                            <li><span class="text-muted">Cliente:</span> <strong>@{{ user.name }}</strong></li>
+                            <li><span class="text-muted">Documento:</span> <strong>@{{ user.number }}</strong></li>
+                            <li><span class="text-muted">Tipo de doc.:</span> <strong>@{{ invoiceTypeLabel }}</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <div class="card" v-if="records.length > 0">
+            <button type="button" class="btn btn-link btn-block text-left p-0" data-toggle="collapse" data-target="#paymentCollapse" style="text-decoration: none; display: block;">
+                <div class="card-header d-flex align-items-center bg-white border-bottom-0" style="cursor: pointer;">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#2b2b2d"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        >
+                        <path d="M3 5m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" />
+                        <path d="M3 10l18 0" />
+                        <path d="M7 15l.01 0" />
+                        <path d="M11 15l2 0" />
+                    </svg>
+                    <span class="ml-2 font-weight-bold">Método de pago</span>
+                </div>
+            </button>
+            <div id="paymentCollapse" class="collapse show">
+                <div class="card-body border-top card-body-h-auto">
+                    @guest('ecommerce')
+                    <p class="text-muted mb-0"><a href="{{route('tenant_ecommerce_login')}}">Inicia sesión</a> para seleccionar un método de pago.</p>
+                    @elseauth('ecommerce')
+                    <div class="btn-group btn-group-toggle d-block" role="group">
+                        <label class="btn btn-outline-primary d-block" :class="{ active: selectedPaymentMethod === 'culqi' }">
+                            <input type="radio" v-model="selectedPaymentMethod" value="culqi" autocomplete="off"> Pagar con VISA
+                        </label>
+                        <label class="btn btn-outline-primary d-block mt-2" :class="{ active: selectedPaymentMethod === 'cash' }">
+                            <input type="radio" v-model="selectedPaymentMethod" value="cash" autocomplete="off"> Pagar con EFECTIVO
+                        </label>
+                        <label v-if="enableYape" class="btn btn-outline-primary d-block mt-2" :class="{ active: selectedPaymentMethod === 'yape' }">
+                            <input type="radio" v-model="selectedPaymentMethod" value="yape" autocomplete="off"> Pagar con YAPE
+                        </label>
+                        <label v-if="enableTransfer" class="btn btn-outline-primary d-block mt-2" :class="{ active: selectedPaymentMethod === 'transfer' }">
+                            <input type="radio" v-model="selectedPaymentMethod" value="transfer" autocomplete="off"> Transferencia Bancaria
+                        </label>
+                        @if($information->script_paypal)
+                        <label class="btn btn-outline-primary d-block mt-2" :class="{ active: selectedPaymentMethod === 'paypal' }">
+                            <input type="radio" v-model="selectedPaymentMethod" value="paypal" autocomplete="off"> PayPal
+                        </label>
+                        @endif
+                    </div>
+                    @endauth
+                </div>
+            </div>
+        </div>
     </div><!-- End .col-lg-8 -->
 
     <div class="col-md-4">
@@ -151,16 +408,11 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Orden Total</td>
+                        <td>Total</td>
                         <td>S/ @{{summary.total}}</td>
                     </tr>
                 </tfoot>
             </table>
-
-            <!-- Mensaje sin cobertura de delivery -->
-            <div v-if="deliveryMessage" class="alert alert-warning text-left py-2 px-3 mb-2 mt-2" style="" role="alert">
-                <strong>&#9888; Sin cobertura:</strong> @{{ deliveryMessage }}
-            </div>
 
             <!-- Coupon input and applied coupon display -->
             <div class="coupon-block mt-3">
@@ -186,97 +438,13 @@
                 </a>
 
                 @elseauth('ecommerce')
-                <button class="btn btn-block btn-sm btn-primary login-link culqi" onclick="execCulqi()"> Pagar con VISA </button>
-
-                <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary login-link-pay">
-                    Pagar con EFECTIVO</button>
-                <div v-show="payment_cash.clicked" style="margin: 3%" class="form-group">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">S/</span>
-                        </div>
-                        <input readonly placeholder="0.0" v-model="payment_cash.amount" type="text"
-                            onkeypress="return isNumberKey(event)" maxlength="14" class="form-control"
-                            aria-label="Amount">
-                        <button @click="paymentCash" class="btn btn-success">OK!</button>
-                    </div>
-                </div>
-
-
-                @if($information->script_paypal)
-
-                    {!!html_entity_decode($information->script_paypal)!!}
-
-                @endif
-
+                    <button v-if="selectedPaymentMethod !== 'paypal'" class="btn btn-block btn-primary mt-2" :disabled="!selectedPaymentMethod" @click="executePayment">Pagar</button>
 
                 @endauth
 
             </div><!-- End .checkout-methods -->
         </div><!-- End .cart-summary -->
     </div><!-- End .col-lg-4 -->
-    <div class="col-12 row mx-0">
-        <div class="col-sm-6 pl-0">
-            <div class="cart-summary">
-                <h3>Datos de contacto y envío</h3>
-
-                <form autocomplete="off" action="#">
-                    <div class="form-group" :class="{'text-danger': errors.telefono}">
-                        <label for="email">Teléfono:</label>
-                        <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono" style="max-width: 100%;">
-                        <small class="form-control-feedback" v-if="errors.telefono" v-text="errors.telefono[0]"></small>
-                    </div>
-                    <div class="form-group" v-if="ubigeoLabel">
-                        <label>Ubigeo:</label>
-                        <input type="text" class="form-control" :value="ubigeoLabel" readonly style="background-color: #f8f9fa; cursor: default; color: #495057;">
-                    </div>
-                    <div class="form-group" :class="{'text-danger': errors.address}">
-                        <label for="email">Dirección:</label>
-                        <textarea v-model="form_contact.address" @click="openAddressModal" readonly class="form-control" placeholder="Click para seleccionar dirección" rows="2" cols="10" style="cursor: pointer; background-color: #fff;"></textarea>
-                        <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-sm-6 pr-0">
-            <div class="cart-summary">
-                <h3>Tipo de comprobante</h3>
-
-                <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento}">
-                    <label>Comprobante:</label>
-                    {{-- <select v-model="formIdentity.identity_document_type_id" class="form-control" @change="optionDocument">
-                        <option value="" disabled>Tipo de comprobante</option>
-                        <option value="1">Boleta</option>
-                        <option value="6">Factura</option>
-                        <option value="80">Nota de venta</option>
-                    </select> --}}
-
-                    <select v-model="form_document.codigo_tipo_documento" class="form-control" @change="optionDocument" style="max-width: 100%;">
-                        <option value="" disabled>Tipo de comprobante</option>
-                        <option value="01">Factura</option>
-                        <option value="03">Boleta</option>
-                        <option value="80">Nota de venta</option>
-                    </select>
-
-                    <small class="form-control-feedback" v-if="errors.codigo_tipo_documento">El campo Comprobante es obligatorio.</small>
-                </div>
-                <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento_identidad}">
-                    <label>Tipo de documento:</label>
-                    <select v-model="typeDocuments" class="form-control" style="max-width: 100%;">
-                        <option value="" disabled>Tipo de documento</option>
-                        <option v-for="item in typeDocumentList" :value="item.id" :label="item.name">@{{ item.name }}</option>
-                    </select>
-                    <small class="form-control-feedback" v-if="errors.codigo_tipo_documento_identidad" v-text="errors.codigo_tipo_documento_identidad[0]"></small>
-                </div>
-                <div class="form-group" :class="{'text-danger': errors.numero_documento}">
-                    <label>Número de documento:</label>
-                    <input v-model="numberDocument" :maxlength="maxLength" type="text" class="form-control" style="max-width: 100%;">
-                    <small class="form-control-feedback" v-if="errors.numero_documento" v-text="errors.numero_documento[0]"></small>
-                </div>
-            </div><!-- End .col-lg-4 -->
-        </div>
-    </div>
 
     <!-- Modal de Dirección -->
     <div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
@@ -388,9 +556,9 @@
                     <strong>Sin cobertura:</strong> @{{ deliveryMessage }}
                 </div>
                 <!-- Alerta de cobertura disponible dentro del modal -->
-                <div v-if="deliveryZone" style="margin: 0 15px 10px; padding: 10px 14px; background: #d1e7dd; border: 1px solid #a3cfbb; border-radius: 4px; color: #0a3622;">
+                {{-- <div v-if="deliveryZone" style="margin: 0 15px 10px; padding: 10px 14px; background: #d1e7dd; border: 1px solid #a3cfbb; border-radius: 4px; color: #0a3622;">
                     <strong>&#10003; Delivery disponible:</strong> @{{ deliveryZone.name }} &mdash; S/ @{{ deliveryZone.price }}
-                </div>
+                </div> --}}
                 <div style="padding: 15px; border-top: 1px solid #dee2e6;">
                     <button type="button" @click="confirmAddress()" style="background-color: #ff6600; color: white; border: none; padding: 12px 40px; font-size: 1rem; font-weight: 500; border-radius: 50px; cursor: pointer; width: 100%; text-transform: uppercase;">Continuar</button>
                 </div>
@@ -400,1294 +568,41 @@
 
 </div><!-- End .row -->
 
+@if(auth('ecommerce')->check() && $information->script_paypal)
+<div id="paypal-widget-container" style="display:none;">
+    {!!html_entity_decode($information->script_paypal)!!}
+</div>
+@endif
+
 <input type="hidden" id="total_amount" data-total="0.0">
 
 @endsection
 
 @push('scripts')
-<!-- script src="https://checkout.culqi.com/js/v3"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.31.1/dist/sweetalert2.all.min.js"></script>
-<script src="https://momentjs.com/downloads/moment.min.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script -->
-
-
-<script type="text/javascript">
-    var app_cart = new Vue({
-        el: '#app',
-        data: {
-            form_contact: {
-                address:   '',
-                telephone:   '',
-            },
-            addressModal: {
-                address: '',
-                reference: '',
-                latitude: -12.046374,
-                longitude: -77.042793,
-                preventSearch: false
-            },
-            map: null,
-            marker: null,
-            geocoder: null,
-            addressSearchTimeout: null,
-            payment_cash: {
-                amount: '',
-                clicked: false
-            },
-            response_search: {},
-            text_search: '',
-            loading_search: false,
-            identity_document_types: [{
-                id: '1',
-                description: 'DNI'
-            }, {
-                id: '6',
-                description: 'RUC'
-            }],
-            formIdentity: {
-                identity_document_type_id: ''
-            },
-            records: [],
-            records_old: [],
-            couponField: '',
-            couponMessage: null,
-            couponLoading: false,
-            appliedCoupon: null,
-            order_generated: {},
-            summary: {
-                subtotal: '0.0',
-                tax: '0.0',
-                total: '0.0'
-            },
-            aux_totals: {},
-            form_document: {},
-            user: {},
-            typeDocumentSelected: '',
-            response_order_total:0,
-            errors: {},
-            exchange_rate_sale: '',
-            typeDocuments: '',
-            typeDocumentList: [],
-            numberDocument: '',
-            phone_whatsapp: {!! json_encode($configuration->phone_whatsapp ) !!},
-            global_discount_type: {!! json_encode($global_discount_type) !!},
-            all_identity_document_types : [{id: '6', name: 'RUC'}, {id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '1', name: 'DNI'}],
-            addressSuggestions: [],
-            departments: [],
-            provinces: [],
-            districts: [],
-            selectedDepartment: '',
-            selectedProvince: '',
-            selectedDistrict: '',
-            highlightedIndex: -1,
-            addressSuggestions: [],
-            addressSearchTimeout: null,
-            // Zona de delivery encontrada para la dirección del cliente
-            deliveryZone: null,
-            deliveryMessage: '',
-            // Primera dirección guardada del cliente (cargada desde el servidor)
-            userDefaultAddress: {!! json_encode($userAddress ?? null) !!},
-        },
-        computed: {
-            maxLength: function () {
-
-                if (this.typeDocuments === '6') {
-                    return 11
-                }
-                if (this.typeDocuments === '1') {
-                    return 8
-                }
-
-                return 15
-            },
-            // Etiqueta del ubigeo formateada: DEPARTAMENTO / PROVINCIA / DISTRITO (código)
-            ubigeoLabel: function () {
-                if (!this.selectedDepartment || !this.selectedProvince || !this.selectedDistrict) return '';
-                const dept = this.departments.find(d => d.value === this.selectedDepartment);
-                const prov = this.provinces.find(p => p.value === this.selectedProvince);
-                const dist = this.districts.find(d => d.value === this.selectedDistrict);
-                if (!dept || !prov || !dist) return '';
-                return dept.label.toUpperCase() + ' / ' + prov.label.toUpperCase() + ' / ' + dist.label.toUpperCase() + ' (' + this.selectedDistrict + ')';
-            }
-        },
-        watch: {
-            'addressModal.address': function(newValue) {
-                // Eliminamos la lógica de búsqueda automática
-                //console.log('Cambio detectado en la dirección, pero no se realizará búsqueda automática.');
-            }
-        },
-        async mounted() {
-          await this.changeExchangeRate(moment().format("YYYY-MM-DD"))
-
-          let exchange_rate_sale = this.exchange_rate_sale
-          let contex = this
-
-          $(".input_quantity").change(function (e) {
-            let value = parseFloat($(this).val())
-            let id = $(this).data('product')
-            let row = contex.records.find(x => x.id == id)
-
-            if(row.currency_type_id === 'USD') {
-              row.sub_total = ((parseFloat(row.sale_unit_price) * value) * exchange_rate_sale).toFixed(2)
-            } else {
-              row.sub_total = (parseFloat(row.sale_unit_price) * value).toFixed(2)
-            }
-
-            row.cantidad = value
-            contex.calculateSummary()
-          })
-
-          this.records.forEach(function (item) {
-            if(item.currency_type_id === 'USD') {
-              item.sub_total = (parseFloat(item.sub_total) * exchange_rate_sale).toFixed(2)
-              item.exchange_rate_sale = exchange_rate_sale
-            }
-            item.sale_unit_price = parseFloat(item.sale_unit_price).toFixed(2)
-          })
-
-          this.calculateSummary()
-
-          // Inicializar Google Maps cuando esté disponible
-          if (typeof google !== 'undefined') {
-              this.initMap()
-          }
-
-          // Cargar ubicaciones y autocompletar si el usuario tiene una dirección guardada
-          this.fetchLocations().then(() => {
-              this.loadDefaultAddress();
-          });
-        },
-        created() {
-            let array = localStorage.getItem('products_cart');
-            array = JSON.parse(array)
-            if (array) {
-                this.records = array.map(function (item) {
-                    let obj = item
-                    obj.cantidad = item.quantity ? parseInt(item.quantity) : 1
-                    obj.sub_total = (parseFloat(item.sale_unit_price) * obj.cantidad).toFixed(2)
-                    obj.exchange_rate_sale = ''
-                    return obj
-                })
-            }
-            //console.log("this.records", this.records);
-            this.initForm();
-
-        },
-        methods: {
-            extractAndSetUbigeoFromComponents(components) {
-                if (!components) return;
-
-                let department = '';
-                let province   = '';
-                let district   = '';
-
-                components.forEach(component => {
-                    const types    = component.types || [];
-                    const longName = (component.long_name || '').toUpperCase();
-
-                    if (types.includes('administrative_area_level_1')) {
-                        // Google devuelve "Provincia de Lima" o "Departamento de Cusco" — limpiar
-                        department = longName
-                            .replace('PROVINCIA DE ', '')
-                            .replace('DEPARTAMENTO DE ', '')
-                            .replace(' REGION', '')
-                            .trim();
-                    }
-                    if (types.includes('administrative_area_level_2')) {
-                        province = longName
-                            .replace('PROVINCIA DE ', '')
-                            .trim();
-                    }
-                    if (types.includes('locality') ||
-                        types.includes('sublocality_level_1') ||
-                        types.includes('administrative_area_level_3')) {
-                        if (!district) {
-                            district = longName
-                                .replace('DISTRITO DE ', '')
-                                .trim();
-                        }
-                    }
-                });
-                /*
-                console.log('📍 Ubigeo extraído:');
-                console.log('   Departamento :', department);
-                console.log('   Provincia    :', province);
-                console.log('   Distrito     :', district);
-                */
-                this.setDepartmentByName(department);
-                this.setProvinceByName(province);
-                this.setDistrictByName(district);
-            },
-            initAutocomplete() {
-                // Nueva API - no necesita instanciar nada globalmente
-                console.log('Autocomplete listo con nueva API de Google Places');
-            },
-
-            async onAddressInputChange() {
-                const query = this.addressModal.address;
-                if (!query || query.length < 3) {
-                    this.addressSuggestions = [];
-                    return;
-                }
-
-                clearTimeout(this.addressSearchTimeout);
-                this.addressSearchTimeout = setTimeout(async () => {
-                    try {
-                        const { AutocompleteSuggestion } = await google.maps.importLibrary("places");
-
-                        const request = {
-                            input: query,
-                            includedRegionCodes: ['pe'],
-                            language: 'es'
-                        };
-
-                        const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(request);
-
-                        this.addressSuggestions = suggestions.map(s => {
-                            const pred = s.placePrediction;
-                            return {
-                                placeId: pred.placeId,
-                                mainText: pred.mainText?.toString() || pred.text?.toString() || '',
-                                secondaryText: pred.secondaryText?.toString() || '',
-                                fullText: pred.text?.toString() || ''
-                            };
-                        });
-
-                        this.highlightedIndex = -1;
-                    } catch (error) {
-                        console.error('Error obteniendo sugerencias:', error);
-                        this.addressSuggestions = [];
-                    }
-                }, 300);
-            },
-
-            async selectSuggestionFromList(suggestion) {
-                this.addressModal.address = suggestion.fullText;
-                this.addressSuggestions = [];
-                this.highlightedIndex = -1;
-
-                try {
-                    const { Place } = await google.maps.importLibrary("places");
-
-                    const place = new Place({
-                        id: suggestion.placeId,
-                        requestedLanguage: 'es'
-                    });
-
-                    await place.fetchFields({
-                        fields: ['displayName', 'formattedAddress', 'location', 'addressComponents']
-                    });
-
-                    const loc = place.location;
-                    this.addressModal.latitude = loc.lat();
-                    this.addressModal.longitude = loc.lng();
-
-                    if (this.map && this.marker) {
-                        this.map.setCenter(loc);
-                        this.map.setZoom(17);
-                        this.marker.setPosition(loc);
-                    }
-
-                    this.addressModal.address = place.formattedAddress || suggestion.fullText;
-
-                    // Convertir formato nuevo al formato clásico para reutilizar el mismo método
-                    const normalizedComponents = (place.addressComponents || []).map(c => ({
-                        long_name: c.longText || c.long_name || '',
-                        types: c.types || []
-                    }));
-
-                    this.extractAndSetUbigeoFromComponents(normalizedComponents);
-
-                    console.log('📍 Sugerencia seleccionada:');
-                    console.log('   Dirección    :', this.addressModal.address);
-                    console.log('   Latitud      :', this.addressModal.latitude);
-                    console.log('   Longitud     :', this.addressModal.longitude);
-                    console.log('   Referencia   :', this.addressModal.reference);
-
-                } catch (error) {
-                    console.error('Error obteniendo detalles del lugar:', error);
-                }
-            },
-
-            extractAndSetUbigeo(addressComponents) {
-                if (!addressComponents) return;
-
-                let department = '';
-                let province  = '';
-                let district  = '';
-
-                addressComponents.forEach(component => {
-                    const types = component.types || [];
-                    const longName = (component.longText || component.long_name || '').toUpperCase();
-
-                    if (types.includes('administrative_area_level_1')) {
-                        department = longName;
-                    }
-                    if (types.includes('administrative_area_level_2')) {
-                        province = longName;
-                    }
-                    if (types.includes('locality') || types.includes('sublocality_level_1') || types.includes('administrative_area_level_3')) {
-                        if (!district) district = longName;
-                    }
-                });
-
-                // Guardar en los selects ocultos (busca por label en mayúsculas)
-                this.setDepartmentByName(department);
-                this.setProvinceByName(province);
-                this.setDistrictByName(district);
-
-                console.log('📍 Ubicación seleccionada:');
-                console.log('   Departamento:', department);
-                console.log('   Provincia   :', province);
-                console.log('   Distrito    :', district);
-                console.log('   Latitud     :', this.addressModal.latitude);
-                console.log('   Longitud    :', this.addressModal.longitude);
-                console.log('   Dirección   :', this.addressModal.address);
-            },
-
-            setDepartmentByName(name) {
-                if (!name) return;
-                const found = this.departments.find(d => d.label.toUpperCase() === name);
-                if (found) {
-                    this.selectedDepartment = found.value;
-                    this.updateProvinces();
-                }
-            },
-
-            setProvinceByName(name) {
-                if (!name) return;
-                this.$nextTick(() => {
-                    const found = this.provinces.find(p => p.label.toUpperCase() === name);
-                    if (found) {
-                        this.selectedProvince = found.value;
-                        this.updateDistricts();
-                    }
-                });
-            },
-
-            setDistrictByName(name) {
-                if (!name) return;
-                this.$nextTick(() => {
-                    setTimeout(() => {
-                        const found = this.districts.find(d => d.label.toUpperCase() === name);
-                        if (found) {
-                            this.selectedDistrict = found.value;
-                        }
-                    }, 100);
-                });
-            },
-
-            moveSuggestion(dir) {
-                if (!this.addressSuggestions.length) return;
-                this.highlightedIndex = Math.max(0, Math.min(this.addressSuggestions.length - 1, this.highlightedIndex + dir));
-            },
-
-            selectHighlighted() {
-                if (this.highlightedIndex >= 0 && this.addressSuggestions[this.highlightedIndex]) {
-                    this.selectSuggestionFromList(this.addressSuggestions[this.highlightedIndex]);
-                }
-            },
-
-            clearSuggestions() {
-                this.addressSuggestions = [];
-                this.highlightedIndex = -1;
-            },
-            incrementQuantity(row) {
-                if (typeof row.cantidad !== 'number' || isNaN(row.cantidad)) {
-                    row.cantidad = 1;
-                } else {
-                    row.cantidad++;
-                }
-                this.updateRowSubtotal(row);
-                this.calculateSummary();
-                this.saveCartToLocalStorage();
-            },
-            decrementQuantity(row) {
-                if (typeof row.cantidad !== 'number' || isNaN(row.cantidad) || row.cantidad <= 1) {
-                    row.cantidad = 1;
-                } else {
-                    row.cantidad--;
-                }
-                this.updateRowSubtotal(row);
-                this.calculateSummary();
-                this.saveCartToLocalStorage();
-            },
-            updateRowSubtotal(row) {
-                let exchange_rate_sale = this.exchange_rate_sale;
-                if(row.currency_type_id === 'USD') {
-                    row.sub_total = ((parseFloat(row.sale_unit_price) * row.cantidad) * exchange_rate_sale).toFixed(2);
-                } else {
-                    row.sub_total = (parseFloat(row.sale_unit_price) * row.cantidad).toFixed(2);
-                }
-            },
-            saveCartToLocalStorage() {
-                localStorage.setItem('products_cart', JSON.stringify(this.records));
-            },
-            async changeExchangeRate(exchange_rate_date){
-                var response = await axios.get(`/exchange_rate/ecommence/${exchange_rate_date}`)
-                this.exchange_rate_sale = parseFloat(response.data.sale)
-            },
-            optionDocument() {
-                this.typeDocumentList = []
-                this.typeDocuments = null
-                // let voucher = [{id: '6', name: 'RUC'}]
-                // let ticket = [{id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '1', name: 'DNI'}]
-
-                //   if(this.formIdentity.identity_document_type_id === '6') {
-                //     this.typeDocumentList = voucher
-                //   }else if (this.formIdentity.identity_document_type_id === '1' && this.payment_cash.amount >= 700) {
-                //     this.typeDocumentList = [{id: '1', name: 'DNI'}]
-                //     this.typeDocuments = ''
-                //   }
-                //   else {
-                //     this.typeDocumentList = ticket
-                //   }
-
-                if(this.form_document.codigo_tipo_documento == '01')
-                {
-                    this.typeDocumentList = this.getIdentityDocumentTypes(['6'])
-                }
-                else if (this.form_document.codigo_tipo_documento == '03' && this.payment_cash.amount >= 700)
-                {
-                    this.typeDocumentList = this.getIdentityDocumentTypes(['1'])
-                }
-                else if (this.form_document.codigo_tipo_documento == '80')
-                {
-                    this.typeDocumentList = (this.payment_cash.amount >= 700) ? this.getIdentityDocumentTypes(['6', '1']) : this.getIdentityDocumentTypes()
-                }
-                else {
-                    this.typeDocumentList = this.getIdentityDocumentTypes(['0', '1', '4'])
-                }
-
-            },
-            getIdentityDocumentTypes(identity_document_types_id = null){
-
-                if(!identity_document_types_id) return this.all_identity_document_types
-
-                return this.all_identity_document_types.filter((item) => {
-                    return identity_document_types_id.includes(item.id)
-                })
-
-            },
-            refreshSetDataCustomer()
-            {
-
-                this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
-                this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
-                this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this.typeDocuments
-                this.form_document.datos_del_cliente_o_receptor.numero_documento = this.numberDocument
-                // this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.formIdentity.identity_document_type_id
-                this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.typeDocuments
-
-            },
-            async getFormPaymentCash() {
-
-                this.refreshSetDataCustomer()
-
-                let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
-                let precio_culqi = Number(this.summary.total)
-                return {
-                    producto: 'Compras Ecommerce Facturador Pro',
-                    precio: precio,
-                    precio_culqi: precio_culqi,
-                    customer: this.form_document.datos_del_cliente_o_receptor,
-                    items: this.records,
-                    purchase: await this.getDocument(),
-                    // Coupon fields for backend
-                    discount_coupon_code: this.appliedCoupon ? this.appliedCoupon.code : null,
-                    discount_coupon_id: this.appliedCoupon ? this.appliedCoupon.id : null,
-                    total_discount: this.appliedCoupon ? this.appliedCoupon.discount : 0
-                }
-            },
-            showSwalMessage(title, text, type){
-
-                swal({
-                    title: title,
-                    text: text,
-                    type: type
-                })
-
-            },
-            async paymentCash() {
-
-                if(!this.form_document.codigo_tipo_documento) {
-                    return this.showSwalMessage('Ocurrió un error!', 'El campo tipo de comprobante es obligatorio', 'error')
-                }
-
-                // verifica si tiene productos seleccionado
-                let product = JSON.parse(localStorage.getItem('products_cart'));
-
-                if (product.length < 1){
-                    swal({
-                        title: "No se han encontrado productos",
-                        text: "Por favor seleccione algún producto de la tienda.",
-                        type: "error"
-                    })
-                    return
-                }
-
-                swal({
-                    title: "Estamos generando el Pago.",
-                    text: `Por favor no cierre esta ventana hasta que el proceso termine.`,
-                    focusConfirm: false,
-                    onOpen: () => {
-                        Swal.showLoading()
-                    }
-                });
-
-                let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
-                let response = await axios.post(url_finally, await this.getFormPaymentCash(), this.getHeaderConfig()).then(response => {
-                        if (response.data.success) {
-                            this.saveContactDataUser()
-                            this.clearShoppingCart()
-                            this.response_order_total = response.data.order.total
-                            swal({
-                                title: "Gracias por su pago!",
-                                text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
-                                type: "success"
-                            }).then((x) => {
-                              app_cart.order_generated = order
-                                //askedDocument(response.data.order);
-                            })
-                        }
-                    }).catch(error => {
-                        swal("Pago No realizado", 'Sucedio algo inesperado.', "error");
-                        if (error.response.status === 422) {
-                          this.errors = error.response.data;
-                        } else {
-                          console.log(error);
-                        }
-                    });
-
-            },
-            redirectHome() {
-                window.location = "{{ route('tenant.ecommerce.index') }}";
-            },
-            getHeaderConfig() {
-                let token = this.user.api_token
-                let axiosConfig = {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`
-                    }
-                };
-                return axiosConfig;
-            },
-            async getDocument() {
-                this.form_document.items = await this.getItemsDocument();
-                // Armar descuentos y totales según estructura esperada
-                const descuentos = await this.getDescuentos();
-                const totales = await this.getTotales(descuentos);
-                // Solo incluir descuentos si hay cupón aplicado
-                let doc = Object.assign({}, this.form_document);
-                doc.totales = totales;
-                if (descuentos.length > 0) {
-                    doc.descuentos = descuentos;
-                }
-                if (doc.codigo_tipo_documento == '01') {
-                    doc.serie_documento = 'F001';
-                } else if (doc.codigo_tipo_documento == '03') {
-                    doc.serie_documento = 'B001';
-                } else {
-                    doc.serie_documento = null;
-                }
-                return doc;
-            },
-            async getDescuentos() {
-                if(!this.appliedCoupon || !this.global_discount_type) return [];
-
-                let montoEntrada = parseFloat(this.appliedCoupon.discount || 0); // Los 100 soles
-                let codigo = this.global_discount_type.id;
-                let descripcion = this.global_discount_type.description;
-                let base = 0;
-                let montoCalculado = 0;
-
-                if(this.global_discount_type.base == 1) {
-                    // Descuento afecta base imponible (Código SUNAT 02)
-                    montoCalculado = montoEntrada / 1.18;
-                    base = parseFloat(this.summary.total_taxed);
-                } else {
-                    // Descuento NO afecta base imponible (Código SUNAT 03)
-                    montoCalculado = montoEntrada;
-                    base = parseFloat(this.summary.total_value) + parseFloat(this.summary.total_igv);
-                }
-
-                let factor = base > 0 ? (montoCalculado / base) : 0;
-
-                return [{
-                    codigo: codigo,
-                    descripcion: descripcion,
-                    factor: parseFloat(factor.toFixed(5)),
-                    monto: parseFloat(montoCalculado.toFixed(2)),
-                    base: parseFloat(base.toFixed(2))
-                }];
-            },
-            async getTotales(descuentos = []) {
-                let total_descuentos_monto = 0.00;
-                if (descuentos.length > 0) {
-                    total_descuentos_monto = descuentos.reduce((sum, d) => sum + (parseFloat(d.monto) || 0), 0);
-                }
-
-                // Valores originales del subtotal de productos (sin descuentos ni delivery)
-                let base_antes = parseFloat(this.aux_totals.total_taxed);
-                let igv_antes  = parseFloat(this.aux_totals.total_igv);
-
-                // Sumar delivery gravado (afectación IGV 10%) si corresponde
-                let delivery_price = (this.deliveryZone && this.deliveryZone.price) ? parseFloat(this.deliveryZone.price) : 0;
-                let delivery_base  = parseFloat((delivery_price / 1.18).toFixed(2));
-                let delivery_igv   = parseFloat((delivery_price - delivery_base).toFixed(2));
-
-                let total_operaciones_gravadas = base_antes + delivery_base;
-                let total_igv                  = igv_antes  + delivery_igv;
-                let total_venta                = total_operaciones_gravadas + total_igv;
-
-                if (descuentos.length > 0 && this.global_discount_type) {
-                    if (this.global_discount_type.base == 1) {
-                        total_operaciones_gravadas = parseFloat((total_operaciones_gravadas - total_descuentos_monto).toFixed(2));
-                        total_igv   = parseFloat((total_operaciones_gravadas * 0.18).toFixed(2));
-                        total_venta = parseFloat((total_operaciones_gravadas + total_igv).toFixed(2));
-                    } else {
-                        total_venta = parseFloat((total_venta - total_descuentos_monto).toFixed(2));
-                    }
-                }
-
-                return {
-                    total_descuentos:               total_descuentos_monto,
-                    total_exportacion:              0.00,
-                    total_operaciones_gravadas:     total_operaciones_gravadas,
-                    total_operaciones_inafectas:    parseFloat(this.aux_totals.total_exonerated || 0),
-                    total_operaciones_exoneradas:   0.00,
-                    total_operaciones_gratuitas:    0.00,
-                    total_igv:                      total_igv,
-                    total_impuestos:                total_igv,
-                    total_valor:                    total_operaciones_gravadas,
-                    total_venta:                    total_venta
-                };
-            },
-            openAddressModal() {
-                $('#addressModal').modal('show')
-                // Inicializar o actualizar el mapa al abrir el modal
-                setTimeout(() => {
-                    if (!this.map) {
-                        this.initMap()
-                    } else {
-                        google.maps.event.trigger(this.map, 'resize')
-                        this.map.setCenter({lat: this.addressModal.latitude, lng: this.addressModal.longitude})
-                    }
-                }, 300)
-            },
-            closeAddressModal() {
-                // Asegurarse de que el modal se cierre correctamente
-                const modalElement = document.getElementById('addressModal');
-                if (modalElement) {
-                    $(modalElement).modal('hide');
-                } else {
-                    console.error('No se encontró el elemento del modal.');
-                }
-            },
-            confirmAddress() {
-                // Construir la dirección completa
-                let fullAddress = ''
-                if (this.addressModal.address) {
-                    fullAddress = this.addressModal.address
-                }
-                if (this.addressModal.reference) {
-                    fullAddress += ' - Ref: ' + this.addressModal.reference
-                }
-
-                this.form_contact.address = fullAddress
-
-                // Asegurarse de que el modal se cierre después de confirmar
-                this.closeAddressModal()
-                // Verificar cobertura de delivery con la ubicación confirmada
-                this.checkDeliveryZone()
-            },
-            initMap() {
-                // Inicializar el mapa con una ubicación predeterminada
-                const defaultLocation = { lat: -12.046374, lng: -77.042793 }; // Coordenadas de Lima, Perú
-
-                this.map = new google.maps.Map(document.getElementById('map'), {
-                    center: defaultLocation,
-                    zoom: 15
-                });
-
-                this.marker = new google.maps.Marker({
-                    position: defaultLocation,
-                    map: this.map,
-                    draggable: true
-                });
-
-                this.geocoder = new google.maps.Geocoder();
-
-                // Intentar obtener la ubicación actual del usuario
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const userLocation = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            };
-
-                            this.map.setCenter(userLocation);
-                            this.marker.setPosition(userLocation);
-                            this.addressModal.latitude = userLocation.lat;
-                            this.addressModal.longitude = userLocation.lng;
-
-                            //console.log('Ubicación actual:', userLocation);
-                        },
-                        (error) => {
-                            console.error('Error obteniendo la ubicación actual:', error);
-                        }
-                    );
-                } else {
-                    console.warn('La geolocalización no está soportada por este navegador.');
-                }
-
-                // Agregar evento de clic al mapa para mover el marcador y actualizar la dirección
-               this.map.addListener('click', (event) => {
-                    const clickedLocation = {
-                        lat: event.latLng.lat(),
-                        lng: event.latLng.lng()
-                    };
-
-                    this.marker.setPosition(clickedLocation);
-                    this.addressModal.latitude = clickedLocation.lat;
-                    this.addressModal.longitude = clickedLocation.lng;
-                    this.addressModal.preventSearch = true;
-
-                    this.geocoder.geocode({ location: clickedLocation }, (results, status) => {
-                        if (status === google.maps.GeocoderStatus.OK && results[0]) {
-                            this.addressModal.address = results[0].formatted_address;
-
-                            // Extraer ubigeo de los addressComponents del geocoder
-                            this.extractAndSetUbigeoFromComponents(results[0].address_components);
-
-                            /*
-                            console.log('📍 Click en mapa:');
-                            console.log('   Dirección    :', this.addressModal.address);
-                            console.log('   Latitud      :', this.addressModal.latitude);
-                            console.log('   Longitud     :', this.addressModal.longitude);
-                            console.log('   Referencia   :', this.addressModal.reference);
-                            */
-                        }
-
-                        setTimeout(() => {
-                            this.addressModal.preventSearch = false;
-                        }, 1000);
-                    });
-                });
-            },
-            getAddressFromLatLng(latLng) {
-                if (!this.geocoder) return
-
-                this.geocoder.geocode({'location': latLng}, (results, status) => {
-                    if (status === 'OK' && results[0]) {
-                        // Obtener la dirección formateada completa
-                        this.addressModal.address = results[0].formatted_address
-                    }
-                })
-            },
-            searchAddressInMap(address) {
-
-                if (!this.geocoder || !this.map) {
-                    console.warn('Geocoder o Map no inicializados');
-                    return;
-                }
-
-                console.log('Buscando dirección:', address);
-                this.geocoder.geocode({'address': address}, (results, status) => {
-                    if (status === 'OK' && results[0]) {
-                        console.log('Dirección encontrada:', results[0].formatted_address);
-                        const location = results[0].geometry.location;
-                        this.addressModal.latitude = location.lat();
-                        this.addressModal.longitude = location.lng();
-
-                        // Actualizar el mapa
-                        this.map.setCenter(location);
-                        this.map.setZoom(16);
-                        if (this.marker) {
-                            this.marker.setPosition(location);
-                        }
-                    } else {
-                        console.warn('Dirección no encontrada. Estado:', status);
-                    }
-                })
-            },
-            async getItemsDocument() {
-
-                let rec = await this.records.map((item) => {
-
-                    let sale_unit_price = 0
-                    let total_exonerated = 0
-                    let total_igv = 0
-                    let total_val = 0
-                    let total = 0
-                    let percentage_igv = 18
-                    let nombre_producto_pdf = item.promotion_id ? item.description : null
-
-                    if (item.sale_affectation_igv_type_id === '10') {
-
-                        if(item.currency_type_id === 'USD') {
-                            sale_unit_price = (parseFloat(item.sale_unit_price) * this.exchange_rate_sale).toFixed(2)
-                        } else {
-                            sale_unit_price = item.sale_unit_price
-                        }
-
-                        unit_value = sale_unit_price / (1 + percentage_igv / 100)
-                        total_igv = item.cantidad * parseFloat(sale_unit_price - unit_value)
-                        total = (item.cantidad * sale_unit_price)
-                        //sale_unit_price = parseFloat(item.sale_unit_price)
-                        total_val = (unit_value * item.cantidad)
-
-                        return {
-                            "codigo_interno": (item.internal_id) ? item.internal_id:"",
-                            "descripcion": item.description,
-                            "codigo_producto_sunat": "",
-                            "unidad_de_medida": item.unit_type_id,
-                            "cantidad": item.cantidad,
-                            "valor_unitario": unit_value,
-                            "codigo_tipo_precio": "01",
-                            "precio_unitario": sale_unit_price,
-                            "codigo_tipo_afectacion_igv": "10",
-                            "total_base_igv": total_val,
-                            "porcentaje_igv": percentage_igv,
-                            "total_igv": total_igv,
-                            "total_impuestos": total_igv,
-                            "total_valor_item": total_val,
-                            "total_item": total,
-                            "actualizar_descripcion": false,
-                            "nombre_producto_pdf": nombre_producto_pdf
-                        }
-
-                    }
-
-                    if (item.sale_affectation_igv_type_id === '20') {
-
-                        if(item.currency_type_id === 'USD') {
-                            sale_unit_price = (parseFloat(item.sale_unit_price) * this.exchange_rate_sale).toFixed(2)
-                        } else {
-                            sale_unit_price = item.sale_unit_price
-                        }
-
-                        unit_value = parseFloat(sale_unit_price)
-                        total_igv = 0
-                        total = (parseFloat(item.cantidad) * parseFloat(sale_unit_price))
-                        //sale_unit_price = parseFloat(item.sale_unit_price)
-                        total_val = (parseFloat(unit_value) * parseFloat(item.cantidad))
-
-                        return {
-                            "codigo_interno": (item.internal_id) ? item.internal_id:"",
-                            "descripcion": item.description,
-                            "codigo_producto_sunat": "",
-                            "unidad_de_medida": item.unit_type_id,
-                            "cantidad": item.cantidad,
-                            "valor_unitario": unit_value,
-                            "codigo_tipo_precio": "01",
-                            "precio_unitario": sale_unit_price,
-                            "codigo_tipo_afectacion_igv": "20",
-                            "total_base_igv": total_val,
-                            "porcentaje_igv": percentage_igv,
-                            "total_igv": 0,
-                            "total_impuestos": 0,
-                            "total_valor_item": total_val,
-                            "total_item": total,
-                            "actualizar_descripcion": false,
-                            "nombre_producto_pdf": nombre_producto_pdf
-                        }
-
-                    }
-
-                })
-
-                // Agregar ítem de delivery si hay zona activa con precio
-                if (this.deliveryZone && parseFloat(this.deliveryZone.price) > 0) {
-                    const delivery_price  = parseFloat(this.deliveryZone.price);
-                    const percentage_igv = 18;
-                    const unit_value   = delivery_price / (1 + percentage_igv / 100);
-                    const igv_val      = delivery_price - unit_value;
-                    rec.push({
-                        "codigo_interno":              "DELIVERY-ECOM",
-                        "descripcion":                 "Costo de Envío - " + this.deliveryZone.name,
-                        "codigo_producto_sunat":       "",
-                        "unidad_de_medida":            "ZZ",
-                        "cantidad":                    1,
-                        "valor_unitario":              parseFloat(unit_value.toFixed(6)),
-                        "codigo_tipo_precio":          "01",
-                        "precio_unitario":             delivery_price,
-                        "codigo_tipo_afectacion_igv":  "10",
-                        "total_base_igv":              parseFloat(unit_value.toFixed(2)),
-                        "porcentaje_igv":              percentage_igv,
-                        "total_igv":                   parseFloat(igv_val.toFixed(2)),
-                        "total_impuestos":             parseFloat(igv_val.toFixed(2)),
-                        "total_valor_item":            parseFloat(unit_value.toFixed(2)),
-                        "total_item":                  delivery_price,
-                        "actualizar_descripcion":      false,
-                        "nombre_producto_pdf":         this.deliveryZone.name
-                    });
-                }
-
-                return rec
-            },
-            initForm() {
-              this.errors = {}
-                this.user = JSON.parse('{!! json_encode( Auth::guard("ecommerce")->user() ) !!}')
-                if(!this.user){
-                    return false
-                }
-
-                this.form_document = {
-                    "acciones": {
-                        "enviar_email": true,
-                        "formato_pdf": "a4"
-                    },
-                    "serie_documento": "",
-                    "numero_documento": "#",
-                    "fecha_de_emision": moment().format('YYYY-MM-DD'),
-                    "hora_de_emision": moment().format('HH:mm:ss'),
-                    "codigo_tipo_operacion": "0101",
-                    "codigo_tipo_documento": "03",
-                    "codigo_tipo_moneda": "PEN",
-                    "fecha_de_vencimiento": moment().format('YYYY-MM-DD'),
-                    "datos_del_cliente_o_receptor": {
-                        "codigo_tipo_documento_identidad": "0",
-                        "numero_documento": "0",
-                        "apellidos_y_nombres_o_razon_social": this.user.name,
-                        "codigo_pais": "PE",
-                        "ubigeo": "150101",
-                        "direccion": this.user.address,
-                        "correo_electronico": this.user.email,
-                        "telefono": this.user.telephone
-                    },
-                    "totales": {},
-                    "items": [],
-                }
-
-
-                // this.formIdentity = {
-                //     identity_document_type_id: ''
-                // }
-
-                this.form_contact.address =  this.user.address
-                this.form_contact.telephone =  this.user.telephone
-
-                this.optionDocument()
-            },
-            deleteItem(id, index) {
-                //remove en fronted
-                this.records.splice(index, 1)
-                //set remove en localstorage
-                let array = localStorage.getItem('products_cart');
-                array = JSON.parse(array);
-                let indexFound = array.findIndex(x => x.id == id)
-                array.splice(indexFound, 1);
-                localStorage.setItem('products_cart', JSON.stringify(array));
-
-                this.calculateSummary()
-
-
-            },
-            clearShoppingCart() {
-              this.errors = {}
-                this.records_old = this.records
-                this.records = []
-                localStorage.setItem('products_cart', JSON.stringify([]))
-                // this.calculateSummary()
-
-                this.summary = {
-                    subtotal: '0.0',
-                    tax: '0.0',
-                    total: '0.00',
-                    total_taxed: '0.0',
-                    total_value: '0.0',
-                    total_exonerated: '0.0',
-                    total_igv: '0.0'
-                }
-                this.payment_cash.amount = '0.00'
-                location.reload()
-            },
-            calculateSummary() {
-
-                //let subtotal = 0.00
-                let total_taxed = 0
-                let total_value = 0
-                let total_exonerated = 0
-                let total_igv = 0
-                let total = 0
-
-                this.records.forEach(function (item) {
-
-                    //subtotal += parseFloat(item.sub_total)
-
-                    let unit_price = item.sub_total
-                    let unit_value = unit_price
-                    let percentage_igv = 18
-
-                    if (item.sale_affectation_igv_type_id === '10') {
-                        unit_value = item.sub_total / (1 + percentage_igv / 100)
-                        total_taxed += parseFloat(unit_value)
-                        total_igv += parseFloat(unit_price - unit_value)
-                    }
-                    if (item.sale_affectation_igv_type_id === '20') {
-                        total_exonerated += parseFloat(unit_value)
-                    }
-
-                    total_value = total_taxed + total_exonerated
-                    total += parseFloat(unit_price)
-                })
-
-                // console.log(total_taxed, total_exonerated, total_igv)
-
-                this.summary.total_taxed = total_taxed.toFixed(2)
-                this.summary.total_exonerated = total_exonerated.toFixed(2)
-                this.summary.total_igv = total_igv.toFixed(2)
-                this.summary.total_value = total_value.toFixed(2)
-                // Aplicar descuento si existe
-                let computedTotal = total;
-                if (this.appliedCoupon && this.appliedCoupon.discount) {
-                    computedTotal = Math.max(0, computedTotal - parseFloat(this.appliedCoupon.discount));
-                }
-                // Agregar costo de delivery si hay zona activa
-
-                let deliveryPrice = (this.deliveryZone && this.deliveryZone.price) ? parseFloat(this.deliveryZone.price) : 0;
-                computedTotal += deliveryPrice;
-                let deliveryIgv = parseFloat((deliveryPrice / 1.18 * 0.18).toFixed(2));
-                this.summary.delivery         = deliveryPrice.toFixed(2);
-                this.summary.delivery_igv     = deliveryIgv.toFixed(2);
-                this.summary.total            = computedTotal.toFixed(2)
-                this.aux_totals               = Object.assign({}, this.summary)
-                // console.log(this.summary)
-
-
-                $("#total_amount").data('total', this.summary.total);
-
-                // this.formIdentity.identity_document_type_id = ''
-                this.form_document.codigo_tipo_documento = null
-                this.optionDocument()
-
-                this.payment_cash.amount = this.summary.total;
-
-                // let x =
-                // console.log(x)
-
-                // let subtotal = 0.00
-                // this.records.forEach(function (item) {
-                //     //console.log(item)
-                //     subtotal += parseFloat(item.sub_total)
-                // })
-
-                // this.summary.subtotal = subtotal.toFixed(2)
-                // let tax = (subtotal * 0.18)
-                // this.summary.tax = tax.toFixed(2)
-                // this.summary.total = (subtotal + tax).toFixed(2)
-                // $("#total_amount").data('total', this.summary.total);
-
-                // this.payment_cash.amount = this.summary.total
-            },
-            saveContactDataUser()
-            {
-                let url_finally = '{{ route("tenant_ecommerce_user_data")}}';
-
-                // Incluir datos de ubigeo y dirección de entrega para registrar en las direcciones del cliente
-                let payload = Object.assign({}, this.form_contact, {
-                    department_id:    this.selectedDepartment   || null,
-                    province_id:      this.selectedProvince     || null,
-                    district_id:      this.selectedDistrict     || null,
-                    delivery_address: this.addressModal.address || this.form_contact.address || null,
-                });
-
-                axios.post(url_finally, payload, this.getHeaderConfig())
-                    .then(response => {
-                       console.log(response.data)
-                    })
-                    .catch(error => {
-
-                    });
-            },
-            clickSendWhatsapp(order_id) {
-
-                window.open(`https://wa.me/51${this.phone_whatsapp}?text=Se ha generado un nuevo pedido con código nro. ${order_id}`, '_blank');
-
-            },
-            onAddressInput() {
-                console.log('Input detectado:', this.addressModal.address);
-                // Aquí puedes agregar cualquier otra lógica que necesites al escribir en el campo de dirección
-            },
-            closeAddressModal() {
-                // Asegurarse de que el modal se cierre correctamente
-                const modalElement = document.getElementById('addressModal');
-                if (modalElement) {
-                    $(modalElement).modal('hide');
-                } else {
-                    console.error('No se encontró el elemento del modal.');
-                }
-            },
-            selectAddressSuggestion(suggestion) {
-                // Usar el campo 'description' para mostrar una dirección más legible
-                this.addressModal.address = suggestion.description;
-                this.addressSuggestions = [];
-                console.log('Dirección seleccionada:', this.addressModal.address);
-
-                // Aquí puedes agregar lógica para actualizar el mapa según la dirección seleccionada
-            },
-            fetchLocations() {
-                // Retorna la promesa para poder encadenar acciones post-carga
-                return axios.get('{{ route("get_location_cascade") }}')
-                    .then(response => {
-                        this.departments = response.data;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching locations:', error);
-                    });
-            },
-            // Precarga la primera dirección guardada del cliente en el modal y los selectores ubigeo
-            loadDefaultAddress() {
-                const addr = this.userDefaultAddress;
-                if (!addr || !addr.address) return;
-
-                // Autocompletar dirección en el modal
-                this.addressModal.address = addr.address;
-
-                // Si no hay ubigeo completo no se puede cargar la cascada
-                if (!addr.department_id) return;
-
-                const dept = this.departments.find(d => d.value === addr.department_id);
-                if (!dept) return;
-
-                // Nivel 1: departamento
-                this.selectedDepartment = dept.value;
-                this.provinces = dept.children || [];
-                this.selectedProvince = '';
-                this.districts = [];
-                this.selectedDistrict = '';
-
-                if (!addr.province_id) return;
-
-                this.$nextTick(() => {
-                    const prov = this.provinces.find(p => p.value === addr.province_id);
-                    if (!prov) return;
-
-                    // Nivel 2: provincia
-                    this.selectedProvince = prov.value;
-                    this.districts = prov.children || [];
-                    this.selectedDistrict = '';
-
-                    if (!addr.district_id) return;
-
-                    this.$nextTick(() => {
-                        setTimeout(() => {
-                            const dist = this.districts.find(d => d.value === addr.district_id);
-                            if (!dist) return;
-
-                            // Nivel 3: distrito
-                            this.selectedDistrict = dist.value;
-
-                            // Verificar zona de delivery con la ubicación precargada
-                            this.checkDeliveryZone();
-                        }, 100);
-                    });
-                });
-            },
-            updateProvinces() {
-                const department = this.departments.find(dep => dep.value === this.selectedDepartment);
-                this.provinces = department ? department.children : [];
-                this.selectedProvince = '';
-                this.districts = [];
-                this.selectedDistrict = '';
-                // Limpiar zona al cambiar departamento para no mostrar datos obsoletos
-                this.deliveryZone = null;
-                this.deliveryMessage = '';
-                this.calculateSummary();
-            },
-            updateDistricts() {
-                const province = this.provinces.find(prov => prov.value === this.selectedProvince);
-                this.districts = province ? province.children : [];
-                this.selectedDistrict = '';
-                // Limpiar zona al cambiar provincia
-                this.deliveryZone = null;
-                this.deliveryMessage = '';
-                this.calculateSummary();
-            },
-            async checkDeliveryZone() {
-                if (!this.selectedDepartment) {
-                    this.deliveryZone = null;
-                    this.deliveryMessage = '';
-                    this.calculateSummary();
-                    return;
-                }
-
-                try {
-                    const params = {
-                        department: this.selectedDepartment,
-                        province:   this.selectedProvince   || undefined,
-                        district:   this.selectedDistrict   || undefined,
-                    };
-                    const res = await axios.get('/ecommerce/delivery-zones/check', { params });
-
-                    if (res.data.found) {
-                        this.deliveryZone    = res.data.zone;
-                        this.deliveryMessage = '';
-                    } else if (res.data.configured === false) {
-                        // No hay zonas configuradas: silencio total
-                        this.deliveryZone    = null;
-                        this.deliveryMessage = '';
-                    } else {
-                        // Hay zonas pero ninguna cubre esta dirección
-                        this.deliveryZone    = null;
-                        this.deliveryMessage = res.data.message || 'Lo sentimos, no contamos con delivery en tu zona por el momento.';
-                    }
-                } catch (e) {
-                    this.deliveryZone    = null;
-                    this.deliveryMessage = '';
-                }
-
-                this.calculateSummary();
-            },
-            async applyCoupon() {
-                if (!this.couponField || this.couponLoading) return;
-                this.couponLoading = true;
-                this.couponMessage = null;
-
-                try {
-                    const payload = { code: this.couponField, order_total: this.summary.total };
-                    const res = await axios.post('/ecommerce/validate-coupon', payload, this.getHeaderConfig());
-                    if (res.data && res.data.success) {
-                        const d = res.data.data;
-                        this.appliedCoupon = {
-                            id: d.id,
-                            code: d.code,
-                            discount: parseFloat(d.discount),
-                            free_shipping: d.free_shipping
-                        };
-                        // Update totals according to backend suggestion
-                        if (typeof d.new_total !== 'undefined') {
-                            this.summary.total = parseFloat(d.new_total).toFixed(2);
-                            this.payment_cash.amount = this.summary.total;
-                        }
-                        this.couponMessage = null;
-                    } else {
-                        this.couponMessage = (res.data && res.data.message) ? res.data.message : 'cupon no valido';
-                    }
-                } catch (err) {
-                    if (err.response && err.response.data && err.response.data.message) {
-                        this.couponMessage = err.response.data.message;
-                    } else {
-                        this.couponMessage = 'cupon no valido';
-                    }
-                } finally {
-                    this.couponLoading = false;
-                }
-            },
-
-            removeCoupon() {
-                this.appliedCoupon = null;
-                this.couponField = '';
-                this.couponMessage = null;
-                this.calculateSummary();
-            },
-        },
-    })
-
+<!-- Configuration globals para cart app -->
+<script>
+    window.__ecommerce_config = {
+        phone_whatsapp: {!! json_encode($configuration->phone_whatsapp ?? '') !!},
+        global_discount_type: {!! json_encode($global_discount_type ?? []) !!},
+        user: {!! json_encode(optional(Auth::guard("ecommerce")->user())->makeHidden(['password', 'remember_token'])) !!},
+        userAddress: {!! json_encode($userAddress ?? null) !!},
+        enable_electronic_documents: {!! json_encode($enable_electronic_documents ?? false) !!},
+        enable_store_pickup: {!! json_encode($enable_store_pickup ?? false) !!},
+        pickup_branches: {!! json_encode($pickup_branches ?? []) !!},
+        enable_yape: {!! json_encode($enable_yape ?? false) !!},
+        enable_transfer: {!! json_encode($enable_transfer ?? false) !!},
+    };
+
+    window.__routes = {
+        payment_cash: '{{ route("tenant_ecommerce_payment_cash") }}',
+        user_data: '{{ route("tenant_ecommerce_user_data") }}',
+        locations: '{{ route("get_location_cascade") }}',
+        home: '{{ route("tenant.ecommerce.index") }}',
+        culqi: '{{ route("tenant_ecommerce_culqui") }}',
+    };
 </script>
+
+@vite('modules/Ecommerce/Resources/assets/js/frontend/cart-app.js')
 
 <script>
     Culqi.publicKey = {!! json_encode($configuration->token_public_culqui ) !!};
@@ -1770,8 +685,8 @@
                 // Coupon fields
                 discount_coupon_code: formpayment.discount_coupon_code,
                 discount_coupon_id: formpayment.discount_coupon_id,
-                total_discount: formpayment.total_discount
-
+                total_discount: formpayment.total_discount,
+                shipping_address: formpayment.shipping_address || '',
             }
 
             $.ajax({

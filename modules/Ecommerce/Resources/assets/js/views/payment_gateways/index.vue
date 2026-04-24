@@ -4,6 +4,25 @@
     <form autocomplete="off" @submit.prevent="submit">
       <div class="form-body">
         <div class="row">
+          <!-- Métodos de pago alternativos -->
+          <div class="col-md-6">
+            <div class="form-group form-modern mb-3">
+              <el-switch v-model="form.enable_yape" :active-value="1" :inactive-value="0"></el-switch>
+              <label class="ms-2 mb-0">Habilitar pago con Yape</label>
+              <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">
+                Muestra la opción &ldquo;Pagar con YAPE&rdquo; en el checkout.
+              </small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group form-modern mb-3">
+              <el-switch v-model="form.enable_transfer" :active-value="1" :inactive-value="0"></el-switch>
+              <label class="ms-2 mb-0">Habilitar transferencia bancaria</label>
+              <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">
+                Muestra la opción &ldquo;Transferencia Bancaria&rdquo; en el checkout.
+              </small>
+            </div>
+          </div>
           <div class="col-md-12">
             <div class="form-group" :class="{'has-danger': errors.token_public_culqui}">
               <label class="control-label">
@@ -98,6 +117,8 @@ export default {
         this.form.token_public_culqui = data.token_public_culqui;
         this.form.token_private_culqui = data.token_private_culqui;
         this.form.script_paypal = data.script_paypal;
+        this.form.enable_yape = data.enable_yape ? 1 : 0;
+        this.form.enable_transfer = data.enable_transfer ? 1 : 0;
       }
     });
   },
@@ -116,7 +137,9 @@ export default {
         id: null,
         token_public_culqui: "",
         token_private_culqui: "",
-        script_paypal: ""
+        script_paypal: "",
+        enable_yape: 0,
+        enable_transfer: 0,
       };
     },
     submit() {

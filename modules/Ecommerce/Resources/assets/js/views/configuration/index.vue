@@ -209,7 +209,45 @@
             <h4 class="mb-2"><strong>Zonas de Delivery</strong></h4>
           </div>
           <DeliveryZones />
+          <div class="mb-3">
+            <h4 class="mb-2"><strong>Sucursales de Recojo</strong></h4>
+          </div>
+          <div class="form-group form-modern mb-3">
+            <el-switch v-model="form.enable_store_pickup" :active-value="1" :inactive-value="0" @change="submit"></el-switch>
+            <label class="ms-2 mb-0">Habilitar recojo en tienda</label>
+            <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">
+              Permite a los clientes elegir recoger su pedido en una sucursal en lugar de recibirlo por delivery.
+            </small>
+          </div>
+          <!-- Sucursales de recojo: solo visible cuando el recojo en tienda está activo -->
+          <div v-if="form.enable_store_pickup == 1" class="mt-4">
+            <PickupBranches />
+          </div>
         </div>
+      </el-tab-pane>
+      <el-tab-pane label="Otras configuraciones">
+        <form autocomplete="off" @submit.prevent="submit">
+          <div class="form-body">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <h4 class="mb-0"><strong>Otras Configuraciones</strong></h4>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group form-modern mb-3">
+                  <el-switch v-model="form.enable_electronic_documents" :active-value="1" :inactive-value="0"></el-switch>
+                  <label class="ms-2 mb-0">Habilitar documentos electrónicos</label>
+                  <small class="d-block text-muted ms-5" style="padding: 0 !important; line-height: 1.5;">
+                    Cuando está desactivado, se genera automáticamente una nota de venta.
+                  </small>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="form-actions text-end float-end pt-2">
+            <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+          </div>
+        </form>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -235,6 +273,7 @@ import DeliveryZones from '../configuration_delivery_zones/index.vue';
 import 'ckeditor5/ckeditor5.css';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import DigitalCoupon from '../configuration_digital_coupon/index.vue';
+import PickupBranches from '../configuration_pickup_branches/index.vue';
 import CKEditor from 'vue-ckeditor5';
 export default {
   components: {
@@ -242,6 +281,7 @@ export default {
     PaymentGateways,
     DigitalCoupon,
     DeliveryZones,
+    PickupBranches,
     'vue-ckeditor': CKEditor.component
   },
   data() {
@@ -304,7 +344,10 @@ export default {
           // campos de páginas personalizadas
           terms_conditions: data.terms_conditions || '',
           privacy_policy: data.privacy_policy || '',
-          about_us: data.about_us || ''
+          about_us: data.about_us || '',
+          // configuración de documentos electrónicos y recojo en tienda
+          enable_electronic_documents: data.enable_electronic_documents ? 1 : 0,
+          enable_store_pickup: data.enable_store_pickup ? 1 : 0,
         };
       } else {
         this.initForm();
@@ -347,7 +390,9 @@ export default {
         full_width_banner: 0,
         terms_conditions: '',
         privacy_policy: '',
-        about_us: ''
+        about_us: '',
+        enable_electronic_documents: 0,
+        enable_store_pickup: 0,
       };
     },
     submit() {

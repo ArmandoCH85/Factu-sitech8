@@ -19,7 +19,7 @@ class PromotionsViewComposer
             ->with('item')
             ->orderByDesc('updated_at')
             ->get();
-        
+
         $config = ConfigurationEcommerce::first();
         $preferences = $config && $config->preferences ? $config->preferences : [];
         $view->full_width_banner = $preferences['full_width_banner'] ?? 0;

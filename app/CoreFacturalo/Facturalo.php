@@ -999,8 +999,13 @@ class Facturalo
             $service = new GiorService();
         }
         if($service_pse_code != null) {
+
+            $this->document->update([
+                'send_to_pse' => true
+            ]);
+
             $response = $service->sendXmlSigned($this->document->filename, $this->xmlSigned);
-            // dd($response);
+
             if($response['success']) {
                 if($response['cdr'] != null) {
                     $this->uploadFile($response['cdr'], 'cdr_b64');

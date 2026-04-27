@@ -117,6 +117,7 @@ class DocumentController extends Controller
         ];
     }
 
+    // TODO: refactorizar para usar el mismo método en el controller de sale notes
     public function records(Request $request)
     {
         $cacheParams = [
@@ -1280,6 +1281,23 @@ class DocumentController extends Controller
         ];
     }
 
+    public function updateCustomFields(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'custom_fields_data' => 'nullable|array'
+        ]);
+
+        $Document = Document::findOrFail($request->input('id'));
+        $Document->custom_fields_data = $request->input('custom_fields_data', []);
+        $Document->save();
+
+        return [
+            'success' => true,
+            'data' => $Document->custom_fields_data
+        ];
+    }
+
     public function getRecords($request)
     {
         $d_end = $request->d_end;
@@ -1297,9 +1315,11 @@ class DocumentController extends Controller
         $guides = $request->guides;
         $plate_numbers = $request->plate_numbers;
         $observations = $request->observations;
+        $custom_fiels = $request->custom_fiels;
 
 //        return $observations;
         $records = Document::query();
+
         if ($d_start && $d_end) {
             $records->whereBetween('date_of_issue', [$d_start, $d_end]);
         }
@@ -1356,6 +1376,7 @@ class DocumentController extends Controller
             $records = $records->where('additional_information', 'like', '%' . $observations . '%');
         }
 
+        //dd($records);
         return $records;
     }
 

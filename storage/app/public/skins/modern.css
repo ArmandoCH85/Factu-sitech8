@@ -1109,6 +1109,9 @@ html.sidebar-light .establishment-selector-container{
     background-color: var(--info) !important;
     color: #fff !important;
 }
+.template-skin-item {
+    border-radius: 8px;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

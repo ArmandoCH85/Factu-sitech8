@@ -2401,6 +2401,9 @@ html.sidebar-ligth-blue .card-header.bg-info {
 .cbm-wrap{
     margin: -20px -25px 30px -25px !important;
 }
+.template-skin-item {
+    border-radius: 10px;
+}
 /* --------------------------- tema Oscuro --------------------------- */
 /* html.dark .header .logo-container .topbar-links:hover {
     background: #161d31d1;

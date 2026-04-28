@@ -1287,6 +1287,9 @@ div.sub-title.text-muted{
 .el-message .el-icon-warning{
     color: #fff !important;
 }
+.el-upload.el-upload--text {
+    width: 100%;
+}
 @media only screen and (min-width: 768px) {
     html.sidebar-left-big-icons .sidebar-left {
         width: 215px;

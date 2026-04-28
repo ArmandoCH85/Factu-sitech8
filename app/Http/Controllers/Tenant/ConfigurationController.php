@@ -747,7 +747,7 @@ class ConfigurationController extends Controller
 
     public function visualUploadSkin(Request $request)
     {
-        if ($request->file->getClientMimeType() != 'text/css') {
+        if (strtolower($request->file->getClientOriginalExtension()) !== 'css') {
             return [
                 'success' => false,
                 'message' =>  'Tipo de archivo no permitido',
@@ -767,7 +767,6 @@ class ConfigurationController extends Controller
             $filename = $file->getClientOriginalName();
             $name = pathinfo($file->getClientOriginalName());
 
-            UploadFileHelper::checkIfValidCssFile($filename, $file->getPathName(), 'css', ['text/css', 'text/plain']);
 
             Storage::disk('public')->put('skins'.DIRECTORY_SEPARATOR.$filename, $file_content);
 

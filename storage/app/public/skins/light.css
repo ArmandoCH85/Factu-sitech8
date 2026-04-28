@@ -979,6 +979,9 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 .circle-child{
     background-color: color-mix(in srgb, var(--accent-color) 40%, #ffffff00);
 }
+.template-skin-item {
+    border-radius: 6px;
+}
 /* end */
 /************************************ tema verde ************************************/
 /* header */

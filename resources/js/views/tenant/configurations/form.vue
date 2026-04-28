@@ -2445,6 +2445,11 @@
                         </div>
                     </el-tab-pane>
 
+                    <el-tab-pane class="mb-3" name="impresion" :lazy="true">
+                        <span slot="label">Impresión</span>
+                        <PrintConfig />
+                    </el-tab-pane>
+
                 </el-tabs>
                 <terms-condition :form="form" :showClose="false"
                     :showDialog.sync="showDialogTermsCondition"></terms-condition>
@@ -2488,6 +2493,7 @@ import ReportConfigurationsIndex from './partials/report_configurations_index.vu
 import PdfFooterImages from './partials/pdf_footer_images.vue'
 import SessionLifetime from '@viewsModuleLevelAccess/configurations/SessionLifetime.vue';
 import PriceLabelsManager from './partials/price_labels_manager.vue';
+import PrintConfig from '../../../../../modules/Restaurant/Resources/assets/js/views/configuration/partials/print-config.vue';
 import { buhoprinter } from '@mixins/buhoprinter';
 
 
@@ -2505,7 +2511,8 @@ export default {
         PdfFooterImages,
         SessionLifetime,
         LegendFooterSale,
-        PriceLabelsManager
+        PriceLabelsManager,
+        PrintConfig
     },
     mixins: [buhoprinter],
     computed: {

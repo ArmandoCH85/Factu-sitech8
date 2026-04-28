@@ -5,7 +5,7 @@
       <div class="col-md-12">
         <h5><b>Integración con BuhoPrinter:</b></h5>
         <span class="text-muted">
-          Activa esta opción para conectar el restaurante con el servicio de impresión local BuhoPrinter.
+          Activa esta opción para conectar la empresa con el servicio de impresión local BuhoPrinter.
           Al activar, el sistema detectará automáticamente el agente en esta red e intentará registrar
           las impresoras disponibles.
         </span>
@@ -40,9 +40,6 @@
           active-text="Activo"
           inactive-text="Inactivo">
         </el-switch>
-        <!-- <small v-if="form.printer_public_ip" class="d-block text-muted mt-1">
-          IP registrada: <b>{{ form.printer_public_ip }}</b>
-        </small> -->
       </div>
     </div>
 
@@ -67,116 +64,8 @@
       </div>
     </div>
 
-    <!-- Configuración de impresoras por propósito (solo si hay impresoras sincronizadas) -->
+    <!-- Lista de impresoras registradas -->
     <template v-if="form.printer_enabled && printers.length > 0">
-      <div class="row mb-3">
-        <div class="col-md-12">
-          <h5><b>Asignación de impresoras:</b></h5>
-          <span class="text-muted">Selecciona qué impresora se usará para cada tipo de salida.</span>
-        </div>
-      </div>
-
-      <div class="row">
-        <!-- Impresora para Comanda -->
-        <div class="col-md-4">
-          <div class="form-group">
-            <label class="control-label">
-              Impresora - Comanda
-              <el-tooltip
-                content="Impresora donde se imprimirán las comandas enviadas a los mozos"
-                effect="dark"
-                placement="top">
-                <i class="fa fa-info-circle text-muted ml-1"></i>
-              </el-tooltip>
-            </label>
-            <el-select
-              v-model="form.printer_name_comanda"
-              clearable
-              placeholder="Seleccionar impresora"
-              class="w-100"
-              :disabled="form.printer_areas_enabled">
-              <el-option
-                v-for="p in printers"
-                :key="p.name"
-                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
-                :value="p.name">
-              </el-option>
-            </el-select>
-
-            <!-- Switch para habilitar áreas de impresión -->
-            <div class="mt-2 d-flex align-items-center">
-              <el-switch
-                v-model="form.printer_areas_enabled"
-                active-text="Habilitar áreas de impresión"
-                @change="onTogglePrinterAreas">
-              </el-switch>
-              <el-tooltip
-                content="No se utilizará la impresora de comanda una vez activada esta opción"
-                effect="dark"
-                placement="top">
-                <i class="fa fa-info-circle text-muted ml-2"></i>
-              </el-tooltip>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Impresora para Documents -->
-        <div class="col-md-4">
-          <div class="form-group">
-            <label class="control-label">
-              Impresora - Documents
-              <el-tooltip
-                content="Impresora asignada para impresión de documentos"
-                effect="dark"
-                placement="top">
-                <i class="fa fa-info-circle text-muted ml-1"></i>
-              </el-tooltip>
-            </label>
-            <el-select
-              v-model="form.printer_name_documents"
-              clearable
-              placeholder="Seleccionar impresora"
-              class="w-100">
-              <el-option
-                v-for="p in printers"
-                :key="p.name"
-                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
-                :value="p.name">
-              </el-option>
-            </el-select>
-          </div>
-        </div>
-
-        <!-- Impresora para Pre-cuenta -->
-        <div class="col-md-4">
-          <div class="form-group">
-            <label class="control-label">
-              Impresora - Precuenta
-              <el-tooltip
-                content="Impresora donde se imprimirá la pre-cuenta para el cliente"
-                effect="dark"
-                placement="top">
-                <i class="fa fa-info-circle text-muted ml-1"></i>
-              </el-tooltip>
-            </label>
-            <el-select
-              v-model="form.printer_name_precuenta"
-              clearable
-              placeholder="Seleccionar impresora"
-              class="w-100">
-              <el-option
-                v-for="p in printers"
-                :key="p.name"
-                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
-                :value="p.name">
-              </el-option>
-            </el-select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lista de impresoras registradas -->
       <div class="row mt-3">
         <div class="col-md-12">
           <h6 class="text-muted mb-2">
@@ -249,7 +138,6 @@ export default {
   filters: {
     formatDate(value) {
       if (!value) return '—'
-      // muestra solo fecha y hora sin zona horaria
       return value.toString().replace('T', ' ').substring(0, 16)
     }
   },
@@ -257,20 +145,13 @@ export default {
   data() {
     return {
       resource: 'restaurant',
-      // estado del formulario de configuración
       form: {
         printer_enabled:         false,
         printer_status:          null,
         printer_public_ip:       null,
         print_local_enabled:     false,
-        printer_name_comanda:    null,
-        printer_name_documents:  null,
-        printer_name_precuenta:  null,
-        printer_areas_enabled:   false,
       },
-      // impresoras registradas en BD
       printers: [],
-      // estado en vivo de la última verificación de esta sesión (no persiste)
       liveStatus: null,
       checking: false,
       saving: false,
@@ -279,9 +160,6 @@ export default {
   },
 
   computed: {
-    /**
-     * Clase de alerta según el estado en vivo o el último guardado en BD.
-     */
     statusAlertClass() {
       const status = this.liveStatus || this.form.printer_status
       if (status === 'connected')    return 'alert-success'
@@ -302,9 +180,6 @@ export default {
   },
 
   methods: {
-    /**
-     * Carga la configuración de impresión desde el backend.
-     */
     async loadConfig() {
       this.loading = true
 
@@ -312,52 +187,32 @@ export default {
         const { data } = await this.$http.get(`/${this.resource}/printers/config`)
         if (data.success) {
           const d = data.data
-          this.form.printer_enabled        = d.printer_enabled
-          this.form.printer_status         = d.printer_status
-          this.form.printer_public_ip      = d.printer_public_ip
-          this.form.print_local_enabled    = d.print_local_enabled
-          this.form.printer_name_comanda   = d.printer_name_comanda
-          this.form.printer_name_documents  = d.printer_name_documents
-          this.form.printer_name_precuenta  = d.printer_name_precuenta
-          this.form.printer_areas_enabled   = d.printer_areas_enabled || false
-          this.printers                    = d.printers || []
-          // Notificar al padre (index.vue) el estado actual de áreas de impresión
-          this.$eventHub.$emit('printerAreasEnabledChanged', this.form.printer_areas_enabled)
+          this.form.printer_enabled     = d.printer_enabled
+          this.form.printer_status      = d.printer_status
+          this.form.printer_public_ip   = d.printer_public_ip
+          this.form.print_local_enabled = d.print_local_enabled
+          this.printers                 = d.printers || []
         }
       } catch (error) {
         console.error('Error al cargar config de impresión:', error)
-        this.loading = false
       } finally {
         this.loading = false
       }
     },
 
-    /**
-     * Maneja el cambio del switch principal.
-     * Al activar: inicia verificación y sincronización si hay host configurado.
-     * Al desactivar: guarda el estado desactivado sin hacer llamadas a BuhoPrinter.
-     */
     async onTogglePrinterEnabled(value) {
       if (value) {
         await this.checkAndSync()
       } else {
-        // desactivar: guardar directamente
         await this.saveConfig(false)
       }
     },
 
-    /**
-     * Verifica la conexión con BuhoPrinter usando el mixin (auto-detección de puerto en localhost)
-     * y sincroniza la lista de impresoras con el backend.
-     *
-     * @param {boolean} silent - si es true, no muestra notificaciones de éxito/error al usuario
-     */
     async checkAndSync(silent = false) {
       this.checking = true
       this.liveStatus = null
 
       try {
-        // 1. Delegar la conexión al mixin — escanea puertos 8181-8484 en localhost
         await this.startConnectionBuho()
 
         if (!this.isBuhoActive) {
@@ -366,7 +221,6 @@ export default {
 
         this.liveStatus = 'connected'
 
-        // 2. Registrar estado exitoso en BD e IP pública del cliente
         const clientPublicIp = await this.fetchClientPublicIp()
         await this.$http.post(`/${this.resource}/printers/status`, {
           printer_status:    'connected',
@@ -375,18 +229,12 @@ export default {
         this.form.printer_status    = 'connected'
         this.form.printer_public_ip = clientPublicIp || null
 
-        // 3. Enviar el host descubierto al backend para que persista printer_host y devuelva
-        //    el payload de configuración con datos sensibles (Redis, fqdn, api_token).
-        //    El frontend reenvía ese payload directamente a BuhoPrinter /configure porque
-        //    el servidor VPS no puede alcanzar localhost del cliente.
         const buhoUrl = this.getBuhoBaseUrl()
         const configRes = await this.$http.post(`/${this.resource}/printers/configure`, {
           buhoprinter_host: buhoUrl,
         })
 
         if (configRes.data.success) {
-          // El payload es un blob cifrado (string opaco). Se envía como texto plano —
-          // BuhoPrinter espera recibir la cadena cifrada directamente, no un JSON wrapper.
           await fetch(`${buhoUrl}/configure`, {
             method : 'POST',
             headers: { 'Content-Type': 'text/plain' },
@@ -394,10 +242,8 @@ export default {
           })
         }
 
-        // 4. Obtener impresoras con su campo is_default desde BuhoPrinter
         const rawPrinters = await this.getBuhoPrintersWithDefaults()
 
-        // 5. Sincronizar con el backend — se envían objetos {name, is_default}
         const syncRes = await this.$http.post(`/${this.resource}/printers/sync`, {
           printers: rawPrinters
         })
@@ -412,7 +258,6 @@ export default {
       } catch (error) {
         this.liveStatus = 'disconnected'
 
-        // Registrar fallo en BD (solo informativo)
         await this.$http.post(`/${this.resource}/printers/status`, { printer_status: 'disconnected' })
           .catch(() => {})
         this.form.printer_status = 'disconnected'
@@ -426,29 +271,12 @@ export default {
       }
     },
 
-    /**
-     * Persiste la configuración de impresión en el backend.
-     * @param {boolean} showMessage - mostrar o no el mensaje de éxito
-     */
-    /**
-     * Maneja el cambio del switch de áreas de impresión.
-     * Guarda la configuración y notifica a index.vue para mostrar/ocultar el tab.
-     */
-    async onTogglePrinterAreas(value) {
-      await this.saveConfig(false)
-      this.$eventHub.$emit('printerAreasEnabledChanged', value)
-    },
-
     async saveConfig(showMessage = true) {
       this.saving = true
       try {
         const res = await this.$http.post(`/${this.resource}/printers/config`, {
-          printer_enabled:         this.form.printer_enabled,
-          print_local_enabled:     this.form.print_local_enabled,
-          printer_name_comanda:    this.form.printer_name_comanda,
-          printer_name_documents:  this.form.printer_name_documents,
-          printer_name_precuenta:  this.form.printer_name_precuenta,
-          printer_areas_enabled:   this.form.printer_areas_enabled,
+          printer_enabled:     this.form.printer_enabled,
+          print_local_enabled: this.form.print_local_enabled,
         })
 
         if (res.data.success && showMessage) {

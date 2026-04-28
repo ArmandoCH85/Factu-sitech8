@@ -1290,6 +1290,14 @@ div.sub-title.text-muted{
 .el-upload.el-upload--text {
     width: 100%;
 }
+.template-skin-item .skin-actions {
+    justify-content: end;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.crossed-out {
+    text-decoration: line-through !important;
+}
 @media only screen and (min-width: 768px) {
     html.sidebar-left-big-icons .sidebar-left {
         width: 215px;

@@ -1033,7 +1033,11 @@ if ($hostname) {
 
             // System skins
             Route::get('configurations/system-skins', 'System\ConfigurationController@getSystemSkins');
+            Route::get('configurations/system-skins/check', 'System\ConfigurationController@checkSystemSkinName');
             Route::post('configurations/system-skins/upload', 'System\ConfigurationController@uploadSystemSkin');
+            Route::post('configurations/system-skins/replace', 'System\ConfigurationController@replaceSystemSkin');
+            Route::post('configurations/system-skins/revert', 'System\ConfigurationController@revertSystemSkin');
+            Route::post('configurations/system-skins/sync', 'System\ConfigurationController@syncDefaultSkin');
             Route::post('configurations/system-skins/delete', 'System\ConfigurationController@deleteSystemSkin');
 
             Route::get('information', 'System\ConfigurationController@InfoIndex')->name('system.information');

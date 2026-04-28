@@ -481,6 +481,28 @@ class ConfigurationController extends Controller
         ]);
     }
 
+    public function checkSystemSkinName(Request $request)
+    {
+        $original = $request->query('filename', '');
+        $baseName = pathinfo($original, PATHINFO_FILENAME);
+        $filename = $baseName . '.css';
+        $exists   = Storage::disk('public')->exists('skins' . DIRECTORY_SEPARATOR . $filename);
+
+        $suggested = $filename;
+        if ($exists) {
+            $counter = 1;
+            do {
+                $suggested = $baseName . '_' . $counter . '.css';
+                $counter++;
+            } while (Storage::disk('public')->exists('skins' . DIRECTORY_SEPARATOR . $suggested));
+        }
+
+        return response()->json([
+            'exists'    => $exists,
+            'suggested' => pathinfo($suggested, PATHINFO_FILENAME),
+        ]);
+    }
+
     public function uploadSystemSkin(Request $request)
     {
         if (!$request->hasFile('file')) {
@@ -489,16 +511,20 @@ class ConfigurationController extends Controller
 
         $file = $request->file('file');
 
-        if (Storage::disk('public')->exists('skins' . DIRECTORY_SEPARATOR . $file->getClientOriginalName())) {
-            return response()->json(['success' => false, 'message' => 'El archivo ya existe']);
-        }
-
         if (strtolower($file->getClientOriginalExtension()) !== 'css') {
             return response()->json(['success' => false, 'message' => 'Solo se permiten archivos .css']);
         }
 
-        $filename = $file->getClientOriginalName();
-        $name     = pathinfo($filename, PATHINFO_FILENAME);
+        // Usar nombre personalizado si el admin lo definió, o el nombre original
+        $customName = trim($request->input('rename_to', ''));
+        $baseName   = $customName !== '' ? $customName : pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $filename   = $baseName . '.css';
+
+        if (Storage::disk('public')->exists('skins' . DIRECTORY_SEPARATOR . $filename)) {
+            return response()->json(['success' => false, 'message' => 'El archivo "' . $filename . '" ya existe. Elige otro nombre.']);
+        }
+
+        $name = $baseName;
 
         Storage::disk('public')->put('skins' . DIRECTORY_SEPARATOR . $filename, file_get_contents($file->getRealPath()));
 
@@ -563,6 +589,147 @@ class ConfigurationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tema eliminado correctamente',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
+
+    public function replaceSystemSkin(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return response()->json(['success' => false, 'message' => __('app.actions.upload.error')]);
+        }
+
+        $file = $request->file('file');
+
+        if (strtolower($file->getClientOriginalExtension()) !== 'css') {
+            return response()->json(['success' => false, 'message' => 'Solo se permiten archivos .css']);
+        }
+
+        $skin = SystemSkin::find($request->skin_id);
+
+        if (!$skin || !$skin->is_default) {
+            return response()->json(['success' => false, 'message' => 'Solo se pueden reemplazar los temas por defecto']);
+        }
+
+        // Nombre único para el override — el archivo original nunca se toca
+        $baseName       = pathinfo($skin->filename, PATHINFO_FILENAME);
+        $newFilename    = $baseName . '_override_' . date('YmdHis') . '.css';
+        $oldActiveFile  = $skin->custom_filename; // puede ser null o un override anterior
+
+        Storage::disk('public')->put('skins' . DIRECTORY_SEPARATOR . $newFilename, file_get_contents($file->getRealPath()));
+
+        // Propagar a todos los tenants: actualizar el filename activo
+        $oldTenantFilename = $oldActiveFile ?? $skin->filename;
+        $clients = Client::with('hostname.website')->get();
+        foreach ($clients as $client) {
+            try {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($client->hostname->website);
+                DB::connection('tenant')->table('skins')
+                    ->where('filename', $oldTenantFilename)
+                    ->where('is_system', true)
+                    ->update(['filename' => $newFilename]);
+            } catch (\Exception $e) {
+                // Continuar con el siguiente tenant si hay error
+            }
+        }
+
+        // Eliminar físicamente el override anterior si existía
+        if ($oldActiveFile) {
+            $oldPath = storage_path('app/public/skins/' . $oldActiveFile);
+            if (file_exists($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
+        $skin->update(['custom_filename' => $newFilename]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema "' . $skin->name . '" reemplazado correctamente',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
+
+    public function revertSystemSkin(Request $request)
+    {
+        $skin = SystemSkin::find($request->skin_id);
+
+        if (!$skin || !$skin->is_default) {
+            return response()->json(['success' => false, 'message' => 'Tema no válido']);
+        }
+
+        if (!$skin->custom_filename) {
+            return response()->json(['success' => false, 'message' => 'Este tema no tiene un reemplazo activo']);
+        }
+
+        $overrideFilename = $skin->custom_filename;
+
+        // Propagar a todos los tenants: volver al filename original
+        $clients = Client::with('hostname.website')->get();
+        foreach ($clients as $client) {
+            try {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($client->hostname->website);
+                DB::connection('tenant')->table('skins')
+                    ->where('filename', $overrideFilename)
+                    ->update(['filename' => $skin->filename]);
+            } catch (\Exception $e) {
+                // Continuar con el siguiente tenant si hay error
+            }
+        }
+
+        // Eliminar físicamente el archivo override
+        $fullPath = storage_path('app/public/skins/' . $overrideFilename);
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
+        }
+
+        $skin->update(['custom_filename' => null]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema "' . $skin->name . '" restaurado al original',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
+
+    public function syncDefaultSkin(Request $request)
+    {
+        $skin = SystemSkin::find($request->skin_id);
+
+        if (!$skin || !$skin->is_default) {
+            return response()->json(['success' => false, 'message' => 'Solo se pueden sincronizar temas por defecto']);
+        }
+
+        $overridePath = $skin->custom_filename
+            ? storage_path('app/public/skins/' . $skin->custom_filename)
+            : null;
+
+        // Forzar a todos los tenants a usar el archivo original
+        $clients = Client::with('hostname.website')->get();
+        foreach ($clients as $client) {
+            try {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($client->hostname->website);
+                DB::connection('tenant')->table('skins')
+                    ->where('name', $skin->name)
+                    ->update(['filename' => $skin->filename]);
+            } catch (\Exception $e) {
+                // Continuar con el siguiente tenant si hay error
+            }
+        }
+
+        // Eliminar archivo override si existe
+        if ($overridePath && file_exists($overridePath)) {
+            @unlink($overridePath);
+        }
+
+        $skin->update(['custom_filename' => null]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema "' . $skin->name . '" sincronizado al original en todos los tenants',
             'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
         ]);
     }

@@ -775,11 +775,10 @@ class ConfigurationController extends Controller
             $skin->name = $name['filename'];
             $skin->save();
 
-            $skins = Skin::all();
             return [
                 'success' => true,
-                'message' =>  'Archivo cargado exitosamente',
-                'skins' => $skins
+                'message' => 'Archivo cargado exitosamente',
+                'skins'   => Skin::all()->map(fn($s) => $s->getCollectionData()),
             ];
         }
         return [
@@ -790,25 +789,32 @@ class ConfigurationController extends Controller
 
     public function visualDeleteSkin(Request $request)
     {
-        $config = Configuration::first();
-        if($config->skin_id == $request->id) {
-            return [
-                'success' => false,
-                'message' => 'No se puede eliminar el Tema actual'
-            ];
+        $skin = Skin::find($request->id);
+
+        if (!$skin) {
+            return ['success' => false, 'message' => 'Tema no encontrado'];
         }
 
+        if ($skin->is_system) {
+            return ['success' => false, 'message' => 'No se pueden eliminar los temas del sistema'];
+        }
 
-        $skin = Skin::find($request->id);
+        try {
+            $config = Configuration::first();
+            if ($config && $config->skin_id == $request->id) {
+                return ['success' => false, 'message' => 'No se puede eliminar el tema actualmente en uso'];
+            }
+        } catch (\Exception $e) {
+            // Si falla la consulta de configuración, continuamos con el delete
+        }
+
         Storage::disk('public')->delete('skins'.DIRECTORY_SEPARATOR.$skin->filename);
         $skin->delete();
 
-        $skins = Skin::all();
-
         return [
             'success' => true,
-            'message' =>  'Tema eliminado correctamente',
-            'skins' => $skins
+            'message' => 'Tema eliminado correctamente',
+            'skins'   => Skin::all()->map(function($s) { return $s->getCollectionData(); }),
         ];
     }
 

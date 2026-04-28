@@ -27,7 +27,7 @@
           <div style="flex: 1;">
             <span style="font-size: 14px;" class="fw-medium">
               {{ skin.name }}
-              <small v-if="index < 2" class="text-muted ms-1">
+              <small v-if="skin.is_system" class="text-muted ms-1">
                 (Tema del sistema)
               </small>
             </span>
@@ -47,7 +47,7 @@
               Descargar
             </el-button>
             <el-button
-              v-if="index > 1"
+              v-if="!skin.is_system"
               size="mini"
               type="danger"
               plain
@@ -139,7 +139,7 @@ export default {
     },
     deleteSkin(index) {
       this.form.id = this.skins[index].id;
-      this.$http.post(`configurations/visual/delete_skin`, this.form)
+      this.$http.post(`/configurations/visual/delete_skin`, this.form)
         .then(response => {
           let data = response.data;
           if (data.success) {
@@ -156,7 +156,7 @@ export default {
           if (error.response && error.response.status === 422) {
             this.errors = error.response.data.errors;
           } else {
-            console.log(error);
+            this.$message.error('Error al eliminar el tema');
           }
         });
     },

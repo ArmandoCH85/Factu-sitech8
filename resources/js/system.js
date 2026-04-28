@@ -54,6 +54,7 @@ import InputService from '../../modules/ApiPeruDev/Resources/assets/js/component
 import SystemGuestRegisterDisabled from  './views/system/guest-register/disabled.vue'
 import SystemGuestRegister from './views/system/guest-register/register.vue'
 import XImportServiceGuest from './../../modules/ApiPeruDev/Resources/assets/js/components/InputServiceGuest.vue'
+import SystemConfigurationThemes from './views/system/configuration/themes.vue'
 
 
 locale.use(lang)
@@ -125,6 +126,8 @@ Vue.component('x-input-service-guest', XImportServiceGuest);
 Vue.component('system-checkout-culqi', CheckoutCulqi)
 Vue.component('system-checkout-izipay', CheckoutIzipay)
 Vue.component('checkout-admin', CheckoutAdmin)
+
+Vue.component('system-configuration-themes', SystemConfigurationThemes)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

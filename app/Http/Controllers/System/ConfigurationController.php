@@ -5,7 +5,9 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\System\Configuration;
+use App\Models\System\Skin as SystemSkin;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\System\Client;
 use Hyn\Tenancy\Environment;
 use Modules\Finance\Helpers\UploadFileHelper;
@@ -459,7 +461,7 @@ class ConfigurationController extends Controller
     public function cron(Request $request)
     {
         $record = Configuration::first();
-        $record->active_cron = $request->active_cron;  
+        $record->active_cron = $request->active_cron;
         $record->save();
 
         return [
@@ -467,5 +469,101 @@ class ConfigurationController extends Controller
             'message' => 'Configuración actualizada',
         ];
 
+    }
+
+    public function getSystemSkins()
+    {
+        $skins = SystemSkin::all()->map(fn($s) => $s->getCollectionData());
+
+        return response()->json([
+            'success' => true,
+            'skins'   => $skins,
+        ]);
+    }
+
+    public function uploadSystemSkin(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return response()->json(['success' => false, 'message' => __('app.actions.upload.error')]);
+        }
+
+        $file = $request->file('file');
+
+        if (Storage::disk('public')->exists('skins' . DIRECTORY_SEPARATOR . $file->getClientOriginalName())) {
+            return response()->json(['success' => false, 'message' => 'El archivo ya existe']);
+        }
+
+        if (strtolower($file->getClientOriginalExtension()) !== 'css') {
+            return response()->json(['success' => false, 'message' => 'Solo se permiten archivos .css']);
+        }
+
+        $filename = $file->getClientOriginalName();
+        $name     = pathinfo($filename, PATHINFO_FILENAME);
+
+        Storage::disk('public')->put('skins' . DIRECTORY_SEPARATOR . $filename, file_get_contents($file->getRealPath()));
+
+        $skin = SystemSkin::create(['name' => $name, 'filename' => $filename, 'is_default' => false]);
+
+        $clients = Client::with('hostname.website')->get();
+        foreach ($clients as $client) {
+            try {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($client->hostname->website);
+                $exists = DB::connection('tenant')->table('skins')->where('filename', $filename)->exists();
+                if (!$exists) {
+                    DB::connection('tenant')->table('skins')->insert([
+                        'name'      => $name,
+                        'filename'  => $filename,
+                        'status'    => 1,
+                        'is_system' => true,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // Continuar con el siguiente tenant si hay error
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema subido correctamente',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
+
+    public function deleteSystemSkin(Request $request)
+    {
+        $skin = SystemSkin::find($request->id);
+
+        if (!$skin) {
+            return response()->json(['success' => false, 'message' => 'Tema no encontrado']);
+        }
+
+        if ($skin->is_default) {
+            return response()->json(['success' => false, 'message' => 'No se pueden eliminar los temas por defecto']);
+        }
+
+        Storage::disk('public')->delete('skins' . DIRECTORY_SEPARATOR . $skin->filename);
+
+        $clients = Client::with('hostname.website')->get();
+        foreach ($clients as $client) {
+            try {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($client->hostname->website);
+                DB::connection('tenant')->table('skins')
+                    ->where('filename', $skin->filename)
+                    ->where('is_system', true)
+                    ->delete();
+            } catch (\Exception $e) {
+                // Continuar con el siguiente tenant si hay error
+            }
+        }
+
+        $skin->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema eliminado correctamente',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
     }
 }

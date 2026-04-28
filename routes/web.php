@@ -1031,6 +1031,11 @@ if ($hostname) {
             Route::post('configurations/visual-theme', 'System\ConfigurationController@storeVisualTheme');
             Route::get('configurations/visual-theme', 'System\ConfigurationController@getVisualTheme');
 
+            // System skins
+            Route::get('configurations/system-skins', 'System\ConfigurationController@getSystemSkins');
+            Route::post('configurations/system-skins/upload', 'System\ConfigurationController@uploadSystemSkin');
+            Route::post('configurations/system-skins/delete', 'System\ConfigurationController@deleteSystemSkin');
+
             Route::get('information', 'System\ConfigurationController@InfoIndex')->name('system.information');
             Route::get('status/history', 'System\StatusController@history')->name('system.status');
             Route::get('status/memory', 'System\StatusController@memory')->name('system.status.memory');

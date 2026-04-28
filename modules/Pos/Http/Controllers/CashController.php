@@ -771,7 +771,7 @@ class CashController extends Controller
                             ];
                     }
                 } else {
-                    // $temp = [];
+                    $temp = [];
                 }
             
                 /* dd((!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->payments->sum('payment')); */                

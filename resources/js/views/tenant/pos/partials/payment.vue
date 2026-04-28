@@ -1600,7 +1600,7 @@ export default {
 
             try {
                 // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
-                await this.printViaBackend(this.responseForm.links.print_ticket, this.configuration?.printer_name_documents);
+                await this.printDocument(this.responseForm.links.print_ticket, this.configuration?.printer_name_documents);
             } catch (e) {
                 console.error('payment autoPrint error', e);
             }
@@ -1642,7 +1642,7 @@ export default {
             const url = this.responseForm?.links?.print_ticket;
             if (url) {
                 // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
-                await this.printViaBackend(url, this.configuration?.printer_name_documents);
+                await this.printDocument(url, this.configuration?.printer_name_documents);
             } else {
                 console.warn('[BuhoPrinter] print_ticket URL no disponible.');
             }

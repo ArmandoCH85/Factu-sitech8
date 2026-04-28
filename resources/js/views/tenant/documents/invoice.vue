@@ -3545,7 +3545,7 @@ export default {
             if(this.isAutoPrint && this.printTicketUrl)
             {
                 // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
-                this.printViaBackend(this.printTicketUrl, this.configuration.printer_name_documents);
+                this.printDocument(this.printTicketUrl, this.configuration.printer_name_documents);
             }
 
         },

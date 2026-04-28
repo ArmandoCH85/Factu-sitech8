@@ -7166,7 +7166,7 @@ export default {
         },
         autoPrintDocument() {
             if (this.isAutoPrint && this.printTicketUrl) {
-                this.printViaBackend(this.printTicketUrl, this.configuration.printer_name_documents);
+                this.printDocument(this.printTicketUrl, this.configuration.printer_name_documents);
             }
         },
         async autoSendPdfMail() {

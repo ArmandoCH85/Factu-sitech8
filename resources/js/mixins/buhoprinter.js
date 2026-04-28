@@ -18,6 +18,10 @@ import {
     displayError,
 } from '../utils/buhoFunctions';
 
+// Cache módulo-nivel para print_destination. Se carga una vez por sesión de página.
+// null = no cargado aún | true = Centralizado (backend) | false = Directo (BuhoPrinter local)
+let _printDestinationCache = null;
+
 export const buhoprinter = {
     data() {
         return {
@@ -127,6 +131,55 @@ export const buhoprinter = {
          */
         getClientPublicIp() {
             return getClientPublicIp();
+        },
+
+        /**
+         * Imprime un documento PDF según el destino configurado en restaurant_configurations.
+         * - print_destination = false (Directo):   envía directo al agente BuhoPrinter local.
+         * - print_destination = true  (Centralizado): envía vía backend → Redis → BuhoPrinter.
+         *
+         * Reemplaza las llamadas directas a printViaBackend en los componentes.
+         *
+         * @param {string}      url         - URL completa del PDF
+         * @param {string|null} printerName - Nombre de la impresora destino (null = predeterminada)
+         */
+        async printDocument(url, printerName = null) {
+            const isCentralized = await this._resolvePrintDestination();
+
+            if (isCentralized) {
+                await this.printViaBackend(url, printerName);
+            } else {
+                // Modo directo: conectar al agente local si aún no está activo
+                if (!this.isBuhoActive) {
+                    await this.startConnectionBuho();
+                }
+                try {
+                    // Impresora: localStorage del equipo → parámetro → predeterminada del agente
+                    const localPrinter = localStorage.getItem('buho_direct_printer_name');
+                    const config = localPrinter
+                        ? { printer: localPrinter }
+                        : (printerName ? { printer: printerName } : this.getUpdatedConfig());
+                    await buhoFetchAndPrint(url, config);
+                    this.$notify({ title: '', message: 'Impresión en proceso...', type: 'success' });
+                } catch (err) {
+                    displayError(err);
+                }
+            }
+        },
+
+        /**
+         * Obtiene el valor de print_destination desde el backend (cacheado por sesión).
+         * @returns {Promise<boolean>}
+         */
+        async _resolvePrintDestination() {
+            if (_printDestinationCache !== null) return _printDestinationCache;
+            try {
+                const { data } = await this.$http.get('/restaurant/printers/config');
+                _printDestinationCache = data.data?.print_destination ?? false;
+            } catch {
+                _printDestinationCache = false;
+            }
+            return _printDestinationCache;
         },
 
         /**

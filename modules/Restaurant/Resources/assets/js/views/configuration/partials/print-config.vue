@@ -12,9 +12,9 @@
       </div>
     </div>
 
-    <div class="row align-items-end mb-4" v-loading="loading">
+    <div class="row mb-4" v-loading="loading">
       <!-- Switch de activación -->
-      <div class="col-md-6">
+      <div class="col-md-3">
         <label class="control-label d-block">Activar impresión con BuhoPrinter</label>
         <el-switch
           v-model="form.printer_enabled"
@@ -25,7 +25,7 @@
       </div>
 
       <!-- Switch de impresión local -->
-      <div class="col-md-6" v-if="form.printer_enabled">
+      <div class="col-md-3" v-if="form.printer_enabled">
         <label class="control-label d-block">
           Impresión local
           <el-tooltip
@@ -41,6 +41,62 @@
           inactive-text="Inactivo">
         </el-switch>
       </div>
+
+      <!-- Switch de dirección -->
+      <div class="col-md-3" v-if="form.printer_enabled">
+        <label class="control-label d-block">
+          Destino de impresión
+          <el-tooltip
+            content="Directo: El sistema enviará las órdenes de impresión directamente a BuhoPrinter, debe estar instalado en el dispositivo actual. Centralizado: Las órdenes de impresión se enviarán a través del api, lo que permite imprimir desde cualquier dispositivo, solo un equipo con BuhoPrinter instalado se encargará de recibir y procesar las órdenes."
+            effect="dark"
+            placement="top">
+            <i class="fa fa-info-circle text-muted ml-1"></i>
+          </el-tooltip>
+        </label>
+        <el-switch
+          v-model="form.print_destination"
+          active-text="Centralizado"
+          inactive-text="Directo"
+          @change="onTogglePrintDestination">
+        </el-switch>
+      </div>
+
+      <!-- Selector de impresora para modo Directo -->
+      <template  v-if="form.printer_enabled">
+        <div class="col-md-3" v-if="!form.print_destination">
+          <label class="control-label d-block">
+            Impresora para impresión directa
+            <el-tooltip
+              content="Cada equipo puede elegir su propia impresora. La selección se guarda localmente en este navegador."
+              effect="dark"
+              placement="top">
+              <i class="fa fa-info-circle text-muted ml-1"></i>
+            </el-tooltip>
+          </label>
+          <template v-if="printers.length > 0">
+            <el-select
+              v-model="directPrinterName"
+              placeholder="Seleccione una impresora"
+              @change="saveDirectPrinter"
+              class="w-100">
+              <el-option
+                v-for="p in printers"
+                :key="p.name"
+                :value="p.name"
+                :label="p.name">
+                <span>{{ p.name }}</span>
+              </el-option>
+            </el-select>
+            <small class="text-muted d-block mt-1">
+              Guardada en este equipo/navegador.
+            </small>
+          </template>
+          <div v-else class="alert alert-warning mt-1 mb-0 py-2">
+            <i class="fa fa-exclamation-triangle mr-1"></i>
+            No hay impresoras sincronizadas. Usa <b>"Verificar y actualizar"</b> para detectarlas.
+          </div>
+        </div>
+      </template>
     </div>
 
     <!-- Indicador de estado (solo informativo) -->
@@ -150,8 +206,10 @@ export default {
         printer_status:          null,
         printer_public_ip:       null,
         print_local_enabled:     false,
+        print_destination:       false,
       },
       printers: [],
+      directPrinterName: null,
       liveStatus: null,
       checking: false,
       saving: false,
@@ -191,13 +249,22 @@ export default {
           this.form.printer_status      = d.printer_status
           this.form.printer_public_ip   = d.printer_public_ip
           this.form.print_local_enabled = d.print_local_enabled
+          this.form.print_destination   = d.print_destination
           this.printers                 = d.printers || []
+          this.initDirectPrinter()
         }
       } catch (error) {
         console.error('Error al cargar config de impresión:', error)
       } finally {
         this.loading = false
       }
+    },
+
+    async onTogglePrintDestination() {
+      if (!this.form.print_destination) {
+        this.initDirectPrinter()
+      }
+      await this.saveConfig(false)
     },
 
     async onTogglePrinterEnabled(value) {
@@ -250,6 +317,7 @@ export default {
 
         if (syncRes.data.success) {
           this.printers = syncRes.data.printers
+          this.initDirectPrinter()
           if (!silent) {
             this.$message.success('BuhoPrinter conectado. Impresoras actualizadas.')
           }
@@ -277,6 +345,7 @@ export default {
         const res = await this.$http.post(`/${this.resource}/printers/config`, {
           printer_enabled:     this.form.printer_enabled,
           print_local_enabled: this.form.print_local_enabled,
+          print_destination:   this.form.print_destination,
         })
 
         if (res.data.success && showMessage) {
@@ -287,6 +356,33 @@ export default {
         console.error(error)
       } finally {
         this.saving = false
+      }
+    },
+
+    /**
+     * Inicializa la impresora para modo Directo.
+     * Prioridad: localStorage → impresora predeterminada → primera de la lista.
+     */
+    initDirectPrinter() {
+      const LS_KEY = 'buho_direct_printer_name'
+      const saved = localStorage.getItem(LS_KEY)
+
+      if (saved && this.printers.find(p => p.name === saved)) {
+        this.directPrinterName = saved
+        return
+      }
+
+      const defaultPrinter = this.printers.find(p => p.is_default)
+      this.directPrinterName = defaultPrinter?.name || this.printers[0]?.name || null
+
+      if (this.directPrinterName) {
+        localStorage.setItem(LS_KEY, this.directPrinterName)
+      }
+    },
+
+    saveDirectPrinter() {
+      if (this.directPrinterName) {
+        localStorage.setItem('buho_direct_printer_name', this.directPrinterName)
       }
     },
   }

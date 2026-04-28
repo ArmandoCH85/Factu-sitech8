@@ -43,6 +43,7 @@ class PrinterController extends Controller
                 'printer_name_documents'  => $config->printer_name_documents ?? null,
                 'printer_name_precuenta'  => $config->printer_name_precuenta ?? null,
                 'printer_per_area_enabled' => (bool) ($config->printer_per_area_enabled ?? false),
+                'print_destination'        => (bool) ($config->print_destination ?? false),
                 'printers'                 => $printers,
             ],
         ]);
@@ -61,6 +62,7 @@ class PrinterController extends Controller
             'printer_name_documents'  => 'nullable|string|max:255',
             'printer_name_precuenta'  => 'nullable|string|max:255',
             'printer_per_area_enabled' => 'nullable|boolean',
+            'print_destination'        => 'nullable|boolean',
         ]);
 
         $config = RestaurantConfiguration::firstOrNew([]);

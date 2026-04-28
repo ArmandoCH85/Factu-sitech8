@@ -44,12 +44,14 @@ class RestaurantConfiguration extends ModelTenant
         'printer_name_documents',
         'printer_name_precuenta',
         'printer_per_area_enabled',
+        'print_destination',
     ];
 
     protected $casts = [
         'print_local_enabled'      => 'boolean',
         'printer_enabled'          => 'boolean',
         'printer_per_area_enabled' => 'boolean',
+        'print_destination'        => 'boolean',
     ];
 
     public $timestamps = false;

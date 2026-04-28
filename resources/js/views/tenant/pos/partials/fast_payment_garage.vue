@@ -1338,7 +1338,7 @@ export default {
             const url = this.printTicketUrl;
             if (url) {
                 // Centraliza la impresión vía backend → Redis → BuhoPrinter agent
-                await this.printViaBackend(url, this.configuration?.printer_name_documents);
+                await this.printDocument(url, this.configuration?.printer_name_documents);
             } else {
                 console.warn('[BuhoPrinter] print_ticket URL no disponible.');
             }

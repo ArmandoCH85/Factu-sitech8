@@ -13,6 +13,8 @@ if ($current_hostname) {
                 Route::post('records', 'CustomFieldController@records');
                 Route::get('sale-notes', 'CustomFieldController@saleNotes');
                 Route::get('documents', 'CustomFieldController@documents');
+                Route::get('dispatches', 'CustomFieldController@dispatches');
+                Route::get('order-notes', 'CustomFieldController@orderNotes');
                 Route::get('record/{id}', 'CustomFieldController@record');
                 Route::post('store', 'CustomFieldController@store');
                 Route::delete('destroy/{id}', 'CustomFieldController@destroy');

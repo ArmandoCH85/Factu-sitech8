@@ -444,6 +444,7 @@ if ($hostname) {
                 Route::get('/columns', 'Tenant\DispatchController@columns');
                 Route::get('/records', 'Tenant\DispatchController@records');
                 Route::get('/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
+                Route::post('/custom-fields/update', 'Tenant\DispatchController@updateCustomFields');
                 Route::post('/tables', 'Tenant\DispatchController@tables');
                 Route::post('', 'Tenant\DispatchController@store');
                 Route::get('/record/{id}', 'Tenant\DispatchController@record');

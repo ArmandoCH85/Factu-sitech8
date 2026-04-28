@@ -119,6 +119,23 @@ class DispatchController extends Controller
         return $query->latest();
     }
 
+    public function updateCustomFields(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'custom_fields_data' => 'nullable|array'
+        ]);
+
+        $dispatch = Dispatch::findOrFail($request->input('id'));
+        $dispatch->custom_fields_data = $request->input('custom_fields_data', []);
+        $dispatch->save();
+
+        return [
+            'success' => true,
+            'data' => $dispatch->custom_fields_data
+        ];
+    }
+
     public function data_table()
     {
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function ($row) {

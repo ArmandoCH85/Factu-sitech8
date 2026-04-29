@@ -261,7 +261,7 @@ class CashController extends Controller
             }
             else if($cash_document->document){
 
-                $note = $cash_document->getNotes();
+                $note = $cash_document->document->getNotes();
 
                 if (is_null($note) || count($note) === 0) {
                     if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){

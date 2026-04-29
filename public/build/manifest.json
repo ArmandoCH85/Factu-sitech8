@@ -9,11 +9,11 @@
     ],
     "file": "assets/_plugin-vue2_normalizer-fcd81e8a.js"
   },
-  "_claim_form-bae5a303.js": {
+  "_claim_form-f1cc00aa.js": {
     "css": [
-      "assets/claim_form-752a1451.css"
+      "assets/claim_form-b455b368.css"
     ],
-    "file": "assets/claim_form-bae5a303.js",
+    "file": "assets/claim_form-f1cc00aa.js",
     "imports": [
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ]
@@ -22,24 +22,24 @@
     "file": "assets/_plugin-vue2_normalizer-ceb821ee.css",
     "src": "_plugin-vue2_normalizer.css"
   },
-  "_vue-clipboard-781a51de.js": {
+  "_vue-clipboard-b3cb3f23.js": {
     "css": [
-      "assets/vue-clipboard-aa33dfa0.css"
+      "assets/vue-clipboard-c450855e.css"
     ],
-    "file": "assets/vue-clipboard-781a51de.js",
+    "file": "assets/vue-clipboard-b3cb3f23.js",
     "imports": [
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ]
   },
   "claim_form.css": {
-    "file": "assets/claim_form-752a1451.css",
+    "file": "assets/claim_form-b455b368.css",
     "src": "claim_form.css"
   },
   "modules/ClaimsBook/Resources/assets/js/app.js": {
-    "file": "assets/app-faebb4ab.js",
+    "file": "assets/app-2587bcdd.js",
     "imports": [
       "__plugin-vue2_normalizer-fcd81e8a.js",
-      "_claim_form-bae5a303.js"
+      "_claim_form-f1cc00aa.js"
     ],
     "isEntry": true,
     "src": "modules/ClaimsBook/Resources/assets/js/app.js"
@@ -58,40 +58,40 @@
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
   "resources/js/app.css": {
-    "file": "assets/app-1c4d2d0d.css",
+    "file": "assets/app-e7df1c03.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-1c4d2d0d.css"
+      "assets/app-e7df1c03.css"
     ],
-    "file": "assets/app-cb956ec4.js",
+    "file": "assets/app-4b3bc9f9.js",
     "imports": [
-      "_vue-clipboard-781a51de.js",
+      "_vue-clipboard-b3cb3f23.js",
       "__plugin-vue2_normalizer-fcd81e8a.js",
-      "_claim_form-bae5a303.js"
+      "_claim_form-f1cc00aa.js"
     ],
     "isEntry": true,
     "src": "resources/js/app.js"
   },
   "resources/js/system.css": {
-    "file": "assets/system-73380f20.css",
+    "file": "assets/system-03bfc63b.css",
     "src": "resources/js/system.css"
   },
   "resources/js/system.js": {
     "css": [
-      "assets/system-73380f20.css"
+      "assets/system-03bfc63b.css"
     ],
-    "file": "assets/system-b956efbe.js",
+    "file": "assets/system-6cb1c6b4.js",
     "imports": [
-      "_vue-clipboard-781a51de.js",
+      "_vue-clipboard-b3cb3f23.js",
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ],
     "isEntry": true,
     "src": "resources/js/system.js"
   },
   "vue-clipboard.css": {
-    "file": "assets/vue-clipboard-aa33dfa0.css",
+    "file": "assets/vue-clipboard-c450855e.css",
     "src": "vue-clipboard.css"
   }
 }

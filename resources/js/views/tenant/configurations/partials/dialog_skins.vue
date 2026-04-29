@@ -41,7 +41,7 @@
               size="mini"
               type="primary"
               plain
-              @click="() => { window.open('/storage/skins/' + skin.filename, '_blank') }"
+              @click="downloadSkin(skin)"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
               Descargar
@@ -127,6 +127,12 @@ export default {
         this.fileList = [];
         this.$message.error(response.message);
       }
+    },
+    downloadSkin(skin) {
+      const a = document.createElement('a');
+      a.href = '/storage/skins/' + skin.filename;
+      a.download = skin.filename;
+      a.click();
     },
     confirmDelete(index) {
       this.$confirm('¿Estás seguro de eliminar este tema?', 'Confirmar', {

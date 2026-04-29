@@ -1301,6 +1301,10 @@ div.sub-title.text-muted{
 .crossed-out {
     text-decoration: line-through !important;
 }
+/* .table-background,
+.table-background td{
+    background-color: color-mix(in srgb, var(--primary-color) 8%, #ffffff00) !important;
+} */
 @media only screen and (min-width: 768px) {
     html.sidebar-left-big-icons .sidebar-left {
         width: 215px;

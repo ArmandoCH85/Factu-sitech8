@@ -18,148 +18,116 @@
         </div>
 
         <div v-else>
-            <div
-                v-for="skin in skins"
-                :key="skin.id"
-                class="d-flex align-items-center justify-content-between p-2 mb-2 template-skin-item">
-                <div class="skin-info me-2">
-                    <span style="font-size: 14px;" class="fw-medium">
-                        {{ skin.name }}
-                        <small v-if="skin.is_default" class="text-muted ms-1">(Tema del sistema)</small>
-                    </span>
-                    <div style="font-size: 12px;" class="mt-1">
-                        <div v-if="skin.is_replaced" class="d-flex align-items-center gap-1">
-                            <div class="d-flex align-items-center">
-                                <i class="el-icon-document me-2"></i>
-                                <span class="crossed-out">{{ skin.filename }}</span>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-1" style="color:#e6a23c;margin-top:-2px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0"/><path d="M15 16l4 -4"/><path d="M15 8l4 4"/></svg>
-                                <span class="fw-medium text-warning">{{ skin.active_filename }}</span>
-                            </div>   
-                        </div> 
-                        <div v-else class="d-flex align-items-center">
-                            <i class="el-icon-document me-2"></i>
-                            <span>{{ skin.filename }}</span>
-                        </div>                                               
-                    </div>
-                </div>
+            <div class="border rounded table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr class="border-bottom">
+                            <th class="text-muted fw-normal ps-3 py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;">Tema</th>
+                            <th class="text-muted fw-normal py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; width: 140px;">Estado</th>
+                            <th class="text-muted fw-normal text-end pe-3 py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="skin in skins" :key="skin.id"
+                            :class="(skin.is_forced || skin.is_tenant_default) ? 'table-background' : ''">
+                            <td class="align-middle ps-3 py-2">
+                                <div class="d-flex align-items-center gap-1 flex-wrap">
+                                    <span class="fw-bold" style="font-size: 13px;">{{ skin.name }}</span>
+                                    <small class="text-muted" style="font-size: 11px;">{{ skin.is_default ? 'sistema' : 'personalizado' }}</small>
+                                    <el-tag v-if="skin.is_replaced" size="mini" type="warning">reemplazado</el-tag>
+                                </div>
+                                <div class="mt-1 text-muted d-flex align-items-center gap-1" style="font-size: 11px;">
+                                    <i class="el-icon-document"></i>
+                                    <template v-if="skin.is_replaced">
+                                        <span style="text-decoration: line-through;">{{ skin.filename }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#e6a23c"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0"/><path d="M15 16l4 -4"/><path d="M15 8l4 4"/></svg>
+                                        <span class="fw-medium text-warning">{{ skin.active_filename }}</span>
+                                    </template>
+                                    <template v-else>
+                                        <span>{{ skin.filename }}</span>
+                                    </template>
+                                </div>
+                            </td>
+                            <td class="align-middle py-2">
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <el-tag v-if="skin.is_forced" size="mini" type="warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
+                                        Forzado
+                                    </el-tag>
+                                    <el-tag v-if="skin.is_tenant_default" size="mini" type="warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z"/></svg>
+                                        Default
+                                    </el-tag>
+                                </div>
+                            </td>
+                            <td class="align-middle py-2 pe-3">
+                                <div class="d-flex justify-content-end">
+                                    <el-tooltip :content="skin.is_forced ? 'Forzar de nuevo' : 'Forzar'" placement="top">
+                                        <el-button size="mini" plain :loading="loading_force" @click="confirmForceSkin(skin)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bolt"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" /></svg>
+                                        </el-button>
+                                    </el-tooltip>
+                                    <el-tooltip content="Hacer default" placement="top">
+                                        <el-button size="mini" plain :disabled="skin.is_tenant_default" :loading="loading_set_default" @click="confirmSetDefault(skin)">
+                                            <svg v-if="skin.is_tenant_default" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star text-success"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
 
-                <div class="d-flex skin-actions">
-                    <el-button
-                        size="mini"
-                        type="primary"
-                        plain
-                        @click="() => { window.open('/storage/skins/' + skin.filename, '_blank') }">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                        Descargar
-                    </el-button>
-                    <el-button
-                        v-if="skin.is_default"
-                        size="mini"
-                        type="warning"
-                        plain
-                        @click.prevent="openReplaceDialog(skin)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 9l5 -5l5 5"/><path d="M12 4l0 12"/></svg>
-                        Reemplazar
-                    </el-button>
-                    <el-button
-                        v-if="skin.is_replaced"
-                        size="mini"
-                        type="info"
-                        plain
-                        :loading="loading_revert"
-                        @click.prevent="confirmRevert(skin)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
-                        Restaurar
-                    </el-button>
-                    <!-- <el-tooltip v-if="skin.is_default && !skin.is_replaced" content="Fuerza a todos los tenants a usar el archivo original (útil si el tema quedó en estado inconsistente)" placement="top">
-                        <el-button
-                            size="mini"
-                            type="danger"
-                            plain
-                            :loading="loading_sync === skin.id"
-                            @click.prevent="confirmSync(skin)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>
-                            Reparar
-                        </el-button>
-                    </el-tooltip> -->
-                    <el-button
-                        v-if="!skin.is_default"
-                        size="mini"
-                        type="danger"
-                        plain
-                        :loading="loading_delete"
-                        @click.prevent="confirmDelete(skin)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                        Eliminar
-                    </el-button>
-                </div>
-            </div>
-        </div>
-
-        <el-divider>Tema por defecto para nuevos tenants</el-divider>
-
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <div style="font-size: 13px;" class="text-muted me-2">
-                Skin que se asignará al crear una nueva empresa:
-            </div>
-            <el-select
-                v-model="selectedTenantDefaultId"
-                size="small"
-                placeholder="Seleccionar tema"
-                style="width: 180px;">
-                <el-option
-                    v-for="skin in skins"
-                    :key="skin.id"
-                    :label="skin.name"
-                    :value="skin.id">
-                </el-option>
-            </el-select>
-            <el-button
-                size="small"
-                type="primary"
-                :loading="loading_set_default"
-                :disabled="selectedTenantDefaultId === currentTenantDefaultId"
-                @click="saveTenantDefault">
-                Guardar
-            </el-button>
-        </div>
-
-        <el-divider>Forzar tema a todas las empresas</el-divider>
-
-        <div>
-            <p style="font-size: 12px;" class="mb-3 text-muted">
-                <i class="el-icon-warning-outline"></i>
-                Selecciona un tema y presiona <strong>Forzar</strong> para que todas las empresas existentes cambien inmediatamente a ese tema.
-                <span v-if="currentForcedSkin" class="ms-1">
-                    Tema actualmente forzado: <strong>{{ currentForcedSkin.name }}</strong>.
-                </span>
-            </p>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <el-select
-                    v-model="selectedForceId"
-                    size="small"
-                    placeholder="Seleccionar tema"
-                    style="width: 180px;">
-                    <el-option
-                        v-for="skin in skins"
-                        :key="skin.id"
-                        :label="skin.name"
-                        :value="skin.id">
-                        <span>{{ skin.name }}</span>
-                        <el-tag v-if="skin.is_forced" size="mini" type="warning" class="ms-1">Forzado</el-tag>
-                    </el-option>
-                </el-select>
-                <el-button
-                    size="small"
-                    type="danger"
-                    :loading="loading_force"
-                    :disabled="!selectedForceId"
-                    @click="confirmForce">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-2px;margin-right:3px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
+                                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-star"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245" /></svg>
+                                        </el-button>
+                                    </el-tooltip>
+                                    <el-tooltip content="Descargar" placement="top">
+                                        <el-button size="mini" plain @click="downloadSkin(skin)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
+                                        </el-button>
+                                    </el-tooltip>
+                                    <el-tooltip v-if="skin.is_default" content="Reemplazar" placement="top">
+                                        <el-button size="mini" plain @click.prevent="openReplaceDialog(skin)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-upload"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>
+                                        </el-button>
+                                    </el-tooltip>
+                                    <el-tooltip v-if="skin.is_replaced" content="Restaurar original" placement="top">
+                                        <el-button size="mini" plain :loading="loading_revert" @click.prevent="confirmRevert(skin)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back-up"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>
+                                        </el-button>
+                                    </el-tooltip>
+                                    <el-tooltip v-if="!skin.is_default" content="Eliminar" placement="top">
+                                        <el-button size="mini" plain type="danger" :loading="loading_delete" @click.prevent="confirmDelete(skin)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash text-danger"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                        </el-button>
+                                    </el-tooltip>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>            
+            <div class="bg-light px-3 py-2 text-muted d-flex flex-wrap gap-3 mt-2 rounded">
+                <span class="d-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
                     Forzar
-                </el-button>
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z"/></svg>
+                    Hacer default
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4l0 12"/></svg>
+                    Descargar
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 9l5 -5l5 5"/><path d="M12 4l0 12"/></svg>
+                    Reemplazar 
+                    <small style="opacity:.7">(solo sistema)</small>
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
+                    Restaurar 
+                    <small style="opacity:.7">(si fue reemplazado)</small>
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
+                    Eliminar 
+                    <small style="opacity:.7">(solo personalizados)</small>
+                </span>
             </div>
         </div>
 
@@ -252,7 +220,7 @@
             <span slot="footer">
                 <el-button @click="onReplaceDialogClose">Cancelar</el-button>
                 <el-button
-                    type="warning"
+                    type="primary"
                     :loading="loading_replace"
                     :disabled="!pendingReplaceFile"
                     @click="confirmReplace">
@@ -285,16 +253,8 @@ export default {
             showReplaceDialog: false,
             replacingSkin: null,
             pendingReplaceFile: null,
-            selectedTenantDefaultId: null,
-            currentTenantDefaultId: null,
-            selectedForceId: null,
             loading_force: false,
         };
-    },
-    computed: {
-        currentForcedSkin() {
-            return this.skins.find(s => s.is_forced) || null;
-        },
     },
     created() {
         this.loadSkins();
@@ -303,50 +263,52 @@ export default {
         loadSkins(skins = null) {
             if (skins) {
                 this.skins = skins;
-                this.syncTenantDefault();
                 return;
             }
             this.$http.get('configurations/system-skins').then(response => {
                 if (response.data.success) {
                     this.skins = response.data.skins;
-                    this.syncTenantDefault();
                 }
-            });
-        },
-        syncTenantDefault() {
-            const def = this.skins.find(s => s.is_tenant_default);
-            if (def) {
-                this.currentTenantDefaultId = def.id;
-                this.selectedTenantDefaultId = def.id;
-            }
-        },
-        saveTenantDefault() {
-            this.loading_set_default = true;
-            this.$http.post('configurations/system-skins/set-tenant-default', { skin_id: this.selectedTenantDefaultId }).then(response => {
-                this.loading_set_default = false;
-                if (response.data.success) {
-                    this.$message.success(response.data.message);
-                    this.skins = response.data.skins;
-                    this.syncTenantDefault();
-                } else {
-                    this.$message.error(response.data.message);
-                }
-            }).catch(() => {
-                this.loading_set_default = false;
-                this.$message.error('Error al actualizar el tema por defecto');
             });
         },
 
-        confirmForce() {
-            const skin = this.skins.find(s => s.id === this.selectedForceId);
-            if (!skin) return;
+        downloadSkin(skin) {
+            const a = document.createElement('a');
+            a.href = '/storage/skins/' + skin.filename;
+            a.download = skin.filename;
+            a.click();
+        },
+
+        confirmSetDefault(skin) {
+            this.$confirm(
+                `¿Establecer "${skin.name}" como tema por defecto para nuevas empresas?`,
+                'Hacer default',
+                { confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar', type: 'info' }
+            ).then(() => {
+                this.loading_set_default = true;
+                this.$http.post('configurations/system-skins/set-tenant-default', { skin_id: skin.id }).then(response => {
+                    this.loading_set_default = false;
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.skins = response.data.skins;
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(() => {
+                    this.loading_set_default = false;
+                    this.$message.error('Error al actualizar el tema por defecto');
+                });
+            }).catch(() => {});
+        },
+
+        confirmForceSkin(skin) {
             this.$confirm(
                 `¿Forzar el tema "${skin.name}" en todas las empresas existentes? El tema activo de cada empresa se cambiará automáticamente.`,
                 'Forzar tema',
                 { confirmButtonText: 'Forzar', cancelButtonText: 'Cancelar', type: 'warning' }
             ).then(() => {
                 this.loading_force = true;
-                this.$http.post('configurations/system-skins/force', { skin_id: this.selectedForceId }).then(response => {
+                this.$http.post('configurations/system-skins/force', { skin_id: skin.id }).then(response => {
                     this.loading_force = false;
                     if (response.data.success) {
                         this.$message.success(response.data.message);

@@ -284,7 +284,6 @@
             }
         },
         async created() {
-            await this.initForm();
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.payment_method_types = response.data.payment_method_types;
@@ -295,12 +294,16 @@
             await this.events();
 
         },
-        methods: {
-            watch: {
-                records(val) {
-                    console.log('RECORDS CAMBIÓ:', val)
+        watch: 
+        {
+            showDialog(val) {
+                if (val) {
+                    this.initForm()
+                    this.getData()
                 }
-            },
+            }
+        },
+        methods: {
             events(){
                 this.$eventHub.$on('reloadDataPayments', ()=>{
                     this.getData()

@@ -388,6 +388,9 @@ class CashController extends Controller
             $documentField => $document->id,
         ]) : null;
         
+        // NOTA: Se esta colocando dentro de los eventos de los modelos para poder registrarlo en caja
+        // Gracias al updateOrCreate la información que primero se creo dentro de evento del modelo, no duplicara la información sino solo
+        // lo actualiza
         $cashDocument = $cash->cash_documents()->updateOrCreate([
             'document_id' => $request->document_id,
             'sale_note_id' => $request->sale_note_id,

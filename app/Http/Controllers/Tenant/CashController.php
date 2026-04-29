@@ -383,7 +383,9 @@ class CashController extends Controller
         $document = $documentModel::findOrFail((int) $request->$documentField);
 
         $isCredit = $document->$paymentConditionField === $creditCondition;
-        $cashDocumentCredit = $isCredit ? CashDocumentCredit::create([
+        // Evitar duplicicdad si ya existe
+
+        $cashDocumentCredit = $isCredit ? CashDocumentCredit::updateOrCreate([
             'cash_id' => $cash->id,
             $documentField => $document->id,
         ]) : null;
@@ -398,7 +400,7 @@ class CashController extends Controller
         ]);
         
         $document->payments->each(function($payment) use($cash,$isDocument,$cashDocument){
-            CashDocumentPayment::create([
+            CashDocumentPayment::updateOrCreate([
                 'cash_id' => $cash->id,
                 $isDocument ? 'document_payment_id' : 'sale_note_payment_id' => $payment->id,
                 'cash_document_id' => optional($cashDocument)->id,

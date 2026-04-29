@@ -115,7 +115,7 @@
             $document = $documentModel::findOrFail((int) $id);
 
             $isCredit = $document->$paymentConditionField === $creditCondition;
-            $cashDocumentCredit = $isCredit ? CashDocumentCredit::create([
+            $cashDocumentCredit = $isCredit ? CashDocumentCredit::updateOrCreate([
                 'cash_id' => $cash->id,
                 $documentField => $document->id,
             ]) : null;
@@ -126,7 +126,7 @@
 
             
             $document->payments->each(function($payment) use($cash,$isDocument,$cashDocument){
-                CashDocumentPayment::create([
+                CashDocumentPayment::updateOrCreate([
                     'cash_id' => $cash->id,
                     $isDocument ? 'document_payment_id' : 'sale_note_payment_id' => $payment->id,
                     'cash_document_id' => optional($cashDocument)->id,

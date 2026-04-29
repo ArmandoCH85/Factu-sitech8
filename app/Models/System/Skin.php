@@ -16,17 +16,19 @@ class Skin extends Model
         'filename',
         'custom_filename',
         'is_default',
+        'is_tenant_default',
     ];
 
     public function getCollectionData()
     {
         return [
-            'id'              => $this->id,
-            'name'            => $this->name,
-            'filename'        => $this->filename,
-            'active_filename' => $this->custom_filename ?? $this->filename,
-            'is_default'      => (bool) $this->is_default,
-            'is_replaced'     => !is_null($this->custom_filename),
+            'id'                => $this->id,
+            'name'              => $this->name,
+            'filename'          => $this->filename,
+            'active_filename'   => $this->custom_filename ?? $this->filename,
+            'is_default'        => (bool) $this->is_default,
+            'is_replaced'       => !is_null($this->custom_filename),
+            'is_tenant_default' => (bool) $this->is_tenant_default,
         ];
     }
 }

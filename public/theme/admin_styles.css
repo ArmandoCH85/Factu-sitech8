@@ -1295,6 +1295,9 @@ div.sub-title.text-muted{
     flex-wrap: wrap;
     gap: 5px;
 }
+.template-skin-item .skin-info {
+    max-width: calc(100% - 160px);
+}
 .crossed-out {
     text-decoration: line-through !important;
 }

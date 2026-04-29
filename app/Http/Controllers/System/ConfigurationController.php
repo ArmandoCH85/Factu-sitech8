@@ -733,4 +733,22 @@ class ConfigurationController extends Controller
             'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
         ]);
     }
+
+    public function setTenantDefaultSkin(Request $request)
+    {
+        $skin = SystemSkin::find($request->skin_id);
+
+        if (!$skin) {
+            return response()->json(['success' => false, 'message' => 'Tema no encontrado']);
+        }
+
+        SystemSkin::query()->update(['is_tenant_default' => false]);
+        $skin->update(['is_tenant_default' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema por defecto actualizado a "' . $skin->name . '"',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
 }

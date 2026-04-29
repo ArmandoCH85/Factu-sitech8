@@ -98,6 +98,34 @@
             </div>
         </div>
 
+        <el-divider>Tema por defecto para nuevos tenants</el-divider>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div style="font-size: 13px;" class="text-muted me-2">
+                Skin que se asignará al crear una nueva empresa:
+            </div>
+            <el-select
+                v-model="selectedTenantDefaultId"
+                size="small"
+                placeholder="Seleccionar tema"
+                style="width: 180px;">
+                <el-option
+                    v-for="skin in skins"
+                    :key="skin.id"
+                    :label="skin.name"
+                    :value="skin.id">
+                </el-option>
+            </el-select>
+            <el-button
+                size="small"
+                type="primary"
+                :loading="loading_set_default"
+                :disabled="selectedTenantDefaultId === currentTenantDefaultId"
+                @click="saveTenantDefault">
+                Guardar
+            </el-button>
+        </div>
+
         <el-divider>Subir nuevo tema</el-divider>
 
         <div>
@@ -210,6 +238,7 @@ export default {
             loading_replace: false,
             loading_revert: false,
             loading_sync: null,
+            loading_set_default: false,
             headers: headers_token,
             pendingFile: null,
             showRenameDialog: false,
@@ -219,17 +248,48 @@ export default {
             showReplaceDialog: false,
             replacingSkin: null,
             pendingReplaceFile: null,
+            selectedTenantDefaultId: null,
+            currentTenantDefaultId: null,
         };
     },
     created() {
         this.loadSkins();
     },
     methods: {
-        loadSkins() {
+        loadSkins(skins = null) {
+            if (skins) {
+                this.skins = skins;
+                this.syncTenantDefault();
+                return;
+            }
             this.$http.get('configurations/system-skins').then(response => {
                 if (response.data.success) {
                     this.skins = response.data.skins;
+                    this.syncTenantDefault();
                 }
+            });
+        },
+        syncTenantDefault() {
+            const def = this.skins.find(s => s.is_tenant_default);
+            if (def) {
+                this.currentTenantDefaultId = def.id;
+                this.selectedTenantDefaultId = def.id;
+            }
+        },
+        saveTenantDefault() {
+            this.loading_set_default = true;
+            this.$http.post('configurations/system-skins/set-tenant-default', { skin_id: this.selectedTenantDefaultId }).then(response => {
+                this.loading_set_default = false;
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.skins = response.data.skins;
+                    this.syncTenantDefault();
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(() => {
+                this.loading_set_default = false;
+                this.$message.error('Error al actualizar el tema por defecto');
             });
         },
 

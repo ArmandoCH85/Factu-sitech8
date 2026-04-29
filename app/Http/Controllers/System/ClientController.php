@@ -11,6 +11,7 @@
     use App\Models\System\Configuration;
     use App\Models\System\Module;
     use App\Models\System\Plan;
+    use App\Models\System\Skin as SystemSkin;
     use Carbon\Carbon;
     use Exception;
     use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
@@ -766,6 +767,43 @@ use App\Models\System\User as SystemUser;
             // Definir variable para registro de invitado
             $from_guest_register = $request->input('from_guest_register', false);
 
+            \Log::info('Sembrando temas del sistema en el nuevo tenant...');
+            $customSystemSkins = SystemSkin::where('is_default', false)->get();
+            foreach ($customSystemSkins as $customSkin) {
+                if (!DB::connection('tenant')->table('skins')->where('filename', $customSkin->filename)->exists()) {
+                    DB::connection('tenant')->table('skins')->insert([
+                        'name'      => $customSkin->name,
+                        'filename'  => $customSkin->filename,
+                        'status'    => 1,
+                        'is_system' => true,
+                    ]);
+                }
+            }
+
+            $replacedDefaultSkins = SystemSkin::where('is_default', true)->whereNotNull('custom_filename')->get();
+            foreach ($replacedDefaultSkins as $replacedSkin) {
+                DB::connection('tenant')->table('skins')
+                    ->where('filename', $replacedSkin->filename)
+                    ->where('is_system', true)
+                    ->update(['filename' => $replacedSkin->custom_filename]);
+            }
+
+            $tenantDefaultSkin = SystemSkin::where('is_tenant_default', true)->first();
+            $tenantSkinId = 3;
+            if ($tenantDefaultSkin) {
+                if ($tenantDefaultSkin->is_default) {
+                    // Los skins predeterminados tienen IDs consistentes entre system y tenant (seeded)
+                    $tenantSkinId = $tenantDefaultSkin->id;
+                } else {
+                    // Skin custom — buscar su ID en la tabla skins del tenant por filename
+                    $tenantSkin = DB::connection('tenant')->table('skins')
+                        ->where('filename', $tenantDefaultSkin->filename)
+                        ->first();
+                    $tenantSkinId = $tenantSkin ? $tenantSkin->id : 3;
+                }
+            }
+            \Log::info('Temas sembrados', ['tenant_skin_id' => $tenantSkinId]);
+
             \Log::info('Insertando configuración...');
             DB::connection('tenant')->table('configurations')->insert([
                 'send_auto' => true,
@@ -801,7 +839,7 @@ use App\Models\System\User as SystemUser;
                     'sidebars' => 'light',
                     'sidebar_theme' => 'white'
                 ]),
-                'skin_id' => 3,
+                'skin_id' => $tenantSkinId,
                 'top_menu_a_id' => 1,
                 'top_menu_b_id' => 15,
                 'top_menu_c_id' => 76,

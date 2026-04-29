@@ -164,6 +164,96 @@
       </div>
     </div>
 
+    <!-- Asignación de impresoras -->
+    <template v-if="printers.length > 0">
+      <hr>
+
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <h5><b>Asignación de impresoras:</b></h5>
+          <span class="text-muted">Selecciona qué impresora se usará para cada tipo de salida.</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class="control-label">
+              Impresora - Comanda
+              <el-tooltip
+                content="Impresora donde se imprimirán las comandas enviadas a los mozos"
+                effect="dark"
+                placement="top">
+                <i class="fa fa-info-circle text-muted ml-1"></i>
+              </el-tooltip>
+            </label>
+            <el-select
+              v-model="form.printer_name_comanda"
+              clearable
+              placeholder="Seleccionar impresora"
+              class="w-100">
+              <el-option
+                v-for="p in printers"
+                :key="p.name"
+                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                :value="p.name">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class="control-label">
+              Impresora - Documents
+              <el-tooltip
+                content="Impresora asignada para impresión de documentos"
+                effect="dark"
+                placement="top">
+                <i class="fa fa-info-circle text-muted ml-1"></i>
+              </el-tooltip>
+            </label>
+            <el-select
+              v-model="form.printer_name_documents"
+              clearable
+              placeholder="Seleccionar impresora"
+              class="w-100">
+              <el-option
+                v-for="p in printers"
+                :key="p.name"
+                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                :value="p.name">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class="control-label">
+              Impresora - Precuenta
+              <el-tooltip
+                content="Impresora donde se imprimirá la pre-cuenta para el cliente"
+                effect="dark"
+                placement="top">
+                <i class="fa fa-info-circle text-muted ml-1"></i>
+              </el-tooltip>
+            </label>
+            <el-select
+              v-model="form.printer_name_precuenta"
+              clearable
+              placeholder="Seleccionar impresora"
+              class="w-100">
+              <el-option
+                v-for="p in printers"
+                :key="p.name"
+                :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                :value="p.name">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <!-- Botones de acción -->
     <div class="row mt-4">
       <div class="col-md-12">
@@ -207,6 +297,9 @@ export default {
         printer_public_ip:       null,
         print_local_enabled:     false,
         print_destination:       false,
+        printer_name_comanda:    null,
+        printer_name_documents:  null,
+        printer_name_precuenta:  null,
       },
       printers: [],
       directPrinterName: null,
@@ -245,12 +338,15 @@ export default {
         const { data } = await this.$http.get(`/${this.resource}/printers/config`)
         if (data.success) {
           const d = data.data
-          this.form.printer_enabled     = d.printer_enabled
-          this.form.printer_status      = d.printer_status
-          this.form.printer_public_ip   = d.printer_public_ip
-          this.form.print_local_enabled = d.print_local_enabled
-          this.form.print_destination   = d.print_destination
-          this.printers                 = d.printers || []
+          this.form.printer_enabled        = d.printer_enabled
+          this.form.printer_status         = d.printer_status
+          this.form.printer_public_ip      = d.printer_public_ip
+          this.form.print_local_enabled    = d.print_local_enabled
+          this.form.print_destination      = d.print_destination
+          this.form.printer_name_comanda   = d.printer_name_comanda
+          this.form.printer_name_documents = d.printer_name_documents
+          this.form.printer_name_precuenta = d.printer_name_precuenta
+          this.printers                    = d.printers || []
           this.initDirectPrinter()
         }
       } catch (error) {
@@ -343,9 +439,12 @@ export default {
       this.saving = true
       try {
         const res = await this.$http.post(`/${this.resource}/printers/config`, {
-          printer_enabled:     this.form.printer_enabled,
-          print_local_enabled: this.form.print_local_enabled,
-          print_destination:   this.form.print_destination,
+          printer_enabled:        this.form.printer_enabled,
+          print_local_enabled:    this.form.print_local_enabled,
+          print_destination:      this.form.print_destination,
+          printer_name_comanda:   this.form.printer_name_comanda,
+          printer_name_documents: this.form.printer_name_documents,
+          printer_name_precuenta: this.form.printer_name_precuenta,
         })
 
         if (res.data.success && showMessage) {

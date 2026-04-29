@@ -734,6 +734,46 @@ class ConfigurationController extends Controller
         ]);
     }
 
+    public function forceSystemSkin(Request $request)
+    {
+        $skin = SystemSkin::find($request->skin_id);
+
+        if (!$skin) {
+            return response()->json(['success' => false, 'message' => 'Tema no encontrado']);
+        }
+
+        $activeFilename = $skin->custom_filename ?? $skin->filename;
+
+        $clients = Client::with('hostname.website')->get();
+        $updated = 0;
+        foreach ($clients as $client) {
+            try {
+                $tenancy = app(Environment::class);
+                $tenancy->tenant($client->hostname->website);
+                $tenantSkin = DB::connection('tenant')->table('skins')
+                    ->where('filename', $activeFilename)
+                    ->first();
+                if ($tenantSkin) {
+                    DB::connection('tenant')->table('configurations')
+                        ->where('id', 1)
+                        ->update(['skin_id' => $tenantSkin->id]);
+                    $updated++;
+                }
+            } catch (\Exception $e) {
+                // Continuar con el siguiente tenant si hay error
+            }
+        }
+
+        SystemSkin::query()->update(['is_forced' => false]);
+        $skin->update(['is_forced' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tema "' . $skin->name . '" forzado en ' . $updated . ' empresa(s)',
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
+
     public function setTenantDefaultSkin(Request $request)
     {
         $skin = SystemSkin::find($request->skin_id);

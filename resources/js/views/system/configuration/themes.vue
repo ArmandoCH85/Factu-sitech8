@@ -126,6 +126,43 @@
             </el-button>
         </div>
 
+        <el-divider>Forzar tema a todas las empresas</el-divider>
+
+        <div>
+            <p style="font-size: 12px;" class="mb-3 text-muted">
+                <i class="el-icon-warning-outline"></i>
+                Selecciona un tema y presiona <strong>Forzar</strong> para que todas las empresas existentes cambien inmediatamente a ese tema.
+                <span v-if="currentForcedSkin" class="ms-1">
+                    Tema actualmente forzado: <strong>{{ currentForcedSkin.name }}</strong>.
+                </span>
+            </p>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <el-select
+                    v-model="selectedForceId"
+                    size="small"
+                    placeholder="Seleccionar tema"
+                    style="width: 180px;">
+                    <el-option
+                        v-for="skin in skins"
+                        :key="skin.id"
+                        :label="skin.name"
+                        :value="skin.id">
+                        <span>{{ skin.name }}</span>
+                        <el-tag v-if="skin.is_forced" size="mini" type="warning" class="ms-1">Forzado</el-tag>
+                    </el-option>
+                </el-select>
+                <el-button
+                    size="small"
+                    type="danger"
+                    :loading="loading_force"
+                    :disabled="!selectedForceId"
+                    @click="confirmForce">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-2px;margin-right:3px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
+                    Forzar
+                </el-button>
+            </div>
+        </div>
+
         <el-divider>Subir nuevo tema</el-divider>
 
         <div>
@@ -250,7 +287,14 @@ export default {
             pendingReplaceFile: null,
             selectedTenantDefaultId: null,
             currentTenantDefaultId: null,
+            selectedForceId: null,
+            loading_force: false,
         };
+    },
+    computed: {
+        currentForcedSkin() {
+            return this.skins.find(s => s.is_forced) || null;
+        },
     },
     created() {
         this.loadSkins();
@@ -291,6 +335,30 @@ export default {
                 this.loading_set_default = false;
                 this.$message.error('Error al actualizar el tema por defecto');
             });
+        },
+
+        confirmForce() {
+            const skin = this.skins.find(s => s.id === this.selectedForceId);
+            if (!skin) return;
+            this.$confirm(
+                `¿Forzar el tema "${skin.name}" en todas las empresas existentes? El tema activo de cada empresa se cambiará automáticamente.`,
+                'Forzar tema',
+                { confirmButtonText: 'Forzar', cancelButtonText: 'Cancelar', type: 'warning' }
+            ).then(() => {
+                this.loading_force = true;
+                this.$http.post('configurations/system-skins/force', { skin_id: this.selectedForceId }).then(response => {
+                    this.loading_force = false;
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.skins = response.data.skins;
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(() => {
+                    this.loading_force = false;
+                    this.$message.error('Error al forzar el tema');
+                });
+            }).catch(() => {});
         },
 
         onFileChange(file) {

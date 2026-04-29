@@ -1041,6 +1041,7 @@ if ($hostname) {
             Route::post('configurations/system-skins/sync', 'System\ConfigurationController@syncDefaultSkin');
             Route::post('configurations/system-skins/delete', 'System\ConfigurationController@deleteSystemSkin');
             Route::post('configurations/system-skins/set-tenant-default', 'System\ConfigurationController@setTenantDefaultSkin');
+            Route::post('configurations/system-skins/force', 'System\ConfigurationController@forceSystemSkin');
 
             Route::get('information', 'System\ConfigurationController@InfoIndex')->name('system.information');
             Route::get('status/history', 'System\StatusController@history')->name('system.status');

@@ -17,6 +17,7 @@ class Skin extends Model
         'custom_filename',
         'is_default',
         'is_tenant_default',
+        'is_forced',
     ];
 
     public function getCollectionData()
@@ -29,6 +30,7 @@ class Skin extends Model
             'is_default'        => (bool) $this->is_default,
             'is_replaced'       => !is_null($this->custom_filename),
             'is_tenant_default' => (bool) $this->is_tenant_default,
+            'is_forced'         => (bool) $this->is_forced,
         ];
     }
 }

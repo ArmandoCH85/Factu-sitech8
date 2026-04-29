@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" :visible="showDialog" @close="close" @open="getData" width="80%">
+    <el-dialog :title="title || 'Cargando pagos...'" :visible="showDialog" @close="close" @open="getData" width="80%">
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12" v-if="records && records.length >= 0">
@@ -380,6 +380,8 @@
                 this.records = [];
                 this.fileList = [];
                 this.showAddButton = true;
+                this.document = {};
+                this.title = null;
             },
             async getData() {
                 if (this.records.some(r => !r.id)) return;

@@ -45,7 +45,7 @@ if($current_hostname) {
                 Route::get('records', 'OrderNoteController@records');
                 Route::get('create', 'OrderNoteController@create')->name('tenant.order_notes.create')->middleware(['redirect.level']);
                 Route::get('edit/{id}', 'OrderNoteController@edit')->middleware(['redirect.level']);
-
+                Route::post('custom-fields/update', 'OrderNoteController@updateCustomFields');
                 Route::get('tables', 'OrderNoteController@tables');
                 Route::get('table/{table}', 'OrderNoteController@table');
                 Route::post('/', 'OrderNoteController@store');

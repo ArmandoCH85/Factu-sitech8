@@ -783,6 +783,7 @@
                 'customer_number' => $this->customer->number,
                 'customer_telephone' => optional($this->customer)->telephone,
                 'customer_email' => optional($this->customer)->email,
+                'custom_fields_data' => $this->custom_fields_data,
                 'currency_type_id' => $this->currency_type_id,
                 'total_exportation' => number_format($this->total_exportation, 2),
                 // 'total_free' => number_format($this->total_free,2),

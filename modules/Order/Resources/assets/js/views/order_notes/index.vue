@@ -81,18 +81,37 @@
                             class="el-icon-arrow-down el-icon--right"
                         ></i>
                     </el-button>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item
-                            v-for="(column, index) in columns"
-                            :key="index"
-                        >
-                            <el-checkbox
-                                v-model="column.visible"
-                                @change="saveColumnVisibility"
-                                >{{ column.title }}</el-checkbox
-                            >
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
+                    <el-dropdown-menu slot="dropdown" style="min-width: 220px;">
+                            <div style="max-height: 520px; overflow-y: auto;">
+                                <el-dropdown-item divided disabled>
+                                    <strong>Campos personalizados</strong>
+                                </el-dropdown-item>
+                                <el-dropdown-item
+                                    v-for="field in customFieldColumns"
+                                    :key="`custom-field-${field.id}`"
+
+                                >
+                                    <el-checkbox
+                                        @change="updateCustomFieldColumns()"
+                                        v-model="field.visible"
+                                        >{{ field.name }}</el-checkbox
+                                    >
+                                </el-dropdown-item>
+                                <el-dropdown-item divided disabled>
+                                    <strong>Seleccionar columnas</strong>
+                                </el-dropdown-item>
+                                <el-dropdown-item
+                                    v-for="(column, index) in columns"
+                                    :key="index"
+                                >
+                                    <el-checkbox
+                                        @change="getColumnsToShow(1)"
+                                        v-model="column.visible"
+                                        >{{ column.title }}</el-checkbox
+                                    >
+                                </el-dropdown-item>
+                            </div>
+                        </el-dropdown-menu>
                 </el-dropdown>
             </div>
             <div class="card-body">
@@ -113,6 +132,14 @@
                         <th>Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
+                        <th
+                            v-for="field in customFieldColumns"
+                            :key="field.id"
+                            class="text-start"
+                            v-if="field.visible"
+                        >
+                            {{ field.name }}
+                        </th>
                         <th>Pedido</th>
                         <th>Comprobantes</th>
                         <th v-if="columns.sale_notes.visible">
@@ -196,6 +223,90 @@
                                         :label="option.description"
                                     ></el-option>
                                 </el-select>
+                            </template>
+                        </td>
+                         <td
+                            v-for="field in customFieldColumns"
+                            :key="field.id"
+                            class="text-start"
+                            v-if="field.visible"
+                        >
+                            <template v-if="isEditableCustomField(field)">
+                                <template v-if="field.type === 'text'">
+                                    <el-input
+                                        v-model="row.custom_fields_data[field.slug]"
+                                        @blur="saveCustomFieldValue(row, field)"
+                                        size="small"
+                                        :placeholder="field.name"
+                                    ></el-input>
+                                </template>
+                                <template v-else-if="field.type === 'number'">
+                                    <el-input
+                                        v-model.number="row.custom_fields_data[field.slug]"
+                                        type="number"
+                                        @blur="saveCustomFieldValue(row, field)"
+                                        size="small"
+                                        :placeholder="field.name"
+                                    ></el-input>
+                                </template>
+                                <template v-else-if="field.type === 'textarea'">
+                                    <el-input
+                                        v-model="row.custom_fields_data[field.slug]"
+                                        type="textarea"
+                                        :rows="2"
+                                        @blur="saveCustomFieldValue(row, field)"
+                                        size="small"
+                                        :placeholder="field.name"
+                                    ></el-input>
+                                </template>
+                                <template v-else-if="field.type === 'select'">
+                                    <el-select
+                                        v-model="row.custom_fields_data[field.slug]"
+                                        @change="saveCustomFieldValue(row, field)"
+                                        size="small"
+                                        clearable
+                                        :placeholder="field.name"
+                                    >
+                                        <el-option
+                                            v-for="option in normalizeOptions(field.options)"
+                                            :key="option"
+                                            :label="option"
+                                            :value="option"
+                                        ></el-option>
+                                    </el-select>
+                                </template>
+                                <template v-else-if="field.type === 'checkbox'">
+                                    <el-checkbox-group
+                                        v-model="row.custom_fields_data[field.slug]"
+                                        @change="saveCustomFieldValue(row, field)"
+                                    >
+                                        <el-checkbox
+                                            v-for="option in normalizeOptions(field.options)"
+                                            :key="option"
+                                            :label="option"
+                                            :value="option"
+                                        >
+                                            {{ option }}
+                                        </el-checkbox>
+                                    </el-checkbox-group>
+                                </template>
+                                <template v-else-if="field.type === 'date'">
+                                    <el-date-picker
+                                        v-model="row.custom_fields_data[field.slug]"
+                                        type="date"
+                                        format="yyyy-MM-dd"
+                                        value-format="yyyy-MM-dd"
+                                        @change="saveCustomFieldValue(row, field)"
+                                        size="small"
+                                        :placeholder="field.name"
+                                    ></el-date-picker>
+                                </template>
+                                <template v-else>
+                                    {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
+                                </template>
+                            </template>
+                            <template v-else>
+                                {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
                             </template>
                         </td>
                         <td>{{ row.identifier }}</td>
@@ -432,6 +543,7 @@ export default {
         if (this.config.mi_tienda_pe === true) {
             this.getMiTiendaDataData();
         }
+        this.loadCustomFieldsColumns();
         this.loadDecimalQuantity();
     },
     data() {
@@ -485,6 +597,7 @@ export default {
                 }
             },
             state_type_accepted: ["01", "03", "05", "07", "13"],
+            customFieldColumns: [],
             decimal_quantity: 2,
         };
     },
@@ -683,7 +796,98 @@ export default {
                     this.clickAnulate(command.id);
                     break;
             }
-        }
+        },
+        async loadCustomFieldsColumns() {
+            try {
+                const response = await this.$http.get(
+                    "/configurations/custom-fields/order-notes"
+                );
+                this.customFieldColumns = (response.data.data || []).map(field => ({
+                    ...field,
+                    visible: field.visible !== undefined ? field.visible : true
+                }));
+            } catch (error) {
+                console.error("Error cargando columnas de campos personalizados:", error);
+                this.customFieldColumns = [];
+            }
+        },
+        updateCustomFieldColumns() {
+            // Custom fields visibility is handled client-side for sale note columns.
+            // Persist here if needed by backend later.
+        },
+        isEditableCustomField(field) {
+            return [
+                'text',
+                'number',
+                'textarea',
+                'select',
+                'checkbox',
+                'date'
+            ].includes(field.type);
+        },
+        normalizeOptions(options) {
+            if (!options) return [];
+            if (Array.isArray(options)) {
+                if (options.length === 1 && typeof options[0] === 'string' && options[0].includes(',')) {
+                    return options[0]
+                        .split(',')
+                        .map(opt => opt.trim())
+                        .filter(opt => opt.length > 0);
+                }
+                return options;
+            }
+            if (typeof options === 'string') {
+                return options
+                    .split(/[,\n]/)
+                    .map(opt => opt.trim())
+                    .filter(opt => opt.length > 0);
+            }
+            return [];
+        },
+        ensureCustomFieldsData(row, field = null) {
+            if (!row.custom_fields_data || typeof row.custom_fields_data !== 'object') {
+                this.$set(row, 'custom_fields_data', {});
+            }
+            if (field && field.type === 'checkbox' && row.custom_fields_data[field.slug] === undefined) {
+                this.$set(row.custom_fields_data, field.slug, []);
+            }
+            return row.custom_fields_data;
+        },
+        saveCustomFieldValue(row, field) {
+            this.ensureCustomFieldsData(row, field);
+            if (field.type === 'checkbox' && !Array.isArray(row.custom_fields_data[field.slug])) {
+                this.$set(row.custom_fields_data, field.slug, []);
+            }
+            this.$http
+                .post('/order-notes/custom-fields/update', {
+                    id: row.id,
+                    custom_fields_data: row.custom_fields_data
+                })
+                .then(response => {
+                    if (response.data.success) {
+                        if (response.data.data !== undefined) {
+                            this.$set(row, 'custom_fields_data', response.data.data);
+                        }
+                        this.$message.success('Campo personalizado actualizado correctamente.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error guardando campo personalizado:', error);
+                    this.$message.error('No se pudo actualizar el campo personalizado.');
+                });
+        },
+        formatCustomFieldValue(value) {
+            if (value === null || value === undefined || value === "") {
+                return "";
+            }
+            if (Array.isArray(value)) {
+                return value.join(", ");
+            }
+            if (typeof value === "object") {
+                return JSON.stringify(value);
+            }
+            return value;
+        },
     }
 };
 </script>

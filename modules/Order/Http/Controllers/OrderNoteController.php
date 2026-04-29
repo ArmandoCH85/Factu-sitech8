@@ -163,6 +163,22 @@
             return $records;
         }
 
+        public function updateCustomFields(Request $request)
+        {
+            $request->validate([
+                'id' => 'required|integer',
+                'custom_fields_data' => 'nullable|array'
+            ]);
+
+            $orderNote = OrderNote::findOrFail($request->input('id'));
+            $orderNote->custom_fields_data = $request->input('custom_fields_data', []);
+            $orderNote->save();
+
+            return [
+                'success' => true,
+                'data' => $orderNote->custom_fields_data
+            ];
+        }
 
         public function documents(Request $request)
         {

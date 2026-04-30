@@ -69,7 +69,7 @@
                     </div>
                     <div class="col-md-12 mt-3">
                         <section :class="['card mb-2 card-transparent', {'card-collapsed': !showAdditionalInfo}]" id="card-section">
-                                <header class="card-header hoverable bg-light border-top rounded-0 py-1 d-flex align-items-center justify-content-between" style="cursor: pointer; padding: 4px 0 !important;" id="card-click" @click="toggleAdditionalInfo">
+                                <header class="hoverable bg-light border-top rounded-0 py-1 d-flex align-items-center justify-content-between" style="cursor: pointer; padding: 4px 0 !important;" id="card-click" @click="toggleAdditionalInfo">
                                     <p class="ps-1 m-0">Información adicional atributos UBL 2.1</p>
                                     <div>
                                         <a href="#" class="card-action card-action-toggle text-info"

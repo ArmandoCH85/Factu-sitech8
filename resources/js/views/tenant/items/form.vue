@@ -11,6 +11,67 @@
         <form autocomplete="off"
               @submit.prevent="submit">
 
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div :class="{'has-danger': errors.internal_id}"
+                         class="form-group">
+                        <template v-if="inventory_configuration && inventory_configuration.generate_internal_id">
+                            <label class="control-label">Código Interno
+                                <el-tooltip class="item"
+                                            content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-input
+                                v-model="form.internal_id"
+                                dusk="internal_id"></el-input>
+                            <small v-if="errors.internal_id"
+                                   class="form-control-feedback"
+                                   v-text="errors.internal_id[0]"></small>
+                        </template>
+                        <template v-else>
+                            <label class="control-label">Código Interno
+                                <el-tooltip class="item"
+                                            content="Código interno de la empresa para el control de sus productos"
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-input v-model="form.internal_id"
+                                      dusk="internal_id"></el-input>
+                            <small v-if="errors.internal_id"
+                                   class="form-control-feedback"
+                                   v-text="errors.internal_id[0]"></small>
+                        </template>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div :class="{'has-danger': errors.description}"
+                         class="form-group">
+                        <label class="control-label">Nombre<span class="text-danger">*</span></label>
+                        <el-input v-model="form.description"
+                                  dusk="description"></el-input>
+                        <small v-if="errors.description"
+                               class="form-control-feedback"
+                               v-text="errors.description[0]"></small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div :class="{'has-danger': errors.sale_unit_price}"
+                         class="form-group">
+                        <label class="control-label">Precio Unitario <span class="text-danger">*</span></label>
+                        <el-input v-model="form.sale_unit_price"
+                                  dusk="sale_unit_price"
+                                  @input="calculatePercentageOfProfitBySale"></el-input>
+                        <small v-if="errors.sale_unit_price"
+                               class="form-control-feedback"
+                               v-text="errors.sale_unit_price[0]"></small>
+                    </div>
+                </div>
+            </div>
 
             <el-tabs v-model="activeName">
                 <el-tab-pane class
@@ -59,17 +120,6 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div :class="{'has-danger': errors.description}"
-                                 class="form-group">
-                                <label class="control-label">Nombre<span class="text-danger">*</span></label>
-                                <el-input v-model="form.description"
-                                          dusk="description"></el-input>
-                                <small v-if="errors.description"
-                                       class="form-control-feedback"
-                                       v-text="errors.description[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
                             <div :class="{'has-danger': errors.second_name}"
                                  class="form-group">
                                 <label class="control-label">Nombre secundario </label>
@@ -102,7 +152,7 @@
                                        v-text="errors.model[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div :class="{'has-danger': errors.unit_type_id}"
                                  class="form-group">
                                 <label class="control-label">Unidad</label>
@@ -134,19 +184,7 @@
                                        v-text="errors.currency_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div :class="{'has-danger': errors.sale_unit_price}"
-                                 class="form-group">
-                                <label class="control-label">Precio Unitario <span class="text-danger">*</span></label>
-                                <el-input v-model="form.sale_unit_price"
-                                          dusk="sale_unit_price"
-                                          @input="calculatePercentageOfProfitBySale"></el-input>
-                                <small v-if="errors.sale_unit_price"
-                                       class="form-control-feedback"
-                                       v-text="errors.sale_unit_price[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div :class="{'has-danger': errors.sale_affectation_igv_type_id}"
                                  class="form-group">
                                 <label class="control-label">Tipo de afectación</label>
@@ -238,42 +276,6 @@
                                 <small v-if="errors.barcode"
                                        class="form-control-feedback"
                                        v-text="errors.barcode[0]"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div :class="{'has-danger': errors.internal_id}"
-                                 class="form-group">
-                                <template v-if="inventory_configuration && inventory_configuration.generate_internal_id">
-                                    <label class="control-label">Código Interno
-                                        <el-tooltip class="item"
-                                                    content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
-                                                    effect="dark"
-                                                    placement="top-start">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-input
-                                        v-model="form.internal_id"
-                                        dusk="internal_id"></el-input>
-                                    <small v-if="errors.internal_id"
-                                           class="form-control-feedback"
-                                           v-text="errors.internal_id[0]"></small>
-                                </template>
-                                <template v-else>
-                                    <label class="control-label">Código Interno
-                                        <el-tooltip class="item"
-                                                    content="Código interno de la empresa para el control de sus productos"
-                                                    effect="dark"
-                                                    placement="top-start">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-input v-model="form.internal_id"
-                                              dusk="internal_id"></el-input>
-                                    <small v-if="errors.internal_id"
-                                           class="form-control-feedback"
-                                           v-text="errors.internal_id[0]"></small>
-                                </template>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -1278,7 +1280,7 @@ export default {
                         this.activeName == 'third' ||
                         this.activeName == 'five'
                     ) {
-                        this.activeName = 'first';
+                        this.activeName = null;
                     }
                     return true;
                 }
@@ -1373,7 +1375,7 @@ export default {
 
             },
             attribute_types: [],
-            activeName: 'first',
+            activeName: null,
             fromPharmacy: false,
             inventory_configuration: null,
             next_internal_id: null
@@ -1741,7 +1743,7 @@ export default {
             //     delete w.price;
             //     return w;
             // });
-this.activeName =  'first'
+this.activeName = null
             if (this.type) {
                 if (this.type !== 'PRODUCTS') {
                     this.form.unit_type_id = 'ZZ';

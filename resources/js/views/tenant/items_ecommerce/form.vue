@@ -9,10 +9,72 @@
                @open="create">
 
         <!-- Tabs adicionales para Restaurant -->
-        <el-tabs v-model="activeTab" class="mt-3">
+        <form autocomplete="off"
+            @submit.prevent="submit">
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div :class="{'has-danger': errors.internal_id}"
+                        class="form-group">
+                        <template v-if="inventory_configuration && inventory_configuration.generate_internal_id">
+                            <label class="control-label">Código Interno
+                                <el-tooltip class="item"
+                                            content="Código interno de la empresa para el control de sus productos | Autogenerado por el sistema"
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-input v-model="form.internal_id"
+                                    dusk="internal_id"></el-input>
+                            <small v-if="errors.internal_id"
+                                class="form-control-feedback"
+                                v-text="errors.internal_id[0]"></small>
+                        </template>
+                        <template v-else>
+                            <label class="control-label">Código Interno
+                                <el-tooltip class="item"
+                                            content="Código interno de la empresa para el control de sus productos"
+                                            effect="dark"
+                                            placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-input v-model="form.internal_id"
+                                    dusk="internal_id"></el-input>
+                            <small v-if="errors.internal_id"
+                                class="form-control-feedback"
+                                v-text="errors.internal_id[0]"></small>
+                        </template>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div :class="{'has-danger': errors.description}"
+                        class="form-group">
+                        <label class="control-label">Nombre<span class="text-danger">*</span></label>
+                        <el-input v-model="form.description"
+                                dusk="description"></el-input>
+                        <small v-if="errors.description"
+                            class="form-control-feedback"
+                            v-text="errors.description[0]"></small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div :class="{'has-danger': errors.sale_unit_price}"
+                        class="form-group">
+                        <label class="control-label">Precio Unitario <span class="text-danger">*</span></label>
+                        <el-input v-model="form.sale_unit_price"
+                                dusk="sale_unit_price"
+                                @input="calculatePercentageOfProfitBySale"></el-input>
+                        <small v-if="errors.sale_unit_price"
+                            class="form-control-feedback"
+                            v-text="errors.sale_unit_price[0]"></small>
+                    </div>
+                </div>
+            </div>
+
+            <el-tabs v-model="activeTab" class="mt-0">
             <el-tab-pane label="General" name="general">
-                <form autocomplete="off"
-                    @submit.prevent="submit">
                     <div class="form-body">
                         <div class="row">
 
@@ -54,17 +116,6 @@
                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
                             </div> -->
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.description}"
-                                    class="form-group">
-                                    <label class="control-label">Nombre<span class="text-danger">*</span></label>
-                                    <el-input v-model="form.description"
-                                            dusk="description"></el-input>
-                                    <small v-if="errors.description"
-                                        class="form-control-feedback"
-                                        v-text="errors.description[0]"></small>
-                                </div>
-                            </div>
         <!--
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.second_name}"
@@ -163,19 +214,6 @@
                                         v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div :class="{'has-danger': errors.sale_unit_price}"
-                                    class="form-group">
-                                    <label class="control-label">Precio Unitario (Venta)
-                                        <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.sale_unit_price"
-                                            dusk="sale_unit_price"
-                                            @input="calculatePercentageOfProfitBySale"></el-input>
-                                    <small v-if="errors.sale_unit_price"
-                                        class="form-control-feedback"
-                                        v-text="errors.sale_unit_price[0]"></small>
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.sale_affectation_igv_type_id}"
                                     class="form-group">
@@ -204,24 +242,6 @@
                                 </div>
                             </div> -->
 
-                            <div class="col-md-3">
-                                <div :class="{'has-danger': errors.internal_id}"
-                                    class="form-group">
-                                    <label class="control-label">Código Interno
-                                        <el-tooltip class="item"
-                                                    content="Código interno de la empresa para el control de sus productos"
-                                                    effect="dark"
-                                                    placement="top-start">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-input v-model="form.internal_id"
-                                            dusk="internal_id"></el-input>
-                                    <small v-if="errors.internal_id"
-                                        class="form-control-feedback"
-                                        v-text="errors.internal_id[0]"></small>
-                                </div>
-                            </div>
                             <!-- <div class="col-md-3">
                                 <div :class="{'has-danger': errors.item_code}"
                                     class="form-group">
@@ -679,14 +699,6 @@
                             </div>-->
                         </div>
                     </div>
-                    <div class="form-actions text-end pt-2">
-                        <el-button class="second-buton me-2" @click.prevent="close()">Cancelar</el-button>
-                        <el-button :loading="loading_submit"
-                                native-type="submit"
-                                type="primary">Guardar
-                        </el-button>
-                    </div>
-                </form>
             </el-tab-pane>
             <el-tab-pane :disabled="!fromRestaurant || (fromRestaurant && form.is_dish === false)" label="Insumos" name="supplies">
                 <template #label>
@@ -706,6 +718,14 @@
                 <modifiers-tab :itemId="recordId"></modifiers-tab>
             </el-tab-pane>
         </el-tabs>
+            <div class="form-actions text-end pt-2">
+                <el-button class="second-buton me-2" @click.prevent="close()">Cancelar</el-button>
+                <el-button :loading="loading_submit"
+                        native-type="submit"
+                        type="primary">Guardar
+                </el-button>
+            </div>
+        </form>
         <!-- <percentage-perception
                 :showDialog.sync="showPercentagePerception"
                 :percentage_perception="percentage_perception">
@@ -755,7 +775,7 @@ export default {
 
     data() {
         return {
-            activeTab: 'general',
+            activeTab: null,
             loading_search: false,
             tags: [],
             categories: [],
@@ -796,6 +816,8 @@ export default {
             },
             showDialogImages: false,
             attribute_types: [],
+            inventory_configuration: null,
+            next_internal_id: null,
             editorConfig: {
                 toolbar: [
                     'heading',
@@ -826,6 +848,11 @@ export default {
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.filteredCategories = this.categories;
+                this.inventory_configuration = response.data.inventory_configuration || null;
+                this.next_internal_id = response.data.next_internal_id || null;
+                if (!this.recordId && this.inventory_configuration && this.inventory_configuration.generate_internal_id && !this.form.internal_id) {
+                    this.form.internal_id = this.next_internal_id;
+                }
             })
 
         // Cargar áreas de preparación
@@ -1063,6 +1090,10 @@ export default {
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                         this.changeAffectationIgvType()
                     })
+            } else {
+                if (this.inventory_configuration && this.inventory_configuration.generate_internal_id && this.next_internal_id) {
+                    this.form.internal_id = this.next_internal_id;
+                }
             }
         },
         loadRecord() {
@@ -1106,6 +1137,10 @@ export default {
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
+                        if (!this.recordId && response.data.id && this.inventory_configuration?.generate_internal_id) {
+                            const nextNum = parseInt(response.data.id) + 1;
+                            this.next_internal_id = String(nextNum).padStart(5, '0');
+                        }
                         if (this.external) {
                             this.$eventHub.$emit('reloadDataItems', response.data.id)
                         } else {
@@ -1130,7 +1165,7 @@ export default {
         },
         close() {
             this.$emit('update:showDialog', false)
-            this.activeTab = 'general'
+            this.activeTab = null
             this.resetForm()
             this.$refs.form_images.clear()
         },

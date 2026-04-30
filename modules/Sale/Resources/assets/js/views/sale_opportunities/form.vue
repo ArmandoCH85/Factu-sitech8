@@ -44,7 +44,7 @@
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-md-6 col-lg-8 pb-2">
+                            <div class="pb-2" :class="{'col-md-6 col-lg-8': currency_types.length > 1, 'col-12': currency_types.length <= 1}">
                                 <div class="form-group position-relative" :class="{'has-danger': errors.customer_id}">
                                     <label class="control-label font-weight-bold">
                                         Cliente
@@ -92,7 +92,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-6 col-md-3 col-lg-2">
+                            <div v-if="currency_types.length > 1" class="col-6 col-md-3 col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -103,7 +103,7 @@
                                            v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3 col-lg-2">
+                            <div v-if="currency_types.length > 1" class="col-6 col-md-3 col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark"

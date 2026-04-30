@@ -101,7 +101,7 @@
                     </header>
                     <div class="card-body card-body-invoice no-gutters border-0 shadow-none p-0 py-1 py-md-2 px-md-2">
                         <div class="row inputs-container mx-1">
-                            <div class="col-md-5 col-lg-4 align-self-end invoice-type">
+                            <div class="col-md-5 col-lg-4 align-self-end invoice-type" :class="{'col-lg-4': currency_types.length > 1, 'col-lg-5': currency_types.length <= 1}">
                                 <div
                                     :class="{
                                         'has-danger': errors.document_type_id
@@ -162,7 +162,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-md-2 align-self-end serie-input">
+                            <div class="align-self-end serie-input" :class="{'col-md-2': currency_types.length > 1, 'col-md-3': currency_types.length <= 1}">
                                 <div
                                     :class="{ 'has-danger': errors.series_id }"
                                     class="form-group"
@@ -187,7 +187,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-md-5 col-lg-2 align-self-end operation-type">
+                            <div class="col-md-5 align-self-end operation-type" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-4': currency_types.length <= 1}">
                                 <div
                                     :class="{
                                         'has-danger': errors.operation_type_id
@@ -234,7 +234,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-2 align-self-end money-input">
+                            <div v-if="currency_types.length > 1" class="col-md-6 col-lg-2 align-self-end money-input">
                                 <div
                                     :class="{
                                         'has-danger': errors.currency_type_id
@@ -260,7 +260,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-2 align-self-end change-type">
+                            <div v-if="currency_types.length > 1" class="col-md-6 col-lg-2 align-self-end change-type">
                                 <div
                                     :class="{
                                         'has-danger': errors.exchange_rate_sale

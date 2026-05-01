@@ -446,6 +446,7 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
+                            this.initForm();
                             this.getData();
                             // this.initDocumentTypes()
                             this.showAddButton = true;

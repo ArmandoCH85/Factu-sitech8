@@ -22180,6 +22180,9 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
     border-color: var(--info) !important;
     color: var(--info) !important;
 }
+.input-group-text {
+    border-radius: 0 .5rem .5rem 0 !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

@@ -378,7 +378,7 @@
                             <th v-if="columns.consultas_api.visible" class="text-center">Consultas <br>API Peru <br>(mes)</th>
                             <th v-if="columns.notas_venta.visible" class="text-center">Cant. <br>Notas de venta</th>
                             <th v-if="columns.total_mes.visible" class="text-center">Total<br><small>(Comprobantes <br>por mes)</small></th>
-                            <th v-if="columns.total_pse.visible" class="text-center">Total<br><small>(Comprobantes <br>a PSE-GIOR)</small></th>
+                            <th v-if="columns.total_pse.visible" class="text-center">Total<br><small>(Comprobantes <br>a PSE)</small></th>
                             <th v-if="columns.total_notas.visible" class="text-center">Total<br><small>(Comprobantes <br>notas de venta)</small></th>                            
                             <th v-if="columns.limitar_doc.visible" class="text-end">Limitar Doc.</th>
                             <th v-if="columns.limitar_usuarios.visible" class="text-center">Limitar <br>Usuarios</th>
@@ -958,7 +958,7 @@ export default {
                     visible: false
                 },
                 total_pse: {
-                    title: 'Total (Comprobantes a PSE-GIOR)',
+                    title: 'Total (Comprobantes a PSE)',
                     visible: false
                 },
                 total_notas: {

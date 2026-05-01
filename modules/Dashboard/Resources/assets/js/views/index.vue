@@ -517,7 +517,7 @@
                                         <loader-graph :rows="4" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
                                     </template>
                                 </div>
-                                <div class="card-body pb-0 card-body-border-radius" v-show="!loaders.top_customers">
+                                <div class="card-body card-body-border-radius" v-show="!loaders.top_customers">
                                     <label>Top clientes</label>
                                     <div class="mt-3">
                                         <el-checkbox  v-model="form.enabled_transaction_customer" @change="loadDataAditional">Ordenar por transacciones</el-checkbox><br>

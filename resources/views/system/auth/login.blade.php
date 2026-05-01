@@ -34,7 +34,7 @@
                                 <input id="email" type="email" name="email" class="form-control form-control-lg"
                                     value="{{ old('email') }}">
                                 <span class="input-group-append">
-                                    <span class="input-group-text">
+                                    <span class="input-group-text h-100">
                                         <i class="fas fa-user"></i>
                                     </span>
                                 </span>
@@ -50,7 +50,7 @@
                             <div class="input-group">
                                 <input name="password" type="password" class="form-control form-control-lg">
                                 <span class="input-group-append">
-                                    <span class="input-group-text">
+                                    <span class="input-group-text h-100">
                                         <i class="fas fa-lock"></i>
                                     </span>
                                 </span>

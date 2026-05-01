@@ -500,6 +500,96 @@
                 </div>
               </div>
             </el-tab-pane>
+            <el-tab-pane class="mb-3" name="seven">
+              <span slot="label">Impresión</span>
+
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <h5><b>Asignación de impresoras:</b></h5>
+                  <span class="text-muted">Selecciona qué impresora se usará para cada tipo de salida.</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="control-label">
+                      Impresora - Comanda
+                      <el-tooltip
+                        content="Impresora donde se imprimirán las comandas enviadas a los mozos"
+                        effect="dark"
+                        placement="top">
+                        <i class="fa fa-info-circle text-muted ml-1"></i>
+                      </el-tooltip>
+                    </label>
+                    <el-select
+                      v-model="form_assignment.printer_name_comanda"
+                      clearable
+                      placeholder="Seleccionar impresora"
+                      class="w-100"
+                      @change="saveAssignment">
+                      <el-option
+                        v-for="p in registered_printers"
+                        :key="p.name"
+                        :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                        :value="p.name">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="control-label">
+                      Impresora - Documents
+                      <el-tooltip
+                        content="Impresora asignada para impresión de documentos"
+                        effect="dark"
+                        placement="top">
+                        <i class="fa fa-info-circle text-muted ml-1"></i>
+                      </el-tooltip>
+                    </label>
+                    <el-select
+                      v-model="form_assignment.printer_name_documents"
+                      clearable
+                      placeholder="Seleccionar impresora"
+                      class="w-100"
+                      @change="saveAssignment">
+                      <el-option
+                        v-for="p in registered_printers"
+                        :key="p.name"
+                        :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                        :value="p.name">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="control-label">
+                      Impresora - Precuenta
+                      <el-tooltip
+                        content="Impresora donde se imprimirá la pre-cuenta para el cliente"
+                        effect="dark"
+                        placement="top">
+                        <i class="fa fa-info-circle text-muted ml-1"></i>
+                      </el-tooltip>
+                    </label>
+                    <el-select
+                      v-model="form_assignment.printer_name_precuenta"
+                      clearable
+                      placeholder="Seleccionar impresora"
+                      class="w-100"
+                      @change="saveAssignment">
+                      <el-option
+                        v-for="p in registered_printers"
+                        :key="p.name"
+                        :label="p.name + (p.is_default ? ' (predeterminada)' : '')"
+                        :value="p.name">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+              </div>
+            </el-tab-pane>
             <el-tab-pane class="mb-3" name="six">
               <span slot="label">Áreas de preparación</span>
 
@@ -700,6 +790,8 @@ export default {
         registered_printers: [],
         form_assignment: {
           printer_name_comanda:     null,
+          printer_name_documents:   null,
+          printer_name_precuenta:   null,
           printer_per_area_enabled: false,
         },
         preparation_areas: [],
@@ -982,11 +1074,28 @@ export default {
           const { data } = await this.$http.get(`/${this.resource}/printers/config`)
           if (data.success) {
             this.form_assignment.printer_name_comanda     = data.data.printer_name_comanda
+            this.form_assignment.printer_name_documents   = data.data.printer_name_documents
+            this.form_assignment.printer_name_precuenta   = data.data.printer_name_precuenta
             this.form_assignment.printer_per_area_enabled = data.data.printer_per_area_enabled || false
             this.registered_printers = data.data.printers || []
           }
         } catch (err) {
           console.error('Error al cargar configuración de impresión:', err)
+        }
+      },
+      async saveAssignment() {
+        try {
+          const res = await this.$http.post(`/${this.resource}/printers/config`, {
+            printer_name_comanda:   this.form_assignment.printer_name_comanda,
+            printer_name_documents: this.form_assignment.printer_name_documents,
+            printer_name_precuenta: this.form_assignment.printer_name_precuenta,
+          })
+          if (res.data.success) {
+            this.$message.success('Asignación de impresoras actualizada.')
+          }
+        } catch (err) {
+          this.$message.error('Error al guardar la asignación de impresoras.')
+          console.error(err)
         }
       },
       async savePrinterPerArea() {

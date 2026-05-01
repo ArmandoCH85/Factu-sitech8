@@ -738,7 +738,12 @@ use App\Models\System\User as SystemUser;
                 ]);
                 \Log::info('Cliente creado', ['client_id' => $client->id]);
 
-                $client->createPayemtnOrder();
+                $is_guest_register = $request->input('from_guest_register', false);
+                $payment_description = $is_guest_register
+                    ? 'Pago por autoregistro - Plan ' . optional($client->plan)->name
+                    : null;
+                $payment_created_by = $is_guest_register ? 'Autoregistro' : 'Sistema';
+                $payment_order = $client->createPayemtnOrder($payment_description, $payment_created_by);
                 \Log::info('Configurando tenancy...');
                 $tenancy = app(Environment::class);
                 $tenancy->tenant($website);
@@ -944,7 +949,7 @@ use App\Models\System\User as SystemUser;
             return [
                 'success' => true,
                 'message' => 'Cliente Registrado satisfactoriamente',
-                'guest_register' => $this->runGuestRegister($from_guest_register, $user_id, $request->email, $client->id)
+                'guest_register' => $this->runGuestRegister($from_guest_register, $user_id, $request->email, $client->id, $payment_order)
             ];
 
         } catch (Exception $e) {
@@ -958,17 +963,19 @@ use App\Models\System\User as SystemUser;
         }
     }
 
-        private function runGuestRegister($from_guest_register, $user_id, $email, $client_id)
+        private function runGuestRegister($from_guest_register, $user_id, $email, $client_id, $payment_order = null)
         {
             if($from_guest_register)
             {
                 $helper = new GuestRegisterHelper();
                 $encrypt_client_id = $helper->encryptValue($client_id);
-                $helper->sendEmail($user_id, $email, $encrypt_client_id);
+                $payment_uuid = $payment_order ? $payment_order->uuid : null;
+                $helper->sendEmail($user_id, $email, $encrypt_client_id, $payment_uuid);
 
                 return [
                     'user_id' => (string) $user_id,
                     'key' => $encrypt_client_id,
+                    'payment_uuid' => $payment_uuid,
                 ];
             }
 

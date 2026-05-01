@@ -45,14 +45,22 @@ export default {
         disabled: {
             type: Boolean,
             default: false
+        },
+        endpointPrefix: {
+            type: String,
+            default: '/payment-gateway/izipay'
         }
     },
     data() {
         return {
             formtoken: null,
             url_result: null,
-            resource: '/payment-gateway/izipay',
             loading: true
+        }
+    },
+    computed: {
+        resource() {
+            return this.endpointPrefix;
         }
     },
     // computed: {

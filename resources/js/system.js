@@ -15,6 +15,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import CheckoutIzipay from './components/checkouts/izipay.vue'
 import CheckoutCulqi from './components/checkouts/culqi.vue'
 import CheckoutAdmin from './components/checkouts/CheckoutAdmin.vue'
+import CheckoutGuest from './components/checkouts/CheckoutGuest.vue'
 
 
 // components
@@ -126,6 +127,7 @@ Vue.component('x-input-service-guest', XImportServiceGuest);
 Vue.component('system-checkout-culqi', CheckoutCulqi)
 Vue.component('system-checkout-izipay', CheckoutIzipay)
 Vue.component('checkout-admin', CheckoutAdmin)
+Vue.component('checkout-guest', CheckoutGuest)
 
 Vue.component('system-configuration-themes', SystemConfigurationThemes)
 

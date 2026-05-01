@@ -24,15 +24,16 @@ class GuestRegisterHelper
      * @param  string $client_id
      * @return array
      */
-    public function sendEmail($id, $email, $client_id)
+    public function sendEmail($id, $email, $client_id, $payment_uuid = null)
     {
         try {
             if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new Exception("Email inválido o vacío: " . var_export($email, true));
             }
             $signed_url = $this->generateSignedUrl($id, $email, $client_id);
-            
-            $class = new VerifyGuestRegisterMail($signed_url);
+            $payment_url = $payment_uuid ? route('guest-register.payment.show', ['uuid' => $payment_uuid]) : null;
+
+            $class = new VerifyGuestRegisterMail($signed_url, $payment_url);
 
             $config = Configuration::first();
             

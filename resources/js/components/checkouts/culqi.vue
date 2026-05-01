@@ -34,6 +34,10 @@ export default {
             type: Boolean,
             default: false
         },
+        endpointPrefix: {
+            type: String,
+            default: '/payment-gateway/culqi'
+        },
     },
     created() {
         if (!window.Culqi) {
@@ -56,13 +60,15 @@ export default {
                 // billetera: true,
                 bancaMovil: true,
                 agente: true,
-                // cuotealo: true,	
+                // cuotealo: true,
             },
-            resource: '/payment-gateway/culqi',
             publicKey: null
         }
     },
     computed: {
+        resource() {
+            return this.endpointPrefix;
+        }
     },
     methods:  {
         submit() {

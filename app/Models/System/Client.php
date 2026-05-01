@@ -347,7 +347,7 @@ class Client extends Model
         return isset($this->price) ? $this->price : $this->plan->pricing;
     }
 
-    public function createPayemtnOrder()
+    public function createPayemtnOrder($description = null, $created_by = 'Sistema')
     {
         $price = $this->getPricePlan();
 
@@ -357,11 +357,11 @@ class Client extends Model
             'amount' => $price,
             'order_state_id' => 1,
             'client_id' => $this->id,
-            'description' => null,
-            'created_by' => 'Sistema',
+            'description' => $description,
+            'created_by' => $created_by,
         ]);
 
-        return $payments_order->id;
+        return $payments_order;
 
     }
 

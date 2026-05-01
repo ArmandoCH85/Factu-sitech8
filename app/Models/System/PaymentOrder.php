@@ -6,13 +6,15 @@ use Carbon\Carbon;
 use Hyn\Tenancy\Traits\UsesSystemConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PaymentOrder extends Model
 {
     use UsesSystemConnection;
-    
+
     public $timestamps = false;
     protected $fillable = [
+        'uuid',
         'order',
         'date_of_due',
         'notifications',
@@ -24,6 +26,20 @@ class PaymentOrder extends Model
         'description',
         'created_by'
     ];
+
+    protected static function booted()
+    {
+        static::creating(function (PaymentOrder $order) {
+            if (empty($order->uuid)) {
+                $order->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
     protected $casts = [
         'date_of_due' => 'date',

@@ -179,11 +179,16 @@ export default {
   data() {
     return {
       loading_submit: false,
-      resource: "ecommerce",
-      errors: {},
-      form: {},
-      soap_sends: [],
-      soap_types: []
+      resource: "ecommerce", // Recurso del que se va a hacer la solicitud
+      errors: {}, // Para almacenar errores de validación
+      form: {
+        title_one_customised_link: "", // Título 1
+        customised_link_one: "", // Link 1
+        title_two_customised_link: "", // Título 2
+        customised_link_two: "", // Link 2
+        title_three_customised_link: "", // Título 3
+        customised_link_three: "", // Link 3
+      },
     };
   },
   async created() {
@@ -217,15 +222,10 @@ export default {
         title_two_customised_link: "",
         title_three_customised_link: "",
         customised_link_one: "",
+        title_two_customised_link: "",
         customised_link_two: "",
+        title_three_customised_link: "",
         customised_link_three: "",
-        link_facebook: "",
-        link_youtube: "",
-        link_tiktok: "",
-        link_instagram: "",
-        tag_shipping: "",
-        tag_dollar: "",
-        tag_support: ""
       };
     },
     submit() {
@@ -255,3 +255,22 @@ export default {
 };
 </script>
 
+<style scoped>
+/* Estilos para mejorar la disposición */
+.card-config {
+  margin-top: 20px;
+}
+
+.form-body {
+  padding: 15px;
+}
+
+.el-input {
+  width: 100%;
+}
+
+/* Ajustes adicionales de espacio entre los campos */
+.form-actions {
+  margin-top: 20px;
+}
+</style>

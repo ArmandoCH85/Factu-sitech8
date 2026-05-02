@@ -1,10 +1,10 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close"  append-to-body >
+    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close" append-to-body>
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-8 col-lg-8 col-xl-8 col-sm-8">
-                        <div class="form-group"  :class="{'has-danger': errors.individual_item_id}">
+                        <div class="form-group" :class="{'has-danger': errors.individual_item_id}">
                             <label class="control-label">
                                 Producto
                             </label>
@@ -38,8 +38,26 @@
 </template>
 <style>
 .el-select-dropdown {
-    max-width: 80% !important;
+    max-width: 100% !important;
     margin-right: 5% !important;
+}
+/* Ajusta el tamaño y la posición del cuadro de diálogo */
+.el-dialog {
+    max-width: 600px; /* Ajusta el tamaño máximo del cuadro de diálogo */
+    margin: 0 auto;   /* Centra el cuadro de diálogo */
+}
+/* Ajusta márgenes y rellenos para evitar desbordamientos */
+.el-select, .el-input-number {
+    margin-bottom: 20px;  /* Agrega espacio entre los campos */
+}
+.form-body {
+    padding: 15px;  /* Ajusta el padding para que no se solapen los elementos */
+}
+/* Estilo para el fondo del diálogo para que no se mueva */
+.el-dialog__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
 <script>

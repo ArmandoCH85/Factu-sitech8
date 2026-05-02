@@ -57,9 +57,6 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
     'precio_unitario' => true,
     'descuento' => true,
     'total' => true,
-    'tipo_persona' => false,
-    'peso_total' => false,
-    'nro_producto' => true,
 ];
 
 @endphp
@@ -108,12 +105,12 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
                     <div class="company_logo_box">
                         <img
                             src="data:{{ mime_content_type(public_path($logo)) }};base64, {{ base64_encode(file_get_contents(public_path($logo))) }}"
-                            alt="{{ \App\CoreFacturalo\Helpers\CompanyDocumentDisplay::logoAlt($company) }}" class="company_logo" style="max-width: 150px;">
+                            alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
                     </div>
                 </td>
                 <td width="50%" class="pl-3 text-center">
                     <div>
-                        @include('pdf.partials.company_document_header_names')
+                        <h4>{{ $company->name }}</h4>
                         <h5>{{ 'RUC '.$company->number }}</h5>
                         <h6 style="text-transform: uppercase;">
                             {{ ($establishment->address !== '-') ? $establishment->address : '' }}
@@ -142,7 +139,7 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
             @else
                 <td colspan="2" width="70%" class="pl-1 text-left">
                     <div>
-                        @include('pdf.partials.company_document_header_names')
+                        <h4>{{ $company->name }}</h4>
                         <h5>{{ 'RUCs '.$company->number }}</h5>
                         <h6 style="text-transform: uppercase;">
                             {{ ($establishment->address !== '-') ? $establishment->address : '' }}
@@ -1027,21 +1024,6 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
         </tbody>
     </table>
     <table class="full-width">
-        @php
-            $personType = $document->person?->person_type;
-        @endphp
-        @if ($showColumns['nro_producto'] ?? false)
-        <tr width="65%">
-            <td colspan="{{ $colspan_total }}" class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
-        </tr>
-        @endif
-        @if ( $personType?->enabled_description_person_type && ($showColumns['tipo_persona'] ?? false))
-            <tr width="65%" >
-                <td>
-                    <strong>{{ $personType->description }}</strong> : {{ $personType->description_person_type }}
-                </td>
-            </tr>
-        @endif
         <tr>
             <td width="65%" style="text-align: top; vertical-align: top;">
                 @foreach(array_reverse( (array) $document->legends) as $row)
@@ -1232,7 +1214,7 @@ $showColumns = $columnsConfig ? $columnsConfig->columns_config : [
             </td>
         </tr>
     </table>
-    @endif    
+    @endif
 </body>
 
 </html>

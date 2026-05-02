@@ -5,7 +5,7 @@ $establishment = $document->establishment;
 $customer = $document->customer;
 $invoice = $document->invoice;
 $document_base = ($document->note) ? $document->note : null;
-$itinerant = $document->itinerant;
+$itinerant = $document->itinerant;  
 // dd($itinerant->description);
 
 //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
@@ -57,7 +57,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
         </tr>
     </table>
     @endif
-    @if($document->state_type->id == '11')
+    @if($document->state_type->id == '11') 
     <div class="company_logo_box" style="position: absolute; text-align: center; top:30%;">
         <img
             src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}"
@@ -80,73 +80,35 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
     @endif
     <table class="full-width">
         <tr>
-            @if($company->logo)
-                <td width="20%">
-                    <div class="company_logo_box">
-                        <img
-                            src="data:{{ mime_content_type(public_path($logo)) }};base64, {{ base64_encode(file_get_contents(public_path($logo))) }}"
-                            alt="{{ \App\CoreFacturalo\Helpers\CompanyDocumentDisplay::logoAlt($company) }}" class="company_logo" style="max-width: 150px;">
-                    </div>
-                </td>
-                <td width="50%" class="pl-3 text-center">
-                    <div>
-                        @include('pdf.partials.company_document_header_names')
-                        <h5>{{ 'RUC '.$company->number }}</h5>
-                        <h6 style="text-transform: uppercase;">
-                            {{ ($establishment->address !== '-') ? $establishment->address : '' }}
-                            {{ ($establishment->district_id !== '-') ? ', '.$establishment->district->description : '' }}
-                            {{ ($establishment->province_id !== '-') ? ', '.$establishment->province->description : '' }}
-                            {{ ($establishment->department_id !== '-') ? '- '.$establishment->department->description : '' }}
-                        </h6>
-                        @isset($establishment->trade_address)
-                            <h6>{{ $establishment->trade_address !== '-' ? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-                        @endisset
-                        <h6>{{ $establishment->telephone !== '-' ? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
-                        <h6>{{ $establishment->email !== '-' ? 'Email: '.$establishment->email : '' }}</h6>
-                        @isset($establishment->web_address)
-                            <h6>{{ $establishment->web_address !== '-' ? 'Web: '.$establishment->web_address : '' }}</h6>
-                        @endisset
-                        @isset($establishment->aditional_information)
-                            <h6>{{ $establishment->aditional_information !== '-' ? $establishment->aditional_information : '' }}</h6>
-                        @endisset
-                    </div>
-                </td>
-                <td width="30%" class="border-box py-4 px-2 text-center">
-                    <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
-                    <h5>{{ $document->document_type->description }}</h5>
-                    <h3>{{ $document_number }}</h3>
-                </td>
-            @else
-                <td colspan="2" width="70%" class="pl-1 text-left">
-                    <div>
-                        @include('pdf.partials.company_document_header_names')
-                        <h5>{{ 'RUCs '.$company->number }}</h5>
-                        <h6 style="text-transform: uppercase;">
-                            {{ ($establishment->address !== '-') ? $establishment->address : '' }}
-                            {{ ($establishment->district_id !== '-') ? ', '.$establishment->district->description : '' }}
-                            {{ ($establishment->province_id !== '-') ? ', '.$establishment->province->description : '' }}
-                            {{ ($establishment->department_id !== '-') ? '- '.$establishment->department->description : '' }}
-                        </h6>
-                        @isset($establishment->trade_address)
-                            <h6>{{ $establishment->trade_address !== '-' ? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-                        @endisset
-                        <h6>{{ $establishment->telephone !== '-' ? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
-                        <h6>{{ $establishment->email !== '-' ? 'Email: '.$establishment->email : '' }}</h6>
-                        @isset($establishment->web_address)
-                            <h6>{{ $establishment->web_address !== '-' ? 'Web: '.$establishment->web_address : '' }}</h6>
-                        @endisset
-                        @isset($establishment->aditional_information)
-                            <h6>{{ $establishment->aditional_information !== '-' ? $establishment->aditional_information : '' }}</h6>
-                        @endisset
-                    </div>
-                </td>
-                <td width="30%" class="border-box py-4 px-2 text-center">
-                    <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
-                    <h5>{{ $document->document_type->description }}</h5>
-                    <h3>{{ $document_number }}</h3>
-                </td>
-            @endif
-        </tr>
+
+    @if($company->logo)
+        <td width="20%">
+            <div class="company_logo_box">
+                <img
+                    src="data:{{ mime_content_type(public_path($logo)) }};base64, {{ base64_encode(file_get_contents(public_path($logo))) }}"
+                    alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
+            </div>
+        </td>
+    @endif
+
+    <td width="{{ $company->logo ? '50%' : '70%' }}"
+        class="pl-3 {{ $company->logo ? 'text-center' : 'text-left' }}">
+        
+        <div>
+            <h4>{{ $company->name }}</h4>
+            <h5>{{ 'RUC '.$company->number }}</h5>
+            <!-- todo tu contenido igual -->
+        </div>
+
+    </td>
+
+    <td width="30%" class="border-box py-4 px-2 text-center">
+        <h3 class="font-bold">{{ 'R.U.C. '.$company->number }}</h3>
+        <h5>{{ $document->document_type->description }}</h5>
+        <h3>{{ $document_number }}</h3>
+    </td>
+
+</tr>
     </table>
     <table class="full-width mt-5">
         <tr>
@@ -213,7 +175,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
             if (!empty($customer->address)) {
                 $addressParts[] = $customer->address;
             }
-
+        
             if ($customer->district_id !== '-') {
                 $ubigeo = \App\Models\Tenant\Catalogs\District::find($customer->district_id);
             }
@@ -235,7 +197,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
             } else {
                 $addressParts[] = isset($ubigeo) ? $ubigeo->province->department->description : '';
             }
-
+        
             $fullAddress = implode(', ', $addressParts);
         @endphp
 
@@ -251,7 +213,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 @endif
             </td>
         </tr>
-
+            
         @else
         <tr>
             <td class="align-top">DIRECCIÓN</td>
@@ -296,7 +258,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 ->where('address', $document->consigned_address)
                 ->where('consigned_id', $document->consigned_id)
                 ->first();
-
+                
             if($district){
                 $department = $district->province->department;
                 $province = $district->province;
@@ -755,7 +717,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     *** Pago Anticipado ***
                     @endif
                 </td>
-
+                
                 @empty($showSerieColumn) @else
                 <td class="text-left align-top">
                     @isset($row->item->lots)
@@ -800,7 +762,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                                 ? ltrim($date_due, '/')
                                 : ($row->relation_item->date_of_due ? $row->relation_item->date_of_due->format('Y-m-d') : '');
                         @endphp
-
+                
                         {{ $cleanedDate }}
                     </td>
                 @endif
@@ -953,8 +915,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 <td class="text-right font-bold">{{ number_format($document->perception->amount, 2) }}</td>
             </tr>
             <tr>
-                <td colspan="{{ ceil(($colspan_total + 1) / 2) }}" class="text-left font-bold" style="white-space: nowrap;">Productos: {{ rtrim(rtrim(number_format(collect($document->items)->sum(function ($item) { return (float) data_get($item, 'quantity', 0); }), 2, '.', ''), '0'), '.') }}</td>
-                <td colspan="{{ floor(($colspan_total + 1) / 2) - 1 }}" class="text-right font-bold pr-2">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td colspan="{{ $colspan_total }}" class="text-right font-bold pr-2">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format(($document->total + $document->perception->amount), 2) }}</td>
             </tr>
             @elseif($document->retention)
@@ -974,8 +935,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
             </tr>
             @else
             <tr>
-                <td colspan="{{ ceil(($colspan_total + 1) / 2) }}" class="text-left font-bold" style="white-space: nowrap;">Productos: {{ rtrim(rtrim(number_format(collect($document->items)->sum(function ($item) { return (float) data_get($item, 'quantity', 0); }), 2, '.', ''), '0'), '.') }}</td>
-                <td colspan="{{ floor(($colspan_total + 1) / 2) - 1 }}" class="text-right font-bold pr-2">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td colspan="{{ $colspan_total }}" class="text-right font-bold pr-2">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
             </tr>
             @endif
@@ -997,19 +957,6 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
         </tbody>
     </table>
     <table class="full-width">
-        @php
-            $personType = $document->person->person_type;
-        @endphp
-        <tr width="65%">
-            <td colspan="{{ $colspan_total }}" class="text-left py-1"><strong>N° DE PRODUCTOS</strong>: {{ $document->items->count() }}</td>
-        </tr>
-        @if ( $personType && $personType->enabled_description_person_type)
-            <tr width="65%" >
-                <td>
-                    <strong>{{ $personType->description }}</strong> : {{ $personType->description_person_type }}
-                </td>
-            </tr>
-        @endif
         <tr>
             <td width="65%" style="text-align: top; vertical-align: top;">
                 @foreach(array_reverse( (array) $document->legends) as $row)
@@ -1074,31 +1021,6 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 </p>
                 @endforeach
                 @endif
-                @endif
-
-                @if ($document->custom_fields_data && count((array)$document->custom_fields_data) > 0)
-                    <br>
-                    <table class="full-width">
-                        @foreach ($document->custom_fields_data as $field_slug => $field_value)
-                            <tr>
-                                <td>
-                                    @php
-                                        $custom_field = \Modules\CustomField\Models\CustomField::where('slug', $field_slug)->first();
-                                        $field_name = ($custom_field) ? $custom_field->name : str_replace('_', ' ', ucfirst($field_slug));
-                                    @endphp
-                                    {{ $field_name }}
-                                </td>
-                                <td width="8px">:</td>
-                                <td>
-                                    @if (is_array($field_value))
-                                        {{ implode(', ', $field_value) }}
-                                    @else
-                                        {{ $field_value }}
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </table>
                 @endif
             </td>
             <td width="35%" class="text-right">

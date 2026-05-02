@@ -283,7 +283,7 @@
             </ul>
 
             <ul class="log-out-container">
-                <li class="btn btn-primary" role="menuitem" href="{{ route('logout') }}"
+                <li class="btn-primary" role="menuitem" href="{{ route('logout') }}"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}
 <!-- <<<<<<< HEAD -->
@@ -298,7 +298,14 @@
                         </svg>
                         Cerrar Sesión
                     </a> -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-logout me-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M9 12h12l-3 -3" /><path d="M18 15l3 -3" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                        stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-logout me-2">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                        <path d="M9 12h12l-3 -3" />
+                        <path d="M18 15l3 -3" />
+                    </svg>
                     Cerrar Sesión
  <!-- dc3907b4 (fix(ui): mejora en estilos para movil) -->
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -360,9 +367,8 @@
             $hasSupportContact = $supportUser && ($supportUser->phone || $supportUser->whatsapp_number || $supportUser->address_contact);
         @endphp
 
-        <span class="separator show-left"></span>
-
         @if($hasSupportContact)
+        <span class="separator"></span>
         <ul class="notifications">
             <li class="m-0">
             <a role="menuitem"  class="notification-icon text-secondary"  onclick="toggleSupportSidebar()" title="Soporte" data-toggle="tooltip">
@@ -376,8 +382,8 @@
             </a>
             </li>
         </ul>
+        @endif
         <span class="separator"></span>
-        @endif        
         <ul class="notifications">
             <li>
                 <a href="{{ route('tenant_orders_index') }}" class="notification-icon text-secondary"
@@ -395,41 +401,8 @@
                 </a>
             </li>
         </ul>
-
-        @if($vc_document > 0)
-            <span class="separator"></span>
-            <ul class="notifications">
-                <li>
-                    <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary"
-                        data-toggle="tooltip" data-placement="bottom" title="Comprobantes no enviados/por enviar">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="icon icon-tabler icons-tabler-outline icon-tabler-bell">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path
-                                d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
-                            <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
-                        </svg>
-                        <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document }}</span>
-                    </a>
-                </li>
-            </ul>
-        @endif
-
-        @if($vc_document_regularize_shipping > 0)
-            <span class="separator"></span>
-            <ul class="notifications">
-                <li>
-                    <a href="{{route('tenant.documents.regularize_shipping')}}" class="notification-icon text-secondary"
-                        data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de rectificación">
-                        <i class="fas fa-exclamation-triangle text-secondary"></i>
-                        <span
-                            class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document_regularize_shipping }}</span>
-                    </a>
-                </li>
-            </ul>
-        @endif
-
+<span class="separator"></span>
+<ul class="notifications">
         @if(in_array('reports', $vc_modules) && $vc_finished_downloads > 0)
             <span class="separator"></span>
             <ul class="notifications">
@@ -445,6 +418,18 @@
             </ul>
         @endif
         <span class="separator"></span>
+<ul class="notifications">
+    <li style="margin-top: -3px;">
+    <tenant-notifications-header
+        :initial-count="{{ $vc_document }}"
+        :redirect-url="{{ json_encode(route('tenant.documents.not_sent')) }}">
+    </tenant-notifications-header>
+    </li>
+</ul>
+
+<span class="separator"></span>
+<div id="userbox" class="userbox">
+...
         <div id="userbox" class="userbox">
             <a href="#" class="user-profile-content check-double" style="cursor: pointer;">
                 <div class="profile-info profile-info-pc" data-lock-name="{{ $vc_user->email }}"
@@ -528,93 +513,30 @@
                             Estilos y temas</a>
                     </li>
 
-                    @php
-                        // Verificar si hay múltiples usuarios
-                        $multiUserCount = 0;
-                        if(config('configuration.multi_user_enabled')) {
-                            try {
-                                $website = app(\Hyn\Tenancy\Environment::class)->tenant();
-                                $currentClient = \App\Models\System\Client::currentClientByWebsite($website)->first();
-                                if($currentClient && auth()->check()) {
-                                    $currentUser = auth()->user();
-                                    if(!empty($currentUser->is_multi_user) && $currentUser->is_multi_user) {
-                                        $originMulti = \Modules\MultiUser\Models\System\MultiUser::find($currentUser->multi_user_id);
-                                        if($originMulti) {
-                                            $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $originMulti->origin_client_id)
-                                                ->where('origin_user_id', $originMulti->origin_user_id)
-                                                ->count();
-                                            $multiUserCount = $multiUserCount + 1;
-                                        } else {
-                                            $multiUserCount = 0;
-                                        }
-                                    } else {
-                                        $multiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $currentClient->id)
-                                            ->where('origin_user_id', $currentUser->id)
-                                            ->count();
-                                        $multiUserCount = $multiUserCount + 1;
-                                    }
-                                }
-                            } catch (\Exception $e) {
-                                $multiUserCount = 0;
-                            }
-                        }
+                    <li class="divider my-2"></li>
 
-                        // Verificar establecimientos
-                        $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
-                        $showMultiUser = $multiUserCount > 1 && config('configuration.multi_user_enabled');
-                        $showEstablishments = auth()->user()->type == 'admin' && count($establishments) > 0;
-                        $configuration = App\Models\Tenant\Configuration::first();
-                        $visual = $configuration ? $configuration->visual : null;
-                        $showInHeader = true;
-                        if (is_object($visual) && property_exists($visual, 'branch_selector_in_sidebar')) {
-                            $showInHeader = !(bool)$visual->branch_selector_in_sidebar;
-                        } elseif (is_array($visual) && array_key_exists('branch_selector_in_sidebar', $visual)) {
-                            $showInHeader = !(bool)$visual['branch_selector_in_sidebar'];
-                        }
-
-                        $showDivider = $showMultiUser || $showEstablishments;
-                    @endphp
-
-                    @if($showDivider)
-                        <li class="divider my-2" id="header-branch-divider" style="display: {{ $showInHeader ? 'block' : 'none !important' }};"></li>
-
-                        <li id="header-branch-container" class="multi-user-content px-4 pb-1" style="display: {{ $showInHeader ? 'block' : 'none !important' }};">
-                            @if($showMultiUser)
-                                <tenant-multi-users-change-client id="header-multi-user-selector" style="display: {{ $showInHeader ? 'block' : 'none !important' }};"></tenant-multi-users-change-client>
-                            @endif
-                            {{-- <div id="reception-component-container" style="width: 100%;">
-                                <reception-component
-                                    :user-type="'admin'"
-                                    :establishment-id="{{ auth()->user()->establishment_id }}"
-                                    :establishments="{{ isset($establishments) ? json_encode($establishments) : json_encode([]) }}"
-                                ></reception-component>
-                            </div> --}}
-                            @php
-                                $current = auth()->user()->establishment_id;
-                                $showBranchSelector = true;
-                            @endphp
-                            @if($showEstablishments)
-                               <div id="header-establishment-selector" style="display: {{ $showInHeader ? 'block' : 'none !important' }};">
-                                   <label class="control-label mt-0">Cambiar sucursal:</label>
-                                   <select
-                                       class="el-input__inner input-select-establishment"
-                                       name="establishment_selector_header"
-                                       id="header-dropdown-establishment-selector"
-                                       onchange="changeSidebarEstablishment(this.value)"
-                                   >
-                                       @foreach($establishments as $establishment)
-                                           <option
-                                               value="{{ $establishment->id }}"
-                                               {{ $establishment->id == $current ? 'selected' : '' }}
-                                           >
-                                               {{ $establishment->description }}
-                                           </option>
-                                       @endforeach
-                                   </select>
-                               </div>
-                            @endif
-                        </li>
-                    @endif
+                    <li class="multi-user-content px-4 pb-1">
+                        @if(config('configuration.multi_user_enabled'))
+                            <tenant-multi-users-change-client></tenant-multi-users-change-client>
+                        @endif
+                        {{-- <div id="reception-component-container" style="width: 100%;">
+                            <reception-component
+                                :user-type="'admin'"
+                                :establishment-id="{{ auth()->user()->establishment_id }}"
+                                :establishments="{{ isset($establishments) ? json_encode($establishments) : json_encode([]) }}"
+                            ></reception-component>
+                        </div> --}}
+                        @php
+                            $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
+                            $current =  auth()->user()->establishment_id;
+                        @endphp
+                        @if (auth()->user()->type == 'admin')
+                           <tenant-hotel-sucursale
+                            :establishments='@json($establishments)'
+                            :current_establishment={{ $current }}
+                           ></tenant-hotel-sucursale>
+                        @endif
+                    </li>
 
                     <li class="divider my-2"></li>
 
@@ -730,39 +652,6 @@
         sidebar.classList.toggle('show');
         backdrop.classList.toggle('show');
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        window.addEventListener('branchSelectorVisibilityChanged', function(event) {
-            if (!event.detail) return;
-
-            let showInHeader;
-            if (typeof event.detail.showInSidebar !== 'undefined') {
-                showInHeader = !event.detail.showInSidebar;
-            } else if (typeof event.detail.showInHeader !== 'undefined') {
-                showInHeader = event.detail.showInHeader;
-            } else {
-                return;
-            }
-
-            const headerBranchContainer = document.getElementById('header-branch-container');
-            const headerDivider = document.getElementById('header-branch-divider');
-            const headerMultiUser = document.getElementById('header-multi-user-selector');
-            const headerEstablishment = document.getElementById('header-establishment-selector');
-
-            if (headerBranchContainer) {
-                headerBranchContainer.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
-            }
-            if (headerDivider) {
-                headerDivider.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
-            }
-            if (headerMultiUser) {
-                headerMultiUser.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
-            }
-            if (headerEstablishment) {
-                headerEstablishment.style.setProperty('display', showInHeader ? 'block' : 'none', showInHeader ? '' : 'important');
-            }
-        });
-    });
 </script>
 @endpush
 {{--

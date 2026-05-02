@@ -3,6 +3,7 @@ import Vue from 'vue'
 // Imports
 import TenantItemAditionalInfoSelector from './views/tenant/components/partials/item_extra_info.vue'
 import TenantItemAditionalInfoModal from './views/tenant/components/partials/modal_item_info_attributes.vue'
+import NotificationHeader from './components/NotificationHeader.vue'
 
 import TenantDashboardIndex from '../../modules/Dashboard/Resources/assets/js/views/index.vue'
 import TenantDashboardSalesByProduct from '../../modules/Dashboard/Resources/assets/js/views/items/SalesByProduct.vue'
@@ -402,6 +403,7 @@ Vue.component('tenant-qr-api', TenantQrApi);
 // Registrations
 Vue.component('tenant-item-aditional-info-selector', TenantItemAditionalInfoSelector)
 Vue.component('tenant-item-aditional-info-modal', TenantItemAditionalInfoModal)
+Vue.component('tenant-notifications-header', NotificationHeader)
 
 Vue.component('tenant-dashboard-index', TenantDashboardIndex)
 Vue.component('tenant-dashboard-sales-by-product', TenantDashboardSalesByProduct)

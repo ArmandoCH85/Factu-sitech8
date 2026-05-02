@@ -449,5 +449,10 @@ class DocumentController extends Controller
             'message' => 'Se habilitó el comprobante para enviarlo por resumen'
         ];
     }
-
+    public function pointCountNotSent()
+    {
+        return [
+            'total' => Document::whereNotSent()->count()
+        ];
+    }
 }

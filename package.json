@@ -2,7 +2,7 @@
     "private": true,
     "scripts": {
         "dev": "node dev-with-css-sync.js",
-        "watch": "node dev-with-css-sync.js --watch",
+        "watch": "node --max-old-space-size=4096 dev-with-css-sync.js --watch",
         "dev-simple": "vite",
         "build": "vite build",
         "sync-skins": "node css-watcher.js",

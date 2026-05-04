@@ -107,7 +107,7 @@
                 <form autocomplete="off" @submit.prevent="submit" class="">
                     <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-lg-4 col-sm-7">
+                            <div class="col-sm-7" :class="{'col-lg-4': currency_types.length > 1, 'col-lg-6': currency_types.length <= 1}">
                                 <div
                                     class="form-group position-relative"
                                     :class="{
@@ -188,7 +188,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2 col-sm-5">
+                            <div class="col-sm-5" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-3': currency_types.length <= 1}">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -217,7 +217,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-4">
+                            <div class="col-4" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-3': currency_types.length <= 1}">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -245,7 +245,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-4">
+                            <div class="col-lg-2 col-4" v-if="currency_types.length > 1">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -274,7 +274,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-4">
+                            <div class="col-lg-2 col-4" v-if="currency_types.length > 1">
                                 <div
                                     class="form-group"
                                     :class="{

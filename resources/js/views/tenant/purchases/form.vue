@@ -152,7 +152,7 @@
                                     <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                                 </div>
                             </div> -->
-                            <div class="col-lg-2 col-3">
+                            <div class="col-lg-2 col-3" v-if="currency_types.length > 1">
                                 <div :class="{'has-danger': errors.currency_type_id}"
                                      class="form-group">
                                     <label class="control-label">Moneda</label>
@@ -168,7 +168,7 @@
                                            v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-3">
+                            <div class="col-lg-2 col-3" v-if="currency_types.length > 1">
                                 <div :class="{'has-danger': errors.exchange_rate_sale}"
                                      class="form-group">
                                     <label class="control-label">Tipo de cambio

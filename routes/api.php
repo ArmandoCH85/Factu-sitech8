@@ -123,14 +123,18 @@ if ($hostname) {
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
 
+        Route::post('login', 'System\Api\AuthController@login');
 
         Route::middleware(['auth:system_api'])->group(function () {
 
-            //reseller
+            //Resellers
             Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
             Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
             Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
             Route::get('reseller/detailsLimitReseller', 'System\Api\ResellerController@detailsLimitReseller');
+
+            //Tenants
+            Route::post('/tenants', 'System\Api\TenantController@store');
 
             Route::get('restaurant/partner/list', 'System\Api\RestaurantPartnerController@list');
             Route::post('restaurant/partner/store', 'System\Api\RestaurantPartnerController@store');

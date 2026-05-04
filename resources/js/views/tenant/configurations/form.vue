@@ -933,6 +933,23 @@
                             </div>
 
                             <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Mostrar sección de Descuentos/Cargos/Atributos por ítem
+                                    <el-tooltip class="item"
+                                        content="Controla la visibilidad de la sección para agregar descuentos, cargos y atributos UBL 2.1 por ítem - Disponible en Cotizaciones y Contratos"
+                                        effect="dark" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{ 'has-danger': errors.show_item_discounts_charges_attributes }" class="form-group">
+                                    <el-switch v-model="form.show_item_discounts_charges_attributes"
+                                        @change="submit"></el-switch>
+                                    <small v-if="errors.show_item_discounts_charges_attributes" class="form-control-feedback"
+                                        v-text="errors.show_item_discounts_charges_attributes[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
                                 <label class="control-label">Restringir venta de productos menores al precio de compra
                                     <el-tooltip class="item"
                                         content="Validar que el precio de compra del producto no sea superior al de venta - Disponible Ventas/Comprobante electrónico - Nota de venta"
@@ -2713,6 +2730,7 @@ export default {
                 search_factory_code_items: false,
                 register_series_invoice_xml: false,
                 enable_discount_by_customer: false,
+                show_item_discounts_charges_attributes: true,
                 enabled_dispatch_ticket_pdf: false,
                 price_selected_add_product: false,
                 restrict_sale_items_cpe: false,

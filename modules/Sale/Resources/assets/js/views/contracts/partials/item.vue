@@ -325,7 +325,7 @@
                             <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
                         </div>
                     </div>-->
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3" v-if="config.show_item_discounts_charges_attributes !== false">
                         <section
                             id="card-section"
                             class="card mb-2 card-transparent"

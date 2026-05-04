@@ -1579,6 +1579,7 @@
             :currency-types="currency_types"
             :show-option-change-currency="true"
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
+            :displayDiscount="config.show_item_discounts_charges_attributes"
             ref="form_add_item"
             :selectedOptionPrice="selected_option_price"
             @add="addRow"

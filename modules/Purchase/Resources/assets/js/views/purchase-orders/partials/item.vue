@@ -197,7 +197,7 @@
                         </div>
 
                     </div>
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3" v-if="config.show_item_discounts_charges_attributes !== false">
                         <el-collapse v-model="activeNames" @change="handleChange">
                             <el-collapse-item title="Información adicional atributos UBL 2.1" name="1">
                             <div>

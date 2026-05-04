@@ -67,7 +67,7 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-3">
+                    <div class="col-md-12 mt-3" v-if="config.show_item_discounts_charges_attributes !== false">
                         <section :class="['card mb-2 card-transparent', {'card-collapsed': !showAdditionalInfo}]" id="card-section">
                                 <header class="hoverable bg-light border-top rounded-0 py-1 d-flex align-items-center justify-content-between" style="cursor: pointer; padding: 4px 0 !important;" id="card-click" @click="toggleAdditionalInfo">
                                     <p class="ps-1 m-0">Información adicional atributos UBL 2.1</p>
@@ -210,10 +210,14 @@
 
     import FaItemForm from '../../fixed_asset_items/form.vue'
     import {calculateRowItem} from '@helpers/functions'
+    import { mapState } from 'vuex/dist/vuex.mjs'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale', 'percentageIgv'],
         components: {FaItemForm},
+        computed: {
+            ...mapState(['config'])
+        },
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',

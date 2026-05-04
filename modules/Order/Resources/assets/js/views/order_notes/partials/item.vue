@@ -412,7 +412,7 @@
                                 <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
                             </div>
                         </div>-->
-                        <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2" v-if="config.show_item_discounts_charges_attributes !== false">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item
                                     :disabled="isUpdateItem"

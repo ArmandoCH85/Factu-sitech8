@@ -500,7 +500,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-2" v-if="!isUpdateItem">
+                        <div class="col-md-12 mt-2" v-if="!isUpdateItem && config.show_item_discounts_charges_attributes !== false">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item
                                     :disabled="isUpdateItem"

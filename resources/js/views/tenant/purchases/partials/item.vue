@@ -373,7 +373,7 @@
                 </div>
             </div>
 
-            <div class="form-body">
+            <div class="form-body" v-if="config.show_item_discounts_charges_attributes !== false">
                 <div class="row">
                     <div class="col-md-12 mt-3">
                             <el-collapse v-model="activeNameCollapse" accordion>

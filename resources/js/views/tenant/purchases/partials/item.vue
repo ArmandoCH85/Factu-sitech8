@@ -122,7 +122,7 @@
                     name="first">
                     <span slot="label">Datos generales</span>
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-8" v-if="affectation_igv_types.length > 1">
                             <div :class="{'has-danger': errors.affectation_igv_type_id}"
                                  class="form-group">
                                 <label class="control-label">Afectación Igv</label>

@@ -132,7 +132,7 @@
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-md-6 col-lg-8 pb-2">
+                            <div class="pb-2" :class="{'col-md-6 col-lg-8': currency_types.length > 1, 'col-12': currency_types.length <= 1}">
                                 <div
                                     class="form-group position-relative"
                                     :class="{
@@ -213,7 +213,7 @@
                                            v-text="errors.payment_method_type_id[0]"></small>
                                 </div>
                             </div> -->
-                            <div class="col-6 col-md-3 col-lg-2">
+                            <div class="col-6 col-md-3 col-lg-2" v-if="currency_types.length > 1">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -239,7 +239,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3 col-lg-2">
+                            <div class="col-6 col-md-3 col-lg-2" v-if="currency_types.length > 1">
                                 <div
                                     class="form-group"
                                     :class="{

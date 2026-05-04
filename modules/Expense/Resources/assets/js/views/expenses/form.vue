@@ -17,7 +17,7 @@
                     <div class="form-body">
     
                         <div class="row mx-0">
-                             <div class="col-lg-4 col-6">
+                             <div class="col-6" :class="{'col-lg-4': currency_types.length > 1, 'col-lg-5': currency_types.length <= 1}">
                                 <div class="form-group" :class="{'has-danger': errors.expense_type_id}">
                                     <label class="control-label">Tipo comprobante</label>
                                     <el-select v-model="form.expense_type_id"  >
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
     
-                            <div class="col-lg-2 col-3">
+                            <div class="col-3" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-3': currency_types.length <= 1}">
                                 <div class="form-group" :class="{'has-danger': errors.number}">
                                     <label class="control-label">Número <span class="text-danger" v-if="form.expense_type_id != 4">*</span></label>
                                     <el-input v-model="form.number"></el-input>
@@ -35,7 +35,7 @@
                                     <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-3">
+                            <div class="col-lg-2 col-3" v-if="currency_types.length > 1">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -46,14 +46,14 @@
                             </div>
     
     
-                            <div class="col-lg-2 col-6">
+                            <div class="col-6" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-4': currency_types.length <= 1}">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <label class="control-label">Fec Emisión</label>
                                     <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div>
-                             <div class="col-lg-2 col-6">
+                             <div class="col-lg-2 col-6" v-if="currency_types.length > 1">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">

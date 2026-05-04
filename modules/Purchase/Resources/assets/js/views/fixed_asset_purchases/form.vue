@@ -107,7 +107,7 @@
                                            v-text="errors.supplier_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-sm-3 col-6">
+                            <div class="col-lg-2 col-sm-3 col-6" v-if="currency_types.length > 1">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -118,7 +118,7 @@
                                            v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-sm-3 col-6">
+                            <div class="col-lg-2 col-sm-3 col-6" v-if="currency_types.length > 1">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark"

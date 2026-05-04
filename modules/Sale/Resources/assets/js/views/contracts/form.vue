@@ -141,7 +141,7 @@
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body m-3 m-md-4">
                         <div class="row mt-1">
-                            <div class="col-lg-6 pb-2">
+                            <div class="pb-2" :class="{'col-lg-6': currency_types.length > 1, 'col-lg-8': currency_types.length <= 1}">
                                 <div
                                     class="form-group position-relative"
                                     :class="{
@@ -208,7 +208,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-4 col-lg-2">
+                            <div class="col-4" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-4': currency_types.length <= 1}">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -240,7 +240,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-4 col-lg-2">
+                            <div v-if="currency_types.length > 1" class="col-4 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{
@@ -266,7 +266,7 @@
                                     ></small>
                                 </div>
                             </div>
-                            <div class="col-4 col-lg-2">
+                            <div v-if="currency_types.length > 1" class="col-4 col-lg-2">
                                 <div
                                     class="form-group"
                                     :class="{

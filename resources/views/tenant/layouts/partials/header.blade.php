@@ -368,9 +368,9 @@
         @endphp
 
         @if($hasSupportContact)
-        <span class="separator"></span>
+        <span class="separator show-left"></span>
         <ul class="notifications">
-            <li class="m-0">
+            <li>
             <a role="menuitem"  class="notification-icon text-secondary"  onclick="toggleSupportSidebar()" title="Soporte" data-toggle="tooltip">
                 <svg width="22" height="22" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -401,8 +401,6 @@
                 </a>
             </li>
         </ul>
-<span class="separator"></span>
-<ul class="notifications">
         @if(in_array('reports', $vc_modules) && $vc_finished_downloads > 0)
             <span class="separator"></span>
             <ul class="notifications">
@@ -418,18 +416,17 @@
             </ul>
         @endif
         <span class="separator"></span>
+        <ul class="notifications">
+            <li>
+                <tenant-notifications-header
+                    :initial-count="{{ $vc_document }}"
+                    :redirect-url="{{ json_encode(route('tenant.documents.not_sent')) }}">
+                </tenant-notifications-header>
+            </li>
+        </ul>
+        <span class="separator"></span>
 <ul class="notifications">
-    <li style="margin-top: -3px;">
-    <tenant-notifications-header
-        :initial-count="{{ $vc_document }}"
-        :redirect-url="{{ json_encode(route('tenant.documents.not_sent')) }}">
-    </tenant-notifications-header>
-    </li>
-</ul>
-
-<span class="separator"></span>
 <div id="userbox" class="userbox">
-...
         <div id="userbox" class="userbox">
             <a href="#" class="user-profile-content check-double" style="cursor: pointer;">
                 <div class="profile-info profile-info-pc" data-lock-name="{{ $vc_user->email }}"

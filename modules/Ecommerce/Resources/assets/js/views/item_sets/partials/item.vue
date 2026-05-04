@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close" append-to-body>
+    <el-dialog width="600px" :title="titleDialog" :visible="showDialog" @open="create" @close="close" append-to-body>
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -11,7 +11,8 @@
                             <el-select
                                     v-model="form.individual_item_id" @change="changeItem"
                                     filterable
-                                    placeholder="Buscar" >
+                                    placeholder="Buscar"
+                                    class="el-select-product">
 
                                     <el-option v-for="option in individual_items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select>
@@ -22,13 +23,13 @@
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
-                            <el-input-number v-model="form.quantity" :min="0.01"></el-input-number>
+                            <el-input-number class="el-input-number-product" v-model="form.quantity" :min="0.01"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>  
                 </div>
             </div>
-            <div class="form-actions text-end mt-2">
+            <div class="form-actions text-end mt-4">
                 <el-button class="me-2" @click.prevent="close()">Cerrar</el-button>
                 <el-button type="primary" native-type="submit" v-if="form.individual_item_id">Agregar</el-button>
             </div>
@@ -36,30 +37,6 @@
          
     </el-dialog>
 </template>
-<style>
-.el-select-dropdown {
-    max-width: 100% !important;
-    margin-right: 5% !important;
-}
-/* Ajusta el tamaño y la posición del cuadro de diálogo */
-.el-dialog {
-    max-width: 600px; /* Ajusta el tamaño máximo del cuadro de diálogo */
-    margin: 0 auto;   /* Centra el cuadro de diálogo */
-}
-/* Ajusta márgenes y rellenos para evitar desbordamientos */
-.el-select, .el-input-number {
-    margin-bottom: 20px;  /* Agrega espacio entre los campos */
-}
-.form-body {
-    padding: 15px;  /* Ajusta el padding para que no se solapen los elementos */
-}
-/* Estilo para el fondo del diálogo para que no se mueva */
-.el-dialog__wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-</style>
 <script>
 
 

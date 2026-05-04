@@ -83,7 +83,7 @@
                             </div> -->
 
 
-                            <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="col-sm-6 col-12" :class="{'col-lg-3': currency_types.length > 1, 'col-lg-6': currency_types.length <= 1}">
                                 <div class="form-group position-relative" :class="{'has-danger': errors.supplier_id}">
                                     <label class="control-label">
                                         Proveedor
@@ -130,7 +130,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2 col-sm-3 col-4">
+                            <div class="col-sm-3 col-4" :class="{'col-lg-2': currency_types.length > 1, 'col-lg-3': currency_types.length <= 1}">
                                 <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                                     <label class="control-label">
                                         Forma de pago
@@ -145,7 +145,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2 col-sm-3 col-4">
+                            <div class="col-lg-2 col-sm-3 col-4" v-if="currency_types.length > 1">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -157,7 +157,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2 col-sm-5 col-4">
+                            <div class="col-lg-2 col-sm-5 col-4" v-if="currency_types.length > 1">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark"

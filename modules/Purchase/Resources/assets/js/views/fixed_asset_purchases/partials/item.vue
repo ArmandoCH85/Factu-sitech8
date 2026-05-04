@@ -3,7 +3,7 @@
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="" :class="{'col-md-6': affectation_igv_types.length > 1, 'col-12': affectation_igv_types.length <= 1}">
                         <div class="form-group" :class="{'has-danger': errors.fixed_asset_item_id}">
                             <label class="control-label d-flex align-items-center">
                                 Producto/Servicio
@@ -41,7 +41,7 @@
                             <small class="form-control-feedback" v-if="errors.fixed_asset_item_id" v-text="errors.fixed_asset_item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" v-if="affectation_igv_types.length > 1">
                         <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id" :disabled="!change_affectation_igv_type_id" filterable>

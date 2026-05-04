@@ -5,6 +5,63 @@
       <div class="form-body">
         <div class="row">
           <div class="col-12">
+            <h4 class="control-label"><strong>Configuración de Barra de Publicidad</strong></h4>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group" :class="{'has-danger': errors.publicidad_activa}">
+              <label class="control-label">Activar Publicidad</label><br>
+              <el-switch v-model="form.publicidad_activa" active-text="Si" inactive-text="No"></el-switch>
+              <small
+                class="form-control-feedback"
+                v-if="errors.publicidad_activa"
+                v-text="errors.publicidad_activa[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-md-6" v-show="form.publicidad_activa">
+            <div class="form-group" :class="{'has-danger': errors.publicidad_texto}">
+              <label class="control-label">Texto de Publicidad</label>
+              <el-input v-model="form.publicidad_texto"></el-input>
+              <small
+                class="form-control-feedback"
+                v-if="errors.publicidad_texto"
+                v-text="errors.publicidad_texto[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-md-3" v-show="form.publicidad_activa">
+            <div class="form-group" :class="{'has-danger': errors.publicidad_color_fondo}">
+              <label class="control-label">Color de Fondo</label><br>
+              <div class="d-flex align-items-center">
+                <input 
+                  type="color" 
+                  v-model="form.publicidad_color_fondo" 
+                  class="form-control form-control-color" 
+                  style="width: 80px; height: 40px; padding: 2px; cursor: pointer; border: 1px solid #dcdfe6;"
+                >
+                <span class="ms-2 text-muted" style="font-family: monospace;">{{ form.publicidad_color_fondo }}</span>
+              </div>
+              <small
+                class="form-control-feedback"
+                v-if="errors.publicidad_color_fondo"
+                v-text="errors.publicidad_color_fondo[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-md-12 mb-3" v-show="form.publicidad_activa">
+            <div class="form-group" :class="{'has-danger': errors.publicidad_link}">
+              <label class="control-label">Link de Publicidad (URL)</label>
+              <el-input v-model="form.publicidad_link" placeholder="https://ejemplo.com"></el-input>
+              <small
+                class="form-control-feedback"
+                v-if="errors.publicidad_link"
+                v-text="errors.publicidad_link[0]"
+              ></small>
+            </div>
+          </div>
+
+          <div class="col-12 mt-2">
+            <hr>
             <h4><strong>Links personalizados para el menú</strong></h4>
           </div>
           <div class="col-md-4">
@@ -210,6 +267,10 @@ export default {
         this.form.tag_shipping = data.tag_shipping;
         this.form.tag_dollar = data.tag_dollar;
         this.form.tag_support = data.tag_support;
+        this.form.publicidad_activa = data.publicidad_activa;
+        this.form.publicidad_texto = data.publicidad_texto;
+        this.form.publicidad_color_fondo = data.publicidad_color_fondo;
+        this.form.publicidad_link = data.publicidad_link;
       }
     });
   },
@@ -226,6 +287,10 @@ export default {
         customised_link_two: "",
         title_three_customised_link: "",
         customised_link_three: "",
+        publicidad_activa: false,
+        publicidad_texto: "",
+        publicidad_color_fondo: "#000000",
+        publicidad_link: "",
       };
     },
     submit() {

@@ -39,6 +39,10 @@ class ConfigurationEcommerce extends ModelTenant
         'enable_store_pickup',
         'enable_yape',
         'enable_transfer',
+        'publicidad_activa',
+        'publicidad_texto',
+        'publicidad_color_fondo',
+        'publicidad_link'
     ];
 
     protected $casts = [

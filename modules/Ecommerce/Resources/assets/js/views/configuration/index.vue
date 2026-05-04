@@ -153,7 +153,15 @@
               <div class="col-md-6">
                 <div class="form-group form-modern">
                   <label class="control-label">Color Principal de la Tienda</label>
-                  <el-color-picker class="col-12 px-0" size="medium" v-model="form.color_ecommerce"></el-color-picker>
+                  <div class="d-flex align-items-center mt-1">
+                    <input 
+                      type="color" 
+                      v-model="form.color_ecommerce" 
+                      class="form-control form-control-color" 
+                      style="width: 80px; height: 40px; padding: 2px; cursor: pointer; border: 1px solid #dcdfe6;"
+                    >
+                    <span class="ms-2 text-muted" style="font-family: monospace;">{{ form.color_ecommerce }}</span>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label class="control-label">Logo</label>

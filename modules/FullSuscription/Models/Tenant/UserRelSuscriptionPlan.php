@@ -1192,6 +1192,9 @@ use App\Http\Controllers\Tenant\SaleNoteController;
                 ->orWhere('subscription_status', 'paused')->get();
     }
 
+    /**
+     * Función para crear unicamente despues de haber creado la primera suscripcion
+     */
         public function createOrder(array $data = []): SuscriptionOrder 
     {
         $_data = [
@@ -1216,7 +1219,6 @@ use App\Http\Controllers\Tenant\SaleNoteController;
         {
 
             $lastOrder = $this->suscription_orders()->latest('date_of_due')->first();
-
             if ($lastOrder) {
                 // dump("lastorder",$lastOrder->date_of_due);
                 return $lastOrder->date_of_due;

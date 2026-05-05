@@ -254,6 +254,7 @@ use Modules\Payment\Models\PaymentConfiguration;
                             'status' => $this->returnStatusOrder($validated['status']),
                             'type' => SuscriptionOrder::TYPE_NEW_SUSCRIPTION,
                             'date_of_issue' => $date_of_issue,
+
                     ];
                     $order = SuscriptionOrder::create($_data_order);
                 }
@@ -270,11 +271,11 @@ use Modules\Payment\Models\PaymentConfiguration;
                     $_data_order = [
                             'amount' => $plan->total,
                             'date_of_payment' => now()->toDateTimeString(),
-                            'person_number' => $validated['customer']['number'],
                             'suscription_id' => $suscription->id,
                             'currency' => 'PEN',
                             'status' => SuscriptionOrder::STATUS_PAID,
                             'type' => SuscriptionOrder::TYPE_SUSCRIPTION_ORDER,
+                            'date_of_due' => $suscription->getCurrentDateOfDue(),
                             'date_of_issue' => $date_of_issue,
                     ];
 
@@ -285,7 +286,6 @@ use Modules\Payment\Models\PaymentConfiguration;
                             'date_of_payment' => now()->toDateTimeString(),
                         ]);
                     }
-
                     
                     SuscriptionOrder::create($_data_order);
 

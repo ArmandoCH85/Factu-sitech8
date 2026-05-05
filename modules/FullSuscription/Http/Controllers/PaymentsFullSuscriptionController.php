@@ -13,7 +13,8 @@
     use Modules\FullSuscription\Http\Resources\UserRelSuscriptionPlansCollection;
     use Modules\FullSuscription\Http\Resources\UserRelSuscriptionPlansResource;
     use Modules\FullSuscription\Models\Tenant\CatPeriod;
-    use Modules\FullSuscription\Models\Tenant\SuscriptionPlan;
+use Modules\FullSuscription\Models\Tenant\SuscriptionOrder;
+use Modules\FullSuscription\Models\Tenant\SuscriptionPlan;
     use Modules\FullSuscription\Models\Tenant\UserRelSuscriptionPlan;
 
     class PaymentsFullSuscriptionController extends FullSuscriptionController
@@ -240,17 +241,29 @@
         {
             $id = null;
             if ($request->has('id')) $id = (int)$request->id;
+
             $plan = UserRelSuscriptionPlan::firstOrNew(['id' => $id], []);
             $plan->fill($request->all());
-
-
+            $plan->subscription_status = UserRelSuscriptionPlan::STATUS_AUTHORIZED;
             $plan->push();
-            $salesNotes = UserRelSuscriptionPlan::setSaleNote($plan);
 
-            if (!empty($salesNotes)) {
-                $plan->sale_notes = implode(',', $salesNotes);
-                $plan->push();
-            }
+
+            $now = Carbon::now()->format('Y-m-d');
+
+            $order = SuscriptionOrder::create([
+                'suscription_id' => $plan->id,
+                'type' => SuscriptionOrder::TYPE_SUSCRIPTION_ORDER,
+                'status' => SuscriptionOrder::STATUS_PENDING,
+                'amount' => $request->total,
+                'date_of_issue' => $now,
+                'date_of_due' => $plan->getCurrentDateOfDue(),
+                'count_notifications' => 0,
+            ]);
+
+            $plan->orders_created = 1;
+            $plan->save();
+
+
             return [
                 'success' => true,
                 'message' => $id ? 'Suscripción actualizada con éxito' : 'Suscripción registrada con éxito',

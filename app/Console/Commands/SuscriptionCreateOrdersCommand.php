@@ -35,15 +35,16 @@ class SuscriptionCreateOrdersCommand extends Command
     {
         $suscriptions = UserRelSuscriptionPlan::whereActive();
 
+
         foreach ($suscriptions as $suscription) {
             $before_day_creation = Configuration::select('before_day_creation_suscription_order')->first()->before_day_creation_suscription_order;
             $plan = $suscription->suscription_plan;
-            $order_creattion_date = $suscription->getCurrentDateOfDue();
+            $order_creattion_date = $suscription->orderCreationDate();
             $count = $suscription->orders_created;
             $quantity_period = $suscription->quantity_period;
 
-            if ($order_creattion_date->subDays($before_day_creation)->isToday()) {
 
+            if ($order_creattion_date->subDays($before_day_creation)->isToday()) {
                 if ($plan->unlimited) {
                     $suscription->createOrder();
                 } else if (($count < $quantity_period)) {

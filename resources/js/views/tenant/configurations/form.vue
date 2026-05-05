@@ -9,107 +9,7 @@
         </div>
         <template>
             <form autocomplete="off">
-                <el-tabs v-model="activeName" type="border-card" class="rounded">
-                    <el-tab-pane class="mb-3" name="first">
-                        <span slot="label">Servicios</span>
-                        <div class="row switch-configuration-container">
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Envío de comprobantes automático</label>
-                                <div :class="{ 'has-danger': errors.send_auto }" class="form-group">
-                                    <el-switch v-model="form.send_auto"
-                                        @change="submit"></el-switch>
-                                    <small v-if="errors.send_auto" class="form-control-feedback"
-                                        v-text="errors.send_auto[0]"></small>
-                                </div>
-                            </div>
-                            <div v-if="typeUser != 'integrator'" class="col-md-6 mt-4">
-                                <label class="control-label">Crontab <small>Tareas Programadas</small></label>
-                                <div :class="{ 'has-danger': errors.cron }" class="form-group">
-                                    <el-switch v-model="form.cron"
-                                        @change="submit"></el-switch>
-                                    <small v-if="errors.cron" class="form-control-feedback"
-                                        v-text="errors.cron[0]"></small>
-                                </div>
-                            </div>
-                            <!-- auto_send_dispatchs_to_sunat -->
-                            <div class="col-md-6 mt-4">
-                                <div class="form-group">
-                                    <label class="control-label">
-                                        Envío de guía de remisión automático
-                                    </label>
-                                    <div :class="{ 'has-danger': errors.auto_send_dispatchs_to_sunat }"
-                                        class="form-group">
-                                        <el-switch v-model="form.auto_send_dispatchs_to_sunat"
-                                            @change="submit"></el-switch>
-                                        <small v-if="errors.auto_send_dispatchs_to_sunat" class="form-control-feedback"
-                                            v-text="errors.auto_send_dispatchs_to_sunat[0]"></small>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div v-if="typeUser != 'integrator'" class="col-md-6 mt-4">
-                                <label class="control-label">Enviar boletas y notas asociadas (Crédito y Débito) de
-                                    forma individual</label>
-                                <div :class="{ 'has-danger': errors.ticket_single_shipment }" class="form-group">
-                                    <el-switch v-model="form.ticket_single_shipment"
-                                        @change="submit"></el-switch>
-                                    <small v-if="errors.ticket_single_shipment" class="form-control-feedback"
-                                        v-text="errors.ticket_single_shipment[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Permitir Colocar direccion de llegada en guía
-
-                                    <el-tooltip class="item"
-                                        content="En guías, cambia el selector a texto para poder introducir el valor. Maximo 100 caracteres"
-                                        effect="dark" placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div :class="{ 'has-danger': errors.dispatches_address_text }" class="form-group">
-                                    <el-switch v-model="form.dispatches_address_text"
-                                        @change="submit"></el-switch>
-                                    <small v-if="errors.dispatches_address_text" class="form-control-feedback"
-                                        v-text="errors.dispatches_address_text[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Asignar dirección de partida - guía
-                                    <el-tooltip class="item"
-                                        content="Se asigna la dirección de partida mediante la informacion registrada en sucursal - Disponible en guías"
-                                        effect="dark" placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div :class="{ 'has-danger': errors.set_address_by_establishment }" class="form-group">
-                                    <el-switch v-model="form.set_address_by_establishment"
-                                        @change="submit"></el-switch>
-                                    <small v-if="errors.set_address_by_establishment" class="form-control-feedback"
-                                        v-text="errors.set_address_by_establishment[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">
-                                    Visualizar precio de productos en GRE Remitente
-                                    <el-tooltip class="item"
-                                        content="Muestra el precio y total de un producto al generar una guía de remisión remitente"
-                                        effect="dark" placement="top-start">
-                                        <i class="ri-information-line"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div :class="{ 'has-danger': errors.enabled_price_items_dispatch }" class="form-group">
-                                    <el-switch v-model="form.enabled_price_items_dispatch"
-                                        @change="submit"></el-switch>
-                                    <small v-if="errors.enabled_price_items_dispatch" class="invalid-feedback"
-                                        v-text="errors.enabled_price_items_dispatch[0]"></small>
-                                </div>
-                            </div>
-                        </div>
-                    </el-tab-pane>
+                <el-tabs v-model="activeName" type="border-card" class="rounded">                    
                     <el-tab-pane class="mb-3" name="second">
                         <span slot="label">Visual</span>
                         <div class="row switch-configuration-container">
@@ -1527,83 +1427,7 @@
                             </div>
 
                         </div>
-                    </el-tab-pane>
-                    <el-tab-pane class="mb-3" name="five">
-                        <span slot="label">Finanzas</span>
-                        <div class="row switch-configuration-container">
-                            <div class="col-12 mt-4">
-                                <div class="form-group" style="display: flex; flex-direction: row-reverse; justify-content: start;">
-                                    <label style="margin-left: 5px;">Aplicar penalidad a los pagos vencidos</label>
-                                    <el-switch v-model="form.finances.apply_arrears"
-                                        @change="submit"></el-switch>
-                                </div>
-                                <div v-if="form.finances.apply_arrears" class="form-group" style="max-width: 300px;">
-                                    <label>Cantidad a aplicar por día</label>
-                                    <el-input v-model="form.finances.arrears_amount" class="input-with-select"
-                                        placeholder="Please input">
-                                        <el-button slot="append" @click="submit">
-                                            <i class="fa fa-save"></i>
-                                        </el-button>
-                                    </el-input>
-                                </div>
-                            </div>
-                            <div class="col-12 mt-4">
-                                <div class="form-group" style="display: flex; flex-direction: row-reverse; justify-content: start;">
-                                    <label style="margin-left: 5px;">Restricción para deuda vencida
-                                        <el-tooltip class="item"
-                                            effect="dark"
-                                            content="Clientes con deuda vencida mayor a los días establecidos, no podrán realizar compras a crédito.">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-switch v-model="form.finances.restriction_expired_debt"
-                                        @change="submit"></el-switch>
-                                </div>
-                                <div v-if="form.finances.restriction_expired_debt" class="form-group" style="max-width: 300px;">
-                                    <label>Días máximos de deuda vencida</label>
-                                    <el-input v-model="form.finances.max_expired_days" class="input-with-select"
-                                        placeholder="Ingrese días">
-                                        <el-button slot="append" @click="submit">
-                                            <i class="fa fa-save"></i>
-                                        </el-button>
-                                    </el-input>
-                                </div>
-                            </div>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane class="mb-3" name="six">
-                        <span slot="label">Datos</span>
-                        <div class="row switch-configuration-container">
-
-                            <div class="col-md-12 mt-4 mb-2 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
-                                <label class="control-label mt-0 ms-1">
-                                    Omitir validación para correo electrónico
-                                    <el-tooltip class="item" effect="dark" placement="top-start">
-                                        <div slot="content">
-                                            No se validará el campo "correo de contacto" en sucursales, podrá
-                                            ingresar un texto libre.
-                                        </div>
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-
-                                <div :class="{ 'has-danger': errors.remove_validation_email_establishments }"
-                                    class="form-group">
-                                    <el-switch v-model="form.remove_validation_email_establishments"
-                                                @change="submit"></el-switch>
-                                    <small v-if="errors.remove_validation_email_establishments"
-                                        class="form-control-feedback"
-                                        v-text="errors.remove_validation_email_establishments[0]"></small>
-                                </div>
-                            </div>
-
-
-                            <div class="col-12 mt-4 d-flex gap-2">
-                                <tenant-options-form></tenant-options-form>
-                                <tenant-options-form-item></tenant-options-form-item>
-                            </div>
-                        </div>
-                    </el-tab-pane>
+                    </el-tab-pane>                    
                     <el-tab-pane class="mb-3" name="seven">
                         <span slot="label">Compras</span>
                         <tenant-configurations-form-purchases :errors="errors" :form="form"
@@ -2192,36 +2016,166 @@
                         <span slot="label">Reportes</span>
                         <report-configurations-index></report-configurations-index>
                     </el-tab-pane>
-                    <el-tab-pane class="mb-3" name="eleven">
-                        <span slot="label">Dashboard</span>
+
+                    <el-tab-pane class="mb-3" name="impresion" :lazy="true">
+                        <span slot="label">Impresión</span>
+                        <PrintConfig />
+                    </el-tab-pane>
+
+                    <el-tab-pane class="mb-3" name="extra">
+                        <span slot="label">Extra</span>
                         <div class="row switch-configuration-container">
                             <div class="col-md-6 mt-4">
-                                <label class="control-label">Ventas
+                                <label class="control-label">Envío de comprobantes automático</label>
+                                <div :class="{ 'has-danger': errors.send_auto }" class="form-group">
+                                    <el-switch v-model="form.send_auto" @change="submit"></el-switch>
+                                    <small v-if="errors.send_auto" class="form-control-feedback"
+                                        v-text="errors.send_auto[0]"></small>
+                                </div>
+                            </div>
+                            <div v-if="typeUser != 'integrator'" class="col-md-6 mt-4">
+                                <label class="control-label">Crontab <small>Tareas Programadas</small></label>
+                                <div :class="{ 'has-danger': errors.cron }" class="form-group">
+                                    <el-switch v-model="form.cron" @change="submit"></el-switch>
+                                    <small v-if="errors.cron" class="form-control-feedback"
+                                        v-text="errors.cron[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">Envío de guía de remisión automático</label>
+                                    <div :class="{ 'has-danger': errors.auto_send_dispatchs_to_sunat }" class="form-group">
+                                        <el-switch v-model="form.auto_send_dispatchs_to_sunat" @change="submit"></el-switch>
+                                        <small v-if="errors.auto_send_dispatchs_to_sunat" class="form-control-feedback"
+                                            v-text="errors.auto_send_dispatchs_to_sunat[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="typeUser != 'integrator'" class="col-md-6 mt-4">
+                                <label class="control-label">Enviar boletas y notas asociadas (Crédito y Débito) de forma individual</label>
+                                <div :class="{ 'has-danger': errors.ticket_single_shipment }" class="form-group">
+                                    <el-switch v-model="form.ticket_single_shipment" @change="submit"></el-switch>
+                                    <small v-if="errors.ticket_single_shipment" class="form-control-feedback"
+                                        v-text="errors.ticket_single_shipment[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Permitir Colocar direccion de llegada en guía
+                                    <el-tooltip class="item"
+                                        content="En guías, cambia el selector a texto para poder introducir el valor. Maximo 100 caracteres"
+                                        effect="dark" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{ 'has-danger': errors.dispatches_address_text }" class="form-group">
+                                    <el-switch v-model="form.dispatches_address_text" @change="submit"></el-switch>
+                                    <small v-if="errors.dispatches_address_text" class="form-control-feedback"
+                                        v-text="errors.dispatches_address_text[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Asignar dirección de partida - guía
+                                    <el-tooltip class="item"
+                                        content="Se asigna la dirección de partida mediante la informacion registrada en sucursal - Disponible en guías"
+                                        effect="dark" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{ 'has-danger': errors.set_address_by_establishment }" class="form-group">
+                                    <el-switch v-model="form.set_address_by_establishment" @change="submit"></el-switch>
+                                    <small v-if="errors.set_address_by_establishment" class="form-control-feedback"
+                                        v-text="errors.set_address_by_establishment[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Visualizar precio de productos en GRE Remitente
+                                    <el-tooltip class="item"
+                                        content="Muestra el precio y total de un producto al generar una guía de remisión remitente"
+                                        effect="dark" placement="top-start">
+                                        <i class="ri-information-line"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{ 'has-danger': errors.enabled_price_items_dispatch }" class="form-group">
+                                    <el-switch v-model="form.enabled_price_items_dispatch" @change="submit"></el-switch>
+                                    <small v-if="errors.enabled_price_items_dispatch" class="invalid-feedback"
+                                        v-text="errors.enabled_price_items_dispatch[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group" style="display: flex; flex-direction: row-reverse; justify-content: start;">
+                                    <label style="margin-left: 5px;">Aplicar penalidad a los pagos vencidos</label>
+                                    <el-switch v-model="form.finances.apply_arrears" @change="submit"></el-switch>
+                                </div>
+                                <div v-if="form.finances.apply_arrears" class="form-group" style="max-width: 300px;">
+                                    <label>Cantidad a aplicar por día</label>
+                                    <el-input v-model="form.finances.arrears_amount" class="input-with-select" placeholder="Please input">
+                                        <el-button slot="append" @click="submit"><i class="fa fa-save"></i></el-button>
+                                    </el-input>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group" style="display: flex; flex-direction: row-reverse; justify-content: start;">
+                                    <label style="margin-left: 5px;">Restricción para deuda vencida
+                                        <el-tooltip class="item" effect="dark"
+                                            content="Clientes con deuda vencida mayor a los días establecidos, no podrán realizar compras a crédito.">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-switch v-model="form.finances.restriction_expired_debt" @change="submit"></el-switch>
+                                </div>
+                                <div v-if="form.finances.restriction_expired_debt" class="form-group" style="max-width: 300px;">
+                                    <label>Días máximos de deuda vencida</label>
+                                    <el-input v-model="form.finances.max_expired_days" class="input-with-select" placeholder="Ingrese días">
+                                        <el-button slot="append" @click="submit"><i class="fa fa-save"></i></el-button>
+                                    </el-input>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="col-12 mt-0 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
+                                <label class="control-label mt-0 ms-1">
+                                    Omitir validación para correo electrónico
                                     <el-tooltip class="item" effect="dark" placement="top-start">
-                                        <div slot="content">Leyenda: Grafico notas de ventas, comprobantes y totales
+                                        <div slot="content">
+                                            No se validará el campo "correo de contacto" en sucursales, podrá ingresar un texto libre.
                                         </div>
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
+                                <div :class="{ 'has-danger': errors.remove_validation_email_establishments }" class="form-group">
+                                    <el-switch v-model="form.remove_validation_email_establishments" @change="submit"></el-switch>
+                                    <small v-if="errors.remove_validation_email_establishments"
+                                        class="form-control-feedback"
+                                        v-text="errors.remove_validation_email_establishments[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3 d-flex gap-2">
+                                <tenant-options-form></tenant-options-form>
+                                <tenant-options-form-item></tenant-options-form-item>
+                            </div>
+                            <hr>
+                            <div class="col-md-6 mt-4 mt-md-0">
+                                <label class="control-label">Ventas
+                                    <el-tooltip class="item" effect="dark" placement="top-start">
+                                        <div slot="content">Leyenda: Grafico notas de ventas, comprobantes y totales</div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
                                 <div class="form-group" :class="{ 'has-danger': errors.dashboard_sales }">
-                                    <el-switch v-model="form.dashboard_sales"
-                                        @change="submit"></el-switch>
+                                    <el-switch v-model="form.dashboard_sales" @change="submit"></el-switch>
                                     <small class="form-control-feedback" v-if="errors.dashboard_sales"
                                         v-text="errors.dashboard_sales[0]"></small>
                                 </div>
                             </div>
-
-                            <div class="col-md-6 mt-4">
+                            <div class="col-md-6 mt-4 mt-md-0">
                                 <label class="control-label">Productos
                                     <el-tooltip class="item" effect="dark" placement="top-start">
-                                        <div slot="content">Leyenda: Ventas por producto, productos por agotarse,
-                                            productos por vencer</div>
+                                        <div slot="content">Leyenda: Ventas por producto, productos por agotarse, productos por vencer</div>
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
                                 <div class="form-group" :class="{ 'has-danger': errors.dashboard_products }">
-                                    <el-switch v-model="form.dashboard_products"
-                                        @change="submit"></el-switch>
+                                    <el-switch v-model="form.dashboard_products" @change="submit"></el-switch>
                                     <small class="form-control-feedback" v-if="errors.dashboard_products"
                                         v-text="errors.dashboard_products[0]"></small>
                                 </div>
@@ -2229,14 +2183,12 @@
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Balance general - compras
                                     <el-tooltip class="item" effect="dark" placement="top-start">
-                                        <div slot="content">Leyenda: Grafico de balance, Utilidades/Ganancias y compras
-                                        </div>
+                                        <div slot="content">Leyenda: Grafico de balance, Utilidades/Ganancias y compras</div>
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
                                 <div class="form-group" :class="{ 'has-danger': errors.dashboard_general }">
-                                    <el-switch v-model="form.dashboard_general"
-                                        @change="submit"></el-switch>
+                                    <el-switch v-model="form.dashboard_general" @change="submit"></el-switch>
                                     <small class="form-control-feedback" v-if="errors.dashboard_general"
                                         v-text="errors.dashboard_general[0]"></small>
                                 </div>
@@ -2245,71 +2197,48 @@
                                 <div class="form-group">
                                     <label class="">Clientes
                                         <el-tooltip class="item" effect="dark" placement="top-start">
-                                            <div slot="content">Leyenda: Top de clientes
-                                            </div>
+                                            <div slot="content">Leyenda: Top de clientes</div>
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
                                     <div :class="{ 'has-danger': errors.dashboard_clients }" class="form-group">
-                                        <el-switch v-model="form.dashboard_clients"
-                                                   @change="submit"></el-switch>
+                                        <el-switch v-model="form.dashboard_clients" @change="submit"></el-switch>
                                         <small v-if="errors.dashboard_clients" class="form-control-feedback"
                                             v-text="errors.dashboard_clients[0]"></small>
                                     </div>
                                 </div>
                             </div>
-
-                        </div>
-                    </el-tab-pane>
-
-
-                    <el-tab-pane class="mb-3" name="tab_point_system">
-                        <span slot="label">S. Puntos</span>
-                        <div class="row switch-configuration-container">
-
-                            <div class="col-md-4 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
+                            <div class="col-md-6 mt-4">
                                 <label class="control-label ms-1 mt-0">
                                     Habilitar sistema por puntos
-
                                     <el-tooltip class="item" effect="dark" placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                         <div slot="content">
                                             <strong>Disponible en Nuevo cpe y POS</strong><br /><br />
                                             El monto de venta equivale a X N° de puntos<br /><br />
-                                            Ejemplo: Si tiene configurado como monto S/1, y este es equivalente a 1
-                                            punto, al realizar una venta por S/100 a cliente X, este acumularía 100
-                                            puntos.<br />
+                                            Ejemplo: Si tiene configurado como monto S/1, y este es equivalente a 1 punto,
+                                            al realizar una venta por S/100 a cliente X, este acumularía 100 puntos.<br />
                                         </div>
                                     </el-tooltip>
-
                                 </label>
                                 <div :class="{ 'has-danger': errors.enabled_point_system }" class="form-group">
-                                    <el-switch v-model="form.enabled_point_system"
-                                        @change="submit"></el-switch>
+                                    <el-switch v-model="form.enabled_point_system" @change="submit"></el-switch>
                                     <small v-if="errors.enabled_point_system" class="form-control-feedback"
                                         v-text="errors.enabled_point_system[0]"></small>
                                 </div>
                             </div>
-
                             <template v-if="form.enabled_point_system">
-
-                                <div class="col-md-4">
-                                    <label class="control-label">
-                                        Monto de venta
-                                    </label>
-                                    <div :class="{ 'has-danger': errors.point_system_sale_amount }"
-                                        class="form-group mt-1">
+                                <div class="col-md-3 mt-4">
+                                    <label class="control-label">Monto de venta</label>
+                                    <div :class="{ 'has-danger': errors.point_system_sale_amount }" class="form-group mt-1">
                                         <el-input-number v-model="form.point_system_sale_amount" :min="0.01"
                                             :precision="2" :step="1" @change="submit"></el-input-number>
                                         <small v-if="errors.point_system_sale_amount" class="form-control-feedback"
                                             v-text="errors.point_system_sale_amount[0]"></small>
                                     </div>
                                 </div>
-
-                                <div class="col-md-4">
-                                    <label class="control-label">
-                                        N° de puntos
-                                    </label>
+                                <div class="col-md-3 mt-4">
+                                    <label class="control-label">N° de puntos</label>
                                     <div :class="{ 'has-danger': errors.quantity_of_points }" class="form-group mt-1">
                                         <el-input-number v-model="form.quantity_of_points" :min="0.01" :precision="2"
                                             :step="1" @change="submit"></el-input-number>
@@ -2317,28 +2246,16 @@
                                             v-text="errors.quantity_of_points[0]"></small>
                                     </div>
                                 </div>
-
-                                <div class="col-md-4 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
-                                    <label class="control-label mt-0 ms-1">
-                                        Redondear al obtener puntos
-                                    </label>
+                                <div class="col-12 d-flex flex-row-reverse align-items-center mt-4" style="justify-content: start;">
+                                    <label class="control-label mt-0 ms-1">Redondear al obtener puntos</label>
                                     <div :class="{ 'has-danger': errors.round_points_of_sale }" class="form-group">
-                                        <el-switch v-model="form.round_points_of_sale"
-                                                    @change="submit"></el-switch>
+                                        <el-switch v-model="form.round_points_of_sale" @change="submit"></el-switch>
                                         <small v-if="errors.round_points_of_sale" class="form-control-feedback"
                                             v-text="errors.round_points_of_sale[0]"></small>
                                     </div>
                                 </div>
                             </template>
-
-                        </div>
-                    </el-tab-pane>
-
-                    <el-tab-pane class="mb-3" name="thirteen">
-                        <span slot="label">Usuario</span>
-                        <div class="row switch-configuration-container">
-                            <div class="col-md-6 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
-
+                            <div class="col-md-6 mt-4">
                                 <label class="control-label mt-0 ms-1">
                                     Recordar cambio de contraseña
                                     <el-tooltip class="item"
@@ -2347,25 +2264,15 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-
-                                <div :class="{ 'has-danger': errors.enabled_remember_change_password }"
-                                    class="form-group">
-                                    <el-switch v-model="form.enabled_remember_change_password"
-                                                @change="submit"></el-switch>
+                                <div :class="{ 'has-danger': errors.enabled_remember_change_password }" class="form-group">
+                                    <el-switch v-model="form.enabled_remember_change_password" @change="submit"></el-switch>
                                     <small v-if="errors.enabled_remember_change_password" class="form-control-feedback"
                                         v-text="errors.enabled_remember_change_password[0]"></small>
                                 </div>
                             </div>
-
                             <div class="col-md-6" v-if="form.enabled_remember_change_password">
-
-                                <label class="control-label">
-                                    N° Meses
-                                </label>
-
-                                <div :class="{ 'has-danger': errors.quantity_month_remember_change_password }"
-                                    class="form-group">
-
+                                <label class="control-label">N° Meses</label>
+                                <div :class="{ 'has-danger': errors.quantity_month_remember_change_password }" class="form-group">
                                     <el-input-number v-model="form.quantity_month_remember_change_password" :min="1"
                                         :precision="0" :step="1" @change="submit"></el-input-number>
                                     <small v-if="errors.quantity_month_remember_change_password"
@@ -2373,11 +2280,7 @@
                                         v-text="errors.quantity_month_remember_change_password[0]"></small>
                                 </div>
                             </div>
-
-
-
-                            <div class="col-md-6 d-flex flex-row-reverse align-items-center" style="justify-content: start;">
-
+                            <div class="col-md-6 mt-4">
                                 <label class="control-label mt-0 ms-1">
                                     Habilitar contraseña segura
                                     <el-tooltip class="item"
@@ -2386,85 +2289,69 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-
                                 <div :class="{ 'has-danger': errors.regex_password_user }" class="form-group">
-                                    <el-switch v-model="form.regex_password_user"
-                                        @change="submit"></el-switch>
+                                    <el-switch v-model="form.regex_password_user" @change="submit"></el-switch>
                                     <small v-if="errors.regex_password_user" class="form-control-feedback"
                                         v-text="errors.regex_password_user[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-3">
+                                <session-lifetime></session-lifetime>
+                            </div>
+                            <template v-if="typeUser != 'integrator' && soapTypeId != '03'">
+                                <div class="col-md-6 mt-4">
+                                    <label class="control-label">Venta con restricción de stock
+                                        <el-tooltip class="item"
+                                            content="Valida el stock de los productos al finalizar la transacción"
+                                            effect="dark" placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div class="form-group" :class="{ 'has-danger': errors.stock_control }">
+                                        <el-switch v-model="form.stock_control" @change="changeStockControl"></el-switch>
+                                        <small class="form-control-feedback" v-if="errors.stock_control"
+                                            v-text="errors.stock_control[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <label class="control-label">Generar automáticamente codigo interno del producto</label>
+                                    <div class="form-group" :class="{ 'has-danger': errors.generate_internal_id }">
+                                        <el-switch v-model="form.generate_internal_id" @change="submitInventoryConfig"></el-switch>
+                                        <small class="form-control-feedback" v-if="errors.generate_internal_id"
+                                            v-text="errors.generate_internal_id[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-4">
+                                    <label class="control-label">
+                                        Revisión de inventario
+                                        <el-tooltip class="item"
+                                            content="Revisión del inventario del sistema con el escaneado/registrado de forma manual - Disponible en módulo Inventario"
+                                            effect="dark" placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div class="form-group" :class="{ 'has-danger': errors.inventory_review }">
+                                        <el-switch v-model="form.inventory_review" @change="submitInventoryConfig"></el-switch>
+                                        <small class="form-control-feedback" v-if="errors.inventory_review"
+                                            v-text="errors.inventory_review[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-4" v-if="form.stock_control">
+                                    <label class="control-label">
+                                        Validar stock al agregar producto
+                                        <el-tooltip class="item" content="Disponible en Nuevo CPE"
+                                            effect="dark" placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div class="form-group" :class="{ 'has-danger': errors.validate_stock_add_item }">
+                                        <el-switch v-model="form.validate_stock_add_item" @change="submitInventoryConfig"></el-switch>
+                                        <small class="form-control-feedback" v-if="errors.validate_stock_add_item"
+                                            v-text="errors.validate_stock_add_item[0]"></small>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
-
-                        <session-lifetime></session-lifetime>
-
-                    </el-tab-pane>
-
-                    <el-tab-pane v-if="typeUser != 'integrator' && soapTypeId != '03'" class="mb-3" name="twelve">
-                        <span slot="label">Inventario</span>
-                        <div class="row switch-configuration-container">
-
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Venta con restricción de stock
-                                    <el-tooltip class="item"
-                                                content="Valida el stock de los productos al finalizar la transacción"
-                                                effect="dark"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div class="form-group" :class="{'has-danger': errors.stock_control}">
-                                    <el-switch v-model="form.stock_control" @change="changeStockControl"></el-switch>
-                                    <small class="form-control-feedback" v-if="errors.stock_control" v-text="errors.stock_control[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Generar automáticamente codigo interno del producto</label>
-                                <div class="form-group" :class="{'has-danger': errors.generate_internal_id}">
-                                    <el-switch v-model="form.generate_internal_id" @change="submitInventoryConfig"></el-switch>
-                                    <small class="form-control-feedback" v-if="errors.generate_internal_id" v-text="errors.generate_internal_id[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">
-                                    Revisión de inventario
-                                    <el-tooltip class="item"
-                                                content="Revisión del inventario del sistema con el escaneado/registrado de forma manual - Disponible en módulo Inventario"
-                                                effect="dark"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div class="form-group" :class="{'has-danger': errors.inventory_review}">
-                                    <el-switch v-model="form.inventory_review" @change="submitInventoryConfig"></el-switch>
-                                    <small class="form-control-feedback" v-if="errors.inventory_review" v-text="errors.inventory_review[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mt-4" v-if="form.stock_control">
-                                <label class="control-label">
-                                    Validar stock al agregar producto
-                                    <el-tooltip class="item"
-                                                content="Disponible en Nuevo CPE"
-                                                effect="dark"
-                                                placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div class="form-group" :class="{'has-danger': errors.validate_stock_add_item}">
-                                    <el-switch v-model="form.validate_stock_add_item" @change="submitInventoryConfig"></el-switch>
-                                    <small class="form-control-feedback" v-if="errors.validate_stock_add_item" v-text="errors.validate_stock_add_item[0]"></small>
-                                </div>
-                            </div>
-
-                        </div>
-                    </el-tab-pane>
-
-                    <el-tab-pane class="mb-3" name="impresion" :lazy="true">
-                        <span slot="label">Impresión</span>
-                        <PrintConfig />
                     </el-tab-pane>
 
                 </el-tabs>
@@ -2563,7 +2450,7 @@ export default {
             printers: [],
             loadingPrinters: false,
             placeholder: '',
-            activeName: 'first'
+            activeName: 'second'
         }
     },
     created() {

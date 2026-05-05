@@ -1773,7 +1773,7 @@ hr {
     height: 1px;
     background-image: -webkit-gradient( linear, right top, left top, from(rgba(0, 0, 0, 0)), color-stop(rgba(0, 0, 0, 0.2)), to(rgba(0, 0, 0, 0)) );
     background-image: linear-gradient(to left, rgba(0, 0, 0, 0), var(--black-accent), rgba(0, 0, 0, 0));
-    margin: 22px 0 22px 0;
+    margin: 22px 0 22px 0 !important;
 }
 /* --------------------------- tema noche --------------------------- */
 html.dark .header .logo-container .topbar-links {
@@ -2752,6 +2752,9 @@ div.welcome-card .welcome-subtitle{
 }
 .template-skin-item {
     border-radius: 8px;
+}
+.el-tabs--border-card>.el-tabs__header .el-tabs__item {
+    border: none;
 }
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {

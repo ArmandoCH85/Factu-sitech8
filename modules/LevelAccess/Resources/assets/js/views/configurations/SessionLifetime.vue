@@ -1,6 +1,6 @@
 <template>
     <div class="row" v-if="form.is_tenant_session_lifetime_enabled">
-        <div class="col-md-4 mt-4">
+        <div class="col-12 col-md-8 mt-0">
             <label class="control-label">
                 Duración de la sesión 
                 <el-tooltip class="item"

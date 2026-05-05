@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <el-tabs v-model="activeName">
+            <el-tabs v-model="activeName" @tab-click="handleTabClick">
                 <el-tab-pane class
                              name="first">
                     <span slot="label">General</span>
@@ -1281,6 +1281,7 @@ export default {
                         this.activeName == 'five'
                     ) {
                         this.activeName = null;
+                        this.lastClickedTab = null;
                     }
                     return true;
                 }
@@ -1376,6 +1377,7 @@ export default {
             },
             attribute_types: [],
             activeName: null,
+            lastClickedTab: null,
             fromPharmacy: false,
             inventory_configuration: null,
             next_internal_id: null
@@ -1469,6 +1471,14 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        handleTabClick(tab) {
+            if (this.lastClickedTab === tab.name) {
+                this.activeName = null;
+                this.lastClickedTab = null;
+            } else {
+                this.lastClickedTab = tab.name;
+            }
+        },
         stripHtml(html) {
             if (!html) return html
             return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
@@ -1744,6 +1754,7 @@ export default {
             //     return w;
             // });
 this.activeName = null
+            this.lastClickedTab = null
             if (this.type) {
                 if (this.type !== 'PRODUCTS') {
                     this.form.unit_type_id = 'ZZ';

@@ -436,7 +436,6 @@ class DocumentController extends Controller
             $customers = Person::with('addresses')
                 ->whereType('customers')
                 ->whereIsEnabled()
-                ->whereFilterCustomerBySeller('customers')
                 ->orderBy('name')
                 ->take(20)
                 ->get()->transform(function ($row) {
@@ -1145,7 +1144,6 @@ class DocumentController extends Controller
 
         $customers = Person::with('addresses')->whereType('customers')
             ->where('id', $id)
-            ->whereFilterCustomerBySeller('customers')
             ->get()->transform(function ($row) {
                 /** @var  Person $row */
                 return $row->getCollectionData();

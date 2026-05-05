@@ -436,36 +436,6 @@ class ItemController extends Controller
                 $request->merge(['barcode' => $request->internal_id]);
             }
         }
-
-        if ($request->internal_id) {
-
-            $original = $request->internal_id;
-            $internal_id = $original;
-            $used_codes = [];
-
-            while (\App\Models\Tenant\Item::where('internal_id', $internal_id)->exists()) {
-                $used_codes[] = $internal_id;
-
-                $internal_id = str_pad(
-                    (int)$internal_id + 1,
-                    strlen($original),
-                    '0',
-                    STR_PAD_LEFT
-                );
-            }
-
-            // reemplazar en request
-            $request->merge(['internal_id' => $internal_id]);
-
-            // 🔔 MENSAJE (opcional pero te lo pidieron)
-            if (!empty($used_codes)) {
-                session()->flash('message', 
-                    'Los códigos ' . implode(', ', $used_codes) . 
-                    ' ya estaban en uso. Se asignó automáticamente el código ' . $internal_id
-                );
-            }
-        }
-        
         $item = Item::firstOrNew(['id' => $id]);
         $item->item_type_id = '01';
         $item->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;

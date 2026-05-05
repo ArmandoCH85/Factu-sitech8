@@ -13,7 +13,7 @@ use Modules\LevelAccess\Helpers\SessionLifetimeHelper;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use App\Models\System\Configuration;
-
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,7 +34,9 @@ class AppServiceProvider extends ServiceProvider
 		// ── AGREGADO (RECIENTE) ──────────────────────────────────────
         // Se movió este método desde ForgotPasswordController para centralizar
         // la configuración de correo en el arranque de la aplicación.
-        $this->configurarCorreoDesdeDB();
+        if (Schema::hasTable('configurations')) {
+            $this->configurarCorreoDesdeDB();
+        }
 	}
 
 	public function register()

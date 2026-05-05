@@ -43,22 +43,6 @@
         $waText = rawurlencode('Hola, tengo una consulta desde la tienda online');
         $waLink = $waPhone ? "https://wa.me/{$waPhone}?text={$waText}" : '';
     ?>
-    @php
-        $config_publicidad = \App\Models\Tenant\ConfigurationEcommerce::first();
-    @endphp
-
-    @if($config_publicidad && $config_publicidad->publicidad_activa)
-        <div id="announcement-bar" class="announcement-bar" style="background-color: {{ $config_publicidad->publicidad_color_fondo }};">
-            <div class="container text-center position-relative">
-                <a href="{{ $config_publicidad->publicidad_link ?? '#' }}" target="_blank" class="announcement-link">
-                    {{ $config_publicidad->publicidad_texto }}
-                </a>
-                <button type="button" class="close-announcement" aria-label="Close" onclick="closeAnnouncementBar()">
-                    <span>&times;</span>
-                </button>
-            </div>
-        </div>
-    @endif
 
     <div class="page-wrapper">
         @include('ecommerce::layouts.partials_ecommerce.header')

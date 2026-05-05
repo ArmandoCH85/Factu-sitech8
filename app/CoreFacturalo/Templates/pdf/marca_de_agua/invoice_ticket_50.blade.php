@@ -457,7 +457,7 @@
         </tr>
     @endif
 
-    @if($document->total_discount > 0 && $document->subtotal > 0)
+    @if($document->total_discount_with_igv > 0 && $document->subtotal > 0)
         <tr>
             <td colspan="3" class="desc-ticket text-uppercase">SUBTOTAL:
                 {{ $document->currency_type->symbol }}</td>
@@ -466,14 +466,14 @@
         </tr>
     @endif
 
-    @if($document->total_discount > 0)
+    @if($document->total_discount_with_igv > 0)
         <tr>
             <td colspan="3"
                 class="desc-ticket text-uppercase">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}
                 :
                 {{ $document->currency_type->symbol }}</td>
             <td colspan="2"
-                class="text-right desc-ticket text-uppercase">{{ number_format($document->total_discount, 2) }}</td>
+                class="text-right desc-ticket text-uppercase">{{ number_format($document->total_discount_with_igv, 2) }}</td>
         </tr>
     @endif
 

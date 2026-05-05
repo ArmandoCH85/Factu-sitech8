@@ -780,18 +780,18 @@ foreach ($document->items as $row) {
         </tr>
     @endif
 
-    @if($document->total_discount > 0 && $document->subtotal > 0)
+    @if($document->total_discount_with_igv > 0 && $document->subtotal > 0)
         <tr>
             <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
             <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->subtotal, 2) }}</td>
         </tr>
     @endif
 
-    @if($document->total_discount > 0)
+    @if($document->total_discount_with_igv > 0)
         <tr>
             <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}" >{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}
                 : {{ $document->currency_type->symbol }}</td>
-            <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount, 2) }}</td>
+            <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount_with_igv, 2) }}</td>
         </tr>
     @endif
 

@@ -399,10 +399,10 @@
                 <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif        
-        @if($document->total_discount > 0)
+        @if($document->total_discount_with_igv > 0)
             <tr>
                 <td colspan="5" class="p-1 text-right align-top desc cell-solid font-bold">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
-                <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount, 2) }}</td>
+                <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount_with_igv, 2) }}</td>
             </tr>
         @endif
         <tr>

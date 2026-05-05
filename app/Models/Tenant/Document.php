@@ -326,6 +326,16 @@ class Document extends ModelTenant
         });
     }
 
+    public function getTotalDiscountWithIgvAttribute()
+    {
+        if ($this->total_value == 0 || $this->total_discount == 0) {
+            return $this->total_discount;
+        }
+        
+        $factor = ($this->total_value + $this->total_taxes) / $this->total_value;
+        return round($this->total_discount * $factor, 2);
+    }
+
     public function getAdditionalDataAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);

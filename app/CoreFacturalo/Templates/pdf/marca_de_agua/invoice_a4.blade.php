@@ -713,7 +713,7 @@
             <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}">
                 TOTAL DCTOS. {{$document->currency_type->symbol}}
             </td>
-            <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount, 2) }}</td>
+            <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount_with_igv, 2) }}</td>
         </tr>
         <tr>
 

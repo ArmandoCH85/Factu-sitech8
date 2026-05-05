@@ -711,18 +711,18 @@
         </tr>
     @endif
 
-    @if($document->total_discount > 0 && $document->subtotal > 0)
+    @if($document->total_discount_with_igv > 0 && $document->subtotal > 0)
         <tr>
             <td colspan="5" class="text-right font-bold desc">SUBTOTAL: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->subtotal, 2) }}</td>
         </tr>
     @endif
 
-    @if($document->total_discount > 0)
+    @if($document->total_discount_with_igv > 0)
         <tr>
             <td colspan="5" class="text-right font-bold desc">DESCUENTO
                 TOTAL: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
+            <td class="text-right font-bold desc">{{ number_format($document->total_discount_with_igv, 2) }}</td>
         </tr>
     @endif
 

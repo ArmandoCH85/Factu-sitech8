@@ -555,7 +555,7 @@ foreach ($document->items as $row) {
             <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}">
                 TOTAL DCTOS. {{$document->currency_type->symbol}}
             </td>
-            <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount, 2) }}</td>
+            <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total_discount_with_igv, 2) }}</td>
         </tr>
         <tr>
             <td class="p-1 text-right align-top desc cell-solid font-bold" colspan="{{ $colspan_total }}">
@@ -576,10 +576,10 @@ foreach ($document->items as $row) {
             <td class="p-1 text-right align-top desc cell-solid font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
 
-        @if($document->total_discount > 0)
+        @if($document->total_discount_with_igv > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_discount_with_igv, 2) }}</td>
             </tr>
         @endif
 

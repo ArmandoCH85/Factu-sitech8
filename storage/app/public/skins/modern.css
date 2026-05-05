@@ -1112,6 +1112,9 @@ html.sidebar-light .establishment-selector-container{
 .template-skin-item {
     border-radius: 8px;
 }
+.coverage-config-message {
+    border-radius: 6px !important;
+}
 /* theme dark */
 html.dark,html.dark body{
     background-color: var(--md-bg-dark);

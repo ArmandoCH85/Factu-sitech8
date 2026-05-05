@@ -53,13 +53,21 @@
             <td>{{ branch.name }}</td>
             <td class="text-muted">{{ branch.address || '—' }}</td>
             <td class="text-end">
-              <el-button
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-                plain
+              <button
+                type="button"
+                class="btn btn-xs btn-danger btn-shad"
                 @click="deleteBranch(branch)"
-              ></el-button>
+              >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M4 7l16 0" />
+                    <path d="M10 11l0 6" />
+                    <path d="M14 11l0 6" />
+                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                  </svg>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -87,11 +95,12 @@
             <td class="text-end">
               <el-button
                 type="primary"
-                size="small"
+                class="btn btn-xs"
                 :loading="saving"
                 @click="saveBranch"
               >
-                <i class="fa fa-plus"></i> Agregar
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                Añadir
               </el-button>
             </td>
           </tr>

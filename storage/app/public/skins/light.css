@@ -982,6 +982,9 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
 .template-skin-item {
     border-radius: 6px;
 }
+.coverage-config-message {
+    border-radius: 4px !important;
+}
 /* end */
 /************************************ tema verde ************************************/
 /* header */

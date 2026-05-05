@@ -2756,6 +2756,9 @@ div.welcome-card .welcome-subtitle{
 .el-tabs--border-card>.el-tabs__header .el-tabs__item {
     border: none;
 }
+.coverage-config-message {
+    border-radius: 8px !important;
+}
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {
     background-color: var(--black-bg-dark) !important;

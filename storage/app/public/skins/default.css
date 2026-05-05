@@ -2418,6 +2418,9 @@ html.dark ul.nav-main li .nav-children li a:after {
     margin-bottom: -4px;
     margin-top: 5px;
 }
+.coverage-config-message {
+    border-radius: 10px !important;
+}
 /* mode dark default */
 html.fixed.sidebar-dark .sidebar-left,
 html.fixed.sidebar-dark .sidebar-header,

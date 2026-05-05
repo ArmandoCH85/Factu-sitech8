@@ -1,17 +1,7 @@
 <template>
   <div>
-    <div class="form-group">
-      <label class="control-label mb-0 text-nowrap">Mensaje sin cobertura:</label>
-      <div class="input-group">
-        <el-input v-model="noCoverageMessage"
-          placeholder="Ej: Lo sentimos, por ahora no contamos con delivery en tu zona." style="flex: 1;"></el-input>
-        <el-button type="primary" size="small" plain class="ms-2 btn btn-sm" style="white-space: nowrap;" :loading="savingMessage"
-          @click="saveNoCoverageMessage">Guardar</el-button>
-      </div>
-    </div>
-
     <!-- Filtros -->
-    <div class="mb-1">
+    <!-- <div class="mb-1">
       <h6 class="fw-semibold mb-0">Filtrar zonas</h6>
     </div>
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
@@ -22,7 +12,7 @@
         <el-option label="Activo" value="1"></el-option>
         <el-option label="Inactivo" value="0"></el-option>
       </el-select>
-    </div>
+    </div> -->
 
     <!-- Tabla -->
     <div class="table-responsive">
@@ -48,8 +38,9 @@
 
         <tbody v-else>
 
-          <!-- ── Nueva zona: fila principal ── -->
-          <tr class="" :style="newRow._open ? 'border-bottom: 0px solid transparent !important' : ''">
+          <!-- ── Nueva zona ── -->
+          <template v-if="showingNewRow">
+          <tr class="" :style="newRow._open ? 'border-bottom: 0px solid transparent !important' : ''" :class="newRow._open ? 'bb-td-0' : ''">
             <td class="text-center">
               <el-switch v-model="newRow.active"></el-switch>
             </td>
@@ -82,8 +73,8 @@
                 <i v-if="newRow._saving" class="fa fa-spinner fa-spin"></i>
                 <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
               </button>
-              <!-- Limpiar -->
-              <button class="btn btn-xs btn-secondary btn-shad" type="button" title="Limpiar"
+              <!-- Cancelar -->
+              <button class="btn btn-xs btn-secondary btn-shad" type="button" title="Cancelar"
                 @click.prevent="resetNewRow">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -98,6 +89,7 @@
           <tr v-if="newRow._open">
             <td colspan="5" class="pt-2 pb-4">
               <div class="d-flex flex-wrap gap-1 mb-1">
+                <span class="d-flex align-items-center text-muted me-1">Añadir zonas</span>
                 <el-select v-model="newRow._picker.depts" multiple collapse-tags filterable placeholder="Departamento"
                   size="small" style="min-width: 80px; flex: 1;" @change="onPickerDeptChange(newRow._picker)">
                   <el-option v-for="d in getPickerAvailableDepts(newRow)" :key="d.value" :label="d.label" :value="d.value"></el-option>
@@ -113,9 +105,12 @@
                   <el-option v-for="d in getPickerDistricts(newRow._picker)" :key="d.value" :label="d.label"
                     :value="d.value"></el-option>
                 </el-select>
-                <el-button type="primary" size="mini" icon="el-icon-plus" class="btn btn-sm"
+                <el-button type="primary" size="mini" class="btn btn-sm"
                   :disabled="newRow._picker.depts.length === 0"
-                  @click.prevent="addCoverage(newRow)"></el-button>
+                  @click.prevent="addCoverage(newRow)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                  Añadir
+                </el-button>
               </div>
               <div v-if="newRow.locations.length > 0" class="d-flex flex-wrap gap-1">
                 <el-tag v-for="(loc, idx) in newRow.locations" :key="idx" closable size="mini" type="info"
@@ -123,6 +118,7 @@
               </div>
             </td>
           </tr>
+          </template>
 
           <!-- ── Zonas existentes ── -->
           <template v-for="row in records">
@@ -191,6 +187,7 @@
             <tr v-if="row._open" :key="'cov-' + row.id">
               <td colspan="5" class="pt-2 pb-4">
                 <div class="d-flex flex-wrap gap-1 mb-1">
+                  <span class="d-flex align-items-center text-muted me-1">Añadir zonas</span>
                   <el-select v-model="row._picker.depts" multiple collapse-tags filterable placeholder="Departamento"
                     size="small" style="min-width: 80px; flex: 1;" @change="onPickerDeptChange(row._picker)">
                     <el-option v-for="d in getPickerAvailableDepts(row)" :key="d.value" :label="d.label" :value="d.value"></el-option>
@@ -206,12 +203,15 @@
                     <el-option v-for="d in getPickerDistricts(row._picker)" :key="d.value" :label="d.label"
                       :value="d.value"></el-option>
                   </el-select>
-                  <el-button type="primary" size="mini" icon="el-icon-plus" class="btn btn-sm"
+                  <el-button type="primary" size="mini" class="btn btn-sm"
                     :disabled="row._picker.depts.length === 0"
-                    @click.prevent="addCoverage(row)"></el-button>
+                    @click.prevent="addCoverage(row)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Añadir
+                  </el-button>
                 </div>
                 <div v-if="row.locations && row.locations.length > 0" class="d-flex flex-wrap gap-1">
-                  <el-tag v-for="(loc, idx) in row.locations" :key="idx" closable size="mini" type="info"
+                  <el-tag v-for="(loc, idx) in row.locations" :key="idx" closable size="mini" type="primary"
                     @close="row.locations.splice(idx, 1)">{{ loc.label }}</el-tag>
                 </div>
                 <span v-else class="text-muted" style="font-size: 12px;">— sin cobertura asignada</span>
@@ -234,6 +234,16 @@
     <el-pagination v-if="pagination.total > pagination.per_page" @current-change="onPageChange"
       :current-page.sync="pagination.current_page" :page-size="pagination.per_page" :total="pagination.total"
       layout="total, prev, pager, next" background small></el-pagination>
+
+    <div class="form-group bg-danger-light rounded p-3 coverage-config-message mt-3">
+      <label class="control-label mb-0 text-nowrap">Mensaje sin cobertura:</label>
+      <div class="input-group">
+        <el-input v-model="noCoverageMessage"
+          placeholder="Ej: Lo sentimos, por ahora no contamos con delivery en tu zona." style="flex: 1;"></el-input>
+        <el-button type="primary" size="small" plain class="ms-2 btn btn-sm" style="white-space: nowrap;" :loading="savingMessage"
+          @click="saveNoCoverageMessage">Guardar</el-button>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -258,6 +268,7 @@ export default {
         active: '',
       },
       searchTimeout: null,
+      showingNewRow: false,
       newRow: { name: '', price: 0, active: true, locations: [], _picker: { depts: [], provs: [], dists: [] }, _saving: false, _open: false },
       noCoverageMessage: '',
       savingMessage: false,
@@ -275,6 +286,11 @@ export default {
     newRowReady() {
       return !!(this.newRow.name && this.newRow.name.trim()) &&
         this.newRow.price > 0;
+    },
+    newRowDirty() {
+      return !!(this.newRow.name && this.newRow.name.trim()) ||
+        this.newRow.price > 0 ||
+        this.newRow.locations.length > 0;
     },
   },
   methods: {
@@ -420,8 +436,32 @@ export default {
     },
 
 
+    _freshRow() {
+      return { name: '', price: 0, active: true, locations: [], _picker: { depts: [], provs: [], dists: [] }, _saving: false, _open: false };
+    },
+    clickNew() {
+      const open = () => { this.newRow = this._freshRow(); this.showingNewRow = true; };
+      if (this.showingNewRow && this.newRowDirty) {
+        this.$confirm('Tienes cambios sin guardar que se perderán. ¿Deseas continuar?', 'Advertencia', {
+          confirmButtonText: 'Descartar cambios',
+          cancelButtonText: 'Cancelar',
+          type: 'warning',
+        }).then(open).catch(() => {});
+        return;
+      }
+      open();
+    },
     resetNewRow() {
-      this.newRow = { name: '', price: 0, active: true, locations: [], _picker: { depts: [], provs: [], dists: [] }, _saving: false, _open: true };
+      const close = () => { this.showingNewRow = false; this.newRow = this._freshRow(); };
+      if (this.newRowDirty) {
+        this.$confirm('Tienes cambios sin guardar que se perderán. ¿Deseas descartarlos?', 'Advertencia', {
+          confirmButtonText: 'Descartar cambios',
+          cancelButtonText: 'Cancelar',
+          type: 'warning',
+        }).then(close).catch(() => {});
+        return;
+      }
+      close();
     },
     saveNewRow() {
       if (!this.newRow.name || !this.newRow.name.trim()) {
@@ -444,7 +484,8 @@ export default {
         })),
       }).then(() => {
         this.$message.success('Zona creada correctamente.');
-        this.resetNewRow();
+        this.showingNewRow = false;
+        this.newRow = this._freshRow();
         this.getRecords();
       }).catch(error => {
         const msg = this.extractErrorMessage(error, 'Error al crear la zona.');

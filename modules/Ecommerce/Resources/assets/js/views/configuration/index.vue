@@ -1,6 +1,6 @@
 <template>
   <div class="col-12 pt-2 pt-md-0">
-    <el-tabs type="border-card" tab-position="left">
+    <el-tabs type="border-card" tab-position="left" class="el-tab-ecommerce-config">
       <el-tab-pane label="Información">
         <div>
           <form autocomplete="off" @submit.prevent="submit">
@@ -214,9 +214,15 @@
       <el-tab-pane label="Zonas de delivery">
         <div>
           <div class="mb-3">
-            <h4 class="mb-2"><strong>Zonas de Delivery</strong></h4>
+            <h4 class="mb-2 d-flex align-items-center justify-content-between">
+              <strong>Zonas de Delivery</strong>
+              <el-button type="primary" plain class="btn btn-sm" @click.prevent="$refs.deliveryZones.clickNew()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                Nuevo
+              </el-button>
+            </h4>
           </div>
-          <DeliveryZones />
+          <DeliveryZones ref="deliveryZones" />
           <div class="mb-3">
             <h4 class="mb-2"><strong>Sucursales de Recojo</strong></h4>
           </div>

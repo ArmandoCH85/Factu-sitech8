@@ -7425,7 +7425,6 @@ html.sidebar-light:not(.dark) ul.nav-main li .nav-children li a:focus {
     font-size: 0.7rem;
     padding: 3.2px 8px;
     padding: 0.2rem 0.5rem;
-    border-radius: 4px !important;
 }
 
 .btn.btn-sm {
@@ -22125,7 +22124,7 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
     overflow: hidden;
 }
 .btn.btn-shad {
-    border-radius: 8px !important;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -22182,6 +22181,25 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 }
 .input-group-text {
     border-radius: 0 .5rem .5rem 0 !important;
+}
+.bg-danger-light {
+    background-color: color-mix(in srgb, var(--danger) 10%, #ffffff) !important;
+    border: 1px solid color-mix(in srgb, var(--danger) 30%, #ffffff) !important;
+}
+.bg-warning-light {
+    background-color: color-mix(in srgb, var(--warning) 10%, #ffffff) !important;
+    border: 1px solid color-mix(in srgb, var(--warning) 30%, #ffffff) !important;
+}
+.bg-success-light {
+    background-color: color-mix(in srgb, var(--success) 10%, #ffffff) !important;
+    border: 1px solid color-mix(in srgb, var(--success) 30%, #ffffff) !important;
+}
+.bg-info-light {
+    background-color: color-mix(in srgb, var(--info) 10%, #ffffff) !important;
+    border: 1px solid color-mix(in srgb, var(--info) 30%, #ffffff) !important;
+}
+.bb-td-0 td {
+    border-bottom: 0px solid transparent !important;
 }
 @media (max-width: 768px) {
     .support-sidebar {

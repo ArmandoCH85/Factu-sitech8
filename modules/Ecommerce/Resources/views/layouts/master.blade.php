@@ -29,13 +29,12 @@
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('porto-light/css/styles_ecommerce.css') }}" />
 </head>
-<<<<<<< HEAD
 
 <body data-company-title="{{ data_get($pageCompany, 'title_web') ?: data_get($pageCompany, 'trade_name') }}">
 
-    <?php
     @include('ecommerce::layouts.partials_ecommerce.announcement_bar')
-    
+    <?php
+        
         $configurationModel = \App\Models\Tenant\Configuration::first();
         $ecommerceConfiguration = \App\Models\Tenant\ConfigurationEcommerce::first();
         $phoneWhatsapp = $ecommerceConfiguration->phone_whatsapp ?? $configurationModel->phone_whatsapp ?? null;

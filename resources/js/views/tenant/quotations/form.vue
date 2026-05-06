@@ -2199,7 +2199,12 @@ export default {
         onPrepareItems(items) {
             return items.map(item => {
                 item.discounts = (item.discounts) ? Object.values(item.discounts) : [];
-                return item;
+                return calculateRowItem(
+                    item,
+                    this.form.currency_type_id,
+                    this.form.exchange_rate_sale,
+                    this.percentage_igv
+                );
             });
         },
         async createQuotationFromSO() {

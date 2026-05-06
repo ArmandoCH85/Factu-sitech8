@@ -224,7 +224,7 @@
                 </div>
                 <div class="col-md-12 text-center pt-2" v-if="showAddButton && (document.total_difference > 0)">
                     <template v-if="permissions.create_payment">
-                        <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Nuevo</el-button>
+                        <el-button :loading="loadingFetch" type="primary" icon="el-icon-plus" @click="clickAddRow">Nuevo</el-button>
                     </template>
                 </div>
             </div>
@@ -273,6 +273,7 @@
                 fileList: [],
                 payment_method_types: [],
                 showAddButton: true,
+                loadingFetch: false, 
                 document: {},
                 permissions: {},
                 index_file: null,
@@ -294,15 +295,15 @@
             await this.events();
 
         },
-        watch: 
-        {
-            showDialog(val) {
-                if (val) {
-                    this.initForm()
-                    this.getData()
-                }
-            }
-        },
+        // watch: 
+        // {
+        //     showDialog(val) {
+        //         if (val) {
+        //             this.initForm()
+        //             this.getData()
+        //         }
+        //     }
+        // },
         methods: {
             events(){
                 this.$eventHub.$on('reloadDataPayments', ()=>{
@@ -384,7 +385,10 @@
                 this.title = null;
             },
             async getData() {
+
                 if (this.records.some(r => !r.id)) return;
+
+                this.loadingFetch = true;
                 this.initForm();
                 await this.$http.get(`/${this.resource}/document/${this.documentId}`)
                     .then(response => {
@@ -396,7 +400,8 @@
                         this.records = response.data.data
                     });
 
-                this.$eventHub.$emit('reloadDataUnpaid')
+                // await this.$eventHub.$emit('reloadDataUnpaid')
+                this.loadingFetch = false;
 
             },
             clickAddRow() {

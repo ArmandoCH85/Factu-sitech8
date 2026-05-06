@@ -128,7 +128,7 @@ class GuestRegisterController extends Controller
                 'success' => true,
                 'message' => 'Cuenta registrada correctamente.',
                 'guest_register' => $response['guest_register'],
-                'payment_url' => $payment_uuid ? route('guest-register.payment.show', ['uuid' => $payment_uuid]) : null,
+                'payment_url' => $payment_uuid ? route('payment.public.show', ['uuid' => $payment_uuid]) : null,
             ];
 
         }

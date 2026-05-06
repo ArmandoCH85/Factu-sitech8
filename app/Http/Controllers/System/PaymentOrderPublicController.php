@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\Payment\Traits\CulqiTrait;
 use Modules\Payment\Traits\IzipayTrait;
 
-class GuestRegisterPaymentController extends Controller
+class PaymentOrderPublicController extends Controller
 {
     use CulqiTrait;
     use IzipayTrait;
@@ -20,7 +20,7 @@ class GuestRegisterPaymentController extends Controller
     {
         $order = $this->resolveOrder($uuid);
 
-        return view('system.guest-register.payment', [
+        return view('system.payment.show', [
             'order' => [
                 'uuid' => $order->uuid,
                 'order' => $order->order,
@@ -43,10 +43,11 @@ class GuestRegisterPaymentController extends Controller
     {
         $order = $this->resolveOrder($uuid);
 
-        return view('system.guest-register.payment-success', [
+        return view('system.payment.success', [
             'order_number' => $order->order,
             'amount' => $order->amount,
             'client_email' => optional($order->client)->email,
+            'is_autoregistro' => $order->created_by === 'Autoregistro',
         ]);
     }
 
@@ -115,12 +116,12 @@ class GuestRegisterPaymentController extends Controller
                 'success' => true,
                 'paid' => $paid,
                 'result' => $charge,
-                'redirect' => $paid ? route('guest-register.payment.success', ['uuid' => $order->uuid]) : null,
+                'redirect' => $paid ? route('payment.public.success', ['uuid' => $order->uuid]) : null,
             ]);
 
         } catch (\Culqi\Error\UnhandledError $e) {
             $error = json_decode($e->getMessage());
-            Log::error('Guest culqi charge error', ['body' => $e->getMessage()]);
+            Log::error('Public payment culqi charge error', ['body' => $e->getMessage()]);
 
             return response()->json([
                 'success' => false,
@@ -131,7 +132,7 @@ class GuestRegisterPaymentController extends Controller
             ], 400);
 
         } catch (\Culqi\Error\CulqiException $e) {
-            Log::error('Guest culqi exception', ['message' => $e->getMessage()]);
+            Log::error('Public payment culqi exception', ['message' => $e->getMessage()]);
 
             return response()->json([
                 'success' => false,
@@ -196,7 +197,7 @@ class GuestRegisterPaymentController extends Controller
             'success' => $result ? true : false,
             'paid' => $paid,
             'result' => $result,
-            'redirect' => $paid ? route('guest-register.payment.success', ['uuid' => $order->uuid]) : null,
+            'redirect' => $paid ? route('payment.public.success', ['uuid' => $order->uuid]) : null,
         ];
     }
 

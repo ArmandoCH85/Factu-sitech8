@@ -70,7 +70,7 @@ export default {
     },
     computed: {
         baseEndpoint() {
-            return `/guest-register/payment/${this.paymentUuid}`;
+            return `/pago/${this.paymentUuid}`;
         },
         amountInCents() {
             return Math.round(Number(this.amount) * 100);

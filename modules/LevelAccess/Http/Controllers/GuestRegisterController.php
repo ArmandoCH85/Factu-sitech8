@@ -38,7 +38,7 @@ class GuestRegisterController extends Controller
                     ->first();
 
                 if ($pending) {
-                    $payment_url = route('guest-register.payment.show', ['uuid' => $pending->uuid]);
+                    $payment_url = route('payment.public.show', ['uuid' => $pending->uuid]);
                     return view('tenant.guest-register.pending-payment.index', compact('payment_url'));
                 }
             }

@@ -71,11 +71,18 @@
             <p class="payment-success__order">Orden #{{ $order_number }}</p>
             <p class="payment-success__amount">S/ {{ number_format($amount, 2) }}</p>
 
-            <div class="payment-success__next">
-                <strong><i class="fa fa-envelope"></i> Siguiente paso: verifica tu correo</strong>
-                Revisa la bandeja de entrada de <strong>{{ $client_email }}</strong> y haz clic en el botón
-                <em>"Confirmar mi correo"</em> para activar tu cuenta y comenzar a usar la plataforma.
-            </div>
+            @if($is_autoregistro)
+                <div class="payment-success__next">
+                    <strong><i class="fa fa-envelope"></i> Siguiente paso: verifica tu correo</strong>
+                    Revisa la bandeja de entrada de <strong>{{ $client_email }}</strong> y haz clic en el botón
+                    <em>"Confirmar mi correo"</em> para activar tu cuenta y comenzar a usar la plataforma.
+                </div>
+            @else
+                <div class="payment-success__next">
+                    <strong><i class="fa fa-check-circle"></i> Tu pago se registró correctamente.</strong>
+                    Gracias por mantener tu servicio al día. Puedes cerrar esta ventana.
+                </div>
+            @endif
         </div>
     </div>
 </section>

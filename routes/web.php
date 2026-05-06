@@ -868,28 +868,27 @@ if ($hostname) {
 
         Route::get('consultas/embed.js', 'System\PublicDocumentSearchController@embedScript')->name('system.public_search.embed');
 
+        Route::prefix('pago')->group(function () {
+            Route::get('{uuid}', 'System\PaymentOrderPublicController@show')->name('payment.public.show');
+            Route::get('{uuid}/success', 'System\PaymentOrderPublicController@success')->name('payment.public.success');
+            Route::get('{uuid}/checkout-config', 'System\PaymentOrderPublicController@enabledCheckout');
+
+            Route::prefix('{uuid}/culqi')->group(function () {
+                Route::get('record', 'System\PaymentOrderPublicController@culqiRecord');
+                Route::post('charge', 'System\PaymentOrderPublicController@culqiCharge');
+            });
+
+            Route::prefix('{uuid}/izipay')->group(function () {
+                Route::get('record', 'System\PaymentOrderPublicController@izipayRecord');
+                Route::post('payment', 'System\PaymentOrderPublicController@izipayPayment');
+                Route::post('transaction', 'System\PaymentOrderPublicController@izipayTransaction');
+            });
+        });
+
         //guest-Register
         Route::prefix('guest-register')->group(function () {
 
             Route::get('/disabled', 'System\GuestRegisterController@disabled')->name('guest.register.disabled');
-
-            Route::prefix('payment')->group(function () {
-                Route::get('{uuid}', 'System\GuestRegisterPaymentController@show')->name('guest-register.payment.show');
-                Route::get('{uuid}/success', 'System\GuestRegisterPaymentController@success')->name('guest-register.payment.success');
-
-                Route::get('{uuid}/checkout-config', 'System\GuestRegisterPaymentController@enabledCheckout');
-
-                Route::prefix('{uuid}/culqi')->group(function () {
-                    Route::get('record', 'System\GuestRegisterPaymentController@culqiRecord');
-                    Route::post('charge', 'System\GuestRegisterPaymentController@culqiCharge');
-                });
-
-                Route::prefix('{uuid}/izipay')->group(function () {
-                    Route::get('record', 'System\GuestRegisterPaymentController@izipayRecord');
-                    Route::post('payment', 'System\GuestRegisterPaymentController@izipayPayment');
-                    Route::post('transaction', 'System\GuestRegisterPaymentController@izipayTransaction');
-                });
-            });
 
             Route::middleware('enable.guest.register')->group(function () {
                 Route::get('/', 'System\GuestRegisterController@index')->name('guest.register.index');

@@ -56,13 +56,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
     private function purchase() {
         PurchaseItem::created(function (PurchaseItem $purchase_item) {
 
-            $presentationQuantity = $this->getPresentationQuantity($purchase_item->item);
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
 
-            \Log::info('inventory:purchase_presentation', [
-                'purchase_item_id' => $purchase_item->id ?? null,
-                'item_id' => $purchase_item->item_id ?? null,
-                'presentationQuantity' => $presentationQuantity,
-            ]);
             $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
             // $warehouse = $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id);
             // $warehouse = $this->findWarehouse();
@@ -81,7 +76,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
     private function purchase_settlement() {
         PurchaseSettlementItem::created(function (PurchaseSettlementItem $purchase_item) {
             /* dd($purchase_item); */
-            $presentationQuantity = $this->getPresentationQuantity($purchase_item->item);
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
 
             $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
             // $warehouse = $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id);
@@ -108,7 +103,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             if (!$document_item->item->is_set)
             {
-                $presentationQuantity = $this->getPresentationQuantity($document_item->item);
+                $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
                 $document = $document_item->document;
                 $factor = ($document->document_type_id === '07') ? 1 : -1;
                 $warehouse = ($document_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id) : $this->findWarehouse();
@@ -177,7 +172,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
                         if(is_array($document_item->item->IdLoteSelected))
                         {
                             // presentacion - factor de lista de precios
-                            $quantity_unit = $this->getPresentationQuantity($document_item->item);
+                            $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
 
                             $lotesSelecteds = $document_item->item->IdLoteSelected;
                             $document_factor = ($document->document_type_id === '07') ? 1 : -1;
@@ -194,7 +189,11 @@ class InventoryKardexServiceProvider extends ServiceProvider
                         else{
 
                             $lot = ItemLotsGroup::query()->find($document_item->item->IdLoteSelected);
-                            $quantity_unit = $this->getPresentationQuantity($document_item->item);
+                            try {
+                                $quantity_unit = $document_item->item->presentation->quantity_unit;
+                            } catch (Exception $e) {
+                                $quantity_unit = 1;
+                            }
                             if ($document->document_type_id === '07') {
                                 $quantity = $lot->quantity + ($quantity_unit * $document_item->quantity);
                             } else {
@@ -244,7 +243,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             if(!$sale_note_item->item->is_set){
 
-                $presentationQuantity = $this->getPresentationQuantity($sale_note_item->item);
+                $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
                 // $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
                 $warehouse = ($sale_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($sale_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($sale_note_item->sale_note->establishment_id);
@@ -324,7 +323,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             if(!$sale_note_item->item->is_set){
 
-                $presentationQuantity = $this->getPresentationQuantity($sale_note_item->item);
+                $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
                 // $warehouse = $this->findWarehouse();
                 $warehouse = ($sale_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($sale_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($sale_note_item->sale_note->establishment_id);
@@ -373,7 +372,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                     if(!$document_item->item->is_set){
 
-                        $presentationQuantity = $this->getPresentationQuantity($document_item->item);
+                        $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
 
                         $factor = 1;
                         $warehouse = $this->findWarehouse();
@@ -420,7 +419,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $document = $order_note_item->order_note;
             $warehouse_id = $order_note_item->warehouse_id;
 
-            $presentationQuantity = $this->getPresentationQuantity($item);
+            $presentationQuantity = $item->presentation->quantity_unit ?? 1;
             // $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
             // $warehouse = ($warehouse_id) ? $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
             $item_id =$order_note_item->item_id;
@@ -429,7 +428,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
              $factor = ($document->document_type_id  && $document->document_type_id === '07') ? 1 : -1;
 
             if (!$item->is_set) {
-                $presentationQuantity = $this->getPresentationQuantity($item);
+                $presentationQuantity = $item->presentation->quantity_unit ?? 1;
                 $quanty = ($factor * ($order_note_item->quantity * $presentationQuantity));
 
                 $warehouse = ($warehouse_id) ?
@@ -545,7 +544,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
 
             // dd($order_note_item);
-            $presentationQuantity = $this->getPresentationQuantity($order_note_item->item);
+            $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
             // $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
             $warehouse = ($order_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($order_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
@@ -583,7 +582,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
         PurchaseItem::deleted(function (PurchaseItem $purchase_item) {
 
 
-            $presentationQuantity = $this->getPresentationQuantity($purchase_item->item);
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
 
             $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
 
@@ -607,7 +606,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
         PurchaseSettlementItem::deleted(function (PurchaseSettlementItem $purchase_item) {
 
 
-            $presentationQuantity = $this->getPresentationQuantity($purchase_item->item);
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
 
             $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
 
@@ -1043,56 +1042,6 @@ class InventoryKardexServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             \Log::warning("No se pudo sincronizar stock del restaurante para item {$item_id}: " . $e->getMessage());
         }
-    }
-
-    /**
-     * Obtiene de forma segura el factor de presentación (quantity_unit) de un item.
-     * Busca en orden: presentation->quantity_unit, item_unit_types[0]->quantity_unit, unit_type[0]->quantity_unit.
-     * Devuelve 1 si no encuentra valor.
-     *
-     * @param mixed $item
-     * @return float|int
-     */
-    private function getPresentationQuantity($item)
-    {
-        $default = 1;
-        if (!$item) return $default;
-
-        try {
-            if (isset($item->presentation)) {
-                if (is_object($item->presentation) && isset($item->presentation->quantity_unit)) {
-                    return (float)$item->presentation->quantity_unit;
-                }
-                if (is_array($item->presentation) && isset($item->presentation['quantity_unit'])) {
-                    return (float)$item->presentation['quantity_unit'];
-                }
-            }
-
-            // Si no encontramos presentación en el objeto proporcionado, intentar cargar el Item desde la base de datos
-            $itemId = null;
-            if (is_object($item) && isset($item->id)) $itemId = $item->id;
-            if (!$itemId && is_object($item) && isset($item->item_id)) $itemId = $item->item_id;
-            if (!$itemId && is_array($item) && isset($item['id'])) $itemId = $item['id'];
-            if (!$itemId && is_array($item) && isset($item['item_id'])) $itemId = $item['item_id'];
-
-            if ($itemId) {
-                try {
-                    $dbItem = Item::with(['presentation'])->find($itemId);
-                    if ($dbItem) {
-
-                        $presentation = $dbItem->presentation->firstWhere('id', $item->presentation->id);
-                        if (isset($presentation) && isset($presentation->quantity_unit)) return (float)$presentation->quantity_unit;
-
-                    }
-                } catch (\Exception $e) {
-                    // ignore and return default below
-                }
-            }
-        } catch (\Exception $e) {
-            return $default;
-        }
-
-        return $default;
     }
 
 }

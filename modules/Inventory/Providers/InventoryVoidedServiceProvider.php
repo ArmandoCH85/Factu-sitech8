@@ -3,7 +3,6 @@
 namespace Modules\Inventory\Providers;
 
 use Modules\Order\Models\OrderNote;
-use App\Models\Tenant\Item;
 use App\Models\Tenant\Document;
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Traits\InventoryTrait;
@@ -44,7 +43,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                             $warehouse = ($detail->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($detail->warehouse_id)->establishment_id) : $this->findWarehouse($document['establishment_id']);
 
-                            $presentationQuantity = $this->getPresentationQuantity($detail['item']);
+                            $presentationQuantity = (!empty($detail['item']->presentation)) ? $detail['item']->presentation->quantity_unit : 1;
 
                             $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
 
@@ -102,7 +101,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                     if(!$document_item->item->is_set)
                     {
                         $warehouse = ($document_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id) : $this->findWarehouse($document->establishment_id);
-                        $presentation_quantity = $this->getPresentationQuantity($document_item->item);
+                        $presentation_quantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
 
                         $factor = -1;
                         $calculate_quantity = $factor * ($document_item->quantity * $presentation_quantity);
@@ -202,7 +201,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                 foreach ($order_note->items as $order_note_item) {
 
-                    $presentationQuantity = $this->getPresentationQuantity($order_note_item->item);
+                    $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
                     $this->createInventoryKardex($order_note, $order_note_item->item_id, $order_note_item->quantity * $presentationQuantity, $warehouse->id);
                     $this->updateStock($order_note_item->item_id, $order_note_item->quantity * $presentationQuantity, $warehouse->id);
@@ -246,85 +245,5 @@ class InventoryVoidedServiceProvider extends ServiceProvider
         });
     }
 
-
-    /**
-     * Obtiene de forma segura el factor de presentación (quantity_unit) de un item.
-     * Busca en orden: presentation->quantity_unit, item_unit_types[0]->quantity_unit, unit_type[0]->quantity_unit.
-     * Devuelve 1 si no encuentra valor.
-     *
-     * @param mixed $item
-     * @return float|int
-     */
-    private function getPresentationQuantity($item)
-    {
-        $default = 1;
-        if (!$item) return $default;
-
-        try {
-            if (isset($item->presentation)) {
-                if (is_object($item->presentation) && isset($item->presentation->quantity_unit)) return (float)$item->presentation->quantity_unit;
-                if (is_array($item->presentation) && isset($item->presentation['quantity_unit'])) return (float)$item->presentation['quantity_unit'];
-            }
-
-            if (isset($item->item_unit_types) && count($item->item_unit_types) > 0) {
-                $first = null;
-                if (is_array($item->item_unit_types)) {
-                    $first = $item->item_unit_types[0] ?? null;
-                } elseif (method_exists($item->item_unit_types, 'first')) {
-                    $first = $item->item_unit_types->first();
-                } else {
-                    $first = $item->item_unit_types[0] ?? null;
-                }
-                if ($first) {
-                    if (is_object($first) && isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                    if (is_array($first) && isset($first['quantity_unit'])) return (float)$first['quantity_unit'];
-                }
-            }
-
-            if (isset($item->unit_type) && count($item->unit_type) > 0) {
-                $first = null;
-                if (is_array($item->unit_type)) {
-                    $first = $item->unit_type[0] ?? null;
-                } elseif (method_exists($item->unit_type, 'first')) {
-                    $first = $item->unit_type->first();
-                } else {
-                    $first = $item->unit_type[0] ?? null;
-                }
-                if ($first) {
-                    if (is_object($first) && isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                    if (is_array($first) && isset($first['quantity_unit'])) return (float)$first['quantity_unit'];
-                }
-            }
-            // Si no encontramos presentación en el objeto proporcionado, intentar cargar el Item desde la base de datos
-            $itemId = null;
-            if (is_object($item) && isset($item->id)) $itemId = $item->id;
-            if (!$itemId && is_object($item) && isset($item->item_id)) $itemId = $item->item_id;
-            if (!$itemId && is_array($item) && isset($item['id'])) $itemId = $item['id'];
-            if (!$itemId && is_array($item) && isset($item['item_id'])) $itemId = $item['item_id'];
-
-            if ($itemId) {
-                try {
-                    $dbItem = Item::with(['presentation','item_unit_types','unit_type'])->find($itemId);
-                    if ($dbItem) {
-                        if (isset($dbItem->presentation) && isset($dbItem->presentation->quantity_unit)) return (float)$dbItem->presentation->quantity_unit;
-                        if (isset($dbItem->item_unit_types) && count($dbItem->item_unit_types) > 0) {
-                            $first = $dbItem->item_unit_types[0];
-                            if (isset($first->quantity_unit)) return (float)$first->quantity_unit;
-                        }
-                        if (isset($dbItem->unit_type) && is_array($dbItem->unit_type) && count($dbItem->unit_type) > 0) {
-                            $first = $dbItem->unit_type[0];
-                            if (isset($first->quantity_unit)) return (float)$first['quantity_unit'];
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // ignore and return default below
-                }
-            }
-        } catch (\Exception $e) {
-            return $default;
-        }
-
-        return $default;
-    }
 
 }

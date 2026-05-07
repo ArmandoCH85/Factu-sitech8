@@ -1978,6 +1978,9 @@ class SaleNoteController extends Controller
         $this->sale_note->state_type_id = '01' ;
         $this->sale_note->number = SaleNote::getLastNumberByModel($obj) ;
         $this->sale_note->unique_filename = null;
+        $this->sale_note->date_of_issue = now()->toDateTimeString();
+        $this->sale_note->due_date = now()->toDateTimeString();
+        $this->sale_note->time_of_issue = now()->toTimeString();
 
         $this->sale_note->changed = false;
         $this->sale_note->document_id = null;

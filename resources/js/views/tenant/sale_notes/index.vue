@@ -995,20 +995,32 @@ export default {
             return value;
         },
         duplicate(id) {
-            this.$http
-                .post(`${this.resource}/duplicate`, { id })
-                .then(response => {
-                    if (response.data.success) {
-                        this.$message.success(
-                            "Se guardaron los cambios correctamente."
-                        );
-                        this.$eventHub.$emit("reloadData");
-                    } else {
-                        this.$message.error("No se guardaron los cambios");
+
+            this.$confirm(
+                    '¿Estás seguro que quieres realizar la duplicidad de la nota de venta?',
+                    'Confirmar Duplicidad',
+                    {
+                        confirmButtonText: 'Sí',
+                        cancelButtonText: 'Cancelar',
+                        type: 'warning',
                     }
-                })
-                .catch(error => {});
-            this.$eventHub.$emit("reloadData");
+                ).then(() => {
+                    this.$http
+                        .post(`${this.resource}/duplicate`, { id })
+                        .then(response => {
+                            if (response.data.success) {
+                                this.$message.success(
+                                    "Se guardaron los cambios correctamente."
+                                );
+                                this.$eventHub.$emit("reloadData");
+                            } else {
+                                this.$message.error("No se guardaron los cambios");
+                            }
+                        })
+                        .catch(error => {});
+                    this.$eventHub.$emit("reloadData");
+
+                }).catch(() => {});
         },
         onOpenModalGenerateCPE() {
             this.showModalGenerateCPE = true;

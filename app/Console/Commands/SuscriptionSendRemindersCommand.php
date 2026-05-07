@@ -22,7 +22,7 @@ class SuscriptionSendRemindersCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'send-payment-reminders:run';
+    protected $signature = 'suscription:send-reminders';
 
     /**
      * The console command description.

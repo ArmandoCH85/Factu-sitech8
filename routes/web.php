@@ -862,7 +862,9 @@ if ($hostname) {
             Route::get('consultas', 'System\PublicDocumentSearchController@index')->name('system.public_search.index');
             Route::post('consultas', 'System\PublicDocumentSearchController@search')->name('system.public_search.search');
             Route::get('consultas/widget/{slug}', 'System\PublicDocumentSearchController@widget')->name('system.public_search.widget');
-            Route::post('consultas/widget/{slug}', 'System\PublicDocumentSearchController@searchWidget')->name('system.public_search.widget.search');
+            Route::post('consultas/widget/{slug}', 'System\PublicDocumentSearchController@searchWidget')
+                ->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)
+                ->name('system.public_search.widget.search');
             Route::get('consultas/widget', 'System\PublicDocumentSearchController@widgetInternal')->name('system.public_search.widget.internal');
         });
 

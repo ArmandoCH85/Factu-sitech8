@@ -317,7 +317,8 @@
                                     v-model="form.customer_id"
                                     :loading="loading_search"
                                     :remote-method="searchRemoteCustomers"
-                                    class="border-left rounded-left border-info"
+                                    clearable
+                                    class="border-left rounded-left border-info customer-select-clearable"
                                     dusk="customer_id"
                                     filterable
                                     @focus="focus_on_client = true"
@@ -3873,6 +3874,9 @@
 }
 .input-custom.el-input-number{
     padding: 0px;
+}
+.customer-select-clearable >>> .el-input__suffix {
+    right: 33px;
 }
 @media only screen and (min-width: 992px) {
     .table-responsive {

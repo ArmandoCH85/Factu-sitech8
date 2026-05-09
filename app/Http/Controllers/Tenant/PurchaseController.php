@@ -102,13 +102,13 @@ use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
         public function getRecords($request)
         {
-
             switch ($request->column) {
                 case 'name':
 
-                    $records = Purchase::whereHas('supplier', function ($query) use ($request) {
-                        return $query->where($request->column, 'like', "%{$request->value}%");
-                    })
+                    $records = Purchase::with(['items.warehouse', 'items.item', 'supplier', 'purchase_payments'])
+                        ->whereHas('supplier', function ($query) use ($request) {
+                            return $query->where($request->column, 'like', "%{$request->value}%");
+                        })
                         ->whereTypeUser()
                         ->latest();
 
@@ -116,9 +116,10 @@ use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
                 case 'date_of_payment':
 
-                    $records = Purchase::whereHas('purchase_payments', function ($query) use ($request) {
-                        return $query->where($request->column, 'like', "%{$request->value}%");
-                    })
+                    $records = Purchase::with(['items.warehouse', 'items.item', 'supplier', 'purchase_payments'])
+                        ->whereHas('purchase_payments', function ($query) use ($request) {
+                            return $query->where($request->column, 'like', "%{$request->value}%");
+                        })
                         ->whereTypeUser()
                         ->latest();
 
@@ -126,15 +127,22 @@ use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
                 default:
 
-                    $records = Purchase::where($request->column, 'like', "%{$request->value}%")
+                    $records = Purchase::with(['items.warehouse', 'items.item', 'supplier', 'purchase_payments'])
+                        ->where($request->column, 'like', "%{$request->value}%")
                         ->whereTypeUser()
                         ->latest();
 
                     break;
             }
 
-            return $records;
+            // Filtro por almacén
+            if ($request->warehouse_id && $request->warehouse_id !== 'all') {
+                $records->whereHas('items', function ($query) use ($request) {
+                    $query->where('warehouse_id', $request->warehouse_id);
+                });
+            }
 
+            return $records;
         }
 
         public function tables()

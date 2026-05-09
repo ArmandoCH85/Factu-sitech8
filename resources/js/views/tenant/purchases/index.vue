@@ -80,6 +80,7 @@
                         <th>Estado de pago</th>
                         <th>Número</th>
                         <th>Productos</th>
+                        <th>Almacén</th>
                         <th>Pagos</th>
                         <!-- <th>F. Pago</th> -->
                         <!-- <th>Estado</th> -->
@@ -222,6 +223,20 @@
                             </template>
                         </td> -->
                         <!-- <td>{{ row.state_type_description }}</td> -->
+                         <td>
+                            <template v-if="row.warehouses && row.warehouses.length">
+                                <el-tag
+                                    v-for="warehouse in row.warehouses"
+                                    :key="warehouse.id"
+                                    size="small"
+                                    type="success"
+                                    class="me-1 mb-1"
+                                >
+                                    {{ warehouse.description }}
+                                </el-tag>
+                            </template>
+                            <span v-else class="text-muted">-</span>
+                        </td>
                         <td class="text-end">
                             <button
                                 v-if="row.state_type_id != '11'"

@@ -53,7 +53,7 @@ Route::middleware(['check.permission', 'locked.tenant','check.email.verified'])-
     // Página de sobre nosotros
     Route::get('nosotros', 'EcommerceController@aboutUs')->name('tenant_ecommerce_about_us');
 
-    Route::get('configuration', 'ConfigurationController@index')->middleware('redirect.module')->name('tenant_ecommerce_configuration');
+    Route::get('configuration', 'ConfigurationController@index')->middleware(['auth', 'redirect.module'])->name('tenant_ecommerce_configuration');
     Route::post('configuration', 'ConfigurationController@store_configuration');
     Route::post('configuration_delivery', 'ConfigurationController@store_configuration_delivery');
     Route::post('configuration_culqui', 'ConfigurationController@store_configuration_culqui');

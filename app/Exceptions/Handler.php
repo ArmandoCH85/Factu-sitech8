@@ -63,12 +63,12 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof AuthenticationException)
         {
-            if ($this->isFrontend($request))
+            if ($request->expectsJson())
             {
-                return redirect()->guest('login');
+                return $this->errorResponse('No se encuentra autenticado', 401, $exception);
             }
 
-            return $this->errorResponse('No se encuentra autenticado', 401, $exception);
+            return redirect()->guest('login');
         }
 
 
@@ -140,7 +140,7 @@ class Handler extends ExceptionHandler
 
     private function isFrontend(Request $request)
     {
-        return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
+        return $request->acceptsHtml() && $request->route() && collect($request->route()->middleware())->contains('web');
     }
 
 

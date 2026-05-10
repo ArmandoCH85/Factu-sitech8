@@ -21,7 +21,7 @@ class CheckEmailIsVerified
             return $next($request);
         }
 
-        if ($configuration->applyCheckGuestEmail() && $request->user()->isNotVerifiedUserEmail()) {
+        if ($configuration->applyCheckGuestEmail() && $request->user() && $request->user()->isNotVerifiedUserEmail()) {
             return redirect()->route('tenant.not-verified-email.index');
         }
 

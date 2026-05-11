@@ -1001,7 +1001,7 @@
                                     : 'bg-dark text-white'
                             ]"
                         >
-                            <span>PAGAR</span>
+                            <span>PAGAR </span>
                             <b
                                 >{{ currency_type.symbol }}
                                 {{ form.total.toFixed(2) }}</b
@@ -1837,7 +1837,7 @@ export default {
                     customer.identity_document_type_id === "6" ? "01" : "03";
             }
 
-            if (this.form.has_retention) {
+            if (this.form.has_retention && this.form.total > 700) {
                 this.changeRetention();
             }
 
@@ -2119,6 +2119,10 @@ export default {
                 }
 
                 return
+            }
+
+            if (this.form.has_retention && this.form.total > 700) {
+                this.changeRetention();
             }
 
             if (flag > 0)
@@ -2564,9 +2568,6 @@ export default {
 
             this.form.subtotal = this.form.total;
 
-            if (this.form.has_retention) {
-                this.changeRetention();
-            }
         },
         recalculateDecimalTotalTaxed(total, igv) {
             return total - igv;

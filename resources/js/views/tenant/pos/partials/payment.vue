@@ -145,7 +145,7 @@
                                                                 {{ form.total_isc }}</p>
                         </div>
                     </div>
-                    <template v-if="form.has_retention">
+                    <template v-if="form.has_retention && form.total > 700">
                     <div class="row m-0 p-0 bg-white d-flex align-items-center" v-if="form.has_retention">
                         <div class="col-sm-6">
                             <p class="mb-0">IMPORTE TOTAL</p>
@@ -178,7 +178,7 @@
                         <p class="font-weight-semibold mb-0">{{currencyTypeActive.symbol}} 4.00</p>
                     </div>
                 </div> -->
-                <template v-if="form.has_retention">
+                <template v-if="form.has_retention && form.total > 700">
                     <div class="row mt-0 mb-3 justify-content-center m-0 text-secondary card-body pos-client-info">
                         <div class="col-sm-6 p-0">
                             <p class="font-weight-semibold text-sm text-secondary mb-0">TOTAL A PAGAR</p>
@@ -1125,9 +1125,9 @@ export default {
         },
         getTotal() {
             let total_pay = this.form.total;
-            if (this.form.has_retention) {
-                total_pay -= this.form.retention.amount;
-            }
+            // if (this.form.has_retention && this.form.total > 700) {
+            //     total_pay -= this.form.retention.amount;
+            // }
 
             if (
                 !_.isEmpty(this.form.retention) &&
@@ -1494,7 +1494,7 @@ export default {
                 await this.asignPlateNumberToItems()
             }
 
-            if (this.form.has_retention) {
+            if (this.form.has_retention && this.form.total > 700) {
                 this.setTotalPendingAmountRetention(this.form.retention.amount);
             }
 

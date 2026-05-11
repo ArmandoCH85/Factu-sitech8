@@ -773,7 +773,7 @@ use App\Models\System\User as SystemUser;
             $from_guest_register = $request->input('from_guest_register', false);
 
             \Log::info('Sembrando temas del sistema en el nuevo tenant...');
-            $customSystemSkins = SystemSkin::where('is_default', false)->get();
+            $customSystemSkins = SystemSkin::where('is_default', false)->where('is_visible_to_clients', true)->get();
             foreach ($customSystemSkins as $customSkin) {
                 if (!DB::connection('tenant')->table('skins')->where('filename', $customSkin->filename)->exists()) {
                     DB::connection('tenant')->table('skins')->insert([

@@ -22,15 +22,26 @@
                 <table class="table table-sm mb-0">
                     <thead>
                         <tr class="border-bottom">
-                            <th class="text-muted fw-normal ps-3 py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;">Tema</th>
+                            <th class="text-muted fw-normal ps-3 py-2 text-center" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; width: 110px;">Activo</th>
+                            <th class="text-muted fw-normal py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;">Tema</th>
                             <th class="text-muted fw-normal py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; width: 140px;">Estado</th>
                             <th class="text-muted fw-normal text-end pe-3 py-2" style="font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="skin in skins" :key="skin.id"
-                            :class="(skin.is_forced || skin.is_tenant_default) ? 'table-background' : ''">
-                            <td class="align-middle ps-3 py-2">
+                            class="skin-row"
+                            :class="skin.is_tenant_default ? 'table-background' : ''">
+                            <td class="align-middle ps-3 py-2 text-center">
+                                <el-tooltip :content="skin.is_visible_to_clients ? 'Desactivar plantilla para clientes' : 'Activar plantilla para clientes'" placement="top">
+                                    <el-switch
+                                        :value="skin.is_visible_to_clients"
+                                        :loading="loading_toggle_visibility === skin.id"
+                                        @change="toggleSkinVisibility(skin)">
+                                    </el-switch>
+                                </el-tooltip>
+                            </td>
+                            <td class="align-middle py-2">
                                 <div class="d-flex align-items-center gap-1 flex-wrap">
                                     <span class="fw-bold" style="font-size: 13px;">{{ skin.name }}</span>
                                     <small class="text-muted" style="font-size: 11px;">{{ skin.is_default ? 'sistema' : 'personalizado' }}</small>
@@ -49,15 +60,19 @@
                                 </div>
                             </td>
                             <td class="align-middle py-2">
-                                <div class="d-flex gap-1 flex-wrap">
-                                    <el-tag v-if="skin.is_forced" size="mini" type="warning">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
-                                        Forzado
-                                    </el-tag>
-                                    <el-tag v-if="skin.is_tenant_default" size="mini" type="warning">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z"/></svg>
-                                        Default
-                                    </el-tag>
+                                <div class="d-flex gap-1 flex-wrap align-items-center">
+                                    <el-tooltip v-if="skin.is_tenant_default" content="Tema por defecto para nuevos clientes" placement="top">
+                                        <el-tag size="mini" type="warning" style="cursor:default;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg>
+                                            Default
+                                        </el-tag>
+                                    </el-tooltip>
+                                    <el-tooltip v-else content="Establecer como default para nuevos clientes" placement="top">
+                                        <button class="set-default-tag-btn" :disabled="loading_set_default" @click="confirmSetDefault(skin)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/></svg>
+                                            Default
+                                        </button>
+                                    </el-tooltip>
                                 </div>
                             </td>
                             <td class="align-middle py-2 pe-3">
@@ -65,13 +80,6 @@
                                     <el-tooltip :content="skin.is_forced ? 'Forzar de nuevo' : 'Forzar'" placement="top">
                                         <el-button size="mini" plain :loading="loading_force" @click="confirmForceSkin(skin)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bolt"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" /></svg>
-                                        </el-button>
-                                    </el-tooltip>
-                                    <el-tooltip content="Hacer default" placement="top">
-                                        <el-button size="mini" plain :disabled="skin.is_tenant_default" :loading="loading_set_default" @click="confirmSetDefault(skin)">
-                                            <svg v-if="skin.is_tenant_default" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star text-success"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-
-                                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-star"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245" /></svg>
                                         </el-button>
                                     </el-tooltip>
                                     <el-tooltip content="Descargar" placement="top">
@@ -99,15 +107,11 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>            
+            </div>
             <div class="bg-light px-3 py-2 text-muted d-flex flex-wrap gap-3 mt-2 rounded">
                 <span class="d-flex align-items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
                     Forzar
-                </span>
-                <span class="d-flex align-items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z"/></svg>
-                    Hacer default
                 </span>
                 <span class="d-flex align-items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4l0 12"/></svg>
@@ -115,17 +119,17 @@
                 </span>
                 <span class="d-flex align-items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 9l5 -5l5 5"/><path d="M12 4l0 12"/></svg>
-                    Reemplazar 
+                    Reemplazar
                     <small style="opacity:.7">(solo sistema)</small>
                 </span>
                 <span class="d-flex align-items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
-                    Restaurar 
+                    Restaurar
                     <small style="opacity:.7">(si fue reemplazado)</small>
                 </span>
                 <span class="d-flex align-items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
-                    Eliminar 
+                    Eliminar
                     <small style="opacity:.7">(solo personalizados)</small>
                 </span>
             </div>
@@ -244,6 +248,7 @@ export default {
             loading_revert: false,
             loading_sync: null,
             loading_set_default: false,
+            loading_toggle_visibility: null,
             headers: headers_token,
             pendingFile: null,
             showRenameDialog: false,
@@ -282,7 +287,7 @@ export default {
         confirmSetDefault(skin) {
             this.$confirm(
                 `¿Establecer "${skin.name}" como tema por defecto para nuevas empresas?`,
-                'Hacer default',
+                'Seleccionar plantilla default',
                 { confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar', type: 'info' }
             ).then(() => {
                 this.loading_set_default = true;
@@ -478,6 +483,22 @@ export default {
             }).catch(() => {});
         },
 
+        toggleSkinVisibility(skin) {
+            this.loading_toggle_visibility = skin.id;
+            this.$http.post('configurations/system-skins/toggle-visibility', { skin_id: skin.id }).then(response => {
+                this.loading_toggle_visibility = null;
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.skins = response.data.skins;
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(() => {
+                this.loading_toggle_visibility = null;
+                this.$message.error('Error al cambiar la visibilidad del tema');
+            });
+        },
+
         confirmDelete(skin) {
             this.$confirm(`¿Estás seguro de eliminar el tema "${skin.name}"? Se eliminará de todos los tenants.`, 'Confirmar', {
                 confirmButtonText: 'Eliminar',
@@ -512,5 +533,32 @@ export default {
 }
 ::v-deep .el-upload-dragger {
     width: 100%;
+}
+
+.set-default-tag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0 7px;
+    height: 22px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #909399;
+    background: transparent;
+    border: 1px dashed #d3d4d6;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+.set-default-tag-btn:hover {
+    color: #e6a23c;
+    border-color: #e6a23c;
+    border-style: solid;
+    background: #fdf6ec;
+}
+.set-default-tag-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 </style>

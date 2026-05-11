@@ -616,7 +616,12 @@ use Illuminate\Support\Facades\Log;
                 $warehouse = new Warehouse();
             }
             $currency = CurrencyType::all();
-            $skins = Skin::all();
+            $hiddenFilenames = collect();
+            try {
+                $hiddenSystem = \App\Models\System\Skin::where('is_visible_to_clients', false)->get();
+                $hiddenFilenames = $hiddenSystem->flatMap(fn($s) => array_filter([$s->filename, $s->custom_filename]))->unique();
+            } catch (\Throwable $e) {}
+            $skins = Skin::all()->filter(fn($s) => !$hiddenFilenames->contains($s->filename))->values();
             return [
                 'id' => $this->id,
                 'company' => $company,

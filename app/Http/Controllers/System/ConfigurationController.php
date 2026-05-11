@@ -791,4 +791,23 @@ class ConfigurationController extends Controller
             'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
         ]);
     }
+
+    public function toggleSkinVisibility(Request $request)
+    {
+        $skin = SystemSkin::find($request->skin_id);
+
+        if (!$skin) {
+            return response()->json(['success' => false, 'message' => 'Tema no encontrado']);
+        }
+
+        $skin->update(['is_visible_to_clients' => !$skin->is_visible_to_clients]);
+
+        $status = $skin->is_visible_to_clients ? 'visible' : 'oculto';
+
+        return response()->json([
+            'success' => true,
+            'message' => "Tema \"$skin->name\" ahora es $status para los clientes",
+            'skins'   => SystemSkin::all()->map(fn($s) => $s->getCollectionData()),
+        ]);
+    }
 }

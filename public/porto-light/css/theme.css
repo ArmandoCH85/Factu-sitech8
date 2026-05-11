@@ -21834,6 +21834,12 @@ div.sub-title.text-muted {
 .btn-add-new:hover{
     opacity: 1;
 }
+.el-dropdown-menu {
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
 .el-dropdown-menu--small .el-dropdown-menu__item {
     line-height: 32px !important;
 }

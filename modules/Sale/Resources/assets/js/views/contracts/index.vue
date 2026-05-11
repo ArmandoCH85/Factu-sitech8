@@ -27,31 +27,31 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <!-- <th>#</th> -->
-                        <th class="text-start">Fecha Emisión</th>
+                        <th class="text-start" v-if="columns.date_of_issue.visible">Fecha Emisión</th>
                         <th class="text-center" v-if="columns.delivery_date.visible">Fecha Entrega</th>
-                        <th>Vendedor</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
-                        <th>Contrato</th>
-                        <th>Cotización</th>
-                        <th class="text-center">Moneda</th>
+                        <th v-if="columns.seller.visible">Vendedor</th>
+                        <th v-if="columns.customer.visible">Cliente</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
+                        <th v-if="columns.number.visible">Contrato</th>
+                        <th v-if="columns.quotation.visible">Cotización</th>
+                        <th class="text-center" v-if="columns.currency_type.visible">Moneda</th>
                         <th class="text-end" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-end" v-if="columns.total_free.visible">T.Gratuito</th>
                         <th class="text-end" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-end" v-if="columns.total_exonerated.visible">T.Exonerado</th>
-                        <th class="text-end">T.Gravado</th>
-                        <th class="text-end">T.Igv</th>
-                        <th class="text-end">Total</th>
+                        <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
+                        <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
+                        <th class="text-end" v-if="columns.total.visible">Total</th>
                         <!-- <th class="text-center">PDF</th> -->
-                        <th class="text-end">Acciones</th>
+                        <th class="text-end" v-if="columns.actions.visible">Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <!-- <td>{{ index }}</td> -->
-                        <td class="text-star">{{ row.date_of_issue }}</td>
+                        <td class="text-start" v-if="columns.date_of_issue.visible">{{ row.date_of_issue }}</td>
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
-                        <td>{{ row.user_name }}</td>
-                        <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td>
+                        <td v-if="columns.seller.visible">{{ row.user_name }}</td>
+                        <td v-if="columns.customer.visible">{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+                        <td v-if="columns.state_type.visible">
                             <template v-if="row.state_type_id == '11'">
                                 {{row.state_type_description}}
                             </template>
@@ -61,23 +61,23 @@
                                 </el-select>
                             </template>
                         </td>
-                        <td>{{ row.number_full }} </td>
-                        <td>{{ row.quotation_number_full }}</td>
-                        <td class="text-center">{{ row.currency_type_id }}</td>
-                        <td class="text-end text-nowrap"  v-if="columns.total_exportation.visible" >{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exportation) }}</td>
+                        <td v-if="columns.number.visible">{{ row.number_full }} </td>
+                        <td v-if="columns.quotation.visible">{{ row.quotation_number_full }}</td>
+                        <td class="text-center" v-if="columns.currency_type.visible">{{ row.currency_type_id }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total_exportation.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exportation) }}</td>
                         <td class="text-end text-nowrap" v-if="columns.total_free.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_free) }}</td>
                         <td class="text-end text-nowrap" v-if="columns.total_unaffected.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_unaffected) }}</td>
                         <td class="text-end text-nowrap" v-if="columns.total_exonerated.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exonerated) }}</td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total_taxed.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total_igv.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
                         <!-- <td class="text-end">
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptionsPdf(row.id)">PDF</button>
                         </td> -->
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click" @command="(command) => handleRowAction(command, row)">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -135,26 +135,22 @@
                 showDialogOptionsPdf: false,
                 state_types: [],
                 columns: {
-                    total_exportation: {
-                        title: 'T.Exportación',
-                        visible: false
-                    },
-                    total_unaffected: {
-                        title: 'T.Inafecto',
-                        visible: false
-                    },
-                    total_exonerated: {
-                        title: 'T.Exonerado',
-                        visible: false
-                    },
-                    total_free: {
-                        title: 'T.Gratuito',
-                        visible: false
-                    },
-                    delivery_date: {
-                        title: 'F.Entrega',
-                        visible: false
-                    }
+                    date_of_issue: { title: 'Fecha Emisión', visible: true },
+                    delivery_date: { title: 'F.Entrega', visible: false },
+                    seller: { title: 'Vendedor', visible: true },
+                    customer: { title: 'Cliente', visible: true },
+                    state_type: { title: 'Estado', visible: true },
+                    number: { title: 'Contrato', visible: true },
+                    quotation: { title: 'Cotización', visible: true },
+                    currency_type: { title: 'Moneda', visible: true },
+                    total_exportation: { title: 'T.Exportación', visible: false },
+                    total_free: { title: 'T.Gratuito', visible: false },
+                    total_unaffected: { title: 'T.Inafecto', visible: false },
+                    total_exonerated: { title: 'T.Exonerado', visible: false },
+                    total_taxed: { title: 'T.Gravado', visible: true },
+                    total_igv: { title: 'T.Igv', visible: true },
+                    total: { title: 'Total', visible: true },
+                    actions: { title: 'Acciones', visible: true },
                 },
                 decimal_quantity: 2
             }
@@ -189,12 +185,17 @@
                 return num.toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
             },
             saveColumnVisibility() {
-                localStorage.setItem('columnVisibilityContracts', JSON.stringify(this.columns));
+                localStorage.setItem('contracts_columnVisibility', JSON.stringify(this.columns));
             },
             loadColumnVisibility() {
-                const savedColumns = localStorage.getItem('columnVisibilityContracts');
+                const savedColumns = localStorage.getItem('contracts_columnVisibility');
                 if (savedColumns) {
-                    this.columns = JSON.parse(savedColumns);
+                    const saved = JSON.parse(savedColumns);
+                    Object.keys(saved).forEach(key => {
+                        if (this.columns[key] !== undefined) {
+                            this.columns[key].visible = saved[key].visible;
+                        }
+                    });
                 }
             },
             async changeStateType(row){

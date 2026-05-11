@@ -64,75 +64,52 @@
                 <data-table :resource="resource" :state-types="state_types">
                     <tr slot="heading">
                         <!-- <th>#</th> -->
-                        <th class="text-start">Fecha Emisión</th>
+                        <th class="text-start" v-if="columns.date_of_issue.visible">Fecha Emisión</th>
                         <th class="text-center" v-if="columns.delivery_date.visible">T. Entrega</th>
-                        <th v-if="columns.registered_by && columns.registered_by.visible">Registrado por</th>
-                        <th v-if="columns.seller && columns.seller.visible">Vendedor</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
-                        <th>Cotización</th>
-                        <th v-if="columns.documents && columns.documents.visible">Comprobantes</th>
-                        <th v-if="columns.sale_notes && columns.sale_notes.visible">Notas de venta</th>
+                        <th v-if="columns.registered_by.visible">Registrado por</th>
+                        <th v-if="columns.seller.visible">Vendedor</th>
+                        <th v-if="columns.customer.visible">Cliente</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
+                        <th v-if="columns.identifier.visible">Cotización</th>
+                        <th v-if="columns.documents.visible">Comprobantes</th>
+                        <th v-if="columns.sale_notes.visible">Notas de venta</th>
                         <th v-if="columns.order_note.visible">Pedido</th>
-                        <th v-if="columns.sale_opportunity && columns.sale_opportunity.visible">Oportunidad Venta</th>
+                        <th v-if="columns.sale_opportunity.visible">Oportunidad Venta</th>
                         <th v-if="columns.referential_information.visible">Inf.Referencial</th>
                         <th v-if="columns.contract.visible">Contrato</th>
                         <!-- <th>Estado</th> -->
                         <th v-if="columns.exchange_rate_sale.visible">T.C.</th>
-                        <th class="text-center" v-if="columns.currency_type_id && columns.currency_type_id.visible">Moneda</th>
-                        <th class="text-center"></th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exportation.visible"
-                        >
-                            T.Exportación
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_free.visible"
-                        >
-                            T.Gratuito
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_unaffected.visible"
-                        >
-                            T.Inafecta
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exonerated.visible"
-                        >
-                            T.Exonerado
-                        </th>
-                        <th class="text-end">T.Gravado</th>
-                        <th class="text-end">T.Igv</th>
-                        <th class="text-end">Total</th>
-                        <th class="text-center">PDF</th>
-                        <th class="text-end"></th>
+                        <th class="text-center" v-if="columns.currency_type_id.visible">Moneda</th>
+                        <th class="text-end" v-if="columns.payments.visible">Pagos</th>
+                        <th class="text-end" v-if="columns.total_exportation.visible">T.Exportación</th>
+                        <th class="text-end" v-if="columns.total_free.visible">T.Gratuito</th>
+                        <th class="text-end" v-if="columns.total_unaffected.visible">T.Inafecta</th>
+                        <th class="text-end" v-if="columns.total_exonerated.visible">T.Exonerado</th>
+                        <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
+                        <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
+                        <th class="text-end" v-if="columns.total.visible">Total</th>
+                        <th class="text-center" v-if="columns.pdf.visible">PDF</th>
+                        <th class="text-end" v-if="columns.actions.visible"></th>
                         <!-- <th class="text-right">Acciones</th> -->
                     </tr>
                     <tr
                         slot-scope="{ index, row }"
                         :class="{ anulate_color: row.state_type_id == '11' }"
                     >
-                        <td class="text-start">
+                        <td class="text-start" v-if="columns.date_of_issue.visible">
                             {{ formatDate(row.date_of_issue) }}
                         </td>
-                        <td
-                            class="text-center"
-                            v-if="columns.delivery_date.visible"
-                        >
+                        <td class="text-center" v-if="columns.delivery_date.visible">
                             {{ row.delivery_date }}
                         </td>
-                        <td v-if="columns.registered_by && columns.registered_by.visible">{{ row.user_name }}</td>
-                        <td v-if="columns.seller && columns.seller.visible">{{ row.seller_name }}</td>
-                        <td>
+                        <td v-if="columns.registered_by.visible">{{ row.user_name }}</td>
+                        <td v-if="columns.seller.visible">{{ row.seller_name }}</td>
+                        <td v-if="columns.customer.visible">
                             {{ row.customer_name }}<br /><small
                                 v-text="row.customer_number"
                             ></small>
                         </td>
-                        <td>
+                        <td v-if="columns.state_type.visible">
                             <template v-if="row.state_type_id == '11'">
                                 {{ row.state_type_description }}
                             </template>
@@ -151,8 +128,8 @@
                                 </el-select>
                             </template>
                         </td>
-                        <td>{{ row.identifier }}</td>
-                        <td v-if="columns.documents && columns.documents.visible">
+                        <td v-if="columns.identifier.visible">{{ row.identifier }}</td>
+                        <td v-if="columns.documents.visible">
                             <template v-for="(document, i) in row.documents">
                                 <template v-if="document.is_voided_or_rejected">
                                     <label :key="i" class="d-block text-danger">
@@ -164,7 +141,7 @@
                                 </template>
                             </template>
                         </td>
-                        <td v-if="columns.sale_notes && columns.sale_notes.visible">
+                        <td v-if="columns.sale_notes.visible">
                             <template v-for="(sale_note, i) in row.sale_notes">
                                 <label :key="i" v-text="sale_note.number_full" class="d-block"></label>
                             </template>
@@ -182,7 +159,7 @@
                                 </label>
                             </template>
                         </td>
-                        <td v-if="columns.sale_opportunity && columns.sale_opportunity.visible">
+                        <td v-if="columns.sale_opportunity.visible">
                             <el-popover
                                 placement="right"
                                 v-if="row.sale_opportunity"
@@ -242,9 +219,9 @@
                         <td v-if="columns.exchange_rate_sale.visible">
                             {{ row.exchange_rate_sale }}
                         </td>
-                        <td class="text-center" v-if="columns.currency_type_id && columns.currency_type_id.visible">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type_id.visible">{{ row.currency_type_id }}</td>
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.payments.visible">
                             <button
                                 type="button"
                                 class="btn waves-effect waves-light btn-xs btn-info"
@@ -282,10 +259,10 @@
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_exonerated) }}
                         </td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap" v-if="columns.total_taxed.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total_igv.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end" v-if="columns.pdf.visible">
                             <button
                                 type="button"
                                 class="btn waves-effect waves-light btn-xs btn-info"
@@ -295,7 +272,7 @@
                             </button>
                         </td>
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click" placement="bottom-end">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -479,21 +456,31 @@ export default {
             showDialogOptionsPdf: false,
             state_types: [],
             columns: {
-                total_exportation: { title: "T.Exportación", visible: false },
-                total_unaffected: { title: "T.Inafecto", visible: false },
-                total_exonerated: { title: "T.Exonerado", visible: false },
-                total_free: { title: "T.Gratuito", visible: false },
-                contract: { title: "Contrato", visible: false },
+                date_of_issue: { title: "Fecha Emisión", visible: true },
                 delivery_date: { title: "T.Entrega", visible: false },
-                referential_information: { title: "Inf.Referencial", visible: false },
-                order_note: { title: "Pedidos", visible: false },
-                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
+                registered_by: { title: "Registrado por", visible: false },
+                seller: { title: "Vendedor", visible: false },
+                customer: { title: "Cliente", visible: true },
+                state_type: { title: "Estado", visible: true },
+                identifier: { title: "Cotización", visible: true },
                 documents: { title: "Comprobantes", visible: false },
                 sale_notes: { title: "Notas de venta", visible: false },
+                order_note: { title: "Pedidos", visible: false },
                 sale_opportunity: { title: "Oportunidad Venta", visible: false },
+                referential_information: { title: "Inf.Referencial", visible: false },
+                contract: { title: "Contrato", visible: false },
+                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
                 currency_type_id: { title: "Moneda", visible: false },
-                registered_by: { title: "Registrado por", visible: false },
-                seller: { title: "Vendedor", visible: false }
+                payments: { title: "Pagos", visible: true },
+                total_exportation: { title: "T.Exportación", visible: false },
+                total_free: { title: "T.Gratuito", visible: false },
+                total_unaffected: { title: "T.Inafecto", visible: false },
+                total_exonerated: { title: "T.Exonerado", visible: false },
+                total_taxed: { title: "T.Gravado", visible: true },
+                total_igv: { title: "T.Igv", visible: true },
+                total: { title: "Total", visible: true },
+                pdf: { title: "PDF", visible: true },
+                actions: { title: "Acciones", visible: true },
             },
             decimal_quantity: 2
         };
@@ -536,16 +523,19 @@ export default {
         },
         saveColumnVisibilityQuotations() {
             localStorage.setItem(
-                "columnVisibilityQuotations",
+                "quotations_columnVisibility",
                 JSON.stringify(this.columns)
             );
         },
         loadColumnVisibilityQuotations() {
-            const savedColumns = localStorage.getItem(
-                "columnVisibilityQuotations"
-            );
+            const savedColumns = localStorage.getItem("quotations_columnVisibility");
             if (savedColumns) {
-                this.columns = JSON.parse(savedColumns);
+                const saved = JSON.parse(savedColumns);
+                Object.keys(saved).forEach(key => {
+                    if (this.columns[key] !== undefined) {
+                        this.columns[key].visible = saved[key].visible;
+                    }
+                });
             }
         },
         clickSendQuotation(id) {

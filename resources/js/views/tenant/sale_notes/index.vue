@@ -61,7 +61,7 @@
                     </el-button>
                      <el-dropdown-menu slot="dropdown" style="min-width: 220px;">
                         <div style="max-height: 520px; overflow-y: auto;">
-                            <div class="px-3 py-2 bg-light border-bottom">
+                            <div class="px-3 py-2 bg-light border-bottom" v-if=" customFieldColumns.length > 0 ">
                                 <strong>Campos personalizados</strong>
                             </div>
                             <el-dropdown-item
@@ -75,7 +75,8 @@
                                     >{{ field.name }}</el-checkbox
                                 >
                             </el-dropdown-item>
-                            <el-dropdown-item divided disabled>
+                            <el-dropdown-item divided v-if=" customFieldColumns.length > 0 "></el-dropdown-item>
+                            <el-dropdown-item disabled>
                                 <strong>Seleccionar columnas</strong>
                             </el-dropdown-item>
                             <el-dropdown-item
@@ -103,23 +104,23 @@
                             Vendedor
                         </th>
 
-                        <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.date_of_issue.visible">Fecha Emisión</th>
                         <th
                             class="text-center"
                             v-if="columns.date_payment.visible"
                         >
                             Fecha de pago
                         </th>
-                        <th>Cliente</th>
-                        <th>Nota de Venta</th>
-                        <th>Estado</th>
+                        <th v-if="columns.customer.visible">Cliente</th>
+                        <th v-if="columns.full_number.visible">Nota de Venta</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
                         <th
                             class="text-end"
                             v-if="columns.exchange_rate_sale.visible"
                         >
                             T.C.
                         </th>
-                        <th class="text-center">Moneda</th>
+                        <th class="text-center" v-if="columns.currency_type.visible">Moneda</th>
                         <th class="text-end" v-if="columns.due_date.visible">
                             F. Vencimiento
                         </th>
@@ -156,7 +157,7 @@
                         <th class="text-end" v-if="columns.total_igv.visible">
                             T.Igv
                         </th>
-                        <th class="text-end">Total</th>
+                        <th class="text-end" v-if="columns.total.visible">Total</th>
 
                         <th
                             class="text-center"
@@ -171,12 +172,11 @@
                             Por pagar
                         </th>
 
-                        <th class="text-center">Comprobantes</th>
-                        <th class="text-center">Estado pago</th>
-                        <th class="text-center">Orden de compra</th>
-
-                        <th class="text-center">Pagos</th>
-                        <th class="text-center">Descarga</th>
+                        <th class="text-center" v-if="columns.documents.visible">Comprobantes</th>
+                        <th class="text-center" v-if="columns.payment_status.visible">Estado pago</th>
+                        <th class="text-center" v-if="columns.purchase_order.visible">Orden de compra</th>
+                        <th class="text-center" v-if="columns.payments.visible">Pagos</th>
+                        <th class="text-center" v-if="columns.download.visible">Descarga</th>
                         <th
                             v-for="field in customFieldColumns"
                             :key="field.id"
@@ -221,7 +221,7 @@
                         >
                             Placa
                         </th>
-                        <th class="text-end">Acciones</th>
+                        <th class="text-end" v-if="columns.actions.visible">Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{'anulate_color': row.state_type_id === '11'}">
                         <!-- <td>{{ index }}</td> -->
@@ -232,7 +232,7 @@
                             {{ row.seller_name }}
                         </td>
 
-                        <td class="text-center">
+                        <td class="text-center" v-if="columns.date_of_issue.visible">
                             {{ formatDate(row.date_of_issue) }}
                         </td>
                         <td
@@ -241,20 +241,20 @@
                         >
                             {{ formatDate(row.date_of_payment) }}
                         </td>
-                        <td>
+                        <td v-if="columns.customer.visible">
                             {{ row.customer_name }}<br /><small
                                 v-text="row.customer_number"
                             ></small>
                         </td>
-                        <td>{{ row.full_number }}</td>
-                        <td>{{ row.state_type_description }}</td>
+                        <td v-if="columns.full_number.visible">{{ row.full_number }}</td>
+                        <td v-if="columns.state_type.visible">{{ row.state_type_description }}</td>
                         <td
                             class="text-center"
                             v-if="columns.exchange_rate_sale.visible"
                         >
                             {{ row.exchange_rate_sale }}
                         </td>
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type.visible">{{ row.currency_type_id }}</td>
 
                         <td class="text-end" v-if="columns.due_date.visible">
                             {{ formatDate(row.due_date) }}
@@ -299,7 +299,7 @@
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_igv) }}
                         </td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
 
                         <td
                             class="text-center text-nowrap"
@@ -315,7 +315,7 @@
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_pending_paid) }}
                         </td>
-                        <td>
+                        <td v-if="columns.documents.visible">
                             <label
                                 v-for="(document, i) in row.documents"
                                 :key="i"
@@ -323,7 +323,7 @@
                                 class="d-block"
                             ></label>
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" v-if="columns.payment_status.visible">
                             <template v-if="row.state_type_id === '11'">
                                 <span class="badge text-white bg-danger">{{
                                     row.state_type_description
@@ -345,9 +345,9 @@
                             </template>
                         </td>
 
-                        <td>{{ row.purchase_order }}</td>
+                        <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
 
-                        <td class="text-center">
+                        <td class="text-center" v-if="columns.payments.visible">
                             <button
                                 type="button"
                                 style="min-width: 41px"
@@ -358,7 +358,7 @@
                             </button>
                         </td>
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.download.visible">
                             <button
                                 type="button"
                                 class="btn waves-effect waves-light btn-xs btn-info"
@@ -546,7 +546,7 @@
                             {{ row.license_plate }}
                         </td>
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click" size="small">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -745,82 +745,37 @@ export default {
             recordId: null,
             statusDispatch: null,
             columns: {
-                due_date: {
-                    title: "Fecha de Vencimiento",
-                    visible: false
-                },
-                exchange_rate_sale: {
-                    title: "Tipo de cambio",
-                    visible: false
-                },
-                total_free: {
-                    title: "T.Gratuito",
-                    visible: false
-                },
-                total_exportation: {
-                    title: "T.Exportación",
-                    visible: false
-                },
-                total_unaffected: {
-                    title: "T.Inafecto",
-                    visible: false
-                },
-                total_exonerated: {
-                    title: "T.Exonerado",
-                    visible: false
-                },
-                total_taxed: {
-                    title: "T.Gravado",
-                    visible: false
-                },
-                total_igv: {
-                    title: "T.IGV",
-                    visible: false
-                },
-                paid: {
-                    title: "Estado de Pago",
-                    visible: false
-                },
-                type_period: {
-                    title: "Tipo Periodo",
-                    visible: true
-                },
-                quantity_period: {
-                    title: "Cantidad Periodo",
-                    visible: true
-                },
-                license_plate: {
-                    title: "Placa",
-                    visible: true
-                },
-                total_paid: {
-                    title: "Pagado",
-                    visible: false
-                },
-                total_pending_paid: {
-                    title: "Por pagar",
-                    visible: false
-                },
-                seller_name: {
-                    title: "Vendedor",
-                    visible: false
-                },
-                recurrence: {
-                    title: "Recurrencia",
-                    visible: false
-                },
-                region: {
-                    title: "Region",
-                    visible: false
-                },
-                date_payment: {
-                    title: "Fecha de pago",
-                    visible: false
-                },
-                dispatch_status: {
-                    title: "Estado de despacho",
-                    visible: false
-                }
+                seller_name: { title: "Vendedor", visible: false },
+                date_of_issue: { title: "Fecha Emisión", visible: true },
+                date_payment: { title: "Fecha de pago", visible: false },
+                customer: { title: "Cliente", visible: true },
+                full_number: { title: "Nota de Venta", visible: true },
+                state_type: { title: "Estado", visible: true },
+                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
+                currency_type: { title: "Moneda", visible: true },
+                due_date: { title: "Fecha de Vencimiento", visible: false },
+                total_exportation: { title: "T.Exportación", visible: false },
+                total_free: { title: "T.Gratuito", visible: false },
+                total_unaffected: { title: "T.Inafecto", visible: false },
+                total_exonerated: { title: "T.Exonerado", visible: false },
+                total_taxed: { title: "T.Gravado", visible: false },
+                total_igv: { title: "T.IGV", visible: false },
+                total: { title: "Total", visible: true },
+                total_paid: { title: "Pagado", visible: false },
+                total_pending_paid: { title: "Por pagar", visible: false },
+                documents: { title: "Comprobantes", visible: true },
+                payment_status: { title: "Estado pago", visible: true },
+                purchase_order: { title: "Orden de compra", visible: true },
+                payments: { title: "Pagos", visible: true },
+                download: { title: "Descarga", visible: true },
+                recurrence: { title: "Recurrencia", visible: false },
+                region: { title: "Region", visible: false },
+                dispatch_status: { title: "Estado de despacho", visible: false },
+                type_period: { title: "Tipo Periodo", visible: true },
+                quantity_period: { title: "Cantidad Periodo", visible: true },
+                paid: { title: "Estado de Pago", visible: false },
+                license_plate: { title: "Placa", visible: true },
+                actions: { title: "Acciones", visible: true },
             },
             customFieldColumns: [],
             decimal_quantity: 2,
@@ -888,14 +843,18 @@ export default {
             this.$http
                 .post("/validate_columns", {
                     columns: this.columns,
-                    report: "sale_notes_index", // Nombre del reporte.
+                    report: "sale_notes_index",
                     updated: updated !== undefined
                 })
                 .then(response => {
                     if (updated === undefined) {
                         let currentCols = response.data.columns;
                         if (currentCols !== undefined) {
-                            this.columns = currentCols;
+                            Object.keys(currentCols).forEach(key => {
+                                if (this.columns[key] !== undefined) {
+                                    this.columns[key].visible = currentCols[key].visible;
+                                }
+                            });
                         }
                     }
                 })

@@ -226,11 +226,11 @@
                                 @change="toggleSelectAll"
                             ></el-checkbox>
                         </th>
-                        <th class="text-end" style="max-width: 83px;">ID</th>
-                        <th class="text-end">Cód. Interno</th>
-                        <th>Unidad</th>
-                        <th>Imagen</th>
-                        <th>
+                        <th class="text-end" style="max-width: 83px;" v-if="columns.id.visible">ID</th>
+                        <th class="text-end" v-if="columns.internal_id.visible">Cód. Interno</th>
+                        <th v-if="columns.unit_type.visible">Unidad</th>
+                        <th v-if="columns.image.visible">Imagen</th>
+                        <th v-if="columns.name.visible">
                             <a href="#" @click.prevent="sort('description')" style="color: inherit; text-decoration: none;">
                                 Nombre
                                 <i class="fas" :class="{
@@ -267,7 +267,7 @@
                         <template v-if="typeUser == 'admin'">
                             <th class="text-center">Historial</th>
                         </template>
-                        <th class="text-start">Stock</th>
+                        <th class="text-start" v-if="columns.stock.visible">Stock</th>
                         <th
                             v-if="
                                 columns.extra_data !== undefined &&
@@ -277,7 +277,7 @@
                         >
                             Stock por datos extra
                         </th>
-                        <th class="text-end">P.Unitario (Venta)</th>
+                        <th class="text-end" v-if="columns.sale_unit_price.visible">P.Unitario (Venta)</th>
                         <th
                             v-if="
                                 typeUser != 'seller' &&
@@ -293,14 +293,14 @@
                         >
                             P. venta
                         </th>
-                        <th class="text-start">Tiene Igv (Venta)</th>
+                        <th class="text-start" v-if="columns.has_igv.visible">Tiene Igv (Venta)</th>
                         <th
                             v-if="columns.purchase_has_igv_description.visible"
                             class="text-start"
                         >
                             Tiene Igv (Compra)
                         </th>
-                        <th class="text-end"></th>
+                        <th class="text-end" v-if="columns.actions.visible"></th>
                     </tr>
 
                     <tr></tr>
@@ -314,10 +314,10 @@
                             @change="handleSelectionChange(row)"
                           ></el-checkbox>
                         </td>
-                        <td class="text-end">{{ row.id }}</td>
-                        <td class="text-end">{{ row.internal_id }}</td>
-                        <td>{{ row.unit_type_id }}</td>
-                        <td>
+                        <td class="text-end" v-if="columns.id.visible">{{ row.id }}</td>
+                        <td class="text-end" v-if="columns.internal_id.visible">{{ row.internal_id }}</td>
+                        <td v-if="columns.unit_type.visible">{{ row.unit_type_id }}</td>
+                        <td v-if="columns.image.visible">
                             <img
                                 :src="row.image_url_small"
                                 style="object-fit: contain;"
@@ -326,7 +326,7 @@
                                 height="32px"
                             />
                         </td>
-                        <td>{{ row.description }}</td>
+                        <td v-if="columns.name.visible">{{ row.description }}</td>
                         <td v-if="columns.description.visible">
                             <div class="limit-4-lines">
                                 {{ stripHtml(row.name) }}
@@ -367,7 +367,7 @@
                             </td>
                         </template>
 
-                        <td>
+                        <td v-if="columns.stock.visible">
                             <div
                                 v-if="config.product_only_location == true"
                                 :class="{
@@ -458,7 +458,7 @@
                                 </button>
                             </template>
                         </td>
-                        <td class="text-end">{{ row.sale_unit_price }}</td>
+                        <td class="text-end" v-if="columns.sale_unit_price.visible">{{ row.sale_unit_price }}</td>
                         <td
                             v-if="
                                 typeUser != 'seller' &&
@@ -474,7 +474,7 @@
                         >
                             {{ row.sale_unit_price_with_igv }}
                         </td>
-                        <td class="text-start">
+                        <td class="text-start" v-if="columns.has_igv.visible">
                             {{ row.has_igv_description }}
                         </td>
                         <td
@@ -483,7 +483,7 @@
                         >
                             {{ row.purchase_has_igv_description }}
                         </td>
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click">
                                 <button
                                     id="dropdownMenuButton"
@@ -715,47 +715,25 @@ export default {
             warehousesDetail: [],
             price_labels: {},
             columns: {
-                description: {
-                    title: "Descripción",
-                    visible: false
-                },
-                item_code: {
-                    title: "Cód. SUNAT",
-                    visible: false
-                },
-                purchase_unit_price: {
-                    title: "P.Unitario (Compra)",
-                    visible: false
-                },
-                purchase_has_igv_description: {
-                    title: "Tiene Igv (Compra)",
-                    visible: false
-                },
-                model: {
-                    title: "Modelo",
-                    visible: false
-                },
-                brand: {
-                    title: "Marca",
-                    visible: false
-                },
-                sanitary: {
-                    title: "N° Sanitario",
-                    visible: false
-                },
-                cod_digemid: {
-                    title: "DIGEMID",
-                    visible: false
-                },
-                real_unit_price: {
-                    title:
-                        "Mostrar el precio de venta total (con el cálculo IGV)",
-                    visible: false
-                },
-                extra_data: {
-                    title: "Stock Por datos extra",
-                    visible: false
-                }
+                id: { title: "ID", visible: true },
+                internal_id: { title: "Cód. Interno", visible: true },
+                unit_type: { title: "Unidad", visible: true },
+                image: { title: "Imagen", visible: true },
+                name: { title: "Nombre", visible: true },
+                description: { title: "Descripción", visible: false },
+                model: { title: "Modelo", visible: false },
+                brand: { title: "Marca", visible: false },
+                item_code: { title: "Cód. SUNAT", visible: false },
+                sanitary: { title: "N° Sanitario", visible: false },
+                cod_digemid: { title: "DIGEMID", visible: false },
+                extra_data: { title: "Stock Por datos extra", visible: false },
+                stock: { title: "Stock", visible: true },
+                sale_unit_price: { title: "P.Unitario (Venta)", visible: true },
+                purchase_unit_price: { title: "P.Unitario (Compra)", visible: false },
+                real_unit_price: { title: "Mostrar el precio de venta total (con el cálculo IGV)", visible: false },
+                has_igv: { title: "Tiene Igv (Venta)", visible: true },
+                purchase_has_igv_description: { title: "Tiene Igv (Compra)", visible: false },
+                actions: { title: "Acciones", visible: true },
             },
             item_unit_types: [],
             titleTopBar: "",
@@ -1037,14 +1015,19 @@ export default {
         },
         saveColumnVisibility() {
             localStorage.setItem(
-                "columnVisibilityItems",
+                "items_columnVisibility",
                 JSON.stringify(this.columns)
             );
         },
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem("columnVisibilityItems");
+            const savedColumns = localStorage.getItem("items_columnVisibility");
             if (savedColumns) {
-                this.columns = JSON.parse(savedColumns);
+                const saved = JSON.parse(savedColumns);
+                Object.keys(saved).forEach(key => {
+                    if (this.columns[key] !== undefined) {
+                        this.columns[key].visible = saved[key].visible;
+                    }
+                });
             }
         },
         ...mapActions(["loadConfiguration"]),

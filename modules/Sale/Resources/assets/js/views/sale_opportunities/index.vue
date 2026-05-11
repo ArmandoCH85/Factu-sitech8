@@ -65,30 +65,30 @@
                 >
                     <!-- ENCABEZADOS -->
                     <tr slot="heading">
-                        <th class="text-left">Fecha Emisión</th>
+                        <th class="text-left" v-if="columns.date_of_issue.visible">Fecha Emisión</th>
                         <th v-if="columns.sale.visible">Vendedor</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
-                        <th>O. Venta</th>
+                        <th v-if="columns.customer.visible">Cliente</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
+                        <th v-if="columns.number.visible">O. Venta</th>
                         <th v-if="columns.quotation.visible">Cotización</th>
-                        <th>O. Compra</th>
-                        <th class="text-center">Moneda</th>
-                        <th class="text-center">Archivos</th>
+                        <th v-if="columns.purchase_order.visible">O. Compra</th>
+                        <th class="text-center" v-if="columns.currency_type.visible">Moneda</th>
+                        <th class="text-center" v-if="columns.files.visible">Archivos</th>
                         <th class="text-end" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-end" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-end" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
                         <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
-                        <th class="text-end">Total</th>
+                        <th class="text-end" v-if="columns.total.visible">Total</th>
                         <!-- <th class="text-center">Descarga</th> -->
-                        <th class="text-end">Acciones</th>
+                        <th class="text-end" v-if="columns.actions.visible">Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <!-- <td>{{ index }}</td> -->
-                        <td class="text-start">{{ row.date_of_issue }}</td>
+                        <td class="text-start" v-if="columns.date_of_issue.visible">{{ row.date_of_issue }}</td>
                         <td v-if="columns.sale.visible">{{ row.user_name }}</td>
-                        <td>{{ row.customer_name }}<br/><small>{{ row.customer_number }}</small></td>
-                        <td>
+                        <td v-if="columns.customer.visible">{{ row.customer_name }}<br/><small>{{ row.customer_number }}</small></td>
+                        <td v-if="columns.state_type.visible">
                             <template v-if="row.state_type_id == '11'">
                                 {{ row.state_type_description }}
                             </template>
@@ -107,12 +107,12 @@
                                 </el-select>
                             </template>
                         </td>
-                        <td>{{ row.number_full }}</td>
+                        <td v-if="columns.number.visible">{{ row.number_full }}</td>
                         <td v-if="columns.quotation.visible">{{ row.quotation_number_full }}</td>
-                        <td>{{ row.purchase_order_number_full }}</td>
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td v-if="columns.purchase_order.visible">{{ row.purchase_order_number_full }}</td>
+                        <td class="text-center" v-if="columns.currency_type.visible">{{ row.currency_type_id }}</td>
 
-                        <td class="text-center">
+                        <td class="text-center" v-if="columns.files.visible">
                             <el-popover placement="right" width="400" trigger="click">
                                 <div class="col-md-12">
                                     <div class="table-responsive">
@@ -150,9 +150,9 @@
                         <td class="text-end text-nowrap" v-if="columns.total_exonerated.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exonerated) }}</td>
                         <td class="text-end text-nowrap" v-if="columns.total_taxed.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}}{{ formatDecimal(row.total_taxed) }}</td>
                         <td class="text-end text-nowrap" v-if="columns.total_igv.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end text-nowrap" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click" @command="handleCommand">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -220,13 +220,22 @@ export default {
             showDialogOptions: false,
             state_types: [],
             columns: {
+                date_of_issue: { title: 'Fecha Emisión', visible: true },
+                sale: { title: 'Vendedor', visible: false },
+                customer: { title: 'Cliente', visible: true },
+                state_type: { title: 'Estado', visible: true },
+                number: { title: 'O. Venta', visible: true },
+                quotation: { title: 'Cotización', visible: true },
+                purchase_order: { title: 'O. Compra', visible: true },
+                currency_type: { title: 'Moneda', visible: true },
+                files: { title: 'Archivos', visible: true },
                 total_exportation: { title: 'T.Exportación', visible: false },
                 total_unaffected: { title: 'T.Inafecto', visible: false },
                 total_exonerated: { title: 'T.Exonerado', visible: false },
                 total_taxed: { title: 'T.Gravado', visible: false },
                 total_igv: { title: 'T.IGV', visible: false },
-                quotation: { title: 'Cotización', visible: true },
-                sale: { title: 'Vendedor', visible: false },
+                total: { title: 'Total', visible: true },
+                actions: { title: 'Acciones', visible: true },
             },
             decimal_quantity: 2,
         }
@@ -278,13 +287,18 @@ export default {
         },
 
         saveColumnVisibility() {
-            localStorage.setItem('columnVisibility', JSON.stringify(this.columns));
+            localStorage.setItem('sale_opportunities_columnVisibility', JSON.stringify(this.columns));
         },
 
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem('columnVisibility');
+            const savedColumns = localStorage.getItem('sale_opportunities_columnVisibility');
             if (savedColumns) {
-                this.columns = JSON.parse(savedColumns);
+                const saved = JSON.parse(savedColumns);
+                Object.keys(saved).forEach(key => {
+                    if (this.columns[key] !== undefined) {
+                        this.columns[key].visible = saved[key].visible;
+                    }
+                });
             }
         },
 

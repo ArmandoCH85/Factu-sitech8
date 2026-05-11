@@ -68,23 +68,23 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <!-- <th>#</th> -->
-                        <th class="text-start">F. Emisión</th>
+                        <th class="text-start" v-if="columns.date_of_issue.visible">F. Emisión</th>
                         <th
                             class="text-center"
                             v-if="columns.date_of_due.visible"
                         >
                             F. Vencimiento
                         </th>
-                        <th>Proveedor</th>
-                        <th>Estado</th>
-                        <th>Estado de pago</th>
-                        <th>Número</th>
-                        <th>Productos</th>
-                        <th>Almacén</th>
-                        <th>Pagos</th>
+                        <th v-if="columns.supplier.visible">Proveedor</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
+                        <th v-if="columns.payment_state.visible">Estado de pago</th>
+                        <th v-if="columns.number.visible">Número</th>
+                        <th v-if="columns.products.visible">Productos</th>
+                        <th v-if="columns.warehouse.visible">Almacén</th>
+                        <th v-if="columns.payments.visible">Pagos</th>
                         <!-- <th>F. Pago</th> -->
                         <!-- <th>Estado</th> -->
-                        <th class="text-center">Moneda</th>
+                        <th class="text-center" v-if="columns.currency_type.visible">Moneda</th>
                         <th class="text-end" v-if="columns.guides.visible">
                             Guía
                         </th>
@@ -125,13 +125,13 @@
                         <th v-if="columns.total_perception.visible">
                             Percepcion
                         </th>
-                        <th class="text-end">Total</th>
+                        <th class="text-end" v-if="columns.total.visible">Total</th>
                         <!-- <th class="text-center">Descargas</th> -->
-                        <th class="text-end">Acciones</th>
+                        <th class="text-end" v-if="columns.actions.visible">Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{'anulate_color': row.state_type_id === '11'}">
                         <!-- <td>{{ index }}</td> -->
-                        <td class="text-start">
+                        <td class="text-start" v-if="columns.date_of_issue.visible">
                             {{ formatDate(row.date_of_issue) }}
                         </td>
                         <td
@@ -146,13 +146,14 @@
                         >
                             {{ formatDate(row.date_of_due) }}
                         </td>
-                        <td>
+                        <td v-if="columns.supplier.visible">
                             {{ row.supplier_name }}<br /><small
                                 v-text="row.supplier_number"
                             ></small>
                         </td>
-                        <td>{{ row.state_type_description }}</td>
+                        <td v-if="columns.state_type.visible">{{ row.state_type_description }}</td>
                         <td
+                            v-if="columns.payment_state.visible"
                             :class="
                                 row.state_type_payment_description == 'Pagado'
                                     ? 'text-success'
@@ -161,14 +162,14 @@
                         >
                             {{ row.state_type_payment_description }}
                         </td>
-                        <td>
+                        <td v-if="columns.number.visible">
                             {{ row.number }}<br />
                             <small
                                 v-text="row.document_type_description"
                             ></small
                             ><br />
                         </td>
-                        <td>
+                        <td v-if="columns.products.visible">
                             <el-popover
                                 placement="right"
                                 width="400"
@@ -223,7 +224,7 @@
                             </template>
                         </td> -->
                         <!-- <td>{{ row.state_type_description }}</td> -->
-                         <td>
+                        <td v-if="columns.warehouse.visible">
                             <template v-if="row.warehouses && row.warehouses.length">
                                 <el-tag
                                     v-for="warehouse in row.warehouses"
@@ -237,7 +238,7 @@
                             </template>
                             <span v-else class="text-muted">-</span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.payments.visible">
                             <button
                                 v-if="row.state_type_id != '11'"
                                 type="button"
@@ -249,7 +250,7 @@
                             </button>
                         </td>
 
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type.visible">{{ row.currency_type_id }}</td>
                         <td class="text-center" v-if="columns.guides.visible">
                             <span v-for="(item, i) in row.guides" :key="i">
                                 {{ item.number }} <br />
@@ -307,8 +308,8 @@
                                 row.total_perception ? row.total_perception : 0
                             }}
                         </td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total }}</td>
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total }}</td>
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click" @command="handleCommand($event, row)">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -446,42 +447,26 @@ export default {
             showDialogPurchasePayments: false,
             showImportDialog: false,
             columns: {
-                date_of_due: {
-                    title: "F. Vencimiento",
-                    visible: false
-                },
-                total_free: {
-                    title: "T.Gratuita",
-                    visible: false
-                },
-                total_unaffected: {
-                    title: "T.Inafecta",
-                    visible: false
-                },
-                total_exonerated: {
-                    title: "T.Exonerado",
-                    visible: false
-                },
-                total_taxed: {
-                    title: "T.Gravado",
-                    visible: false
-                },
-                total_igv: {
-                    title: "T.Igv",
-                    visible: false
-                },
-                total_perception: {
-                    title: "Percepcion",
-                    visible: false
-                },
-                guides: {
-                    title: "Guias",
-                    visible: false
-                },
-                purchase_order: {
-                    title: "Orden de Compra",
-                    visible: false
-                }
+                date_of_issue: { title: "F. Emisión", visible: true },
+                date_of_due: { title: "F. Vencimiento", visible: false },
+                supplier: { title: "Proveedor", visible: true },
+                state_type: { title: "Estado", visible: true },
+                payment_state: { title: "Estado de pago", visible: true },
+                number: { title: "Número", visible: true },
+                products: { title: "Productos", visible: true },
+                warehouse: { title: "Almacén", visible: true },
+                payments: { title: "Pagos", visible: true },
+                currency_type: { title: "Moneda", visible: true },
+                guides: { title: "Guias", visible: false },
+                purchase_order: { title: "Orden de Compra", visible: false },
+                total_free: { title: "T.Gratuita", visible: false },
+                total_unaffected: { title: "T.Inafecta", visible: false },
+                total_exonerated: { title: "T.Exonerado", visible: false },
+                total_taxed: { title: "T.Gravado", visible: false },
+                total_igv: { title: "T.Igv", visible: false },
+                total_perception: { title: "Percepcion", visible: false },
+                total: { title: "Total", visible: true },
+                actions: { title: "Acciones", visible: true },
             },
             permissions: {}
         };
@@ -505,16 +490,19 @@ export default {
         },
         saveColumnVisibility() {
             localStorage.setItem(
-                "columnVisibilityPurchases",
+                "purchases_columnVisibility",
                 JSON.stringify(this.columns)
             );
         },
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem(
-                "columnVisibilityPurchases"
-            );
+            const savedColumns = localStorage.getItem("purchases_columnVisibility");
             if (savedColumns) {
-                this.columns = JSON.parse(savedColumns);
+                const saved = JSON.parse(savedColumns);
+                Object.keys(saved).forEach(key => {
+                    if (this.columns[key] !== undefined) {
+                        this.columns[key].visible = saved[key].visible;
+                    }
+                });
             }
         },
         getItemDescription(scope) {

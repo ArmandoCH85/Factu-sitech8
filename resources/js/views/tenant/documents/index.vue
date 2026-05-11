@@ -141,7 +141,7 @@
                         </el-button>
                         <el-dropdown-menu slot="dropdown" style="min-width: 220px;">
                             <div style="max-height: 520px; overflow-y: auto;">
-                                <el-dropdown-item divided disabled>
+                                <el-dropdown-item divided disabled v-if=" customFieldColumns.length > 0 ">
                                     <strong>Campos personalizados</strong>
                                 </el-dropdown-item>
                                 <el-dropdown-item
@@ -155,7 +155,8 @@
                                         >{{ field.name }}</el-checkbox
                                     >
                                 </el-dropdown-item>
-                                <el-dropdown-item divided disabled>
+                                <el-dropdown-item divided v-if=" customFieldColumns.length > 0 "></el-dropdown-item>
+                                <el-dropdown-item disabled>
                                     <strong>Seleccionar columnas</strong>
                                 </el-dropdown-item>
                                 <el-dropdown-item
@@ -176,7 +177,7 @@
                     <tr slot="heading">
                         <!-- <th>#</th> -->
                         <th v-if="columns.soap_type.visible">SOAP</th>
-                        <th class="text-start" style="min-width: 95px;">
+                        <th class="text-start" style="min-width: 95px;" v-if="columns.date_of_issue.visible">
                             Emisión
                         </th>
                         <th
@@ -192,8 +193,8 @@
                         >
                             Fecha Vencimiento
                         </th>
-                        <th>Cliente</th>
-                        <th>Número</th>
+                        <th v-if="columns.customer.visible">Cliente</th>
+                        <th v-if="columns.number.visible">Número</th>
                         <th v-if="columns.notes.visible">Notas C/D</th>
                         <th v-if="columns.dispatch.visible">
                             Guía de Remisión
@@ -201,7 +202,7 @@
                         <th v-if="columns.sales_note.visible">Nota de venta</th>
                         <th v-if="columns.order_note.visible">Pedidos</th>
                         <th v-if="columns.send_it.visible">Email Enviado</th>
-                        <th>Estado</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
                         <th
                             v-for="field in customFieldColumns"
                             :key="field.id"
@@ -264,8 +265,8 @@
                         >
                             {{ columns.total_charge.title }}
                         </th>
-                        <th class="text-end">T.Gravado</th>
-                        <th class="text-end">T.Igv</th>
+                        <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
+                        <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
                         <th class="text-end" v-if="columns.total.visible">
                             Total
                         </th>
@@ -279,11 +280,8 @@
                         >
                             Orden de compra
                         </th>
-                        <th class="text-center"></th>
-                        <th
-                            class="text-end"
-                            v-if="typeUser != 'integrator'"
-                        ></th>
+                        <th class="text-center" v-if="columns.downloads.visible"></th>
+                        <th class="text-end" v-if="typeUser != 'integrator' && columns.actions.visible"></th>
                     </tr>
                     <tr
                         slot-scope="{ index, row }"
@@ -309,7 +307,7 @@
                         <td v-if="columns.soap_type.visible">
                             {{ row.soap_type_description }}
                         </td>
-                        <td class="text-start">{{ row.date_of_issue }}</td>
+                        <td class="text-start" v-if="columns.date_of_issue.visible">{{ row.date_of_issue }}</td>
                         <td
                             class="text-center"
                             v-if="columns.date_payment.visible"
@@ -327,12 +325,12 @@
                         >
                             {{ row.date_of_due }}
                         </td>
-                        <td>
+                        <td v-if="columns.customer.visible">
                             {{ row.customer_name }}<br /><small
                                 v-text="row.customer_number"
                             ></small>
                         </td>
-                        <td>
+                        <td v-if="columns.number.visible">
                             {{ row.number }}<br />
                             <small
                                 v-text="row.document_type_description"
@@ -444,7 +442,7 @@
                             </span>
                         </td>
 
-                        <td>
+                        <td v-if="columns.state_type.visible">
                             <el-tooltip
                                 v-if="tooltip(row, false)"
                                 class="item"
@@ -663,10 +661,10 @@
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_charge) }}
                         </td>
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.total_taxed.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_taxed) }}</td>
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.total_igv.visible">
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_igv) }}</td>
                         <td class="text-end" v-if="columns.total.visible">
@@ -688,7 +686,7 @@
                         <td v-if="columns.purchase_order.visible">
                             {{ row.purchase_order }}
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" v-if="columns.downloads.visible">
                             <button
                                 type="button"
                                 style="min-width: 41px"
@@ -718,7 +716,7 @@
                             </button>
                         </td>
 
-                        <td class="text-end" v-if="typeUser != 'integrator'">
+                        <td class="text-end" v-if="typeUser != 'integrator' && columns.actions.visible">
                             <el-dropdown trigger="click" size="small">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -1106,90 +1104,35 @@ export default {
             showDialogOptions: false,
             showDialogPayments: false,
             columns: {
-                notes: {
-                    title: "Notas C/D",
-                    visible: false
-                },
-                dispatch: {
-                    title: "Guía de Remisión",
-                    visible: false
-                },
-                plate_numbers: {
-                    title: "Placa",
-                    visible: false
-                },
-                user_name: {
-                    title: "Usuario",
-                    visible: false
-                },
-                exchange_rate_sale: {
-                    title: "Tipo de cambio",
-                    visible: false
-                },
-                total_exportation: {
-                    title: "T.Exportación",
-                    visible: false
-                },
-                total_free: {
-                    title: "T.Gratuito",
-                    visible: false
-                },
-                total_unaffected: {
-                    title: "T.Inafecto",
-                    visible: false
-                },
-                total_exonerated: {
-                    title: "T.Exonerado",
-                    visible: false
-                },
-                date_of_due: {
-                    title: "F. Vencimiento",
-                    visible: false
-                },
-                guides: {
-                    title: "Guias",
-                    visible: false
-                },
-                sales_note: {
-                    title: "Nota de ventas",
-                    visible: false
-                },
-                order_note: {
-                    title: "Pedidos",
-                    visible: false
-                },
-                send_it: {
-                    title: "Correo enviado al destinatario",
-                    visible: false
-                },
-                total: {
-                    title: "Total",
-                    visible: false
-                },
-                currency_type_id: {
-                    title: "Moneda",
-                    visible: false
-                },
-                purchase_order: {
-                    title: "Orden de Compra",
-                    visible: false
-                },
-                soap_type: {
-                    title: "Soap",
-                    visible: false
-                },
-                balance: {
-                    title: "Saldo",
-                    visible: true
-                },
-                total_charge: {
-                    title: "T.Cargos",
-                    visible: false
-                },
-                date_payment: {
-                    title: "Fecha de pago",
-                    visible: false
-                }
+                soap_type: { title: "Soap", visible: false },
+                date_of_issue: { title: "Emisión", visible: true },
+                date_payment: { title: "Fecha de pago", visible: false },
+                date_of_due: { title: "F. Vencimiento", visible: false },
+                customer: { title: "Cliente", visible: true },
+                number: { title: "Número", visible: true },
+                notes: { title: "Notas C/D", visible: false },
+                dispatch: { title: "Guía de Remisión", visible: false },
+                sales_note: { title: "Nota de ventas", visible: false },
+                order_note: { title: "Pedidos", visible: false },
+                send_it: { title: "Correo enviado al destinatario", visible: false },
+                state_type: { title: "Estado", visible: true },
+                user_name: { title: "Usuario", visible: false },
+                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
+                currency_type_id: { title: "Moneda", visible: false },
+                guides: { title: "Guias", visible: false },
+                plate_numbers: { title: "Placa", visible: false },
+                total_exportation: { title: "T.Exportación", visible: false },
+                total_free: { title: "T.Gratuito", visible: false },
+                total_unaffected: { title: "T.Inafecto", visible: false },
+                total_exonerated: { title: "T.Exonerado", visible: false },
+                total_charge: { title: "T.Cargos", visible: false },
+                total_taxed: { title: "T.Gravado", visible: true },
+                total_igv: { title: "T.Igv", visible: true },
+                total: { title: "Total", visible: false },
+                balance: { title: "Saldo", visible: true },
+                purchase_order: { title: "Orden de Compra", visible: false },
+                downloads: { title: "Descargas (XML/PDF/CDR)", visible: true },
+                actions: { title: "Acciones", visible: true },
             },
             customFieldColumns: [],
             decimal_quantity: 2,
@@ -1230,14 +1173,18 @@ export default {
             this.$http
                 .post("/validate_columns", {
                     columns: this.columns,
-                    report: "document_index", // Nombre del reporte.
+                    report: "document_index",
                     updated: updated !== undefined
                 })
                 .then(response => {
                     if (updated === undefined) {
                         let currentCols = response.data.columns;
                         if (currentCols !== undefined) {
-                            this.columns = currentCols;
+                            Object.keys(currentCols).forEach(key => {
+                                if (this.columns[key] !== undefined) {
+                                    this.columns[key].visible = currentCols[key].visible;
+                                }
+                            });
                         }
                     }
                 })

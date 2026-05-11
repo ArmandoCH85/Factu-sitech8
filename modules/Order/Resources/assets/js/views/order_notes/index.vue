@@ -83,7 +83,7 @@
                     </el-button>
                     <el-dropdown-menu slot="dropdown" style="min-width: 220px;">
                             <div style="max-height: 520px; overflow-y: auto;">
-                                <el-dropdown-item divided disabled>
+                                <el-dropdown-item divided disabled v-if=" customFieldColumns.length > 0 ">
                                     <strong>Campos personalizados</strong>
                                 </el-dropdown-item>
                                 <el-dropdown-item
@@ -97,7 +97,8 @@
                                         >{{ field.name }}</el-checkbox
                                     >
                                 </el-dropdown-item>
-                                <el-dropdown-item divided disabled>
+                                <el-dropdown-item divided v-if=" customFieldColumns.length > 0 "></el-dropdown-item>
+                                <el-dropdown-item disabled>
                                     <strong>Seleccionar columnas</strong>
                                 </el-dropdown-item>
                                 <el-dropdown-item
@@ -122,16 +123,11 @@
                 >
                     <tr slot="heading">
                         <!-- <th>#</th> -->
-                        <th class="text-start">Fecha Emisión</th>
-                        <th
-                            class="text-center"
-                            v-if="columns.delivery_date.visible"
-                        >
-                            Fecha Entrega
-                        </th>
-                        <th>Vendedor</th>
-                        <th>Cliente</th>
-                        <th>Estado</th>
+                        <th class="text-start" v-if="columns.date_of_issue.visible">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.delivery_date.visible">Fecha Entrega</th>
+                        <th v-if="columns.seller.visible">Vendedor</th>
+                        <th v-if="columns.customer.visible">Cliente</th>
+                        <th v-if="columns.state_type.visible">Estado</th>
                         <th
                             v-for="field in customFieldColumns"
                             :key="field.id"
@@ -140,49 +136,23 @@
                         >
                             {{ field.name }}
                         </th>
-                        <th>Pedido</th>
-                        <th>Comprobantes</th>
-                        <th v-if="columns.sale_notes.visible">
-                            Notas de venta
-                        </th>
+                        <th v-if="columns.identifier.visible">Pedido</th>
+                        <th v-if="columns.documents.visible">Comprobantes</th>
+                        <th v-if="columns.sale_notes.visible">Notas de venta</th>
                         <th v-if="columns.quotation.visible">Cotizacion</th>
                         <th v-if="columns.dispatches.visible">Guías</th>
-                        <th v-if="columns.mi_tienda_pe.visible">
-                            #Pedido MiTienda.Pe
-                        </th>
+                        <th v-if="columns.mi_tienda_pe.visible">#Pedido MiTienda.Pe</th>
                         <!-- <th>Estado</th> -->
-                        <th class="text-center">Moneda</th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exportation.visible"
-                        >
-                            T.Exportación
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_unaffected.visible"
-                        >
-                            T.Inafecta
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exonerated.visible"
-                        >
-                            T.Exonerado
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_taxed.visible"
-                        >
-                            T.Gravado
-                        </th>
-                        <th class="text-end" v-if="columns.total_igv.visible">
-                            T.Igv
-                        </th>
-                        <th class="text-end">Saldo</th>
-                        <th class="text-end">Total</th>
-                        <th class="text-center">PDF</th>
-                        <th class="text-end">Acciones</th>
+                        <th class="text-center" v-if="columns.currency_type.visible">Moneda</th>
+                        <th class="text-end" v-if="columns.total_exportation.visible">T.Exportación</th>
+                        <th class="text-end" v-if="columns.total_unaffected.visible">T.Inafecta</th>
+                        <th class="text-end" v-if="columns.total_exonerated.visible">T.Exonerado</th>
+                        <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
+                        <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
+                        <th class="text-end" v-if="columns.balance.visible">Saldo</th>
+                        <th class="text-end" v-if="columns.total.visible">Total</th>
+                        <th class="text-center" v-if="columns.pdf.visible">PDF</th>
+                        <th class="text-end" v-if="columns.actions.visible">Acciones</th>
                     </tr>
 
                     <tr></tr>
@@ -191,22 +161,19 @@
                         :class="{ anulate_color: row.state_type_id == '11' }"
                     >
                         <!-- <td>{{ index }}</td> -->
-                        <td class="text-start">
+                        <td class="text-start" v-if="columns.date_of_issue.visible">
                             {{ formatDate(row.date_of_issue) }}
                         </td>
-                        <td
-                            class="text-center"
-                            v-if="columns.delivery_date.visible"
-                        >
+                        <td class="text-center" v-if="columns.delivery_date.visible">
                             {{ formatDate(row.delivery_date) }}
                         </td>
-                        <td>{{ row.user_name }}</td>
-                        <td>
+                        <td v-if="columns.seller.visible">{{ row.user_name }}</td>
+                        <td v-if="columns.customer.visible">
                             {{ row.customer_name }}<br /><small
                                 v-text="row.customer_number"
                             ></small>
                         </td>
-                        <td>
+                        <td v-if="columns.state_type.visible">
                             <template v-if="row.state_type_id == '11'">
                                 {{ row.state_type_description }}
                             </template>
@@ -309,8 +276,8 @@
                                 {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
                             </template>
                         </td>
-                        <td>{{ row.identifier }}</td>
-                        <td>
+                        <td v-if="columns.identifier.visible">{{ row.identifier }}</td>
+                        <td v-if="columns.documents.visible">
                             <template v-for="(document, i) in row.documents">
                                 <label
                                     :key="i"
@@ -366,7 +333,7 @@
                         </td>
 
                         <!-- <td>{{ row.state_type_description }}</td> -->
-                        <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center" v-if="columns.currency_type.visible">{{ row.currency_type_id }}</td>
                         <td
                             class="text-end text-nowrap"
                             v-if="columns.total_exportation.visible"
@@ -399,7 +366,7 @@
                             {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
                             {{ formatDecimal(row.total_igv) }}
                         </td>
-                        <td class="text-end text-nowrap">
+                        <td class="text-end text-nowrap" v-if="columns.balance.visible">
                             <label
                                 v-if="row.documents.length > 0"
                                 :key="'doc_payment_' + index"
@@ -411,8 +378,8 @@
                                 v-text="calculatePayments(row.sale_notes)"
                             ></label>
                         </td>
-                        <td class="text-end text-nowrap">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
-                        <td class="text-end">
+                        <td class="text-end text-nowrap" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
+                        <td class="text-end" v-if="columns.pdf.visible">
                             <button
                                 type="button"
                                 class="btn waves-effect waves-light btn-xs btn-info"
@@ -422,7 +389,7 @@
                             </button>
                         </td>
 
-                        <td class="text-end">
+                        <td class="text-end" v-if="columns.actions.visible">
                             <el-dropdown trigger="click" @command="handleCommand">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -555,46 +522,27 @@ export default {
             showDialogOptionsPdf: false,
             state_types: [],
             columns: {
-                total_exportation: {
-                    title: "T.Exportación",
-                    visible: false
-                },
-                total_unaffected: {
-                    title: "T.Inafecto",
-                    visible: false
-                },
-                total_exonerated: {
-                    title: "T.Exonerado",
-                    visible: false
-                },
-                total_taxed: {
-                    title: "T.Gravado",
-                    visible: true
-                },
-                total_igv: {
-                    title: "T.IGV",
-                    visible: true
-                },
-                delivery_date: {
-                    title: "F.Entrega",
-                    visible: true
-                },
-                sale_notes: {
-                    title: "Notas de venta",
-                    visible: true
-                },
-                quotation: {
-                    title: "Cotizacion",
-                    visible: false
-                },
-                dispatches: {
-                    title: "Guías de Remisión",
-                    visible: false
-                },
-                mi_tienda_pe: {
-                    title: "Pedido MiTienda.Pe",
-                    visible: false
-                }
+                date_of_issue: { title: "Fecha Emisión", visible: true },
+                delivery_date: { title: "F.Entrega", visible: true },
+                seller: { title: "Vendedor", visible: true },
+                customer: { title: "Cliente", visible: true },
+                state_type: { title: "Estado", visible: true },
+                identifier: { title: "Pedido", visible: true },
+                documents: { title: "Comprobantes", visible: true },
+                sale_notes: { title: "Notas de venta", visible: true },
+                quotation: { title: "Cotizacion", visible: false },
+                dispatches: { title: "Guías de Remisión", visible: false },
+                mi_tienda_pe: { title: "Pedido MiTienda.Pe", visible: false },
+                currency_type: { title: "Moneda", visible: true },
+                total_exportation: { title: "T.Exportación", visible: false },
+                total_unaffected: { title: "T.Inafecto", visible: false },
+                total_exonerated: { title: "T.Exonerado", visible: false },
+                total_taxed: { title: "T.Gravado", visible: true },
+                total_igv: { title: "T.IGV", visible: true },
+                balance: { title: "Saldo", visible: true },
+                total: { title: "Total", visible: true },
+                pdf: { title: "PDF", visible: true },
+                actions: { title: "Acciones", visible: true },
             },
             state_type_accepted: ["01", "03", "05", "07", "13"],
             customFieldColumns: [],
@@ -656,14 +604,19 @@ export default {
         },
         saveColumnVisibility() {
             localStorage.setItem(
-                "columnVisibilityOrders",
+                "order_notes_columnVisibility",
                 JSON.stringify(this.columns)
             );
         },
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem("columnVisibilityOrders");
+            const savedColumns = localStorage.getItem("order_notes_columnVisibility");
             if (savedColumns) {
-                this.columns = JSON.parse(savedColumns);
+                const saved = JSON.parse(savedColumns);
+                Object.keys(saved).forEach(key => {
+                    if (this.columns[key] !== undefined) {
+                        this.columns[key].visible = saved[key].visible;
+                    }
+                });
             }
         },
         ...mapActions(["loadConfiguration"]),

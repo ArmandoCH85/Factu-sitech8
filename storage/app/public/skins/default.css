@@ -20,6 +20,10 @@
     --warning: #ff8400;
     --primary: #007bff;
     --info: #1dadff; 
+    --border-radius-lg: 14px;
+    --border-radius-sm: 8px;
+    --secondary-blue: #1c4bd2;
+    --border-color: #d5dbe8;
 }
 
 html, body {

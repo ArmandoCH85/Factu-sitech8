@@ -605,6 +605,59 @@
                             </div>
                         </div>
                     </el-tab-pane>
+                    <el-tab-pane class="mb-3" name="mail">
+                        <span slot="label">Correo</span>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_host}" class="form-group">
+                                    <label class="control-label" for="smtp_host">Host SMTP</label>
+                                    <el-input id="smtp_host" v-model="form.smtp_host"></el-input>
+                                    <small v-if="errors.smtp_host" class="form-control-feedback" v-text="errors.smtp_host[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_port}" class="form-group">
+                                    <label class="control-label" for="smtp_port">Puerto SMTP</label>
+                                    <el-input id="smtp_port" v-model="form.smtp_port"></el-input>
+                                    <small v-if="errors.smtp_port" class="form-control-feedback" v-text="errors.smtp_port[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_user}" class="form-group">
+                                    <label class="control-label" for="smtp_user">Usuario SMTP</label>
+                                    <el-input id="smtp_user" v-model="form.smtp_user"></el-input>
+                                    <small v-if="errors.smtp_user" class="form-control-feedback" v-text="errors.smtp_user[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_password}" class="form-group">
+                                    <label class="control-label" for="smtp_password">Contraseña SMTP</label>
+                                    <el-input id="smtp_password" v-model="form.smtp_password" type="password"></el-input>
+                                    <small v-if="errors.smtp_password" class="form-control-feedback" v-text="errors.smtp_password[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_encryption}" class="form-group">
+                                    <label class="control-label" for="smtp_encryption">Encriptación</label>
+                                    <el-select id="smtp_encryption" v-model="form.smtp_encryption" style="width: 100%">
+                                        <el-option label="SSL" value="ssl"></el-option>
+                                        <el-option label="TLS" value="tls"></el-option>
+                                        <el-option label="Ninguna" value=""></el-option>
+                                    </el-select>
+                                    <small v-if="errors.smtp_encryption" class="form-control-feedback" v-text="errors.smtp_encryption[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @click="openMailManual">Ver manual</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" :disabled="loading_test" @click="testEmail">
+                                        <span v-if="loading_test">Probando...</span>
+                                        <span v-else>Hacer prueba</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
                         <span slot="label">Contable</span>
                         <div class="row switch-configuration-container">
@@ -2437,6 +2490,7 @@ export default {
             showDialogAllowanceCharge: false,
             showDialogPriceLabels: false,
             loading_submit: false,
+            loading_test: false,
             resource: 'configurations',
             errors: {},
             form: {
@@ -2444,6 +2498,11 @@ export default {
                 visual: {},
                 dispatches_address_text: false,
                 restaurant_tip_factor: 0,
+                smtp_host: '',
+                smtp_port: null,
+                smtp_user: '',
+                smtp_password: '',
+                smtp_encryption: ''
             },
             affectation_igv_types: [],
             global_discount_types: [],
@@ -2561,6 +2620,11 @@ export default {
                 group_items_generate_document: false,
                 enabled_global_igv_to_purchase: this.config.enabled_global_igv_to_purchase,
                 set_address_by_establishment: false,
+                smtp_host: '',
+                smtp_port: null,
+                smtp_user: '',
+                smtp_password: '',
+                smtp_encryption: '',
                 permission_to_edit_cpe: false,
                 name_product_pdf_to_xml: false,
                 detraction_amount_rounded_int: false,
@@ -2777,6 +2841,30 @@ export default {
             }).then(() => {
                 this.loading_submit = false;
             });
+        },
+        testEmail() {
+            this.loading_test = true;
+            this.$http.post(`/${this.resource}/test-email`, {
+                smtp_host: this.form.smtp_host,
+                smtp_port: this.form.smtp_port,
+                smtp_user: this.form.smtp_user,
+                smtp_password: this.form.smtp_password,
+                smtp_encryption: this.form.smtp_encryption,
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                } else {
+                    this.$message.error(response.data.message || 'Error al enviar correo de prueba');
+                }
+            }).catch(error => {
+                const message = error.response?.data?.message || 'Error al enviar correo de prueba';
+                this.$message.error(message);
+            }).then(() => {
+                this.loading_test = false;
+            });
+        },
+        openMailManual() {
+            globalThis.open('https://manual.uio.la/Pro7/guias-adicionales/configuracion-smtp-segura', '_blank', 'noopener');
         },
         changeAmountPlasticBagTaxes() {
             this.loading_submit = true;

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\System\Client;
 use Hyn\Tenancy\Environment;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 
 
 class ConfigurationController extends Controller
@@ -346,6 +349,52 @@ class ConfigurationController extends Controller
             'success' => false,
             'message' =>  __('app.actions.upload.error'),
         ];
+    }
+
+    public function testEmail(Request $request)
+    {
+        $request->validate([
+            'mail_host' => 'required|string',
+            'mail_port' => 'required|numeric',
+            'mail_username' => 'required|string',
+            'mail_password' => 'required|string',
+            'mail_encryption' => 'nullable|string',
+        ]);
+
+        $this->applyMailConfiguration($request->all());
+
+        $recipient = Auth::user()->email ?? $request->user()->email;
+        if (empty($recipient)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró una dirección de correo válida para el usuario actual.',
+            ], 422);
+        }
+
+        try {
+            Mail::raw('Este es un correo de prueba para verificar la configuración SMTP.', function ($message) use ($recipient) {
+                $message->to($recipient)->subject('Prueba de configuración SMTP');
+            });
+
+            return [
+                'success' => true,
+                'message' => 'Correo de prueba enviado a ' . $recipient,
+            ];
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar el correo de prueba: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    protected function applyMailConfiguration(array $data)
+    {
+        Config::set('mail.host', $data['mail_host'] ?? null);
+        Config::set('mail.port', $data['mail_port'] ?? null);
+        Config::set('mail.username', $data['mail_username'] ?? null);
+        Config::set('mail.password', $data['mail_password'] ?? null);
+        Config::set('mail.encryption', $data['mail_encryption'] ?? null);
     }
 
     public function emails(Request $request)

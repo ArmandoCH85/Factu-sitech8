@@ -120,6 +120,7 @@ if ($hostname) {
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
+            Route::post('configurations/test-email', 'Tenant\ConfigurationController@testEmail');
             Route::post('configurations/apiruc', 'Tenant\ConfigurationController@storeApiRuc');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
             Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
@@ -948,6 +949,7 @@ if ($hostname) {
             Route::post('clients', 'System\ClientController@store');
             Route::post('clients/update', 'System\ClientController@update');
             Route::get('clients/search', 'System\ClientController@search');
+            Route::post('clients/test-email', 'System\ClientController@testEmail');
 
             Route::delete('clients/{client}/{input_validate}', 'System\ClientController@destroy');
             // Route::delete('clients/{client}', 'System\ClientController@destroy');
@@ -1070,6 +1072,7 @@ if ($hostname) {
             Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
             Route::get('configurations/apkurl', 'System\ConfigurationController@apkurl');
             Route::post('configurations/emails', 'System\ConfigurationController@emails');
+            Route::post('configurations/emails/test', 'System\ConfigurationController@testEmail');
             Route::post('configurations/qrapi', 'System\ConfigurationController@qrapi');
             Route::post('configurations/google-maps', 'System\ConfigurationController@googleMaps');
 

@@ -28,8 +28,10 @@
     use Illuminate\Support\Str;
     use Illuminate\Support\Facades\Cache;
     use App\Helpers\GuestRegisterHelper;
-use App\Models\System\PlanPeriod;
-use App\Models\System\User as SystemUser;
+    use App\Models\System\PlanPeriod;
+    use App\Models\System\User as SystemUser;
+    use Illuminate\Support\Facades\Config;
+    use Illuminate\Support\Facades\Mail;
 
     class ClientController extends Controller
     {
@@ -126,6 +128,14 @@ use App\Models\System\User as SystemUser;
             $soap_password = $config->soap_password;
             $regex_password_client = $config->regex_password_client;
 
+            $global_smtp_config = [
+                'smtp_host' => $config->mail_host ?? 'smtp.gmail.com',
+                'smtp_port' => $config->mail_port ?? 465,
+                'smtp_user' => $config->mail_username ?? '',
+                'smtp_password' => $config->mail_password ?? '',
+                'smtp_encryption' => $config->mail_encryption ?? 'ssl',
+            ];
+
             return compact(
                 'url_base',
                 'plans',
@@ -143,7 +153,9 @@ use App\Models\System\User as SystemUser;
                 'group_hotel_apps',
                 'group_pharmacy_apps',
                 'regex_password_client',
-                'group_restaurant_apps');
+                'group_restaurant_apps',
+                'group_restaurant_apps',
+                'global_smtp_config');
         }
 
         private function prepareModules(Module $module): Module
@@ -1311,5 +1323,54 @@ use App\Models\System\User as SystemUser;
             return $user instanceof SystemUser
                 && $user->reseller_id !== null
                 && ! $user->canAccessSystemModule('plans');
+        }
+
+        public function testEmail(Request $request)
+        {
+            $request->validate([
+                'smtp_host' => 'required|string',
+                'smtp_port' => 'required|integer',
+                'smtp_user' => 'required|string',
+                'smtp_password' => 'required|string',
+                'email' => 'required|email',
+            ]);
+
+            $this->applyMailConfiguration($request->all());
+
+            $recipient = $request->email;
+            if (empty($recipient)) {
+                return response()->json(['success' => false, 'message' => 'No se especificó un correo de destino'], 422);
+            }
+
+            try {
+                Mail::raw('Este es un correo de prueba para verificar que tu configuración SMTP está funcionando correctamente.', function ($message) use ($recipient) {
+                    $message->to($recipient)->subject('Prueba de configuración SMTP');
+                });
+                return ['success' => true, 'message' => 'Correo de prueba enviado correctamente a ' . $recipient];
+            } catch (Exception $e) {
+                \Log::error('Mail test error: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Error al enviar correo: ' . $e->getMessage()], 500);
+            }
+        }
+
+        protected function applyMailConfiguration(array $data)
+        {
+            if (!empty($data['smtp_host'])) {
+                Config::set('mail.host', $data['smtp_host']);
+            }
+            if (!empty($data['smtp_port'])) {
+                Config::set('mail.port', $data['smtp_port']);
+            }
+            if (!empty($data['smtp_user'])) {
+                Config::set('mail.username', $data['smtp_user']);
+            }
+            if (!empty($data['smtp_password'])) {
+                Config::set('mail.password', $data['smtp_password']);
+            }
+            if (!empty($data['smtp_encryption'])) {
+                Config::set('mail.encryption', $data['smtp_encryption']);
+            } else {
+                Config::set('mail.encryption', null);
+            }
         }
     }

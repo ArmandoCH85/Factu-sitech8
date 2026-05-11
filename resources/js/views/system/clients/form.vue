@@ -655,16 +655,24 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group p-t-20 mt-3">
-                                    <a
-                                        :href="'https://manual.uio.la/Pro7/guias-adicionales/configuracion-smtp-segura'"
-                                        class="btn btn-sm btn-outline-primary"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        role="button"
+                                <div class="form-group p-t-20 mt-3 d-flex flex-wrap gap-2">
+                                    <el-button
+                                        size="small"
+                                        type="info"
+                                        plain
+                                        @click.prevent="openMailManual()"
                                     >
-                                        Para correos Gmail verificar el manual
-                                    </a>
+                                        Ver manual
+                                    </el-button>
+                                    <el-button
+                                        size="small"
+                                        type="primary"
+                                        :loading="loading_test"
+                                        :disabled="loading_submit"
+                                        @click.prevent="testEmail()"
+                                    >
+                                        Hacer prueba
+                                    </el-button>
                                 </div>
                             </div>
                         </div>
@@ -790,6 +798,8 @@ export default {
             collapse: 1,
             business: null,
             regex_password_client: false,
+            loading_test: false,
+            global_smtp_config: {},
         }
     },
     updated() {
@@ -818,7 +828,7 @@ export default {
                 this.group_restaurant_apps = response.data.group_restaurant_apps
                 this.regex_password_client = response.data.regex_password_client
                 this.plan_periods = response.data.plan_periods
-
+                this.global_smtp_config = response.data.global_smtp_config || {}
             })
 
         await this.initForm()
@@ -979,6 +989,14 @@ export default {
                 this.titleDialog = 'Editar Cliente';
             } else {
                 this.titleDialog = 'Nuevo Cliente';
+                // Load global SMTP configuration for new clients
+                if (this.global_smtp_config && Object.keys(this.global_smtp_config).length > 0) {
+                    this.form.smtp_host = this.global_smtp_config.smtp_host || 'smtp.gmail.com';
+                    this.form.smtp_port = this.global_smtp_config.smtp_port || 465;
+                    this.form.smtp_user = this.global_smtp_config.smtp_user || 'username';
+                    this.form.smtp_password = this.global_smtp_config.smtp_password || '';
+                    this.form.smtp_encryption = this.global_smtp_config.smtp_encryption || 'ssl';
+                }
                 const preSelecteds = [];
                 this.modules.map(m => {
                     preSelecteds.push(m.id);
@@ -1190,6 +1208,36 @@ export default {
                 });
             });
             return preSelecteds
+        },
+        testEmail() {
+            if (!this.form.email) {
+                return this.$message.error('Debe ingresar un Correo de Acceso para enviar la prueba');
+            }
+            if (!this.form.smtp_host || !this.form.smtp_port || !this.form.smtp_user || !this.form.smtp_password) {
+                return this.$message.error('Debe completar todos los campos SMTP antes de hacer la prueba');
+            }
+            this.loading_test = true;
+            this.$http.post('clients/test-email', {
+                smtp_host: this.form.smtp_host,
+                smtp_port: this.form.smtp_port,
+                smtp_user: this.form.smtp_user,
+                smtp_password: this.form.smtp_password,
+                smtp_encryption: this.form.smtp_encryption,
+                email: this.form.email,
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(error => {
+                this.$message.error(error.response?.data?.message || 'Error al enviar correo de prueba');
+            }).then(() => {
+                this.loading_test = false;
+            });
+        },
+        openMailManual() {
+            window.open('https://manual.uio.la/Pro7/guias-adicionales/configuracion-smtp-segura', '_blank');
         }
     }
 }

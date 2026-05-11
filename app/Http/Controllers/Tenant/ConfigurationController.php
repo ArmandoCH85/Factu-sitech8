@@ -30,6 +30,10 @@ use Modules\Finance\Helpers\UploadFileHelper;
 use App\Models\Tenant\ConfigurationEcommerce;
 use App\Models\Tenant\TemplateColumnsConfig;
 use Modules\Restaurant\Models\Printer;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 
 
 class ConfigurationController extends Controller
@@ -373,6 +377,7 @@ class ConfigurationController extends Controller
     public function record()
     {
         $configuration = Configuration::first();
+        Configuration::setConfigSmtpMail();
         $is_restaurant_active = DB::connection('tenant')->table('business_turns')
             ->where('id', 3)
             ->where('active', 1)
@@ -394,6 +399,56 @@ class ConfigurationController extends Controller
         $record = new ConfigurationResource($configuration);
 
         return  $record;
+    }
+
+    public function testEmail(Request $request)
+    {
+        $request->validate([
+            'smtp_host' => 'required|string',
+            'smtp_port' => 'required|numeric',
+            'smtp_user' => 'required|string',
+            'smtp_password' => 'required|string',
+            'smtp_encryption' => 'nullable|string',
+        ]);
+
+        $this->applyTenantMailConfiguration($request->all());
+
+        $recipient = Auth::user()->email ?? $request->user()->email;
+        if (empty($recipient)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró una dirección de correo válida para el usuario actual.',
+            ], 422);
+        }
+
+        try {
+            Mail::raw('Este es un correo de prueba para verificar la configuración SMTP del cliente.', function ($message) use ($recipient) {
+                $message->to($recipient)->subject('Prueba de configuración SMTP');
+            });
+
+            return [
+                'success' => true,
+                'message' => 'Correo de prueba enviado a ' . $recipient,
+            ];
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar el correo de prueba: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    protected function applyTenantMailConfiguration(array $data)
+    {
+        if (!empty($data['smtp_host']) && !empty($data['smtp_port']) && !empty($data['smtp_user']) && !empty($data['smtp_password'])) {
+            Config::set('mail.host', $data['smtp_host']);
+            Config::set('mail.port', $data['smtp_port']);
+            Config::set('mail.username', $data['smtp_user']);
+            Config::set('mail.password', $data['smtp_password']);
+            Config::set('mail.encryption', $data['smtp_encryption'] ?? null);
+        } else {
+            Configuration::setConfigSmtpMail();
+        }
     }
 
     public function store(ConfigurationRequest $request)

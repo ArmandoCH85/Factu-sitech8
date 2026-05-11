@@ -1,8 +1,15 @@
 <template>
     <div>
         <div class="card">
-            <div class="card-header bg-info bg-info-customer-admin">
+            <div class="card-header bg-info bg-info-customer-admin d-flex justify-content-between align-items-center">
                 <h3 class="my-0">Configuración de correo</h3>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    @click="openMailManual"
+                >
+                    Ver manual
+                </button>
             </div>
             <form class="row card-body px-0" autocomplete="off" @submit.prevent="submit">
                 <div class="col-md-6">
@@ -41,13 +48,15 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="form-group pt-3">
+                    <div class="form-group pt-3 d-flex flex-wrap gap-2">
                         <button
                             type="button"
-                            class="btn btn-sm btn-outline-primary"
-                            @click="openMailManual"
+                            class="btn btn-sm btn-outline-success"
+                            :disabled="loading_submit"
+                            @click="testEmail"
                         >
-                            Para correos Gmail verificar el manual
+                            <span v-if="loading_test">Probando...</span>
+                            <span v-else>Hacer prueba</span>
                         </button>
                     </div>
                 </div>
@@ -147,6 +156,7 @@ export default {
     data() {
         return {
             loading_submit: false,
+            loading_test: false,
             resource: 'configurations',
             errors: {},
             consultationUrl: '',
@@ -227,8 +237,25 @@ export default {
                     this.loading_submit = false;
                 });
 
-            this.loading_submit = false;
-        }
-    },
+        },
+        testEmail() {
+            this.loading_test = true;
+            this.$http.post(`${this.resource}/emails/test`, this.form)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                    } else {
+                        this.$message.error(response.data.message || 'Error al enviar correo de prueba');
+                    }
+                })
+                .catch(error => {
+                    const message = error.response?.data?.message || 'Error al enviar correo de prueba';
+                    this.$message.error(message);
+                })
+                .finally(() => {
+                    this.loading_test = false;
+                });
+        },
+    }
 }
 </script>

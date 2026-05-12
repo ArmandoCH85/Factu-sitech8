@@ -192,7 +192,7 @@ export default {
             ].join('\n');
         },
         openMailManual() {
-            globalThis.open('https://manual.uio.la/Pro7/guias-adicionales/configuracion-smtp-segura', '_blank', 'noopener');
+            globalThis.open('https://manual.pro8.uio.la/guias-adicionales/Configuracion/configuracion-smtp-segura', '_blank', 'noopener');
         },
         copyConsultationCode(text) {
             if (navigator.clipboard && globalThis.isSecureContext) {

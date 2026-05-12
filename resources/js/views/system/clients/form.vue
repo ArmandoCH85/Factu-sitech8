@@ -1237,7 +1237,7 @@ export default {
             });
         },
         openMailManual() {
-            window.open('https://manual.uio.la/Pro7/guias-adicionales/configuracion-smtp-segura', '_blank');
+            window.open('https://manual.pro8.uio.la/guias-adicionales/Configuracion/configuracion-smtp-segura', '_blank');
         }
     }
 }

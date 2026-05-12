@@ -57,7 +57,6 @@
             </div>
 
             <div class="card-body">
-
                 <data-table
                     ref="dt"
                     :resource="resource"
@@ -287,19 +286,24 @@ export default {
         },
 
         saveColumnVisibility() {
-            localStorage.setItem('sale_opportunities_columnVisibility', JSON.stringify(this.columns));
+            const columns = {};
+            Object.keys(this.columns).forEach(key => {
+                columns[key] = { title: this.columns[key].title, visible: this.columns[key].visible };
+            });
+            this.$http.post('/column-visibility/sale_opportunities_index', { columns }).catch(() => {});
         },
 
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem('sale_opportunities_columnVisibility');
-            if (savedColumns) {
-                const saved = JSON.parse(savedColumns);
-                Object.keys(saved).forEach(key => {
-                    if (this.columns[key] !== undefined) {
-                        this.columns[key].visible = saved[key].visible;
-                    }
-                });
-            }
+            this.$http.get('/column-visibility/sale_opportunities_index').then(response => {
+                if (response.data.success && response.data.data) {
+                    const data = response.data.data;
+                    Object.keys(data).forEach(key => {
+                        if (this.columns[key] !== undefined) {
+                            this.columns[key].visible = data[key].visible;
+                        }
+                    });
+                }
+            }).catch(() => {});
         },
 
         async clickDownloadFile(filename) {

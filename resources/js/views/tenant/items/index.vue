@@ -264,7 +264,7 @@
                         >
                             DIGEMID
                         </th>
-                        <template v-if="typeUser == 'admin'">
+                        <template v-if="typeUser == 'admin' && columns.history.visible">
                             <th class="text-center">Historial</th>
                         </template>
                         <th class="text-start" v-if="columns.stock.visible">Stock</th>
@@ -355,7 +355,7 @@
                             {{ row.cod_digemid }}
                         </td>
 
-                        <template v-if="typeUser == 'admin'">
+                        <template v-if="typeUser == 'admin' && columns.history.visible">
                             <td class="text-center">
                                 <button
                                     class="btn waves-effect waves-light btn-xs btn-primary"
@@ -727,6 +727,7 @@ export default {
                 sanitary: { title: "N° Sanitario", visible: false },
                 cod_digemid: { title: "DIGEMID", visible: false },
                 extra_data: { title: "Stock Por datos extra", visible: false },
+                history: { title: "Historial", visible: true },
                 stock: { title: "Stock", visible: true },
                 sale_unit_price: { title: "P.Unitario (Venta)", visible: true },
                 purchase_unit_price: { title: "P.Unitario (Compra)", visible: false },
@@ -1014,21 +1015,23 @@ export default {
             localStorage.setItem('itemSortDirection', this.sortDirection);
         },
         saveColumnVisibility() {
-            localStorage.setItem(
-                "items_columnVisibility",
-                JSON.stringify(this.columns)
-            );
+            const columns = {};
+            Object.keys(this.columns).forEach(key => {
+                columns[key] = { title: this.columns[key].title, visible: this.columns[key].visible };
+            });
+            this.$http.post('/column-visibility/items_index', { columns }).catch(() => {});
         },
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem("items_columnVisibility");
-            if (savedColumns) {
-                const saved = JSON.parse(savedColumns);
-                Object.keys(saved).forEach(key => {
-                    if (this.columns[key] !== undefined) {
-                        this.columns[key].visible = saved[key].visible;
-                    }
-                });
-            }
+            this.$http.get('/column-visibility/items_index').then(response => {
+                if (response.data.success && response.data.data) {
+                    const data = response.data.data;
+                    Object.keys(data).forEach(key => {
+                        if (this.columns[key] !== undefined) {
+                            this.columns[key].visible = data[key].visible;
+                        }
+                    });
+                }
+            }).catch(() => {});
         },
         ...mapActions(["loadConfiguration"]),
         clickHistory(recordId) {

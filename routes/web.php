@@ -228,6 +228,8 @@ if ($hostname) {
             Route::get('items', 'Tenant\ItemController@index')->name('tenant.items.index')->middleware('redirect.level');
             Route::get('services', 'Tenant\ItemController@indexServices')->name('tenant.services')->middleware('redirect.level');
             Route::get('items/columns', 'Tenant\ItemController@columns');
+            Route::get('column-visibility/{module}', 'Tenant\ColumnVisibilityController@show');
+            Route::post('column-visibility/{module}', 'Tenant\ColumnVisibilityController@store');
             Route::get('items/records', 'Tenant\ItemController@records');
             Route::get('items/tables', 'Tenant\ItemController@tables');
             Route::get('items/record/{item}', 'Tenant\ItemController@record');
@@ -1077,6 +1079,11 @@ if ($hostname) {
             Route::post('configurations/google-maps', 'System\ConfigurationController@googleMaps');
 
             Route::get('configurations/update-tenant-discount-type-base', 'System\ConfigurationController@updateTenantDiscountTypeBase');
+
+            // Column visibility defaults
+            Route::get('configurations/column-visibility', 'System\ColumnVisibilityController@index');
+            Route::get('configurations/column-visibility/{module}', 'System\ColumnVisibilityController@show');
+            Route::post('configurations/column-visibility/{module}', 'System\ColumnVisibilityController@store');
 
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');

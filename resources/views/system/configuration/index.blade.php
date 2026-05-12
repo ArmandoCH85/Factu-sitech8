@@ -14,6 +14,7 @@
         <div class="col-lg-6 col-md-12">
             <system-login-settings :configuration='@json($configuration)'></system-login-settings>
             <system-configuration-themes></system-configuration-themes>
+            <system-configuration-visible-columns></system-configuration-visible-columns>
             <system-login-other-configuration></system-login-other-configuration>
             <system-qrapi-configuration :configuration='@json($configuration)'></system-qrapi-configuration>
             <system-google-maps-configuration :configuration='@json($configuration)'></system-google-maps-configuration>

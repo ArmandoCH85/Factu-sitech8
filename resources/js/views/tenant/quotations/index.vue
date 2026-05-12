@@ -482,7 +482,7 @@ export default {
                 pdf: { title: "PDF", visible: true },
                 actions: { title: "Acciones", visible: true },
             },
-            decimal_quantity: 2
+            decimal_quantity: 2,
         };
     },
     async created() {
@@ -522,21 +522,23 @@ export default {
             return moment(date).format("DD-MM-YYYY");
         },
         saveColumnVisibilityQuotations() {
-            localStorage.setItem(
-                "quotations_columnVisibility",
-                JSON.stringify(this.columns)
-            );
+            const columns = {};
+            Object.keys(this.columns).forEach(key => {
+                columns[key] = { title: this.columns[key].title, visible: this.columns[key].visible };
+            });
+            this.$http.post('/column-visibility/quotations_index', { columns }).catch(() => {});
         },
         loadColumnVisibilityQuotations() {
-            const savedColumns = localStorage.getItem("quotations_columnVisibility");
-            if (savedColumns) {
-                const saved = JSON.parse(savedColumns);
-                Object.keys(saved).forEach(key => {
-                    if (this.columns[key] !== undefined) {
-                        this.columns[key].visible = saved[key].visible;
-                    }
-                });
-            }
+            this.$http.get('/column-visibility/quotations_index').then(response => {
+                if (response.data.success && response.data.data) {
+                    const data = response.data.data;
+                    Object.keys(data).forEach(key => {
+                        if (this.columns[key] !== undefined) {
+                            this.columns[key].visible = data[key].visible;
+                        }
+                    });
+                }
+            }).catch(() => {});
         },
         clickSendQuotation(id) {
             this.recordId = id;

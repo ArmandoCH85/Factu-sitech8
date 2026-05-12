@@ -106,7 +106,7 @@
                                     :key="index"
                                 >
                                     <el-checkbox
-                                        @change="getColumnsToShow(1)"
+                                        @change="saveColumnVisibility"
                                         v-model="column.visible"
                                         >{{ column.title }}</el-checkbox
                                     >
@@ -603,21 +603,23 @@ export default {
             });
         },
         saveColumnVisibility() {
-            localStorage.setItem(
-                "order_notes_columnVisibility",
-                JSON.stringify(this.columns)
-            );
+            const columns = {};
+            Object.keys(this.columns).forEach(key => {
+                columns[key] = { title: this.columns[key].title, visible: this.columns[key].visible };
+            });
+            this.$http.post('/column-visibility/order_notes_index', { columns }).catch(() => {});
         },
         loadColumnVisibility() {
-            const savedColumns = localStorage.getItem("order_notes_columnVisibility");
-            if (savedColumns) {
-                const saved = JSON.parse(savedColumns);
-                Object.keys(saved).forEach(key => {
-                    if (this.columns[key] !== undefined) {
-                        this.columns[key].visible = saved[key].visible;
-                    }
-                });
-            }
+            this.$http.get('/column-visibility/order_notes_index').then(response => {
+                if (response.data.success && response.data.data) {
+                    const data = response.data.data;
+                    Object.keys(data).forEach(key => {
+                        if (this.columns[key] !== undefined) {
+                            this.columns[key].visible = data[key].visible;
+                        }
+                    });
+                }
+            }).catch(() => {});
         },
         ...mapActions(["loadConfiguration"]),
 

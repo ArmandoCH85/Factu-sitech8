@@ -152,7 +152,7 @@
                     total: { title: 'Total', visible: true },
                     actions: { title: 'Acciones', visible: true },
                 },
-                decimal_quantity: 2
+                decimal_quantity: 2,
             }
         },
         async created() {
@@ -185,18 +185,23 @@
                 return num.toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
             },
             saveColumnVisibility() {
-                localStorage.setItem('contracts_columnVisibility', JSON.stringify(this.columns));
+                const columns = {};
+                Object.keys(this.columns).forEach(key => {
+                    columns[key] = { title: this.columns[key].title, visible: this.columns[key].visible };
+                });
+                this.$http.post('/column-visibility/contracts_index', { columns }).catch(() => {});
             },
             loadColumnVisibility() {
-                const savedColumns = localStorage.getItem('contracts_columnVisibility');
-                if (savedColumns) {
-                    const saved = JSON.parse(savedColumns);
-                    Object.keys(saved).forEach(key => {
-                        if (this.columns[key] !== undefined) {
-                            this.columns[key].visible = saved[key].visible;
-                        }
-                    });
-                }
+                this.$http.get('/column-visibility/contracts_index').then(response => {
+                    if (response.data.success && response.data.data) {
+                        const data = response.data.data;
+                        Object.keys(data).forEach(key => {
+                            if (this.columns[key] !== undefined) {
+                                this.columns[key].visible = data[key].visible;
+                            }
+                        });
+                    }
+                }).catch(() => {});
             },
             async changeStateType(row){
 

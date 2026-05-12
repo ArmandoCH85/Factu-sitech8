@@ -855,6 +855,16 @@ export default {
                                     this.columns[key].visible = currentCols[key].visible;
                                 }
                             });
+                        } else {
+                            this.$http.get('/column-visibility/sale_notes').then(res => {
+                                if (res.data.success && res.data.data) {
+                                    Object.keys(res.data.data).forEach(key => {
+                                        if (this.columns[key] !== undefined) {
+                                            this.columns[key].visible = res.data.data[key].visible;
+                                        }
+                                    });
+                                }
+                            }).catch(() => {});
                         }
                     }
                 })

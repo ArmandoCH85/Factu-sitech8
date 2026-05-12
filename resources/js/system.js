@@ -56,6 +56,7 @@ import SystemGuestRegisterDisabled from  './views/system/guest-register/disabled
 import SystemGuestRegister from './views/system/guest-register/register.vue'
 import XImportServiceGuest from './../../modules/ApiPeruDev/Resources/assets/js/components/InputServiceGuest.vue'
 import SystemConfigurationThemes from './views/system/configuration/themes.vue'
+import SystemsVisibleColumns from './views/system/configuration/visibleColumns.vue'
 
 
 locale.use(lang)
@@ -130,6 +131,7 @@ Vue.component('checkout-admin', CheckoutAdmin)
 Vue.component('checkout-guest', CheckoutGuest)
 
 Vue.component('system-configuration-themes', SystemConfigurationThemes)
+Vue.component('system-configuration-visible-columns', SystemsVisibleColumns)
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

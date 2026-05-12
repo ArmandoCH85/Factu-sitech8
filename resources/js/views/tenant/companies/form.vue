@@ -14,7 +14,7 @@
             </div>
             <div class="card-body">
                 <form autocomplete="off"
-                      @submit.prevent="submit">
+                      @submit.prevent="submit('company')">
                     <div class="form-body">
                         <div class="row">
                             <!-- <div class="col-md-6">
@@ -460,7 +460,7 @@
                         </div> -->
                     </div>
                     <div class="form-actions text-end pt-2">
-                        <el-button :loading="loading_submit"
+                         <el-button :loading="loading_submit.company"
                                    native-type="submit"
                                    type="primary">Guardar
                         </el-button>
@@ -469,43 +469,124 @@
             </div>
         </div>
         <div class="card card-config">
-            <div class="card-header bg-info">
-                <h3 class="my-0">Consulta integrada de CPE - Validador de documentos
-                    <el-tooltip class="item"
-                                content="Obtener los datos desde el portal de Sunat"
-                                effect="dark"
-                                placement="top-start">
-                        <i class="fa fa-info-circle"></i>
-                    </el-tooltip>
-                </h3>
+            <div class="card-header bg-info d-flex justify-content-between align-items-center">
+                <h3 class="my-0">Configuración de Correo</h3>
+                <el-button
+                    size="small"
+                    type="info"
+                    plain
+                    @click.prevent="openMailManual()"
+                >
+                    Ver manual
+                </el-button>
             </div>
             <div class="card-body">
                 <form autocomplete="off"
-                      @submit.prevent="submit">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div :class="{'has-danger': errors.integrated_query_client_id}"
-                                 class="form-group">
-                                <label class="control-label">Client ID</label>
-                                <el-input v-model="form.integrated_query_client_id"></el-input>
-                                <small v-if="errors.integrated_query_client_id"
-                                       class="form-control-feedback"
-                                       v-text="errors.integrated_query_client_id[0]"></small>
+                      @submit.prevent="submit('smtp')">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_host}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Dirección del host de correo
+                                    </label>
+                                    <el-input
+                                        v-model="form.smtp_host">
+                                    </el-input>
+                                    <small
+                                        v-if="errors.smtp_host"
+                                        class="form-control-feedback"
+                                        v-text="errors.smtp_host[0]">
+                                    </small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div :class="{'has-danger': errors.integrated_query_client_secret}"
-                                 class="form-group">
-                                <label class="control-label">Client Secret (Clave)</label>
-                                <el-input v-model="form.integrated_query_client_secret"></el-input>
-                                <small v-if="errors.integrated_query_client_secret"
-                                       class="form-control-feedback"
-                                       v-text="errors.integrated_query_client_secret[0]"></small>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_port}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Puerto del host de correo
+                                    </label>
+                                    <el-input
+                                        v-model="form.smtp_port">
+                                    </el-input>
+                                    <small
+                                        v-if="errors.smtp_port"
+                                        class="form-control-feedback"
+                                        v-text="errors.smtp_port[0]">
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_user}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Nombre de usuario de correo
+                                    </label>
+                                    <el-input
+                                        v-model="form.smtp_user">
+                                    </el-input>
+                                    <small
+                                        v-if="errors.smtp_user"
+                                        class="form-control-feedback"
+                                        v-text="errors.smtp_user[0]">
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_password}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Contraseña del usuario de correo
+                                    </label>
+                                    <el-input
+                                        v-model="form.smtp_password"
+                                        type="password">
+                                    </el-input>
+                                    <small
+                                        v-if="errors.smtp_password"
+                                        class="form-control-feedback"
+                                        v-text="errors.smtp_password[0]">
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div :class="{'has-danger': errors.smtp_encryption}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Encriptación de correo
+                                    </label>
+                                    <el-select
+                                        v-model="form.smtp_encryption"
+                                        style="width: 100%">
+                                        <el-option label="SSL" value="ssl"></el-option>
+                                        <el-option label="TLS" value="tls"></el-option>
+                                        <el-option label="Ninguna" value=""></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.smtp_encryption"
+                                        class="form-control-feedback"
+                                        v-text="errors.smtp_encryption[0]">
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group p-t-20 mt-3 d-flex flex-wrap gap-2">
+                                    <el-button
+                                        size="small"
+                                        type="primary"
+                                        :loading="loading_test"
+                                        :disabled="loading_submit.smtp || loading_test"
+                                        @click.prevent="testEmail()"
+                                    >
+                                        Hacer prueba
+                                    </el-button>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="form-actions text-end pt-2">
-                        <el-button :loading="loading_submit"
+                        <el-button :loading="loading_submit.smtp"
                                    native-type="submit"
                                    type="primary">Guardar
                         </el-button>
@@ -519,7 +600,7 @@
             </div>
             <div class="card-body">
                 <form autocomplete="off"
-                      @submit.prevent="submit">
+                      @submit.prevent="submit('integrated')">
                     <div class="form-body">
                         <div class="row">
                             <div class="col-md-12">
@@ -576,7 +657,7 @@
                         </div>
                     </div>
                     <div class="form-actions text-end pt-2">
-                        <el-button :loading="loading_submit"
+                        <el-button :loading="loading_submit.integrated"
                                    native-type="submit"
                                    type="primary">Guardar
                         </el-button>
@@ -613,6 +694,12 @@ export default {
         return {
             loading_company_record: true,
             loading_submit: false,
+            loading_submit: {
+                company: false,
+                smtp: false,
+                integrated: false,
+                guia: false,
+            },
             loading_delete_logo: false,
             loading_delete_logo_dark: false,
             loading_delete_favicon: false,
@@ -621,6 +708,7 @@ export default {
             loading_logo_dark: false,
             loading_favicon: false,
             loading_app_logo: false,
+            loading_test: false,
             headers: headers_token,
             resource: 'companies',
             errors: {},
@@ -830,11 +918,20 @@ export default {
                 soap_sunat_password: null,
                 api_sunat_id: null,
                 api_sunat_secret: null,
-                title_web: null
+                title_web: null,
+                /** Mail */
+                smtp_host: null,
+                smtp_port: null,
+                smtp_user: null,
+                smtp_password: null,
+                smtp_encryption: null
             }
         },
-        submit() {
-            this.loading_submit = true
+        submit(section = 'company') {
+            if (!Object.prototype.hasOwnProperty.call(this.loading_submit, section)) {
+                section = 'company'
+            }
+            this.loading_submit[section] = true
             this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
@@ -844,14 +941,14 @@ export default {
                     }
                 })
                 .catch(error => {
-                    if (error.response.status === 422) {
+                    if (error.response && error.response.status === 422) {
                         this.errors = error.response.data
                     } else {
                         console.log(error)
                     }
                 })
                 .then(() => {
-                    this.loading_submit = false
+                    this.loading_submit[section] = false
                 })
         },
         successUpload(response, file, fileList) {
@@ -993,6 +1090,32 @@ export default {
             fileReader.readAsDataURL(file)
 
             this.uploadCompanyFile(file, type)
+        },
+        testEmail() {
+            if (!this.form.smtp_host || !this.form.smtp_port || !this.form.smtp_user || !this.form.smtp_password) {
+                return this.$message.error('Debe completar todos los campos SMTP antes de hacer la prueba');
+            }
+            this.loading_test = true;
+            this.$http.post('/configurations/test-email', {
+                smtp_host: this.form.smtp_host,
+                smtp_port: this.form.smtp_port,
+                smtp_user: this.form.smtp_user,
+                smtp_password: this.form.smtp_password,
+                smtp_encryption: this.form.smtp_encryption,
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(error => {
+                this.$message.error(error.response?.data?.message || 'Error al enviar correo de prueba');
+            }).then(() => {
+                this.loading_test = false;
+            });
+        },
+        openMailManual() {
+            window.open('https://manual.pro8.uio.la/guias-adicionales/Configuracion/configuracion-smtp-segura', '_blank');
         }
     }
 }

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\SoapType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\CompanyRequest;
@@ -89,8 +90,29 @@ class CompanyController extends Controller
     {
         $id = $request->input('id');
         $company = Company::find($id);
-        $company->fill($request->all());
+        $company->fill($request->except([
+            'smtp_host',
+            'smtp_port',
+            'smtp_user',
+            'smtp_password',
+            'smtp_encryption',
+        ]));
         $company->save();
+
+        $smtpData = $request->only([
+            'smtp_host',
+            'smtp_port',
+            'smtp_user',
+            'smtp_password',
+            'smtp_encryption',
+        ]);
+
+        $configuration = Configuration::first();
+        if (!$configuration) {
+            $configuration = new Configuration();
+        }
+        $configuration->fill($smtpData);
+        $configuration->save();
 
         return [
             'success' => true,

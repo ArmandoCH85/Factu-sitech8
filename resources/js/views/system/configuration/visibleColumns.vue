@@ -3,89 +3,59 @@
         <div class="card-header bg-info bg-info-customer-admin">
             <h3 class="my-0">Visibilidad de columnas por defecto</h3>
         </div>
-        <div class="card-body">
-            <p class="text-muted mb-3">
-                Configure qué columnas se mostrarán por defecto en cada listado para usuarios sin configuración previa.
+        <div class="card-body px-3 pt-3 pb-2">
+            <p class="text-muted mb-3" style="font-size:0.85rem;">
+                Configure qué columnas se mostrarán por defecto en cada listado para usuarios nuevos o sin configuración guardada.
             </p>
 
-            <div class="section-group mb-3">
-                <p class="fw-bold mb-1 text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em;">Compras</p>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2">
-                    <span>Listado de compras</span>
-                    <el-button size="small" type="primary" @click="openDialog('purchases_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-            </div>
+            <el-collapse v-model="openSections" class="vc-collapse">
+                <el-collapse-item
+                    v-for="section in sections"
+                    :key="section.key"
+                    :name="section.key"
+                    class="vc-collapse-item"
+                >
+                    <template slot="title">
+                        <div class="vc-section__header">
+                            <div class="d-flex align-items-center" style="gap:10px;">
+                                <div class="vc-section__icon" :style="{ background: section.color + '18', color: section.color }" v-html="section.svg"></div>
+                                <span class="vc-section__title">{{ section.label }}</span>
+                            </div>
+                            <span class="vc-section__count">
+                                {{ section.modules.length }} {{ section.modules.length === 1 ? 'listado' : 'listados' }}
+                            </span>
+                        </div>
+                    </template>
 
-            <div class="section-group mb-3">
-                <p class="fw-bold mb-1 text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em;">Ventas</p>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2 mb-1">
-                    <span>Boleta / Factura</span>
-                    <el-button size="small" type="primary" @click="openDialog('document_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2">
-                    <span>Notas de venta</span>
-                    <el-button size="small" type="primary" @click="openDialog('sale_notes_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-            </div>
-
-            <div class="section-group mb-3">
-                <p class="fw-bold mb-1 text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em;">Preventa</p>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2 mb-1">
-                    <span>Oportunidad de venta</span>
-                    <el-button size="small" type="primary" @click="openDialog('sale_opportunities_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2 mb-1">
-                    <span>Cotizaciones</span>
-                    <el-button size="small" type="primary" @click="openDialog('quotations_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2 mb-1">
-                    <span>Contratos</span>
-                    <el-button size="small" type="primary" @click="openDialog('contracts_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2">
-                    <span>Pedidos</span>
-                    <el-button size="small" type="primary" @click="openDialog('order_notes_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-            </div>
-
-            <div class="section-group mb-3">
-                <p class="fw-bold mb-1 text-uppercase" style="font-size:0.75rem; letter-spacing:0.05em;">Productos / Servicios</p>
-                <div class="d-flex align-items-center justify-content-between border rounded p-2">
-                    <span>Productos</span>
-                    <el-button size="small" type="primary" @click="openDialog('items_index')">
-                        <i class="fa fa-columns"></i> Editar columnas
-                    </el-button>
-                </div>
-            </div>
+                    <div
+                        v-for="(moduleKey, idx) in section.modules"
+                        :key="moduleKey"
+                        class="vc-module-item"
+                        :class="{ 'vc-module-item--border': idx > 0 }"
+                    >
+                        <div class="d-flex align-items-center" style="gap:8px;">
+                            <span class="vc-module-item__dot" :style="{ background: section.color }"></span>
+                            <span class="vc-module-item__label">{{ moduleLabel(moduleKey) }}</span>
+                        </div>
+                        <el-button size="small" @click="openDialog(moduleKey)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:-2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"/><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"/><path d="M16 5l3 3"/></svg>
+                            Editar columnas
+                        </el-button>
+                    </div>
+                </el-collapse-item>
+            </el-collapse>
 
             <el-dialog
-                :title="'Columnas por defecto — ' + (editingModuleLabel)"
+                :title="'Columnas por defecto — ' + editingModuleLabel"
                 :visible.sync="dialogVisible"
                 width="560px"
                 :close-on-click-modal="false"
             >
-                <p class="text-muted" style="font-size:0.85rem;">
+                <p class="text-muted mb-3" style="font-size:0.85rem;">
                     Las columnas marcadas se mostrarán por defecto a usuarios que aún no hayan personalizado su vista.
                 </p>
                 <div class="columns-grid">
-                    <div
-                        v-for="(col, key) in editingColumns"
-                        :key="key"
-                    >
+                    <div v-for="(col, key) in editingColumns" :key="key">
                         <el-checkbox v-model="col.visible">{{ col.title }}</el-checkbox>
                     </div>
                 </div>
@@ -391,12 +361,46 @@ export default {
             editingModuleKey: null,
             editingColumns: {},
             savedConfigs: {},
+            openSections: ['purchases'],
+            sections: [
+                {
+                    key: 'purchases',
+                    label: 'Compras',
+                    color: '#f59e0b',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>',
+                    modules: ['purchases_index'],
+                },
+                {
+                    key: 'sales',
+                    label: 'Ventas',
+                    color: '#10b981',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-receipt-2"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg>',
+                    modules: ['document_index', 'sale_notes_index'],
+                },
+                {
+                    key: 'presale',
+                    label: 'Preventa',
+                    color: '#8b5cf6',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>',
+                    modules: ['sale_opportunities_index', 'quotations_index', 'contracts_index', 'order_notes_index'],
+                },
+                {
+                    key: 'products',
+                    label: 'Productos / Servicios',
+                    color: '#ef4444',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-category"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 4h6v6h-6l0 -6" /><path d="M14 4h6v6h-6l0 -6" /><path d="M4 14h6v6h-6l0 -6" /><path d="M14 17a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>',
+                    modules: ['items_index'],
+                },
+            ],
         };
     },
     created() {
         this.loadConfigs();
     },
     methods: {
+        moduleLabel(key) {
+            return MODULES[key] ? MODULES[key].label : key;
+        },
         async loadConfigs() {
             try {
                 const res = await this.$http.get('/configurations/column-visibility');
@@ -470,6 +474,106 @@ export default {
 </script>
 
 <style scoped>
+/* el-collapse overrides */
+.vc-collapse {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vc-collapse >>> .el-collapse-item {
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0;
+}
+
+.vc-collapse >>> .el-collapse-item__header {
+    height: 56px;
+    padding: 0 16px;
+    border-bottom: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.vc-collapse >>> .el-collapse-item__header.is-active {
+    border-radius: 10px 10px 0 0;
+    border-bottom: none;
+    background-color: var(--accent-color);
+}
+
+.vc-collapse >>> .el-collapse-item__arrow {
+    margin-left: 8px;
+}
+
+.vc-collapse >>> .el-collapse-item__wrap {
+    border-bottom: none;
+    border-radius: 0 0 10px 10px;
+}
+
+.vc-collapse >>> .el-collapse-item__content {
+    padding: 0;
+}
+
+/* Section header layout */
+.vc-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    padding-right: 4px;
+}
+
+.vc-section__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.vc-section__title {
+    font-weight: 600;
+}
+
+.vc-section__count {
+    font-size: 0.78rem;
+}
+
+/* Module items */
+.vc-module-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px 10px 15px;
+    border: 1px solid var(--accent-color);
+    margin: 10px;
+    border-radius: 6px;
+    background-color: var(--light-color);
+}
+
+.vc-module-item:hover {
+    background-color: #fff;
+}
+.vc-module-item__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    opacity: 0.3;
+}
+
+.vc-module-item:hover .vc-module-item__dot {
+    opacity: 1;
+}
+.vc-module-item__label {
+    font-size: 0.875rem;
+}
+
+
 .columns-grid {
     display: grid;
     grid-template-rows: repeat(6, auto);
@@ -480,7 +584,7 @@ export default {
 
 .preview-wrap {
     margin-top: 20px;
-    border-top: 1px solid #ebeef5;
+    border-top: 1px solid var(--accent-color);
     padding-top: 12px;
 }
 
@@ -488,13 +592,12 @@ export default {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #909399;
     margin-bottom: 8px;
 }
 
 .preview-scroll {
     overflow-x: auto;
-    border: 1px solid #ebeef5;
+    border: 1px solid var(--accent-color);
     border-radius: 4px;
 }
 
@@ -506,18 +609,18 @@ export default {
 }
 
 .preview-table thead th {
-    background: #f5f7fa;
+    background: var(--light-color);
     padding: 5px 10px;
-    border-bottom: 1px solid #ebeef5;
-    color: #606266;
+    border-bottom: 1px solid var(--accent-color);
+    color: var(--dark-color);
     font-weight: 600;
     text-align: left;
 }
 
 .preview-table tbody td {
     padding: 4px 10px;
-    border-bottom: 1px solid #f5f7fa;
-    color: #c0c4cc;
+    border-bottom: 1px solid var(--accent-color);
+    color: var(--dark-color);
 }
 
 .preview-table tbody tr:last-child td {
@@ -526,7 +629,7 @@ export default {
 
 .preview-empty {
     text-align: center;
-    color: #c0c4cc;
+    color: var(--muted);
     font-size: 0.8rem;
     padding: 12px;
     margin: 0;

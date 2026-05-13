@@ -79,15 +79,8 @@
                             <el-dropdown-item disabled>
                                 <strong>Seleccionar columnas</strong>
                             </el-dropdown-item>
-                            <el-dropdown-item
-                                v-for="(column, index) in columns"
-                                :key="index"
-                            >
-                                <el-checkbox
-                                    @change="getColumnsToShow(1)"
-                                    v-model="column.visible"
-                                    >{{ column.title }}</el-checkbox
-                                >
+                            <el-dropdown-item v-for="col in orderedColumns" :key="col.key">
+                                <el-checkbox @change="getColumnsToShow(1)" v-model="columns[col.key].visible">{{ col.title }}</el-checkbox>
                             </el-dropdown-item>
                         </div>
                     </el-dropdown-menu>
@@ -96,457 +89,121 @@
             <div class="card-body">
                 <data-table :resource="resource">
                     <tr slot="heading">
-                        <!-- <th>#</th> -->
-                        <th
-                            class="text-end"
-                            v-if="columns.seller_name.visible"
-                        >
-                            Vendedor
-                        </th>
-
-                        <th class="text-center" v-if="columns.date_of_issue.visible">Fecha Emisión</th>
-                        <th
-                            class="text-center"
-                            v-if="columns.date_payment.visible"
-                        >
-                            Fecha de pago
-                        </th>
-                        <th v-if="columns.customer.visible">Cliente</th>
-                        <th v-if="columns.full_number.visible">Nota de Venta</th>
-                        <th v-if="columns.state_type.visible">Estado</th>
-                        <th
-                            class="text-end"
-                            v-if="columns.exchange_rate_sale.visible"
-                        >
-                            T.C.
-                        </th>
-                        <th class="text-center" v-if="columns.currency_type.visible">Moneda</th>
-                        <th class="text-end" v-if="columns.due_date.visible">
-                            F. Vencimiento
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exportation.visible"
-                        >
-                            T.Exportación
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_free.visible"
-                        >
-                            T.Gratuito
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_unaffected.visible"
-                        >
-                            T.Inafecta
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exonerated.visible"
-                        >
-                            T.Exonerado
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_taxed.visible"
-                        >
-                            T.Gravado
-                        </th>
-                        <th class="text-end" v-if="columns.total_igv.visible">
-                            T.Igv
-                        </th>
-                        <th class="text-end" v-if="columns.total.visible">Total</th>
-
-                        <th
-                            class="text-center"
-                            v-if="columns.total_paid.visible"
-                        >
-                            Pagado
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.total_pending_paid.visible"
-                        >
-                            Por pagar
-                        </th>
-
-                        <th class="text-center" v-if="columns.documents.visible">Comprobantes</th>
-                        <th class="text-center" v-if="columns.payment_status.visible">Estado pago</th>
-                        <th class="text-center" v-if="columns.purchase_order.visible">Orden de compra</th>
-                        <th class="text-center" v-if="columns.payments.visible">Pagos</th>
-                        <th class="text-center" v-if="columns.download.visible">Descarga</th>
-                        <th
-                            v-for="field in customFieldColumns"
-                            :key="field.id"
-                            class="text-start"
-                            v-if="field.visible"
-                        >
-                            {{ field.name }}
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.recurrence.visible"
-                        >
-                            Recurrencia
-                        </th>
-                        <th class="text-start" v-if="columns.region.visible">
-                            Region
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.dispatch_status.visible"
-                        >
-                            Estado de despacho
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.type_period.visible"
-                        >
-                            Tipo Periodo
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.quantity_period.visible"
-                        >
-                            Cantidad Periodo
-                        </th>
-                        <th class="text-center" v-if="columns.paid.visible">
-                            Estado de Pago
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.license_plate.visible"
-                        >
-                            Placa
-                        </th>
-                        <th class="text-end" v-if="columns.actions.visible">Acciones</th>
+                        <template v-for="col in orderedColumns">
+                            <th v-if="col.visible && col.key === 'seller_name'" :key="col.key" class="text-end">Vendedor</th>
+                            <th v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-center">Fecha Emisión</th>
+                            <th v-if="col.visible && col.key === 'date_payment'" :key="col.key" class="text-center">Fecha de pago</th>
+                            <th v-if="col.visible && col.key === 'customer'" :key="col.key">Cliente</th>
+                            <th v-if="col.visible && col.key === 'full_number'" :key="col.key">Nota de Venta</th>
+                            <th v-if="col.visible && col.key === 'state_type'" :key="col.key">Estado</th>
+                            <th v-if="col.visible && col.key === 'exchange_rate_sale'" :key="col.key" class="text-end">T.C.</th>
+                            <th v-if="col.visible && col.key === 'currency_type'" :key="col.key" class="text-center">Moneda</th>
+                            <th v-if="col.visible && col.key === 'due_date'" :key="col.key" class="text-end">F. Vencimiento</th>
+                            <th v-if="col.visible && col.key === 'total_exportation'" :key="col.key" class="text-end">T.Exportación</th>
+                            <th v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end">T.Gratuito</th>
+                            <th v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end">T.Inafecta</th>
+                            <th v-if="col.visible && col.key === 'total_exonerated'" :key="col.key" class="text-end">T.Exonerado</th>
+                            <th v-if="col.visible && col.key === 'total_taxed'" :key="col.key" class="text-end">T.Gravado</th>
+                            <th v-if="col.visible && col.key === 'total_igv'" :key="col.key" class="text-end">T.Igv</th>
+                            <th v-if="col.visible && col.key === 'total'" :key="col.key" class="text-end">Total</th>
+                            <th v-if="col.visible && col.key === 'total_paid'" :key="col.key" class="text-center">Pagado</th>
+                            <th v-if="col.visible && col.key === 'total_pending_paid'" :key="col.key" class="text-center">Por pagar</th>
+                            <th v-if="col.visible && col.key === 'documents'" :key="col.key" class="text-center">Comprobantes</th>
+                            <th v-if="col.visible && col.key === 'payment_status'" :key="col.key" class="text-center">Estado pago</th>
+                            <th v-if="col.visible && col.key === 'purchase_order'" :key="col.key" class="text-center">Orden de compra</th>
+                            <th v-if="col.visible && col.key === 'payments'" :key="col.key" class="text-center">Pagos</th>
+                            <th v-if="col.visible && col.key === 'download'" :key="col.key" class="text-center">Descarga</th>
+                            <!-- Campos personalizados: posición fija después de download -->
+                            <template v-if="col.key === 'download'">
+                                <template v-for="field in customFieldColumns">
+                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start">{{ field.name }}</th>
+                                </template>
+                            </template>
+                            <th v-if="col.visible && col.key === 'recurrence'" :key="col.key" class="text-center">Recurrencia</th>
+                            <th v-if="col.visible && col.key === 'region'" :key="col.key" class="text-start">Region</th>
+                            <th v-if="col.visible && col.key === 'dispatch_status'" :key="col.key" class="text-end">Estado de despacho</th>
+                            <th v-if="col.visible && col.key === 'type_period'" :key="col.key" class="text-center">Tipo Periodo</th>
+                            <th v-if="col.visible && col.key === 'quantity_period'" :key="col.key" class="text-center">Cantidad Periodo</th>
+                            <th v-if="col.visible && col.key === 'paid'" :key="col.key" class="text-center">Estado de Pago</th>
+                            <th v-if="col.visible && col.key === 'license_plate'" :key="col.key" class="text-center">Placa</th>
+                            <th v-if="col.visible && col.key === 'actions'" :key="col.key" class="text-end">Acciones</th>
+                        </template>
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{'anulate_color': row.state_type_id === '11'}">
-                        <!-- <td>{{ index }}</td> -->
-                        <td
-                            class="text-end"
-                            v-if="columns.seller_name.visible"
-                        >
-                            {{ row.seller_name }}
-                        </td>
-
-                        <td class="text-center" v-if="columns.date_of_issue.visible">
-                            {{ formatDate(row.date_of_issue) }}
-                        </td>
-                        <td
-                            class="text-center"
-                            v-if="columns.date_payment.visible"
-                        >
-                            {{ formatDate(row.date_of_payment) }}
-                        </td>
-                        <td v-if="columns.customer.visible">
-                            {{ row.customer_name }}<br /><small
-                                v-text="row.customer_number"
-                            ></small>
-                        </td>
-                        <td v-if="columns.full_number.visible">{{ row.full_number }}</td>
-                        <td v-if="columns.state_type.visible">{{ row.state_type_description }}</td>
-                        <td
-                            class="text-center"
-                            v-if="columns.exchange_rate_sale.visible"
-                        >
-                            {{ row.exchange_rate_sale }}
-                        </td>
-                        <td class="text-center" v-if="columns.currency_type.visible">{{ row.currency_type_id }}</td>
-
-                        <td class="text-end" v-if="columns.due_date.visible">
-                            {{ formatDate(row.due_date) }}
-                        </td>
-                        <td
-                            class="text-end text-nowrap"
-                            v-if="columns.total_exportation.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_exportation) }}
-                        </td>
-                        <td
-                            class="text-end text-nowrap"
-                            v-if="columns.total_free.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_free) }}
-                        </td>
-                        <td
-                            class="text-end text-nowrap"
-                            v-if="columns.total_unaffected.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_unaffected) }}
-                        </td>
-                        <td
-                            class="text-end text-nowrap"
-                            v-if="columns.total_exonerated.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_exonerated) }}
-                        </td>
-
-                        <td
-                            class="text-end text-nowrap"
-                            v-if="columns.total_taxed.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_taxed) }}
-                        </td>
-                        <td class="text-end text-nowrap" v-if="columns.total_igv.visible">
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_igv) }}
-                        </td>
-                        <td class="text-end text-nowrap" v-if="columns.total.visible">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
-
-                        <td
-                            class="text-center text-nowrap"
-                            v-if="columns.total_paid.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_paid) }}
-                        </td>
-                        <td
-                            class="text-center text-nowrap"
-                            v-if="columns.total_pending_paid.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_pending_paid) }}
-                        </td>
-                        <td v-if="columns.documents.visible">
-                            <label
-                                v-for="(document, i) in row.documents"
-                                :key="i"
-                                v-text="document.number_full"
-                                class="d-block"
-                            ></label>
-                        </td>
-                        <td class="text-center" v-if="columns.payment_status.visible">
-                            <template v-if="row.state_type_id === '11'">
-                                <span class="badge text-white bg-danger">{{
-                                    row.state_type_description
-                                }}</span>
-                            </template>
-                            <template v-else>
-                                <span
-                                    class="badge text-white"
-                                    :class="{
-                                        'bg-success': row.total_canceled,
-                                        'bg-warning': !row.total_canceled
-                                    }"
-                                    >{{
-                                        row.total_canceled
-                                            ? "Pagado"
-                                            : "Pendiente"
-                                    }}</span
-                                >
-                            </template>
-                        </td>
-
-                        <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
-
-                        <td class="text-center" v-if="columns.payments.visible">
-                            <button
-                                type="button"
-                                style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-primary"
-                                @click.prevent="clickPayment(row.id)"
-                            >
-                                <i class="fas fa-money-bill-alt"></i>
-                            </button>
-                        </td>
-
-                        <td class="text-end" v-if="columns.download.visible">
-                            <button
-                                type="button"
-                                class="btn waves-effect waves-light btn-xs btn-info"
-                                @click.prevent="clickDownload(row.external_id)"
-                            >
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                        </td>
-                        <td
-                            v-for="field in customFieldColumns"
-                            :key="field.id"
-                            class="text-start"
-                            v-if="field.visible"
-                        >
-                            <template v-if="isEditableCustomField(field)">
-                                <template v-if="field.type === 'text'">
-                                    <el-input
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        @blur="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-input>
-                                </template>
-                                <template v-else-if="field.type === 'number'">
-                                    <el-input
-                                        v-model.number="row.custom_fields_data[field.slug]"
-                                        type="number"
-                                        @blur="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-input>
-                                </template>
-                                <template v-else-if="field.type === 'textarea'">
-                                    <el-input
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        type="textarea"
-                                        :rows="2"
-                                        @blur="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-input>
-                                </template>
-                                <template v-else-if="field.type === 'select'">
-                                    <el-select
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        @change="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        clearable
-                                        :placeholder="field.name"
-                                    >
-                                        <el-option
-                                            v-for="option in normalizeOptions(field.options)"
-                                            :key="option"
-                                            :label="option"
-                                            :value="option"
-                                        ></el-option>
-                                    </el-select>
-                                </template>
-                                <template v-else-if="field.type === 'checkbox'">
-                                    <el-checkbox-group
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        @change="saveCustomFieldValue(row, field)"
-                                    >
-                                        <el-checkbox
-                                            v-for="option in normalizeOptions(field.options)"
-                                            :key="option"
-                                            :label="option"
-                                            :value="option"
-                                        >
-                                            {{ option }}
-                                        </el-checkbox>
-                                    </el-checkbox-group>
-                                </template>
-                                <template v-else-if="field.type === 'date'">
-                                    <el-date-picker
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        type="date"
-                                        format="yyyy-MM-dd"
-                                        value-format="yyyy-MM-dd"
-                                        @change="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-date-picker>
-                                </template>
-                                <template v-else>
-                                    {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
+                        <template v-for="col in orderedColumns">
+                            <td v-if="col.visible && col.key === 'seller_name'" :key="col.key" class="text-end">{{ row.seller_name }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-center">{{ formatDate(row.date_of_issue) }}</td>
+                            <td v-if="col.visible && col.key === 'date_payment'" :key="col.key" class="text-center">{{ formatDate(row.date_of_payment) }}</td>
+                            <td v-if="col.visible && col.key === 'customer'" :key="col.key">{{ row.customer_name }}<br /><small v-text="row.customer_number"></small></td>
+                            <td v-if="col.visible && col.key === 'full_number'" :key="col.key">{{ row.full_number }}</td>
+                            <td v-if="col.visible && col.key === 'state_type'" :key="col.key">{{ row.state_type_description }}</td>
+                            <td v-if="col.visible && col.key === 'exchange_rate_sale'" :key="col.key" class="text-center">{{ row.exchange_rate_sale }}</td>
+                            <td v-if="col.visible && col.key === 'currency_type'" :key="col.key" class="text-center">{{ row.currency_type_id }}</td>
+                            <td v-if="col.visible && col.key === 'due_date'" :key="col.key" class="text-end">{{ formatDate(row.due_date) }}</td>
+                            <td v-if="col.visible && col.key === 'total_exportation'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_exportation) }}</td>
+                            <td v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_free) }}</td>
+                            <td v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_unaffected) }}</td>
+                            <td v-if="col.visible && col.key === 'total_exonerated'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_exonerated) }}</td>
+                            <td v-if="col.visible && col.key === 'total_taxed'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_taxed) }}</td>
+                            <td v-if="col.visible && col.key === 'total_igv'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_igv) }}</td>
+                            <td v-if="col.visible && col.key === 'total'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total) }}</td>
+                            <td v-if="col.visible && col.key === 'total_paid'" :key="col.key" class="text-center text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_paid) }}</td>
+                            <td v-if="col.visible && col.key === 'total_pending_paid'" :key="col.key" class="text-center text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_pending_paid) }}</td>
+                            <td v-if="col.visible && col.key === 'documents'" :key="col.key">
+                                <label v-for="(document, i) in row.documents" :key="i" v-text="document.number_full" class="d-block"></label>
+                            </td>
+                            <td v-if="col.visible && col.key === 'payment_status'" :key="col.key" class="text-center">
+                                <template v-if="row.state_type_id === '11'"><span class="badge text-white bg-danger">{{ row.state_type_description }}</span></template>
+                                <template v-else><span class="badge text-white" :class="{ 'bg-success': row.total_canceled, 'bg-warning': !row.total_canceled }">{{ row.total_canceled ? 'Pagado' : 'Pendiente' }}</span></template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'purchase_order'" :key="col.key">{{ row.purchase_order }}</td>
+                            <td v-if="col.visible && col.key === 'payments'" :key="col.key" class="text-center">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickPayment(row.id)"><i class="fas fa-money-bill-alt"></i></button>
+                            </td>
+                            <td v-if="col.visible && col.key === 'download'" :key="col.key" class="text-end">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.external_id)"><i class="fas fa-file-pdf"></i></button>
+                            </td>
+                            <!-- Campos personalizados: posición fija después de download -->
+                            <template v-if="col.key === 'download'">
+                                <template v-for="field in customFieldColumns">
+                                    <td v-if="field.visible" :key="`cf-data-${field.id}`" class="text-start">
+                                        <template v-if="isEditableCustomField(field)">
+                                            <template v-if="field.type === 'text'"><el-input v-model="row.custom_fields_data[field.slug]" @blur="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-input></template>
+                                            <template v-else-if="field.type === 'number'"><el-input v-model.number="row.custom_fields_data[field.slug]" type="number" @blur="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-input></template>
+                                            <template v-else-if="field.type === 'textarea'"><el-input v-model="row.custom_fields_data[field.slug]" type="textarea" :rows="2" @blur="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-input></template>
+                                            <template v-else-if="field.type === 'select'">
+                                                <el-select v-model="row.custom_fields_data[field.slug]" @change="saveCustomFieldValue(row, field)" size="small" clearable :placeholder="field.name">
+                                                    <el-option v-for="option in normalizeOptions(field.options)" :key="option" :label="option" :value="option"></el-option>
+                                                </el-select>
+                                            </template>
+                                            <template v-else-if="field.type === 'checkbox'">
+                                                <el-checkbox-group v-model="row.custom_fields_data[field.slug]" @change="saveCustomFieldValue(row, field)">
+                                                    <el-checkbox v-for="option in normalizeOptions(field.options)" :key="option" :label="option" :value="option">{{ option }}</el-checkbox>
+                                                </el-checkbox-group>
+                                            </template>
+                                            <template v-else-if="field.type === 'date'"><el-date-picker v-model="row.custom_fields_data[field.slug]" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-date-picker></template>
+                                            <template v-else>{{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}</template>
+                                        </template>
+                                        <template v-else>{{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}</template>
+                                    </td>
                                 </template>
                             </template>
-                            <template v-else>
-                                {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
-                            </template>
-                        </td>
-                        <td
-                            class="text-end"
-                            v-if="columns.recurrence.visible"
-                        >
-                            <template
-                                v-if="
-                                    row.type_period && row.quantity_period > 0
-                                "
-                            >
-                                <el-switch
-                                    :disabled="row.apply_concurrency"
-                                    v-model="row.enabled_concurrency"
-                                    active-text="Si"
-                                    inactive-text="No"
-                                    @change="changeConcurrency(row)"
-                                ></el-switch>
-                            </template>
-                        </td>
-
-                        <td class="text-start" v-if="columns.region.visible">
-                            {{ row.customer_region }}
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.dispatch_status.visible"
-                        >
-                            <template
-                                v-if="row.status_dispatch === 'ENTREGADO'"
-                            >
-                                <button
-                                    type="button"
-                                    style="min-width: 41px"
-                                    class="btn waves-effect waves-light btn-xs btn-success"
-                                    @click.prevent="
-                                        clickDispatchStatus(row.id, false)
-                                    "
-                                >
-                                    {{ row.status_dispatch }}
-                                </button>
-                            </template>
-
-                            <template
-                                v-if="row.status_dispatch === 'PENDIENTE'"
-                            >
-                                <button
-                                    type="button"
-                                    style="min-width: 41px"
-                                    class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="
-                                        clickDispatchStatus(row.id, true)
-                                    "
-                                >
-                                    {{ row.status_dispatch }}
-                                </button>
-                            </template>
-
-                            <template v-if="row.status_dispatch === 'PARCIAL'">
-                                <button
-                                    type="button"
-                                    style="min-width: 41px"
-                                    class="btn waves-effect waves-light btn-xs btn-warning"
-                                    @click.prevent="
-                                        clickDispatchStatus(row.id, true)
-                                    "
-                                >
-                                    {{ row.status_dispatch }}
-                                </button>
-                            </template>
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.type_period.visible"
-                        >
-                            {{ row.type_period | period }}
-                        </td>
-                        <td
-                            class="text-end"
-                            v-if="columns.quantity_period.visible"
-                        >
-                            {{ row.quantity_period }}
-                        </td>
-
-                        <td class="text-end" v-if="columns.paid.visible">
-                            {{ row.paid ? "Pagado" : "Pendiente" }}
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.license_plate.visible"
-                        >
-                            {{ row.license_plate }}
-                        </td>
-
-                        <td class="text-end" v-if="columns.actions.visible">
+                            <td v-if="col.visible && col.key === 'recurrence'" :key="col.key" class="text-end">
+                                <template v-if="row.type_period && row.quantity_period > 0">
+                                    <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
+                                </template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'region'" :key="col.key" class="text-start">{{ row.customer_region }}</td>
+                            <td v-if="col.visible && col.key === 'dispatch_status'" :key="col.key" class="text-end">
+                                <template v-if="row.status_dispatch === 'ENTREGADO'"><button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDispatchStatus(row.id, false)">{{ row.status_dispatch }}</button></template>
+                                <template v-if="row.status_dispatch === 'PENDIENTE'"><button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDispatchStatus(row.id, true)">{{ row.status_dispatch }}</button></template>
+                                <template v-if="row.status_dispatch === 'PARCIAL'"><button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickDispatchStatus(row.id, true)">{{ row.status_dispatch }}</button></template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'type_period'" :key="col.key" class="text-end">{{ row.type_period | period }}</td>
+                            <td v-if="col.visible && col.key === 'quantity_period'" :key="col.key" class="text-end">{{ row.quantity_period }}</td>
+                            <td v-if="col.visible && col.key === 'paid'" :key="col.key" class="text-end">{{ row.paid ? 'Pagado' : 'Pendiente' }}</td>
+                            <td v-if="col.visible && col.key === 'license_plate'" :key="col.key" class="text-end">{{ row.license_plate }}</td>
+                            <td v-if="col.visible && col.key === 'actions'" :key="col.key" class="text-end">
                             <el-dropdown trigger="click" size="small">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -648,6 +305,7 @@
                                 </el-dropdown-menu>
                             </el-dropdown>
                         </td>
+                        </template>
                     </tr>
                 </data-table>
             </div>
@@ -730,7 +388,12 @@ export default {
         SaleNoteDispatchStatus
     },
     computed: {
-        ...mapState(["config"])
+        ...mapState(["config"]),
+        orderedColumns() {
+            return Object.entries(this.columns)
+                .map(([key, col]) => ({ key, ...col }))
+                .sort((a, b) => a.order - b.order);
+        },
     },
     data() {
         return {
@@ -745,37 +408,37 @@ export default {
             recordId: null,
             statusDispatch: null,
             columns: {
-                seller_name: { title: "Vendedor", visible: false },
-                date_of_issue: { title: "Fecha Emisión", visible: true },
-                date_payment: { title: "Fecha de pago", visible: false },
-                customer: { title: "Cliente", visible: true },
-                full_number: { title: "Nota de Venta", visible: true },
-                state_type: { title: "Estado", visible: true },
-                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
-                currency_type: { title: "Moneda", visible: true },
-                due_date: { title: "Fecha de Vencimiento", visible: false },
-                total_exportation: { title: "T.Exportación", visible: false },
-                total_free: { title: "T.Gratuito", visible: false },
-                total_unaffected: { title: "T.Inafecto", visible: false },
-                total_exonerated: { title: "T.Exonerado", visible: false },
-                total_taxed: { title: "T.Gravado", visible: false },
-                total_igv: { title: "T.IGV", visible: false },
-                total: { title: "Total", visible: true },
-                total_paid: { title: "Pagado", visible: false },
-                total_pending_paid: { title: "Por pagar", visible: false },
-                documents: { title: "Comprobantes", visible: true },
-                payment_status: { title: "Estado pago", visible: true },
-                purchase_order: { title: "Orden de compra", visible: true },
-                payments: { title: "Pagos", visible: true },
-                download: { title: "Descarga", visible: true },
-                recurrence: { title: "Recurrencia", visible: false },
-                region: { title: "Region", visible: false },
-                dispatch_status: { title: "Estado de despacho", visible: false },
-                type_period: { title: "Tipo Periodo", visible: true },
-                quantity_period: { title: "Cantidad Periodo", visible: true },
-                paid: { title: "Estado de Pago", visible: false },
-                license_plate: { title: "Placa", visible: true },
-                actions: { title: "Acciones", visible: true },
+                seller_name:        { title: "Vendedor",             visible: false, order: 0  },
+                date_of_issue:      { title: "Fecha Emisión",        visible: true,  order: 1  },
+                date_payment:       { title: "Fecha de pago",        visible: false, order: 2  },
+                customer:           { title: "Cliente",              visible: true,  order: 3  },
+                full_number:        { title: "Nota de Venta",        visible: true,  order: 4  },
+                state_type:         { title: "Estado",               visible: true,  order: 5  },
+                exchange_rate_sale: { title: "Tipo de cambio",       visible: false, order: 6  },
+                currency_type:      { title: "Moneda",               visible: true,  order: 7  },
+                due_date:           { title: "Fecha de Vencimiento", visible: false, order: 8  },
+                total_exportation:  { title: "T.Exportación",        visible: false, order: 9  },
+                total_free:         { title: "T.Gratuito",           visible: false, order: 10 },
+                total_unaffected:   { title: "T.Inafecto",           visible: false, order: 11 },
+                total_exonerated:   { title: "T.Exonerado",          visible: false, order: 12 },
+                total_taxed:        { title: "T.Gravado",            visible: false, order: 13 },
+                total_igv:          { title: "T.IGV",                visible: false, order: 14 },
+                total:              { title: "Total",                visible: true,  order: 15 },
+                total_paid:         { title: "Pagado",               visible: false, order: 16 },
+                total_pending_paid: { title: "Por pagar",            visible: false, order: 17 },
+                documents:          { title: "Comprobantes",         visible: true,  order: 18 },
+                payment_status:     { title: "Estado pago",          visible: true,  order: 19 },
+                purchase_order:     { title: "Orden de compra",      visible: true,  order: 20 },
+                payments:           { title: "Pagos",                visible: true,  order: 21 },
+                download:           { title: "Descarga",             visible: true,  order: 22 },
+                recurrence:         { title: "Recurrencia",          visible: false, order: 23 },
+                region:             { title: "Region",               visible: false, order: 24 },
+                dispatch_status:    { title: "Estado de despacho",   visible: false, order: 25 },
+                type_period:        { title: "Tipo Periodo",         visible: true,  order: 26 },
+                quantity_period:    { title: "Cantidad Periodo",     visible: true,  order: 27 },
+                paid:               { title: "Estado de Pago",       visible: false, order: 28 },
+                license_plate:      { title: "Placa",                visible: true,  order: 29 },
+                actions:            { title: "Acciones",             visible: true,  order: 30 },
             },
             customFieldColumns: [],
             decimal_quantity: 2,
@@ -840,9 +503,13 @@ export default {
         },
         ...mapActions(["loadConfiguration"]),
         getColumnsToShow(updated) {
+            const columnsPayload = {};
+            Object.keys(this.columns).forEach(key => {
+                columnsPayload[key] = { title: this.columns[key].title, visible: this.columns[key].visible, order: this.columns[key].order };
+            });
             this.$http
                 .post("/validate_columns", {
-                    columns: this.columns,
+                    columns: columnsPayload,
                     report: "sale_notes_index",
                     updated: updated !== undefined
                 })
@@ -853,6 +520,9 @@ export default {
                             Object.keys(currentCols).forEach(key => {
                                 if (this.columns[key] !== undefined) {
                                     this.columns[key].visible = currentCols[key].visible;
+                                    if (currentCols[key].order !== undefined) {
+                                        this.columns[key].order = currentCols[key].order;
+                                    }
                                 }
                             });
                         } else {
@@ -861,6 +531,9 @@ export default {
                                     Object.keys(res.data.data).forEach(key => {
                                         if (this.columns[key] !== undefined) {
                                             this.columns[key].visible = res.data.data[key].visible;
+                                            if (res.data.data[key].order !== undefined) {
+                                                this.columns[key].order = res.data.data[key].order;
+                                            }
                                         }
                                     });
                                 }

@@ -159,15 +159,8 @@
                                 <el-dropdown-item disabled>
                                     <strong>Seleccionar columnas</strong>
                                 </el-dropdown-item>
-                                <el-dropdown-item
-                                    v-for="(column, index) in columns"
-                                    :key="index"
-                                >
-                                    <el-checkbox
-                                        @change="getColumnsToShow(1)"
-                                        v-model="column.visible"
-                                        >{{ column.title }}</el-checkbox
-                                    >
+                                <el-dropdown-item v-for="col in orderedColumns" :key="col.key">
+                                    <el-checkbox @change="getColumnsToShow(1)" v-model="columns[col.key].visible">{{ col.title }}</el-checkbox>
                                 </el-dropdown-item>
                             </div>
                         </el-dropdown-menu>
@@ -175,113 +168,43 @@
                 </div>
                 <data-table :resource="resource">
                     <tr slot="heading">
-                        <!-- <th>#</th> -->
-                        <th v-if="columns.soap_type.visible">SOAP</th>
-                        <th class="text-start" style="min-width: 95px;" v-if="columns.date_of_issue.visible">
-                            Emisión
-                        </th>
-                        <th
-                            v-if="columns.date_payment.visible"
-                            class="text-center"
-                            style="min-width: 95px;"
-                        >
-                            Fecha de pago
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.date_of_due.visible"
-                        >
-                            Fecha Vencimiento
-                        </th>
-                        <th v-if="columns.customer.visible">Cliente</th>
-                        <th v-if="columns.number.visible">Número</th>
-                        <th v-if="columns.notes.visible">Notas C/D</th>
-                        <th v-if="columns.dispatch.visible">
-                            Guía de Remisión
-                        </th>
-                        <th v-if="columns.sales_note.visible">Nota de venta</th>
-                        <th v-if="columns.order_note.visible">Pedidos</th>
-                        <th v-if="columns.send_it.visible">Email Enviado</th>
-                        <th v-if="columns.state_type.visible">Estado</th>
-                        <th
-                            v-for="field in customFieldColumns"
-                            :key="field.id"
-                            class="text-start"
-                            v-if="field.visible"
-                        >
-                            {{ field.name }}
-                        </th>
-                        <th v-if="columns.user_name.visible">Usuario</th>
-                        <th
-                            class="text-end"
-                            v-if="columns.exchange_rate_sale.visible"
-                        >
-                            T.C.
-                        </th>
-                        <th
-                            class="text-center"
-                            v-if="columns.currency_type_id.visible"
-                        >
-                            Moneda
-                        </th>
-                        <th class="text-end" v-if="columns.guides.visible">
-                            Guia
-                        </th>
-
-                        <th
-                            class="text-center"
-                            v-if="columns.plate_numbers.visible"
-                        >
-                            Placa
-                        </th>
-
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exportation.visible"
-                        >
-                            T.Exportación
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_free.visible"
-                        >
-                            T.Gratuita
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_unaffected.visible"
-                        >
-                            T.Inafecta
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_exonerated.visible"
-                        >
-                            T.Exonerado
-                        </th>
-                        <th
-                            class="text-end"
-                            v-if="columns.total_charge.visible"
-                        >
-                            {{ columns.total_charge.title }}
-                        </th>
-                        <th class="text-end" v-if="columns.total_taxed.visible">T.Gravado</th>
-                        <th class="text-end" v-if="columns.total_igv.visible">T.Igv</th>
-                        <th class="text-end" v-if="columns.total.visible">
-                            Total
-                        </th>
-                        <th class="text-end" v-if="columns.balance.visible">
-                            Saldo
-                        </th>
-                        <th
-                            class="text-center"
-                            style="min-width: 95px;"
-                            v-if="columns.purchase_order.visible"
-                        >
-                            Orden de compra
-                        </th>
-                        <th class="text-center" v-if="columns.downloads.visible"></th>
-                        <th class="text-end" v-if="typeUser != 'integrator' && columns.actions.visible"></th>
+                        <template v-for="col in orderedColumns">
+                            <th v-if="col.visible && col.key === 'soap_type'" :key="col.key">SOAP</th>
+                            <th v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start" style="min-width: 95px;">Emisión</th>
+                            <th v-if="col.visible && col.key === 'date_payment'" :key="col.key" class="text-center" style="min-width: 95px;">Fecha de pago</th>
+                            <th v-if="col.visible && col.key === 'date_of_due'" :key="col.key" class="text-center">Fecha Vencimiento</th>
+                            <th v-if="col.visible && col.key === 'customer'" :key="col.key">Cliente</th>
+                            <th v-if="col.visible && col.key === 'number'" :key="col.key">Número</th>
+                            <th v-if="col.visible && col.key === 'notes'" :key="col.key">Notas C/D</th>
+                            <th v-if="col.visible && col.key === 'dispatch'" :key="col.key">Guía de Remisión</th>
+                            <th v-if="col.visible && col.key === 'sales_note'" :key="col.key">Nota de venta</th>
+                            <th v-if="col.visible && col.key === 'order_note'" :key="col.key">Pedidos</th>
+                            <th v-if="col.visible && col.key === 'send_it'" :key="col.key">Email Enviado</th>
+                            <th v-if="col.visible && col.key === 'state_type'" :key="col.key">Estado</th>
+                            <!-- Campos personalizados: posición fija después de state_type -->
+                            <template v-if="col.key === 'state_type'">
+                                <template v-for="field in customFieldColumns">
+                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start">{{ field.name }}</th>
+                                </template>
+                            </template>
+                            <th v-if="col.visible && col.key === 'user_name'" :key="col.key">Usuario</th>
+                            <th v-if="col.visible && col.key === 'exchange_rate_sale'" :key="col.key" class="text-end">T.C.</th>
+                            <th v-if="col.visible && col.key === 'currency_type_id'" :key="col.key" class="text-center">Moneda</th>
+                            <th v-if="col.visible && col.key === 'guides'" :key="col.key" class="text-end">Guia</th>
+                            <th v-if="col.visible && col.key === 'plate_numbers'" :key="col.key" class="text-center">Placa</th>
+                            <th v-if="col.visible && col.key === 'total_exportation'" :key="col.key" class="text-end">T.Exportación</th>
+                            <th v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end">T.Gratuita</th>
+                            <th v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end">T.Inafecta</th>
+                            <th v-if="col.visible && col.key === 'total_exonerated'" :key="col.key" class="text-end">T.Exonerado</th>
+                            <th v-if="col.visible && col.key === 'total_charge'" :key="col.key" class="text-end">{{ columns.total_charge.title }}</th>
+                            <th v-if="col.visible && col.key === 'total_taxed'" :key="col.key" class="text-end">T.Gravado</th>
+                            <th v-if="col.visible && col.key === 'total_igv'" :key="col.key" class="text-end">T.Igv</th>
+                            <th v-if="col.visible && col.key === 'total'" :key="col.key" class="text-end">Total</th>
+                            <th v-if="col.visible && col.key === 'balance'" :key="col.key" class="text-end">Saldo</th>
+                            <th v-if="col.visible && col.key === 'purchase_order'" :key="col.key" class="text-center" style="min-width: 95px;">Orden de compra</th>
+                            <th v-if="col.visible && col.key === 'downloads'" :key="col.key" class="text-center"></th>
+                            <th v-if="col.visible && col.key === 'actions' && typeUser != 'integrator'" :key="col.key" class="text-end"></th>
+                        </template>
                     </tr>
                     <tr
                         slot-scope="{ index, row }"
@@ -289,434 +212,107 @@
                             'anulate_color': row.state_type_id === '11',
                             'text-warning': row.state_type_id === '13',
                             'border-light': row.state_type_id === '01',
-                            'border-left border-info':
-                                row.state_type_id === '03',
-                            'border-left border-success':
-                                row.state_type_id === '05',
-                            'border-left border-secondary':
-                                row.state_type_id === '07',
-                            'border-left border-dark':
-                                row.state_type_id === '09',
-                            'border-left border-danger':
-                                row.state_type_id === '11',
-                            'border-left border-warning':
-                                row.state_type_id === '13'
+                            'border-left border-info': row.state_type_id === '03',
+                            'border-left border-success': row.state_type_id === '05',
+                            'border-left border-secondary': row.state_type_id === '07',
+                            'border-left border-dark': row.state_type_id === '09',
+                            'border-left border-danger': row.state_type_id === '11',
+                            'border-left border-warning': row.state_type_id === '13'
                         }"
                     >
-                        <!-- <td>{{ index }}</td> -->
-                        <td v-if="columns.soap_type.visible">
-                            {{ row.soap_type_description }}
-                        </td>
-                        <td class="text-start" v-if="columns.date_of_issue.visible">{{ row.date_of_issue }}</td>
-                        <td
-                            class="text-center"
-                            v-if="columns.date_payment.visible"
-                        >
-                            {{ formatDate(row.date_of_payment) }}
-                        </td>
-                        <td
-                            class="text-center"
-                            :class="{
-                                'text-danger':
-                                    row.balance > 0 &&
-                                    isDateWarning(row.date_of_due)
-                            }"
-                            v-if="columns.date_of_due.visible"
-                        >
-                            {{ row.date_of_due }}
-                        </td>
-                        <td v-if="columns.customer.visible">
-                            {{ row.customer_name }}<br /><small
-                                v-text="row.customer_number"
-                            ></small>
-                        </td>
-                        <td v-if="columns.number.visible">
-                            {{ row.number }}<br />
-                            <small
-                                v-text="row.document_type_description"
-                            ></small
-                            ><br />
-                            <small
-                                v-if="row.affected_document"
-                                v-text="row.affected_document"
-                            ></small>
-                        </td>
-                        <td v-if="columns.notes.visible">
-                            <template v-for="(row, index) in row.notes">
-                                <label class="d-block :key="index"
-                                    >{{ row.note_type_description }}:
-                                    {{ row.description }}</label
-                                >
-                            </template>
-                        </td>
-
-                        <!-- <td v-if="columns.notes.visible">
-                            <template v-for="(row, index) in row.notes">
-                                <label class="d-block" :key="index"
-                                    >{{ row.note_type_description }}:
-                                    {{ row.description }}</label
-                                >
-                            </template>
-                        </td> -->
-
-                        <td v-if="columns.dispatch.visible">
-                            <template v-for="(dispatch, index) in row.dispatches">
-                                <label class="d-block" :key="index">{{
-                                    dispatch.description
-                                }}</label>
-                            </template>
-                        </td>
-
-                        <!-- <td v-if="columns.dispatch.visible">
-                            <template v-for="(row, index) in row.dispatches">
-                                <label class="d-block" :key="index">{{
-                                    row.description
-                                }}</label>
-                            </template>
-                        </td> -->
-                        
-                        <td v-if="columns.sales_note.visible">
-                            <template v-for="(salesNote, index) in row.sales_note">
-                                <label class="d-block" :key="index"
-                                    >{{ salesNote.number_full }} ({{
-                                        salesNote.state_type_description
-                                    }})</label
-                                >
-                            </template>
-                        </td>
-
-                        <!-- <td v-if="columns.sales_note.visible">
-                            <template v-for="(row, index) in row.sales_note">
-                                <label class="d-block" :key="index"
-                                    >{{ row.number_full }} ({{
-                                        row.state_type_description
-                                    }})</label
-                                >
-                            </template>
-                        </td> -->
-
-                        <td v-if="columns.order_note.visible">
-                            <template
-                                v-if="
-                                    row.order_note && row.order_note.identifier
-                                "
-                            >
-                                {{ row.order_note.identifier }}
-                            </template>
-                        </td>
-                        <td v-if="columns.send_it.visible">
-                            <!--
-                            <el-tooltip
-                                        class="item"
-                                        effect="dark"
-                                        placement="bottom">
-                                <div slot="content">
-                                    <span v-for="(item, i) in row.email_send_it_array"
-                                          :key="i">
-                                        {{ (item.email_send_it === false)?'No enviado':'Enviado' }} - {{ item.email }}  - {{ item.send_date }} <br>
-                                    </span>
-                                </div>
-                                <span class="badge "
-                                      :class="
-                                      {'text-danger': (row.email_send_it === false), 'text-success': (row.email_send_it === true), }">
-                                    <i class="fas fa-lg"
-                                       :class="{ 'fa-times': (row.email_send_it === false), 'fa-check': (row.email_send_it === true), }"
-                                    ></i>
+                        <template v-for="col in orderedColumns">
+                            <td v-if="col.visible && col.key === 'soap_type'" :key="col.key">{{ row.soap_type_description }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ row.date_of_issue }}</td>
+                            <td v-if="col.visible && col.key === 'date_payment'" :key="col.key" class="text-center">{{ formatDate(row.date_of_payment) }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_due'" :key="col.key" class="text-center" :class="{ 'text-danger': row.balance > 0 && isDateWarning(row.date_of_due) }">{{ row.date_of_due }}</td>
+                            <td v-if="col.visible && col.key === 'customer'" :key="col.key">{{ row.customer_name }}<br /><small v-text="row.customer_number"></small></td>
+                            <td v-if="col.visible && col.key === 'number'" :key="col.key">{{ row.number }}<br /><small v-text="row.document_type_description"></small><br /><small v-if="row.affected_document" v-text="row.affected_document"></small></td>
+                            <td v-if="col.visible && col.key === 'notes'" :key="col.key">
+                                <template v-for="(note, i) in row.notes" :key="i">
+                                    <label class="d-block">{{ note.note_type_description }}: {{ note.description }}</label>
+                                </template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'dispatch'" :key="col.key">
+                                <template v-for="(dispatch, i) in row.dispatches" :key="i">
+                                    <label class="d-block">{{ dispatch.description }}</label>
+                                </template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'sales_note'" :key="col.key">
+                                <template v-for="(salesNote, i) in row.sales_note" :key="i">
+                                    <label class="d-block">{{ salesNote.number_full }} ({{ salesNote.state_type_description }})</label>
+                                </template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'order_note'" :key="col.key">
+                                <template v-if="row.order_note && row.order_note.identifier">{{ row.order_note.identifier }}</template>
+                            </td>
+                            <td v-if="col.visible && col.key === 'send_it'" :key="col.key">
+                                <span class="badge" :class="{ 'text-muted': row.email_send_it === false, 'text-success': row.email_send_it === true }">
+                                    <i class="fas fa-lg" :class="{ 'fa-minus': row.email_send_it === false, 'fa-check': row.email_send_it === true }"></i>
                                 </span>
-                            </el-tooltip>-->
-
-                            <span
-                                class="badge "
-                                :class="{
-                                    'text-muted': row.email_send_it === false,
-                                    'text-success': row.email_send_it === true
-                                }"
-                            >
-                                <i
-                                    class="fas fa-lg"
-                                    :class="{
-                                        'fa-minus': row.email_send_it === false,
-                                        'fa-check': row.email_send_it === true
-                                    }"
-                                ></i>
-                            </span>
-                        </td>
-
-                        <td v-if="columns.state_type.visible">
-                            <el-tooltip
-                                v-if="tooltip(row, false)"
-                                class="item"
-                                effect="dark"
-                                placement="bottom"
-                            >
-                                <div slot="content">{{ tooltip(row) }}</div>
-                                <span
-                                    class="badge bg-secondary text-white"
-                                    :class="{
-                                        'bg-danger': row.state_type_id === '11',
-                                        'bg-warning':
-                                            row.state_type_id === '13',
-                                        'bg-secondary':
-                                            row.state_type_id === '01',
-                                        'bg-info': row.state_type_id === '03',
-                                        'bg-success':
-                                            row.state_type_id === '05',
-                                        'bg-secondary':
-                                            row.state_type_id === '07',
-                                        'bg-dark': row.state_type_id === '09'
-                                    }"
-                                >
-                                    {{ row.state_type_description }}
-                                </span>
-                            </el-tooltip>
-                            <span
-                                v-else
-                                class="badge bg-secondary text-white"
-                                :class="{
-                                    'bg-danger': row.state_type_id === '11',
-                                    'bg-warning': row.state_type_id === '13',
-                                    'bg-secondary': row.state_type_id === '01',
-                                    'bg-info': row.state_type_id === '03',
-                                    'bg-success': row.state_type_id === '05',
-                                    'bg-secondary': row.state_type_id === '07',
-                                    'bg-dark': row.state_type_id === '09'
-                                }"
-                            >
-                                {{ row.state_type_description }}
-                            </span>
-                            <a
-                                v-if="row.state_type_id === '13'"
-                                href="voided"
-                                class="small"
-                                ><br />Ir a anulaciones</a
-                            >
-                            <template
-                                v-if="
-                                    row.regularize_shipping &&
-                                        row.state_type_id === '01'
-                                "
-                            >
-                                <el-tooltip
-                                    class="item"
-                                    effect="dark"
-                                    :content="row.message_regularize_shipping"
-                                    placement="top-start"
-                                >
-                                    <i
-                                        class="fas fa-exclamation-triangle fa-lg"
-                                        style="color: #D2322D !important"
-                                    ></i>
+                            </td>
+                            <td v-if="col.visible && col.key === 'state_type'" :key="col.key">
+                                <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
+                                    <div slot="content">{{ tooltip(row) }}</div>
+                                    <span class="badge bg-secondary text-white" :class="{ 'bg-danger': row.state_type_id === '11', 'bg-warning': row.state_type_id === '13', 'bg-secondary': row.state_type_id === '01', 'bg-info': row.state_type_id === '03', 'bg-success': row.state_type_id === '05', 'bg-dark': row.state_type_id === '09' }">{{ row.state_type_description }}</span>
                                 </el-tooltip>
-                            </template>
-                        </td>
-                         <td
-                            v-for="field in customFieldColumns"
-                            :key="field.id"
-                            class="text-start"
-                            v-if="field.visible"
-                        >
-                            <template v-if="isEditableCustomField(field)">
-                                <template v-if="field.type === 'text'">
-                                    <el-input
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        @blur="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-input>
+                                <span v-else class="badge bg-secondary text-white" :class="{ 'bg-danger': row.state_type_id === '11', 'bg-warning': row.state_type_id === '13', 'bg-secondary': row.state_type_id === '01', 'bg-info': row.state_type_id === '03', 'bg-success': row.state_type_id === '05', 'bg-dark': row.state_type_id === '09' }">{{ row.state_type_description }}</span>
+                                <a v-if="row.state_type_id === '13'" href="voided" class="small"><br />Ir a anulaciones</a>
+                                <template v-if="row.regularize_shipping && row.state_type_id === '01'">
+                                    <el-tooltip class="item" effect="dark" :content="row.message_regularize_shipping" placement="top-start">
+                                        <i class="fas fa-exclamation-triangle fa-lg" style="color: #D2322D !important"></i>
+                                    </el-tooltip>
                                 </template>
-                                <template v-else-if="field.type === 'number'">
-                                    <el-input
-                                        v-model.number="row.custom_fields_data[field.slug]"
-                                        type="number"
-                                        @blur="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-input>
-                                </template>
-                                <template v-else-if="field.type === 'textarea'">
-                                    <el-input
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        type="textarea"
-                                        :rows="2"
-                                        @blur="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-input>
-                                </template>
-                                <template v-else-if="field.type === 'select'">
-                                    <el-select
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        @change="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        clearable
-                                        :placeholder="field.name"
-                                    >
-                                        <el-option
-                                            v-for="option in normalizeOptions(field.options)"
-                                            :key="option"
-                                            :label="option"
-                                            :value="option"
-                                        ></el-option>
-                                    </el-select>
-                                </template>
-                                <template v-else-if="field.type === 'checkbox'">
-                                    <el-checkbox-group
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        @change="saveCustomFieldValue(row, field)"
-                                    >
-                                        <el-checkbox
-                                            v-for="option in normalizeOptions(field.options)"
-                                            :key="option"
-                                            :label="option"
-                                            :value="option"
-                                        >
-                                            {{ option }}
-                                        </el-checkbox>
-                                    </el-checkbox-group>
-                                </template>
-                                <template v-else-if="field.type === 'date'">
-                                    <el-date-picker
-                                        v-model="row.custom_fields_data[field.slug]"
-                                        type="date"
-                                        format="yyyy-MM-dd"
-                                        value-format="yyyy-MM-dd"
-                                        @change="saveCustomFieldValue(row, field)"
-                                        size="small"
-                                        :placeholder="field.name"
-                                    ></el-date-picker>
-                                </template>
-                                <template v-else>
-                                    {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
+                            </td>
+                            <!-- Campos personalizados: posición fija después de state_type -->
+                            <template v-if="col.key === 'state_type'">
+                                <template v-for="field in customFieldColumns">
+                                    <td v-if="field.visible" :key="`cf-data-${field.id}`" class="text-start">
+                                        <template v-if="isEditableCustomField(field)">
+                                            <template v-if="field.type === 'text'"><el-input v-model="row.custom_fields_data[field.slug]" @blur="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-input></template>
+                                            <template v-else-if="field.type === 'number'"><el-input v-model.number="row.custom_fields_data[field.slug]" type="number" @blur="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-input></template>
+                                            <template v-else-if="field.type === 'textarea'"><el-input v-model="row.custom_fields_data[field.slug]" type="textarea" :rows="2" @blur="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-input></template>
+                                            <template v-else-if="field.type === 'select'">
+                                                <el-select v-model="row.custom_fields_data[field.slug]" @change="saveCustomFieldValue(row, field)" size="small" clearable :placeholder="field.name">
+                                                    <el-option v-for="option in normalizeOptions(field.options)" :key="option" :label="option" :value="option"></el-option>
+                                                </el-select>
+                                            </template>
+                                            <template v-else-if="field.type === 'checkbox'">
+                                                <el-checkbox-group v-model="row.custom_fields_data[field.slug]" @change="saveCustomFieldValue(row, field)">
+                                                    <el-checkbox v-for="option in normalizeOptions(field.options)" :key="option" :label="option" :value="option">{{ option }}</el-checkbox>
+                                                </el-checkbox-group>
+                                            </template>
+                                            <template v-else-if="field.type === 'date'"><el-date-picker v-model="row.custom_fields_data[field.slug]" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" @change="saveCustomFieldValue(row, field)" size="small" :placeholder="field.name"></el-date-picker></template>
+                                            <template v-else>{{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}</template>
+                                        </template>
+                                        <template v-else>{{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}</template>
+                                    </td>
                                 </template>
                             </template>
-                            <template v-else>
-                                {{ formatCustomFieldValue(row.custom_fields_data[field.slug]) }}
-                            </template>
-                        </td>
-                        <td v-if="columns.user_name.visible">
-                            {{ row.user_name }}
-                            <br /><small v-text="row.user_email"></small>
-                        </td>
-                        <td v-if="columns.exchange_rate_sale.visible">
-                            {{ row.exchange_rate_sale }}
-                        </td>
-                        <td
-                            class="text-center"
-                            v-if="columns.currency_type_id.visible"
-                        >
-                            {{ row.currency_type_id }}
-                        </td>
-                        <td class="text-center" v-if="columns.guides.visible">
-                            <span v-for="(item, i) in row.guides" :key="i">
-                                {{ item.number }} <br />
-                            </span>
-                        </td>
-
-                        <td
-                            class="text-center"
-                            v-if="columns.plate_numbers.visible"
-                        >
-                            <span
-                                v-for="(item, i) in row.plate_numbers"
-                                :key="i"
-                            >
-                                {{ item.description }} <br />
-                            </span>
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.total_exportation.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_exportation) }}
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.total_free.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_free) }}
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.total_unaffected.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_unaffected) }}
-                        </td>
-                        <td
-                            class="text-end"
-                            v-if="columns.total_exonerated.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_exonerated) }}
-                        </td>
-                        <td
-                            class="text-end"
-                            v-if="columns.total_charge.visible"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_charge) }}
-                        </td>
-                        <td class="text-end" v-if="columns.total_taxed.visible">
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_taxed) }}</td>
-                        <td class="text-end" v-if="columns.total_igv.visible">
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total_igv) }}</td>
-                        <td class="text-end" v-if="columns.total.visible">
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.total) }}
-                        </td>
-
-                        <td
-                            class="text-end"
-                            v-if="columns.balance.visible"
-                            :class="{
-                                'text-warning': row.balance > 0,
-                                'text-success': row.balance == 0
-                            }"
-                        >
-                            {{row.currency_type_id === 'PEN' ? 'S/' : '$'}}
-                            {{ formatDecimal(row.balance) }}
-                        </td>
-                        <td v-if="columns.purchase_order.visible">
-                            {{ row.purchase_order }}
-                        </td>
-                        <td class="text-center" v-if="columns.downloads.visible">
-                            <button
-                                type="button"
-                                style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-2"
-                                @click.prevent="clickDownload(row.download_xml)"
-                                v-if="row.has_xml"
-                            >
-                                XML
-                            </button>
-                            <button
-                                type="button"
-                                style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-2"
-                                @click.prevent="clickDownload(row.download_pdf)"
-                                v-if="row.has_pdf"
-                            >
-                                PDF
-                            </button>
-                            <button
-                                type="button"
-                                style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-2"
-                                @click.prevent="clickDownload(row.download_cdr)"
-                                v-if="row.has_cdr"
-                            >
-                                CDR
-                            </button>
-                        </td>
-
-                        <td class="text-end" v-if="typeUser != 'integrator' && columns.actions.visible">
+                            <td v-if="col.visible && col.key === 'user_name'" :key="col.key">{{ row.user_name }}<br /><small v-text="row.user_email"></small></td>
+                            <td v-if="col.visible && col.key === 'exchange_rate_sale'" :key="col.key">{{ row.exchange_rate_sale }}</td>
+                            <td v-if="col.visible && col.key === 'currency_type_id'" :key="col.key" class="text-center">{{ row.currency_type_id }}</td>
+                            <td v-if="col.visible && col.key === 'guides'" :key="col.key" class="text-center">
+                                <span v-for="(item, i) in row.guides" :key="i">{{ item.number }} <br /></span>
+                            </td>
+                            <td v-if="col.visible && col.key === 'plate_numbers'" :key="col.key" class="text-center">
+                                <span v-for="(item, i) in row.plate_numbers" :key="i">{{ item.description }} <br /></span>
+                            </td>
+                            <td v-if="col.visible && col.key === 'total_exportation'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_exportation) }}</td>
+                            <td v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_free) }}</td>
+                            <td v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_unaffected) }}</td>
+                            <td v-if="col.visible && col.key === 'total_exonerated'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_exonerated) }}</td>
+                            <td v-if="col.visible && col.key === 'total_charge'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_charge) }}</td>
+                            <td v-if="col.visible && col.key === 'total_taxed'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_taxed) }}</td>
+                            <td v-if="col.visible && col.key === 'total_igv'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_igv) }}</td>
+                            <td v-if="col.visible && col.key === 'total'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total) }}</td>
+                            <td v-if="col.visible && col.key === 'balance'" :key="col.key" class="text-end" :class="{ 'text-warning': row.balance > 0, 'text-success': row.balance == 0 }">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.balance) }}</td>
+                            <td v-if="col.visible && col.key === 'purchase_order'" :key="col.key">{{ row.purchase_order }}</td>
+                            <td v-if="col.visible && col.key === 'downloads'" :key="col.key" class="text-center">
+                                <button v-if="row.has_xml" type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-2" @click.prevent="clickDownload(row.download_xml)">XML</button>
+                                <button v-if="row.has_pdf" type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-2" @click.prevent="clickDownload(row.download_pdf)">PDF</button>
+                                <button v-if="row.has_cdr" type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2 me-2" @click.prevent="clickDownload(row.download_cdr)">CDR</button>
+                            </td>
+                            <td v-if="col.visible && col.key === 'actions' && typeUser != 'integrator'" :key="col.key" class="text-end">
                             <el-dropdown trigger="click" size="small">
                                 <el-button class="btn-dropdown">
                                     <i class="fas fa-ellipsis-v"></i>
@@ -972,6 +568,7 @@
                                 C. Detracción
                             </button> -->
                         </td>
+                        </template>
                     </tr>
                 </data-table>
             </div>
@@ -1070,7 +667,12 @@ export default {
         "view_validator_cpe"
     ],
     computed: {
-        ...mapState(["config"])
+        ...mapState(["config"]),
+        orderedColumns() {
+            return Object.entries(this.columns)
+                .map(([key, col]) => ({ key, ...col }))
+                .sort((a, b) => a.order - b.order);
+        },
     },
     components: {
         DocumentsVoided,
@@ -1104,35 +706,35 @@ export default {
             showDialogOptions: false,
             showDialogPayments: false,
             columns: {
-                soap_type: { title: "Soap", visible: false },
-                date_of_issue: { title: "Emisión", visible: true },
-                date_payment: { title: "Fecha de pago", visible: false },
-                date_of_due: { title: "F. Vencimiento", visible: false },
-                customer: { title: "Cliente", visible: true },
-                number: { title: "Número", visible: true },
-                notes: { title: "Notas C/D", visible: false },
-                dispatch: { title: "Guía de Remisión", visible: false },
-                sales_note: { title: "Nota de ventas", visible: false },
-                order_note: { title: "Pedidos", visible: false },
-                send_it: { title: "Correo enviado al destinatario", visible: false },
-                state_type: { title: "Estado", visible: true },
-                user_name: { title: "Usuario", visible: false },
-                exchange_rate_sale: { title: "Tipo de cambio", visible: false },
-                currency_type_id: { title: "Moneda", visible: false },
-                guides: { title: "Guias", visible: false },
-                plate_numbers: { title: "Placa", visible: false },
-                total_exportation: { title: "T.Exportación", visible: false },
-                total_free: { title: "T.Gratuito", visible: false },
-                total_unaffected: { title: "T.Inafecto", visible: false },
-                total_exonerated: { title: "T.Exonerado", visible: false },
-                total_charge: { title: "T.Cargos", visible: false },
-                total_taxed: { title: "T.Gravado", visible: true },
-                total_igv: { title: "T.Igv", visible: true },
-                total: { title: "Total", visible: false },
-                balance: { title: "Saldo", visible: true },
-                purchase_order: { title: "Orden de Compra", visible: false },
-                downloads: { title: "Descargas (XML/PDF/CDR)", visible: true },
-                actions: { title: "Acciones", visible: true },
+                soap_type:          { title: "Soap",                           visible: false, order: 0  },
+                date_of_issue:      { title: "Emisión",                        visible: true,  order: 1  },
+                date_payment:       { title: "Fecha de pago",                  visible: false, order: 2  },
+                date_of_due:        { title: "F. Vencimiento",                 visible: false, order: 3  },
+                customer:           { title: "Cliente",                        visible: true,  order: 4  },
+                number:             { title: "Número",                         visible: true,  order: 5  },
+                notes:              { title: "Notas C/D",                      visible: false, order: 6  },
+                dispatch:           { title: "Guía de Remisión",               visible: false, order: 7  },
+                sales_note:         { title: "Nota de ventas",                 visible: false, order: 8  },
+                order_note:         { title: "Pedidos",                        visible: false, order: 9  },
+                send_it:            { title: "Correo enviado al destinatario", visible: false, order: 10 },
+                state_type:         { title: "Estado",                         visible: true,  order: 11 },
+                user_name:          { title: "Usuario",                        visible: false, order: 12 },
+                exchange_rate_sale: { title: "Tipo de cambio",                 visible: false, order: 13 },
+                currency_type_id:   { title: "Moneda",                         visible: false, order: 14 },
+                guides:             { title: "Guias",                          visible: false, order: 15 },
+                plate_numbers:      { title: "Placa",                          visible: false, order: 16 },
+                total_exportation:  { title: "T.Exportación",                  visible: false, order: 17 },
+                total_free:         { title: "T.Gratuito",                     visible: false, order: 18 },
+                total_unaffected:   { title: "T.Inafecto",                     visible: false, order: 19 },
+                total_exonerated:   { title: "T.Exonerado",                    visible: false, order: 20 },
+                total_charge:       { title: "T.Cargos",                       visible: false, order: 21 },
+                total_taxed:        { title: "T.Gravado",                      visible: true,  order: 22 },
+                total_igv:          { title: "T.Igv",                          visible: true,  order: 23 },
+                total:              { title: "Total",                          visible: false, order: 24 },
+                balance:            { title: "Saldo",                          visible: true,  order: 25 },
+                purchase_order:     { title: "Orden de Compra",                visible: false, order: 26 },
+                downloads:          { title: "Descargas (XML/PDF/CDR)",        visible: true,  order: 27 },
+                actions:            { title: "Acciones",                       visible: true,  order: 28 },
             },
             customFieldColumns: [],
             decimal_quantity: 2,
@@ -1170,9 +772,13 @@ export default {
         ...mapActions(["loadConfiguration"]),
 
         getColumnsToShow(updated) {
+            const columnsPayload = {};
+            Object.keys(this.columns).forEach(key => {
+                columnsPayload[key] = { title: this.columns[key].title, visible: this.columns[key].visible, order: this.columns[key].order };
+            });
             this.$http
                 .post("/validate_columns", {
-                    columns: this.columns,
+                    columns: columnsPayload,
                     report: "document_index",
                     updated: updated !== undefined
                 })
@@ -1183,6 +789,9 @@ export default {
                             Object.keys(currentCols).forEach(key => {
                                 if (this.columns[key] !== undefined) {
                                     this.columns[key].visible = currentCols[key].visible;
+                                    if (currentCols[key].order !== undefined) {
+                                        this.columns[key].order = currentCols[key].order;
+                                    }
                                 }
                             });
                         } else {
@@ -1191,6 +800,9 @@ export default {
                                     Object.keys(res.data.data).forEach(key => {
                                         if (this.columns[key] !== undefined) {
                                             this.columns[key].visible = res.data.data[key].visible;
+                                            if (res.data.data[key].order !== undefined) {
+                                                this.columns[key].order = res.data.data[key].order;
+                                            }
                                         }
                                     });
                                 }

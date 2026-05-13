@@ -1,11 +1,11 @@
 <template>
     <div class="card">
         <div class="card-header bg-info bg-info-customer-admin">
-            <h3 class="my-0">Visibilidad de columnas por defecto</h3>
+            <h3 class="my-0">Columnas por defecto</h3>
         </div>
         <div class="card-body px-3 pt-3 pb-2">
             <p class="text-muted mb-3" style="font-size:0.85rem;">
-                Configure qué columnas se mostrarán por defecto en cada listado para usuarios nuevos o sin configuración guardada.
+                Configure qué columnas se mostrarán y en qué orden aparecerán por defecto en cada listado. Esta configuración se aplica a usuarios nuevos o que aún no hayan personalizado su vista.
             </p>
 
             <el-collapse v-model="openSections" class="vc-collapse">
@@ -46,46 +46,124 @@
             </el-collapse>
 
             <el-dialog
-                :title="'Columnas por defecto — ' + editingModuleLabel"
+                :title="'Columnas — ' + editingModuleLabel"
                 :visible.sync="dialogVisible"
-                width="560px"
+                width="780px"
                 :close-on-click-modal="false"
+                custom-class="col-dialog"
             >
-                <p class="text-muted mb-3" style="font-size:0.85rem;">
-                    Las columnas marcadas se mostrarán por defecto a usuarios que aún no hayan personalizado su vista.
+                <p class="text-muted" style="margin:-8px 0 14px;">
+                    Selecciona y ordena las columnas visibles por defecto.
                 </p>
-                <div class="columns-grid">
-                    <div v-for="(col, key) in editingColumns" :key="key">
-                        <el-checkbox v-model="col.visible">{{ col.title }}</el-checkbox>
+
+                <!-- Wizard tabs (indicadores) -->
+                <div class="wz-tabs">
+                    <span class="wz-tab"><span class="wz-num">1</span> Elige columnas</span>
+                    <span class="wz-sep"></span>
+                    <span class="wz-tab"><span class="wz-num">2</span> Ordena</span>
+                    <span class="wz-sep"></span>
+                    <span class="wz-tab"><span class="wz-num">3</span> Vista previa</span>
+                </div>
+
+                <!-- Dual panel -->
+                <div class="dp-wrap">
+                    <!-- Izquierda: Todas las columnas con checkbox -->
+                    <div class="dp-panel">
+                        <div class="dp-panel__head">
+                            <span class="dp-panel__label">COLUMNAS</span>
+                            <span class="dp-panel__count">{{ activeColumnsComputed.length }} / {{ allColumns.length }}</span>
+                        </div>
+                        <div class="dp-panel__search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input v-model="searchAvailable" placeholder="Buscar..." class="dp-search-input" />
+                        </div>
+                        <div class="dp-panel__list">
+                            <div
+                                v-for="col in filteredAllColumns"
+                                :key="col.key"
+                                class="dp-item dp-item--toggle"
+                                :class="{ 'dp-item--checked': isActive(col.key) }"
+                                @click="toggleColumn(col.key)"
+                            >
+                                <span class="dp-item__title">{{ col.title }}</span>
+                                <span class="dp-item__check" :class="{ 'dp-item__check--on': isActive(col.key) }">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </div>
+                            <p v-if="filteredAllColumns.length === 0" class="dp-panel__empty">Sin resultados</p>
+                        </div>
+                    </div>
+
+                    <!-- Derecha: Activas -->
+                    <div class="dp-panel">
+                        <div class="dp-panel__head">
+                            <span class="dp-panel__label">ORDEN - ACTIVAS</span>
+                            <span class="dp-panel__count">{{ activeColumnsComputed.length }}</span>
+                        </div>
+                        <div class="dp-panel__search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input v-model="searchActive" placeholder="Buscar..." class="dp-search-input" />
+                        </div>
+                        <div class="dp-panel__list">
+                            <draggable
+                                v-model="activeColumnsComputed"
+                                handle=".drag-handle"
+                                animation="150"
+                                ghost-class="dp-item--ghost"
+                            >
+                                <div
+                                    v-for="col in activeColumnsComputed"
+                                    v-show="!searchActive || col.title.toLowerCase().includes(searchActive.toLowerCase())"
+                                    :key="col.key"
+                                    class="dp-item dp-item--active"
+                                >
+                                    <span class="drag-handle">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="19" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+                                    </span>
+                                    <span class="dp-item__title">{{ col.title }}</span>
+                                    <button class="dp-item__remove" @click.stop="deactivateColumn(col.key)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>
+                                </div>
+                            </draggable>
+                            <p v-if="activeColumnsComputed.length === 0" class="dp-panel__empty">Sin columnas activas</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="preview-wrap">
-                    <p class="preview-label">Vista previa</p>
-                    <div class="preview-scroll">
-                        <table class="preview-table">
+                <!-- Vista previa -->
+                <div class="pv-wrap">
+                    <p class="pv-label">VISTA PREVIA</p>
+                    <div class="pv-scroll">
+                        <table class="pv-table" v-if="activeColumnsComputed.length > 0">
                             <thead>
                                 <tr>
-                                    <th v-for="col in visibleColumnsList" :key="col.key">{{ col.title }}</th>
+                                    <th v-for="col in activeColumnsComputed" :key="col.key">{{ col.title }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(row, i) in sampleRows" :key="i">
-                                    <td v-for="col in visibleColumnsList" :key="col.key">{{ row[col.key] }}</td>
+                                    <td v-for="col in activeColumnsComputed" :key="col.key">
+                                        <span v-if="col.type === 'status'" :class="['pv-badge', 'pv-badge--' + i]">{{ row[col.key] }}</span>
+                                        <span v-else>{{ row[col.key] }}</span>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <p v-if="visibleColumnsList.length === 0" class="preview-empty">
-                            Sin columnas visibles
-                        </p>
+                        <p v-else class="pv-empty">Sin columnas activas</p>
                     </div>
                 </div>
 
-                <span slot="footer">
-                    <el-button @click="dialogVisible = false">Cancelar</el-button>
-                    <el-button type="primary" :loading="saving" @click="saveModule">
-                        Guardar
-                    </el-button>
+                <span slot="footer" class="col-dialog__footer">
+                    <span class="col-dialog__count">{{ activeColumnsComputed.length }} columnas activas</span>
+                    <div>
+                        <el-button @click="resetToDefault">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:-2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>
+                            Restablecer
+                        </el-button>
+                        <el-button @click="dialogVisible = false">Cancelar</el-button>
+                        <el-button type="primary" :loading="saving" @click="saveModule">Guardar</el-button>
+                    </div>
                 </span>
             </el-dialog>
         </div>
@@ -93,6 +171,8 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 const SAMPLE_BY_TYPE = {
     id:       [1, 2, 3],
     code:     ['P001', 'P002', 'S001'],
@@ -136,7 +216,7 @@ const MODULES = {
             total_igv:        { title: 'T.IGV',               visible: true,  type: 'price'    },
             balance:          { title: 'Saldo',               visible: true,  type: 'price'    },
             total:            { title: 'Total',               visible: true,  type: 'price'    },
-            pdf:              { title: 'PDF',                  visible: true,  type: 'action'   },
+            pdf:              { title: 'PDF',                 visible: true,  type: 'action'   },
             actions:          { title: 'Acciones',            visible: true,  type: 'action'   },
         },
     },
@@ -177,7 +257,7 @@ const MODULES = {
             sale_opportunity:        { title: 'Oportunidad Venta',  visible: false, type: 'document' },
             referential_information: { title: 'Inf.Referencial',    visible: false, type: 'text'     },
             contract:                { title: 'Contrato',           visible: false, type: 'text'     },
-            exchange_rate_sale:      { title: 'Tipo de cambio',     visible: false, type: 'exchange' },
+            exchange_rate_sale:      { title: 'T. de cambio',       visible: false, type: 'exchange' },
             currency_type_id:        { title: 'Moneda',             visible: false, type: 'currency' },
             payments:                { title: 'Pagos',              visible: true,  type: 'price'    },
             total_exportation:       { title: 'T.Exportación',      visible: false, type: 'price'    },
@@ -332,23 +412,42 @@ const MODULES = {
 };
 
 export default {
+    components: { draggable },
     computed: {
         editingModuleLabel() {
             const mod = MODULES[this.editingModuleKey];
             return mod ? mod.label : '';
         },
-        visibleColumnsList() {
-            return Object.entries(this.editingColumns)
-                .filter(([, col]) => col.visible)
-                .map(([key, col]) => ({ key, title: col.title }));
+        // Computed con getter+setter para el draggable
+        activeColumnsComputed: {
+            get() {
+                return this.allColumns.filter(c => c.visible);
+            },
+            set(newActiveOrder) {
+                // Reinserta el nuevo orden de activas manteniendo las inactivas en su posición relativa
+                const result = [];
+                let activeIdx = 0;
+                for (const col of this.allColumns) {
+                    if (col.visible) {
+                        result.push(newActiveOrder[activeIdx++]);
+                    } else {
+                        result.push(col);
+                    }
+                }
+                this.allColumns = result;
+            },
+        },
+        filteredAllColumns() {
+            const q = this.searchAvailable.toLowerCase();
+            if (!q) return this.allColumns;
+            return this.allColumns.filter(c => c.title.toLowerCase().includes(q));
         },
         sampleRows() {
-            const mod = MODULES[this.editingModuleKey];
-            if (!mod) return [];
+            if (!this.editingModuleKey) return [];
             return [0, 1, 2].map(i => {
                 const row = {};
-                Object.entries(mod.columns).forEach(([key, col]) => {
-                    row[key] = (SAMPLE_BY_TYPE[col.type] ?? ['—', '—', '—'])[i];
+                this.activeColumnsComputed.forEach(col => {
+                    row[col.key] = (SAMPLE_BY_TYPE[col.type] ?? ['—', '—', '—'])[i];
                 });
                 return row;
             });
@@ -359,7 +458,9 @@ export default {
             dialogVisible: false,
             saving: false,
             editingModuleKey: null,
-            editingColumns: {},
+            allColumns: [],
+            searchAvailable: '',
+            searchActive: '',
             savedConfigs: {},
             openSections: ['purchases'],
             sections: [
@@ -381,7 +482,7 @@ export default {
                     key: 'presale',
                     label: 'Preventa',
                     color: '#8b5cf6',
-                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>',
                     modules: ['sale_opportunities_index', 'quotations_index', 'contracts_index', 'order_notes_index'],
                 },
                 {
@@ -414,22 +515,61 @@ export default {
             if (!mod) return;
 
             this.editingModuleKey = moduleKey;
+            this.searchAvailable = '';
+            this.searchActive = '';
 
-            const cols = JSON.parse(JSON.stringify(mod.columns));
+            // Construir array con order y defaultOrder (posición fija del MODULES, nunca cambia)
+            const allCols = Object.entries(mod.columns).map(([key, col], idx) => ({
+                key,
+                title: col.title,
+                type: col.type,
+                visible: col.visible,
+                order: idx,
+                defaultOrder: idx,
+            }));
+
+            // Aplicar configuración guardada (visible + order, pero NO defaultOrder)
             const saved = this.savedConfigs[moduleKey];
             if (saved && saved.columns) {
-                Object.keys(saved.columns).forEach(key => {
-                    if (cols[key] !== undefined) {
-                        cols[key].visible = saved.columns[key].visible;
+                allCols.forEach(col => {
+                    const s = saved.columns[col.key];
+                    if (s !== undefined) {
+                        col.visible = s.visible;
+                        if (s.order !== undefined) col.order = s.order;
                     }
                 });
             }
 
-            this.editingColumns = cols;
+            allCols.sort((a, b) => a.order - b.order);
+            this.allColumns = allCols;
+
             this.dialogVisible = true;
         },
+        isActive(key) {
+            const col = this.allColumns.find(c => c.key === key);
+            return col ? col.visible : false;
+        },
+        toggleColumn(key) {
+            const col = this.allColumns.find(c => c.key === key);
+            if (col) this.$set(col, 'visible', !col.visible);
+        },
+        deactivateColumn(key) {
+            const col = this.allColumns.find(c => c.key === key);
+            if (col) this.$set(col, 'visible', false);
+        },
+        resetToDefault() {
+            const mod = MODULES[this.editingModuleKey];
+            if (!mod) return;
+            this.allColumns = Object.entries(mod.columns).map(([key, col], idx) => ({
+                key,
+                title: col.title,
+                type: col.type,
+                visible: col.visible,
+                order: idx,
+                defaultOrder: idx,
+            }));
+        },
         async saveModule() {
-
             try {
                 await this.$confirm(
                     'Esta acción reemplazará la configuración de columnas de <strong>todos los usuarios</strong> que tienen su propia configuración guardada para este listado. ¿Deseas continuar?',
@@ -446,9 +586,11 @@ export default {
             }
 
             this.saving = true;
+
             const columns = {};
-            Object.keys(this.editingColumns).forEach(key => {
-                columns[key] = { title: this.editingColumns[key].title, visible: this.editingColumns[key].visible };
+            // Guardar con el order de su posición en allColumns
+            this.allColumns.forEach((col, idx) => {
+                columns[col.key] = { title: col.title, visible: col.visible, order: idx };
             });
 
             try {
@@ -474,21 +616,19 @@ export default {
 </script>
 
 <style scoped>
-/* el-collapse overrides */
+/* ===== Collapse ===== */
 .vc-collapse {
     border: none;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-
 .vc-collapse >>> .el-collapse-item {
     border: 1px solid var(--accent-color);
     border-radius: 10px;
     overflow: hidden;
     margin: 0;
 }
-
 .vc-collapse >>> .el-collapse-item__header {
     height: 56px;
     padding: 0 16px;
@@ -496,27 +636,19 @@ export default {
     border-radius: 10px;
     font-size: 0.9rem;
 }
-
 .vc-collapse >>> .el-collapse-item__header.is-active {
     border-radius: 10px 10px 0 0;
     border-bottom: none;
-    background-color: var(--accent-color);
+    background-color: var(--light-color);
 }
-
-.vc-collapse >>> .el-collapse-item__arrow {
-    margin-left: 8px;
-}
-
+.vc-collapse >>> .el-collapse-item__arrow { margin-left: 8px; }
 .vc-collapse >>> .el-collapse-item__wrap {
     border-bottom: none;
     border-radius: 0 0 10px 10px;
 }
+.vc-collapse >>> .el-collapse-item__content { padding: 0; }
 
-.vc-collapse >>> .el-collapse-item__content {
-    padding: 0;
-}
-
-/* Section header layout */
+/* ===== Section header ===== */
 .vc-section__header {
     display: flex;
     align-items: center;
@@ -524,7 +656,6 @@ export default {
     flex: 1;
     padding-right: 4px;
 }
-
 .vc-section__icon {
     width: 34px;
     height: 34px;
@@ -534,16 +665,10 @@ export default {
     justify-content: center;
     flex-shrink: 0;
 }
+.vc-section__title { font-weight: 600; }
+.vc-section__count { font-size: 0.78rem; }
 
-.vc-section__title {
-    font-weight: 600;
-}
-
-.vc-section__count {
-    font-size: 0.78rem;
-}
-
-/* Module items */
+/* ===== Module items ===== */
 .vc-module-item {
     display: flex;
     align-items: center;
@@ -552,12 +677,9 @@ export default {
     border: 1px solid var(--accent-color);
     margin: 10px;
     border-radius: 6px;
-    background-color: var(--light-color);
-}
-
-.vc-module-item:hover {
     background-color: #fff;
 }
+.vc-module-item:hover { background-color: #fff; }
 .vc-module-item__dot {
     width: 7px;
     height: 7px;
@@ -565,73 +687,249 @@ export default {
     flex-shrink: 0;
     opacity: 0.3;
 }
+.vc-module-item:hover .vc-module-item__dot { opacity: 1; }
+.vc-module-item__label { font-size: 0.875rem; }
 
-.vc-module-item:hover .vc-module-item__dot {
-    opacity: 1;
+/* ===== Dialog override ===== */
+.col-dialog >>> .el-dialog__body { padding: 16px 20px 8px; }
+.col-dialog >>> .el-dialog__footer { padding: 12px 20px 16px; border-top: 1px solid var(--accent-color); }
+
+/* ===== Wizard tabs ===== */
+.wz-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
 }
-.vc-module-item__label {
-    font-size: 0.875rem;
+.wz-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
 }
-
-
-.columns-grid {
-    display: grid;
-    grid-template-rows: repeat(6, auto);
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
-    gap: 8px 16px;
-}
-
-.preview-wrap {
-    margin-top: 20px;
-    border-top: 1px solid var(--accent-color);
-    padding-top: 12px;
-}
-
-.preview-label {
+.wz-tab--active { font-weight: 600; }
+.wz-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e5e7eb;
     font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.wz-tab--active .wz-num { background: var(--primary-color); color: #fff; }
+.wz-sep {
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+    max-width: 40px;
+}
+
+/* ===== Dual panel ===== */
+.dp-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.dp-panel {
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.dp-panel__head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--light-color);
+    border-bottom: 1px solid var(--accent-color);
+}
+.dp-panel__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+.dp-panel__count {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #e5e7eb;
+    border-radius: 10px;
+    padding: 1px 7px;
+}
+.dp-panel__search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--accent-color);
+}
+.dp-search-input {
+    border: none;
+    outline: none;
+    font-size: 0.8rem;
+    width: 100%;
+    background: transparent;
+}
+.dp-panel__list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 220px;
+    padding: 4px 0;
+}
+.dp-panel__list::-webkit-scrollbar { width: 4px; }
+.dp-panel__list::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 4px; }
+
+.pv-scroll::-webkit-scrollbar { height: 4px; }
+.pv-scroll::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 4px; }
+
+.dp-panel__empty {
+    text-align: center;
+    font-size: 0.78rem;
+    padding: 16px;
+    margin: 0;
+}
+
+/* ===== Items ===== */
+.dp-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    transition: background 0.1s;
+}
+.dp-item--avail {
+    cursor: pointer;
+}
+.dp-item--avail:hover { background: var(--accent-color); }
+.dp-item--active {
+    cursor: default;
+}
+.dp-item--active:hover { background: var(--light-color); }
+.dp-item--ghost { opacity: 0.4; background: #f0f4ff !important; }
+
+/* Toggle items (panel izquierdo con todas las columnas) */
+.dp-item--toggle { cursor: pointer; }
+.dp-item--toggle:hover { background: var(--light-color); }
+
+.dp-item__title { flex: 1; }
+
+.dp-item__check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--accent-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: transparent;
+    transition: all 0.15s;
+    background-color: #fff;
+}
+.dp-item--avail:hover .dp-item__check {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: #fff;
+}
+/* Checkbox activo (columna activa) */
+.dp-item__check--on {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.drag-handle {
+    cursor: grab;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 3px;
+}
+.drag-handle:hover { background: #f3f4f6; }
+.drag-handle:active { cursor: grabbing; }
+
+.dp-item__remove {
+    border: none;
+    background: none;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    border-radius: 3px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.dp-item__remove:hover { color: var(--danger); background: #fef2f2; }
+
+/* ===== Preview ===== */
+.pv-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     margin-bottom: 8px;
 }
-
-.preview-scroll {
+.pv-scroll {
     overflow-x: auto;
     border: 1px solid var(--accent-color);
-    border-radius: 4px;
+    border-radius: 6px;
 }
-
-.preview-table {
+.pv-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.75rem;
     white-space: nowrap;
 }
-
-.preview-table thead th {
+.pv-table thead th {
     background: var(--light-color);
-    padding: 5px 10px;
+    padding: 6px 10px;
     border-bottom: 1px solid var(--accent-color);
-    color: var(--dark-color);
     font-weight: 600;
     text-align: left;
 }
-
-.preview-table tbody td {
-    padding: 4px 10px;
+.pv-table tbody td {
+    padding: 5px 10px;
     border-bottom: 1px solid var(--accent-color);
-    color: var(--dark-color);
 }
-
-.preview-table tbody tr:last-child td {
-    border-bottom: none;
-}
-
-.preview-empty {
+.pv-table tbody tr:last-child td { border-bottom: none; }
+.pv-empty {
     text-align: center;
-    color: var(--muted);
+    color: #bbb;
     font-size: 0.8rem;
-    padding: 12px;
+    padding: 14px;
     margin: 0;
+}
+
+/* Status badges en preview */
+.pv-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+.pv-badge--0 { background: #fef9c3; color: #a16207; }
+.pv-badge--1 { background: #dbeafe; color: #1d4ed8; }
+.pv-badge--2 { background: #f3f4f6; color: #6b7280; }
+
+/* ===== Footer ===== */
+.col-dialog__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.col-dialog__count {
+    font-size: 0.8rem;
+    color: #888;
 }
 </style>

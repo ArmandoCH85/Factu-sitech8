@@ -617,6 +617,8 @@
                                     title="+ Agregar Descuentos/Cargos/Atributos especiales"
                                     v-if="showSpecialData"
                                 >
+                                    <template v-if="!isCreditNote">
+
                                     <div v-if="discount_types.length > 0">
                                         <label class="control-label">
                                             Descuentos
@@ -719,6 +721,7 @@
                                             </table>
                                         </div>                                        
                                     </div>
+                                    </template>
                                     <div v-if="charge_types.length > 0">
                                         <label class="control-label">
                                             Cargos
@@ -1014,6 +1017,7 @@ export default {
         "permissionEditItemPrices",
         "selectedOptionPrice",
         "documentId",
+        'isCreditNote'
     ],
     components: {
         ItemForm,

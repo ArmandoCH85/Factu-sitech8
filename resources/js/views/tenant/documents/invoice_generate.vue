@@ -2068,7 +2068,7 @@
 
                                                     <template
                                                         v-if="
-                                                            form.has_retention
+                                                            form.has_retention && amountRetentionValidate
                                                         "
                                                     >
                                                         <tr
@@ -2139,9 +2139,7 @@
                                                         </tr>
                                                     </template>
                                                     <template
-                                                        v-if="
-                                                            !form.has_retention
-                                                        "
+                                                        v-else
                                                     >
                                                         <tr
                                                             v-if="
@@ -4243,17 +4241,12 @@ export default {
             if (this.form.currency_type_id === "USD") {
                 amount = 700 / this.form.exchange_rate_sale;
             }
-            return this.form.total < amount;
+            return this.form.total > amount;
         },
         getCustomer(){
             const customer = this.customers.find(
                 c => String(c.id) === String(this.form.customer_id)
             );
-            console.log('getCustomer', {
-                customer_id: this.form.customer_id,
-                customers: this.customers,
-                customer
-            });
             return customer || {};
         }
     },
@@ -6623,10 +6616,13 @@ export default {
             if (["1001", "1004"].includes(this.form.operation_type_id))
                 this.changeDetractionType();
 
-            if (this.form.has_retention ) {
-                this.changeRetention();
-            }
 
+            let customer = _.find(this.customers, {
+                id: this.form.customer_id
+            });
+            if (customer) {
+                this.validateCustomerRetention(customer.identity_document_type_id)
+            }
             this.setTotalDefaultPayment();
             this.setPendingAmount();
 
@@ -6985,11 +6981,12 @@ export default {
                 return false;
             }
 
-            if (this.form.has_retention && this.amountRetentionValidate) {
-                this.$message.warning(
-                    "El comprobante no cumple con el monto mínimo para aplicar retención o el cliente no es sujeto de retención"
-                );
-                return false;
+            let customer = _.find(this.customers, {
+                id: this.form.customer_id
+            });
+
+            if (customer) {
+                this.validateCustomerRetention(customer.identity_document_type_id)
             }
 
             //Validando las series seleccionadas
@@ -7255,7 +7252,9 @@ export default {
                     this.form.customer_id = customer_id;
                     let customer = _.find(this.customers, {'id': customer_id});
                     this.form.has_retention = customer.is_agent_retention
-                    this.changeRetention();
+                    if (this.form.has_retention && this.amountRetentionValidate) {
+                        this.changeRetention();
+                    }
 
                     this.setCustomerAccumulatedPoints(
                         customer_id,
@@ -7307,6 +7306,7 @@ export default {
                 this.selected_option_price = 1;
             }
             // retencion para clientes con ruc
+            
 
             this.validateCustomerRetention(customer.identity_document_type_id);
 
@@ -7346,14 +7346,14 @@ export default {
         },
         validateCustomerRetention(identity_document_type_id) {
             if (identity_document_type_id != "6") {
-                if (this.form.has_retention) {
-                    this.form.has_retention = false;
-                    this.changeRetention();
-                }
-
                 this.show_has_retention = false;
-            } else {
-                this.show_has_retention = true;
+                return;
+            }
+
+            this.show_has_retention = true;
+
+            if (this.form.has_retention && this.amountRetentionValidate) {
+                this.changeRetention();
             }
         },
         initDataPaymentCondition01() {
@@ -7484,7 +7484,7 @@ export default {
         },
         getTotal() {
             let total_pay = this.form.total;
-            if (this.form.has_retention) {
+            if (this.form.has_retention && this.amountRetentionValidate) {
                 total_pay -= this.form.retention.amount;
             }
             // console.log(this.form.retention)

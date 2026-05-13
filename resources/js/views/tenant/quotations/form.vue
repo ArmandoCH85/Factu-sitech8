@@ -1812,9 +1812,11 @@ export default {
             this.charges_types = data.charges_types;
             this.company = data.company;
             
-            this.form.currency_type_id = this.config.currency_type_id || 
-                (this.currency_types.length > 0 ? this.currency_types[0].id : null);
-            
+            const configCurrencyAvailable = this.currency_types.some(c => c.id === this.config.currency_type_id);
+            this.form.currency_type_id = (this.config.currency_type_id && configCurrencyAvailable)
+                ? this.config.currency_type_id
+                : (this.currency_types.length > 0 ? this.currency_types[0].id : null);
+
             this.form.establishment_id =
                 this.establishments.length > 0
                     ? this.establishments[0].id
@@ -2337,9 +2339,11 @@ export default {
             this.activePanel = 0;
             this.initForm();
 
-            this.form.currency_type_id = this.config.currency_type_id || 
-                (this.currency_types.length > 0 ? this.currency_types[0].id : null);
-    
+            const configCurrencyAvailable = this.currency_types.some(c => c.id === this.config.currency_type_id);
+            this.form.currency_type_id = (this.config.currency_type_id && configCurrencyAvailable)
+                ? this.config.currency_type_id
+                : (this.currency_types.length > 0 ? this.currency_types[0].id : null);
+
             this.form.establishment_id =
                 this.establishments.length > 0
                     ? this.establishments[0].id

@@ -2377,12 +2377,10 @@ export default {
 
             this.payment_method_types = response.data.payment_method_types;
             this.company = response.data.company;
-            if (this.config.currency_type_id === undefined) {
-                this.form.currency_type_id =
-                    this.currency_types.length > 0
-                        ? this.currency_types[0].id
-                        : null;
-            }
+            const configCurrencyAvailable = this.currency_types.some(c => c.id === this.config.currency_type_id);
+            this.form.currency_type_id = (this.config.currency_type_id && configCurrencyAvailable)
+                ? this.config.currency_type_id
+                : (this.currency_types.length > 0 ? this.currency_types[0].id : null);
             this.form.establishment_id =
                 this.establishments.length > 0
                     ? this.establishments[0].id
@@ -2967,13 +2965,10 @@ export default {
         resetForm() {
             this.activePanel = 0;
             this.initForm();
-            //this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
-            if (this.config.currency_type_id === undefined) {
-                this.form.currency_type_id =
-                    this.currency_types.length > 0
-                        ? this.currency_types[0].id
-                        : null;
-            }
+            const configCurrencyAvailable = this.currency_types.some(c => c.id === this.config.currency_type_id);
+            this.form.currency_type_id = (this.config.currency_type_id && configCurrencyAvailable)
+                ? this.config.currency_type_id
+                : (this.currency_types.length > 0 ? this.currency_types[0].id : null);
             this.form.establishment_id =
                 this.establishments.length > 0
                     ? this.establishments[0].id
@@ -3457,7 +3452,10 @@ export default {
                     }
                 })
                 .then(() => {
-                    this.form.currency_type_id = this.config.currency_type_id;
+                    const configCurrencyAvailable = this.currency_types.some(c => c.id === this.config.currency_type_id);
+                    this.form.currency_type_id = (this.config.currency_type_id && configCurrencyAvailable)
+                        ? this.config.currency_type_id
+                        : (this.currency_types.length > 0 ? this.currency_types[0].id : null);
                     this.loading_submit = false;
                 });
         },

@@ -117,7 +117,6 @@
                     v-model="row.timingType"
                     size="small"
                     style="width:100%;"
-                    @change="val => updateTimingType(row.id, val)"
                   >
                     <el-option value="before"   label="Días antes de vencer"></el-option>
                     <el-option value="same_day" label="El mismo día del vencimiento"></el-option>

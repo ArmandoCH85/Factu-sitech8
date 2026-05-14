@@ -610,35 +610,35 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.smtp_host}" class="form-group">
-                                    <label class="control-label" for="smtp_host">Host SMTP</label>
+                                    <label class="control-label" for="smtp_host">Dirección del host de correo</label>
                                     <el-input id="smtp_host" v-model="form.smtp_host"></el-input>
                                     <small v-if="errors.smtp_host" class="form-control-feedback" v-text="errors.smtp_host[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.smtp_port}" class="form-group">
-                                    <label class="control-label" for="smtp_port">Puerto SMTP</label>
+                                    <label class="control-label" for="smtp_port">Puerto del host de correo</label>
                                     <el-input id="smtp_port" v-model="form.smtp_port"></el-input>
                                     <small v-if="errors.smtp_port" class="form-control-feedback" v-text="errors.smtp_port[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.smtp_user}" class="form-group">
-                                    <label class="control-label" for="smtp_user">Usuario SMTP</label>
+                                    <label class="control-label" for="smtp_user">Nombre de usuario de correo</label>
                                     <el-input id="smtp_user" v-model="form.smtp_user"></el-input>
                                     <small v-if="errors.smtp_user" class="form-control-feedback" v-text="errors.smtp_user[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.smtp_password}" class="form-group">
-                                    <label class="control-label" for="smtp_password">Contraseña SMTP</label>
+                                    <label class="control-label" for="smtp_password">Contraseña del usuario de correo</label>
                                     <el-input id="smtp_password" v-model="form.smtp_password" type="password"></el-input>
                                     <small v-if="errors.smtp_password" class="form-control-feedback" v-text="errors.smtp_password[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.smtp_encryption}" class="form-group">
-                                    <label class="control-label" for="smtp_encryption">Encriptación</label>
+                                    <label class="control-label" for="smtp_encryption">Encriptación de correo</label>
                                     <el-select id="smtp_encryption" v-model="form.smtp_encryption" style="width: 100%">
                                         <el-option label="SSL" value="ssl"></el-option>
                                         <el-option label="TLS" value="tls"></el-option>

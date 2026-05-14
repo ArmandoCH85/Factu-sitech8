@@ -61,27 +61,22 @@
                             </td>
                             <td class="align-middle py-2">
                                 <div class="d-flex gap-1 flex-wrap align-items-center">
-                                    <el-tooltip v-if="skin.is_tenant_default" content="Tema por defecto para nuevos clientes" placement="top">
-                                        <el-tag size="mini" type="warning" style="cursor:default;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg>
-                                            Default
-                                        </el-tag>
-                                    </el-tooltip>
-                                    <el-tooltip v-else content="Establecer como default para nuevos clientes" placement="top">
-                                        <button class="set-default-tag-btn" :disabled="loading_set_default" @click="confirmSetDefault(skin)">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/></svg>
-                                            Default
+                                    <el-tooltip
+                                        :content="skin.is_tenant_default ? 'Tema predeterminado · Click para forzar a empresas existentes' : 'Aplicar tema (predeterminado o forzar)'"
+                                        placement="top">
+                                        <button
+                                            class="apply-skin-btn"
+                                            :class="{ 'apply-skin-btn--active': skin.is_tenant_default }"
+                                            @click="openApplyDialog(skin)">
+                                            <svg v-if="skin.is_tenant_default" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="margin-top:-1px;display:inline-block"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg>
+                                            <svg v-else xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/></svg>
+                                            {{ skin.is_tenant_default ? 'Default' : 'Aplicar' }}
                                         </button>
                                     </el-tooltip>
                                 </div>
                             </td>
                             <td class="align-middle py-2 pe-3">
                                 <div class="d-flex justify-content-end">
-                                    <el-tooltip :content="skin.is_forced ? 'Forzar de nuevo' : 'Forzar'" placement="top">
-                                        <el-button size="mini" plain :loading="loading_force" @click="confirmForceSkin(skin)">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-bolt"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" /></svg>
-                                        </el-button>
-                                    </el-tooltip>
                                     <el-tooltip content="Descargar" placement="top">
                                         <el-button size="mini" plain @click="downloadSkin(skin)">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-download"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
@@ -110,8 +105,9 @@
             </div>
             <div class="bg-light px-3 py-2 text-muted d-flex flex-wrap gap-3 mt-2 rounded">
                 <span class="d-flex align-items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
-                    Forzar
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245"/></svg>
+                    Aplicar
+                    <small style="opacity:.7">(predeterminado o forzar a existentes)</small>
                 </span>
                 <span class="d-flex align-items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4l0 12"/></svg>
@@ -187,6 +183,80 @@
             </span>
         </el-dialog>
 
+        <!-- Diálogo de aplicación de tema (default + forzar) -->
+        <el-dialog
+            :title="applyingSkin ? `Aplicar tema: ${applyingSkin.name}` : ''"
+            :visible.sync="showApplyDialog"
+            width="540px"
+            :close-on-click-modal="false"
+            @close="closeApplyDialog">
+            <div v-if="applyingSkin">
+                <p class="text-muted mb-3" style="font-size: 13px;">
+                    Elige cómo aplicar este tema. Las dos opciones son independientes; puedes usar una, la otra o ambas.
+                </p>
+
+                <!-- Opción 1: Hacer predeterminado -->
+                <div class="apply-option" :class="{ 'apply-option--done': applyingSkin.is_tenant_default }">
+                    <div class="d-flex align-items-start">
+                        <div class="apply-option__icon apply-option__icon--default">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="apply-option__title">Establecer como predeterminado</div>
+                            <div class="apply-option__desc text-muted">
+                                Las <strong>empresas nuevas</strong> que se creen a partir de ahora usarán este tema por defecto.
+                                <span class="d-block text-muted mt-1" style="font-size: 11px;">No afecta a las empresas ya existentes.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="apply-option__action text-end mt-2">
+                        <el-tag v-if="applyingSkin.is_tenant_default" type="success" size="mini">
+                            <i class="el-icon-check"></i> Ya es el predeterminado
+                        </el-tag>
+                        <el-button
+                            v-else
+                            type="warning"
+                            size="small"
+                            :loading="loading_set_default"
+                            :disabled="loading_force"
+                            @click="executeSetDefault">
+                            Hacer predeterminado
+                        </el-button>
+                    </div>
+                </div>
+
+                <!-- Opción 2: Forzar -->
+                <div class="apply-option apply-option--danger mt-3">
+                    <div class="d-flex align-items-start">
+                        <div class="apply-option__icon apply-option__icon--force">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="apply-option__title">Forzar en todas las empresas</div>
+                            <div class="apply-option__desc text-muted">
+                                Reemplaza el tema activo en <strong>todas las empresas existentes</strong>.
+                                <span class="d-block text-muted mt-1" style="font-size: 11px;">Acción inmediata: los usuarios verán el cambio al recargar.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="apply-option__action text-end mt-2">
+                        <el-button
+                            type="danger"
+                            plain
+                            size="small"
+                            :loading="loading_force"
+                            :disabled="loading_set_default"
+                            @click="executeForce">
+                            Forzar tema
+                        </el-button>
+                    </div>
+                </div>
+            </div>
+            <span slot="footer">
+                <el-button @click="closeApplyDialog">Cerrar</el-button>
+            </span>
+        </el-dialog>
+
         <!-- Diálogo de reemplazo de tema por defecto -->
         <el-dialog
             :title="`Reemplazar tema: ${replacingSkin ? replacingSkin.name : ''}`"
@@ -259,6 +329,8 @@ export default {
             replacingSkin: null,
             pendingReplaceFile: null,
             loading_force: false,
+            showApplyDialog: false,
+            applyingSkin: null,
         };
     },
     created() {
@@ -284,48 +356,52 @@ export default {
             a.click();
         },
 
-        confirmSetDefault(skin) {
-            this.$confirm(
-                `¿Establecer "${skin.name}" como tema por defecto para nuevas empresas?`,
-                'Seleccionar plantilla default',
-                { confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar', type: 'info' }
-            ).then(() => {
-                this.loading_set_default = true;
-                this.$http.post('configurations/system-skins/set-tenant-default', { skin_id: skin.id }).then(response => {
-                    this.loading_set_default = false;
-                    if (response.data.success) {
-                        this.$message.success(response.data.message);
-                        this.skins = response.data.skins;
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                }).catch(() => {
-                    this.loading_set_default = false;
-                    this.$message.error('Error al actualizar el tema por defecto');
-                });
-            }).catch(() => {});
+        openApplyDialog(skin) {
+            this.applyingSkin = skin;
+            this.showApplyDialog = true;
+        },
+        closeApplyDialog() {
+            if (this.loading_set_default || this.loading_force) return;
+            this.showApplyDialog = false;
+            this.applyingSkin = null;
         },
 
-        confirmForceSkin(skin) {
-            this.$confirm(
-                `¿Forzar el tema "${skin.name}" en todas las empresas existentes? El tema activo de cada empresa se cambiará automáticamente.`,
-                'Forzar tema',
-                { confirmButtonText: 'Forzar', cancelButtonText: 'Cancelar', type: 'warning' }
-            ).then(() => {
-                this.loading_force = true;
-                this.$http.post('configurations/system-skins/force', { skin_id: skin.id }).then(response => {
-                    this.loading_force = false;
-                    if (response.data.success) {
-                        this.$message.success(response.data.message);
-                        this.skins = response.data.skins;
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                }).catch(() => {
-                    this.loading_force = false;
-                    this.$message.error('Error al forzar el tema');
-                });
-            }).catch(() => {});
+        executeSetDefault() {
+            if (!this.applyingSkin) return;
+            this.loading_set_default = true;
+            this.$http.post('configurations/system-skins/set-tenant-default', { skin_id: this.applyingSkin.id }).then(response => {
+                this.loading_set_default = false;
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.skins = response.data.skins;
+                    const refreshed = this.skins.find(s => s.id === this.applyingSkin.id);
+                    if (refreshed) this.applyingSkin = refreshed;
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(() => {
+                this.loading_set_default = false;
+                this.$message.error('Error al actualizar el tema por defecto');
+            });
+        },
+
+        executeForce() {
+            if (!this.applyingSkin) return;
+            this.loading_force = true;
+            this.$http.post('configurations/system-skins/force', { skin_id: this.applyingSkin.id }).then(response => {
+                this.loading_force = false;
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.skins = response.data.skins;
+                    const refreshed = this.skins.find(s => s.id === this.applyingSkin.id);
+                    if (refreshed) this.applyingSkin = refreshed;
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            }).catch(() => {
+                this.loading_force = false;
+                this.$message.error('Error al forzar el tema');
+            });
         },
 
         onFileChange(file) {
@@ -535,7 +611,7 @@ export default {
     width: 100%;
 }
 
-.set-default-tag-btn {
+.apply-skin-btn {
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -551,14 +627,59 @@ export default {
     white-space: nowrap;
     transition: all 0.15s ease;
 }
-.set-default-tag-btn:hover {
+.apply-skin-btn:hover {
     color: #e6a23c;
     border-color: #e6a23c;
     border-style: solid;
     background: #fdf6ec;
 }
-.set-default-tag-btn:disabled {
+.apply-skin-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+.apply-skin-btn--active {
+    color: #b88230;
+    background: #fdf6ec;
+    border: 1px solid #f5dab1;
+}
+.apply-skin-btn--active:hover {
+    color: #b88230;
+    background: #faecd8;
+    border-color: #e6a23c;
+}
+
+.apply-option {
+    border: 1px solid #ebeef5;
+    border-radius: 6px;
+    padding: 14px 16px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.apply-option--done {
+    border-color: color-mix(in srgb, var(--success) 30%, #ffffff);
+}
+.apply-option--danger {
+    border-color: color-mix(in srgb, var(--danger) 30%, #ffffff);
+}
+.apply-option__icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.apply-option__icon--default {
+    color: var(--warning);
+    background: color-mix(in srgb, var(--warning) 20%, #ffffff);
+}
+.apply-option__icon--force {
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 20%, #ffffff);
+}
+.apply-option__title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
 }
 </style>

@@ -15,8 +15,7 @@
                             >
                                 {{ see_more ? "Ocultar filtros" : "Mostrar filtros" }}
                             </el-button>
-                            <el-button v-if="hasActiveFilters" class="submit ms-2 mb-2" type="info" @click.prevent="cleanInputs"  icon="el-icon-refresh">Limpiar </el-button>
-                            <el-checkbox v-model="auto_hide_filters" class="ms-3 mb-2" >Ocultar filtros al buscar</el-checkbox>
+                            <el-button v-if="hasActiveFilters" class="submit ms-2 mb-2" type="info" @click.prevent="cleanInputs"  icon="el-icon-refresh">Limpiar </el-button>                            
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-12 text-end">
@@ -160,9 +159,11 @@
                             <el-checkbox v-model="search.pending_payment" >PEND. DE PAGO</el-checkbox>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-md-4 col-sm-12 d-flex mt-2">
+                    <div class="col-md-10 col-sm-12 d-flex mt-2">
                         <el-button class="submit me-2" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
+                        <el-checkbox v-model="auto_hide_filters" class="d-flex align-items-center" >Ocultar filtros al buscar</el-checkbox>
                     </div>
+
 
                 </div>
 

@@ -159,7 +159,7 @@
                                 <el-dropdown-item disabled>
                                     <strong>Seleccionar columnas</strong>
                                 </el-dropdown-item>
-                                <el-dropdown-item v-for="col in orderedColumns" :key="col.key">
+                                <el-dropdown-item v-for="col in tenantSelectableColumns" :key="col.key">
                                     <el-checkbox @change="getColumnsToShow(1)" v-model="columns[col.key].visible">{{ col.title }}</el-checkbox>
                                 </el-dropdown-item>
                             </div>
@@ -181,10 +181,10 @@
                             <th v-if="col.visible && col.key === 'order_note'" :key="col.key">Pedidos</th>
                             <th v-if="col.visible && col.key === 'send_it'" :key="col.key">Email Enviado</th>
                             <th v-if="col.visible && col.key === 'state_type'" :key="col.key">Estado</th>
-                            <!-- Campos personalizados: posición fija después de state_type -->
-                            <template v-if="col.key === 'state_type'">
+                            <!-- Campos personalizados: posición configurable vía columna virtual `personalized` (visibilidad la dicta cada field) -->
+                            <template v-if="col.key === 'personalized'">
                                 <template v-for="field in customFieldColumns">
-                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start">{{ field.name }}</th>
+                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start" style="min-width: 120px;">{{ field.name }}</th>
                                 </template>
                             </template>
                             <th v-if="col.visible && col.key === 'user_name'" :key="col.key">Usuario</th>
@@ -263,8 +263,8 @@
                                     </el-tooltip>
                                 </template>
                             </td>
-                            <!-- Campos personalizados: posición fija después de state_type -->
-                            <template v-if="col.key === 'state_type'">
+                            <!-- Campos personalizados: posición configurable vía columna virtual `personalized` (visibilidad la dicta cada field) -->
+                            <template v-if="col.key === 'personalized'">
                                 <template v-for="field in customFieldColumns">
                                     <td v-if="field.visible" :key="`cf-data-${field.id}`" class="text-start">
                                         <template v-if="isEditableCustomField(field)">
@@ -673,6 +673,9 @@ export default {
                 .map(([key, col]) => ({ key, ...col }))
                 .sort((a, b) => a.order - b.order);
         },
+        tenantSelectableColumns() {
+            return this.orderedColumns.filter(col => col.key !== 'personalized');
+        },
     },
     components: {
         DocumentsVoided,
@@ -718,34 +721,36 @@ export default {
                 order_note:         { title: "Pedidos",                        visible: false, order: 9  },
                 send_it:            { title: "Correo enviado al destinatario", visible: false, order: 10 },
                 state_type:         { title: "Estado",                         visible: true,  order: 11 },
-                user_name:          { title: "Usuario",                        visible: false, order: 12 },
-                exchange_rate_sale: { title: "Tipo de cambio",                 visible: false, order: 13 },
-                currency_type_id:   { title: "Moneda",                         visible: false, order: 14 },
-                guides:             { title: "Guias",                          visible: false, order: 15 },
-                plate_numbers:      { title: "Placa",                          visible: false, order: 16 },
-                total_exportation:  { title: "T.Exportación",                  visible: false, order: 17 },
-                total_free:         { title: "T.Gratuito",                     visible: false, order: 18 },
-                total_unaffected:   { title: "T.Inafecto",                     visible: false, order: 19 },
-                total_exonerated:   { title: "T.Exonerado",                    visible: false, order: 20 },
-                total_charge:       { title: "T.Cargos",                       visible: false, order: 21 },
-                total_taxed:        { title: "T.Gravado",                      visible: true,  order: 22 },
-                total_igv:          { title: "T.Igv",                          visible: true,  order: 23 },
-                total:              { title: "Total",                          visible: false, order: 24 },
-                balance:            { title: "Saldo",                          visible: true,  order: 25 },
-                purchase_order:     { title: "Orden de Compra",                visible: false, order: 26 },
-                downloads:          { title: "Descargas (XML/PDF/CDR)",        visible: true,  order: 27 },
-                actions:            { title: "Acciones",                       visible: true,  order: 28 },
+                personalized:       { title: "Personalizados",                 visible: true,  order: 12 },
+                user_name:          { title: "Usuario",                        visible: false, order: 13 },
+                exchange_rate_sale: { title: "Tipo de cambio",                 visible: false, order: 14 },
+                currency_type_id:   { title: "Moneda",                         visible: false, order: 15 },
+                guides:             { title: "Guias",                          visible: false, order: 16 },
+                plate_numbers:      { title: "Placa",                          visible: false, order: 17 },
+                total_exportation:  { title: "T.Exportación",                  visible: false, order: 18 },
+                total_free:         { title: "T.Gratuito",                     visible: false, order: 19 },
+                total_unaffected:   { title: "T.Inafecto",                     visible: false, order: 20 },
+                total_exonerated:   { title: "T.Exonerado",                    visible: false, order: 21 },
+                total_charge:       { title: "T.Cargos",                       visible: false, order: 22 },
+                total_taxed:        { title: "T.Gravado",                      visible: true,  order: 23 },
+                total_igv:          { title: "T.Igv",                          visible: true,  order: 24 },
+                total:              { title: "Total",                          visible: false, order: 25 },
+                balance:            { title: "Saldo",                          visible: true,  order: 26 },
+                purchase_order:     { title: "Orden de Compra",                visible: false, order: 27 },
+                downloads:          { title: "Descargas (XML/PDF/CDR)",        visible: true,  order: 28 },
+                actions:            { title: "Acciones",                       visible: true,  order: 29 },
             },
             customFieldColumns: [],
+            savedCustomFieldVisibilities: {},
             decimal_quantity: 2,
         };
     },
-    created() {
+    async created() {
         this.$store.commit("setConfiguration", this.configuration);
         this.loadConfiguration();
-        this.getColumnsToShow();
-        this.loadCustomFieldsColumns();
         this.loadDecimalQuantity();
+        await this.getColumnsToShow();
+        this.loadCustomFieldsColumns();
     },
     methods: {
         loadDecimalQuantity() {
@@ -776,7 +781,14 @@ export default {
             Object.keys(this.columns).forEach(key => {
                 columnsPayload[key] = { title: this.columns[key].title, visible: this.columns[key].visible, order: this.columns[key].order };
             });
-            this.$http
+            if (updated !== undefined && columnsPayload.personalized) {
+                const fields = {};
+                this.customFieldColumns.forEach(field => {
+                    fields[field.slug] = field.visible;
+                });
+                columnsPayload.personalized.fields = fields;
+            }
+            return this.$http
                 .post("/validate_columns", {
                     columns: columnsPayload,
                     report: "document_index",
@@ -794,6 +806,9 @@ export default {
                                     }
                                 }
                             });
+                            if (currentCols.personalized && currentCols.personalized.fields) {
+                                this.savedCustomFieldVisibilities = currentCols.personalized.fields;
+                            }
                         } else {
                             this.$http.get('/column-visibility/documents').then(res => {
                                 if (res.data.success && res.data.data) {
@@ -805,6 +820,9 @@ export default {
                                             }
                                         }
                                     });
+                                    if (res.data.data.personalized && res.data.data.personalized.fields) {
+                                        this.savedCustomFieldVisibilities = res.data.data.personalized.fields;
+                                    }
                                 }
                             }).catch(() => {});
                         }
@@ -976,18 +994,23 @@ export default {
                 const response = await this.$http.get(
                     "/configurations/custom-fields/documents"
                 );
-                this.customFieldColumns = (response.data.data || []).map(field => ({
-                    ...field,
-                    visible: field.visible !== undefined ? field.visible : true
-                }));
+                const defaultVisible = this.columns.personalized
+                    ? this.columns.personalized.visible
+                    : true;
+                this.customFieldColumns = (response.data.data || []).map(field => {
+                    const savedVisible = this.savedCustomFieldVisibilities[field.slug];
+                    return {
+                        ...field,
+                        visible: savedVisible !== undefined ? savedVisible : defaultVisible
+                    };
+                });
             } catch (error) {
                 console.error("Error cargando columnas de campos personalizados:", error);
                 this.customFieldColumns = [];
             }
         },
         updateCustomFieldColumns() {
-            // Custom fields visibility is handled client-side for sale note columns.
-            // Persist here if needed by backend later.
+            this.getColumnsToShow(1);
         },
         isEditableCustomField(field) {
             return [

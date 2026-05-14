@@ -101,7 +101,7 @@
                                 <el-dropdown-item disabled>
                                     <strong>Seleccionar columnas</strong>
                                 </el-dropdown-item>
-                                <el-dropdown-item v-for="col in orderedColumns" :key="col.key">
+                                <el-dropdown-item v-for="col in tenantSelectableColumns" :key="col.key">
                                     <el-checkbox @change="saveColumnVisibility" v-model="columns[col.key].visible">{{ col.title }}</el-checkbox>
                                 </el-dropdown-item>
                             </div>
@@ -121,10 +121,10 @@
                             <th v-if="col.visible && col.key === 'seller'" :key="col.key">Vendedor</th>
                             <th v-if="col.visible && col.key === 'customer'" :key="col.key">Cliente</th>
                             <th v-if="col.visible && col.key === 'state_type'" :key="col.key">Estado</th>
-                            <!-- Campos personalizados: posición fija después de state_type -->
-                            <template v-if="col.key === 'state_type'">
+                            <!-- Campos personalizados: posición configurable vía columna virtual `personalized` (visibilidad la dicta cada field) -->
+                            <template v-if="col.key === 'personalized'">
                                 <template v-for="field in customFieldColumns">
-                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start">{{ field.name }}</th>
+                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start" style="min-width: 120px;">{{ field.name }}</th>
                                 </template>
                             </template>
                             <th v-if="col.visible && col.key === 'identifier'" :key="col.key">Pedido</th>
@@ -164,8 +164,8 @@
                                     </el-select>
                                 </template>
                             </td>
-                            <!-- Campos personalizados: posición fija después de state_type -->
-                            <template v-if="col.key === 'state_type'">
+                            <!-- Campos personalizados: posición configurable vía columna virtual `personalized` (visibilidad la dicta cada field) -->
+                            <template v-if="col.key === 'personalized'">
                                 <template v-for="field in customFieldColumns">
                                     <td v-if="field.visible" :key="`cf-data-${field.id}`" class="text-start">
                                         <template v-if="isEditableCustomField(field)">
@@ -313,16 +313,16 @@ export default {
         StateType,
         ChangeStateType
     },
-    created() {
-        this.loadColumnVisibility();
+    async created() {
         this.$store.commit("setConfiguration", this.configuration);
         this.loadConfiguration();
         this.filter();
         if (this.config.mi_tienda_pe === true) {
             this.getMiTiendaDataData();
         }
-        this.loadCustomFieldsColumns();
         this.loadDecimalQuantity();
+        await this.loadColumnVisibility();
+        this.loadCustomFieldsColumns();
     },
     data() {
         return {
@@ -338,25 +338,27 @@ export default {
                 seller:            { title: "Vendedor",            visible: true,  order: 2  },
                 customer:          { title: "Cliente",             visible: true,  order: 3  },
                 state_type:        { title: "Estado",              visible: true,  order: 4  },
-                identifier:        { title: "Pedido",              visible: true,  order: 5  },
-                documents:         { title: "Comprobantes",        visible: true,  order: 6  },
-                sale_notes:        { title: "Notas de venta",      visible: true,  order: 7  },
-                quotation:         { title: "Cotizacion",          visible: false, order: 8  },
-                dispatches:        { title: "Guías de Remisión",   visible: false, order: 9  },
-                mi_tienda_pe:      { title: "Pedido MiTienda.Pe",  visible: false, order: 10 },
-                currency_type:     { title: "Moneda",              visible: true,  order: 11 },
-                total_exportation: { title: "T.Exportación",       visible: false, order: 12 },
-                total_unaffected:  { title: "T.Inafecto",          visible: false, order: 13 },
-                total_exonerated:  { title: "T.Exonerado",         visible: false, order: 14 },
-                total_taxed:       { title: "T.Gravado",           visible: true,  order: 15 },
-                total_igv:         { title: "T.IGV",               visible: true,  order: 16 },
-                balance:           { title: "Saldo",               visible: true,  order: 17 },
-                total:             { title: "Total",               visible: true,  order: 18 },
-                pdf:               { title: "PDF",                 visible: true,  order: 19 },
-                actions:           { title: "Acciones",            visible: true,  order: 20 },
+                personalized:      { title: "Personalizados",      visible: true,  order: 5  },
+                identifier:        { title: "Pedido",              visible: true,  order: 6  },
+                documents:         { title: "Comprobantes",        visible: true,  order: 7  },
+                sale_notes:        { title: "Notas de venta",      visible: true,  order: 8  },
+                quotation:         { title: "Cotizacion",          visible: false, order: 9  },
+                dispatches:        { title: "Guías de Remisión",   visible: false, order: 10 },
+                mi_tienda_pe:      { title: "Pedido MiTienda.Pe",  visible: false, order: 11 },
+                currency_type:     { title: "Moneda",              visible: true,  order: 12 },
+                total_exportation: { title: "T.Exportación",       visible: false, order: 13 },
+                total_unaffected:  { title: "T.Inafecto",          visible: false, order: 14 },
+                total_exonerated:  { title: "T.Exonerado",         visible: false, order: 15 },
+                total_taxed:       { title: "T.Gravado",           visible: true,  order: 16 },
+                total_igv:         { title: "T.IGV",               visible: true,  order: 17 },
+                balance:           { title: "Saldo",               visible: true,  order: 18 },
+                total:             { title: "Total",               visible: true,  order: 19 },
+                pdf:               { title: "PDF",                 visible: true,  order: 20 },
+                actions:           { title: "Acciones",            visible: true,  order: 21 },
             },
             state_type_accepted: ["01", "03", "05", "07", "13"],
             customFieldColumns: [],
+            savedCustomFieldVisibilities: {},
             decimal_quantity: 2,
         };
     },
@@ -366,6 +368,9 @@ export default {
             return Object.entries(this.columns)
                 .map(([key, col]) => ({ key, ...col }))
                 .sort((a, b) => a.order - b.order);
+        },
+        tenantSelectableColumns() {
+            return this.orderedColumns.filter(col => col.key !== 'personalized');
         },
         seller_can_generate_cpe() {
             if (
@@ -423,10 +428,17 @@ export default {
             Object.keys(this.columns).forEach(key => {
                 columns[key] = { title: this.columns[key].title, visible: this.columns[key].visible, order: this.columns[key].order };
             });
+            if (columns.personalized) {
+                const fields = {};
+                this.customFieldColumns.forEach(field => {
+                    fields[field.slug] = field.visible;
+                });
+                columns.personalized.fields = fields;
+            }
             this.$http.post('/column-visibility/order_notes_index', { columns }).catch(() => {});
         },
         loadColumnVisibility() {
-            this.$http.get('/column-visibility/order_notes_index').then(response => {
+            return this.$http.get('/column-visibility/order_notes_index').then(response => {
                 if (response.data.success && response.data.data) {
                     const data = response.data.data;
                     Object.keys(data).forEach(key => {
@@ -437,6 +449,9 @@ export default {
                             }
                         }
                     });
+                    if (data.personalized && data.personalized.fields) {
+                        this.savedCustomFieldVisibilities = data.personalized.fields;
+                    }
                 }
             }).catch(() => {});
         },
@@ -576,18 +591,23 @@ export default {
                 const response = await this.$http.get(
                     "/configurations/custom-fields/order-notes"
                 );
-                this.customFieldColumns = (response.data.data || []).map(field => ({
-                    ...field,
-                    visible: field.visible !== undefined ? field.visible : true
-                }));
+                const defaultVisible = this.columns.personalized
+                    ? this.columns.personalized.visible
+                    : true;
+                this.customFieldColumns = (response.data.data || []).map(field => {
+                    const savedVisible = this.savedCustomFieldVisibilities[field.slug];
+                    return {
+                        ...field,
+                        visible: savedVisible !== undefined ? savedVisible : defaultVisible
+                    };
+                });
             } catch (error) {
                 console.error("Error cargando columnas de campos personalizados:", error);
                 this.customFieldColumns = [];
             }
         },
         updateCustomFieldColumns() {
-            // Custom fields visibility is handled client-side for sale note columns.
-            // Persist here if needed by backend later.
+            this.saveColumnVisibility();
         },
         isEditableCustomField(field) {
             return [

@@ -79,7 +79,7 @@
                             <el-dropdown-item disabled>
                                 <strong>Seleccionar columnas</strong>
                             </el-dropdown-item>
-                            <el-dropdown-item v-for="col in orderedColumns" :key="col.key">
+                            <el-dropdown-item v-for="col in tenantSelectableColumns" :key="col.key">
                                 <el-checkbox @change="getColumnsToShow(1)" v-model="columns[col.key].visible">{{ col.title }}</el-checkbox>
                             </el-dropdown-item>
                         </div>
@@ -113,10 +113,10 @@
                             <th v-if="col.visible && col.key === 'purchase_order'" :key="col.key" class="text-center">Orden de compra</th>
                             <th v-if="col.visible && col.key === 'payments'" :key="col.key" class="text-center">Pagos</th>
                             <th v-if="col.visible && col.key === 'download'" :key="col.key" class="text-center">Descarga</th>
-                            <!-- Campos personalizados: posición fija después de download -->
-                            <template v-if="col.key === 'download'">
+                            <!-- Campos personalizados: posición configurable vía columna virtual `personalized` (visibilidad la dicta cada field) -->
+                            <template v-if="col.key === 'personalized'">
                                 <template v-for="field in customFieldColumns">
-                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start">{{ field.name }}</th>
+                                    <th v-if="field.visible" :key="`cf-head-${field.id}`" class="text-start" style="min-width: 120px;">{{ field.name }}</th>
                                 </template>
                             </template>
                             <th v-if="col.visible && col.key === 'recurrence'" :key="col.key" class="text-center">Recurrencia</th>
@@ -163,8 +163,8 @@
                             <td v-if="col.visible && col.key === 'download'" :key="col.key" class="text-end">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.external_id)"><i class="fas fa-file-pdf"></i></button>
                             </td>
-                            <!-- Campos personalizados: posición fija después de download -->
-                            <template v-if="col.key === 'download'">
+                            <!-- Campos personalizados: posición configurable vía columna virtual `personalized` (visibilidad la dicta cada field) -->
+                            <template v-if="col.key === 'personalized'">
                                 <template v-for="field in customFieldColumns">
                                     <td v-if="field.visible" :key="`cf-data-${field.id}`" class="text-start">
                                         <template v-if="isEditableCustomField(field)">
@@ -394,6 +394,9 @@ export default {
                 .map(([key, col]) => ({ key, ...col }))
                 .sort((a, b) => a.order - b.order);
         },
+        tenantSelectableColumns() {
+            return this.orderedColumns.filter(col => col.key !== 'personalized');
+        },
     },
     data() {
         return {
@@ -431,16 +434,18 @@ export default {
                 purchase_order:     { title: "Orden de compra",      visible: true,  order: 20 },
                 payments:           { title: "Pagos",                visible: true,  order: 21 },
                 download:           { title: "Descarga",             visible: true,  order: 22 },
-                recurrence:         { title: "Recurrencia",          visible: false, order: 23 },
-                region:             { title: "Region",               visible: false, order: 24 },
-                dispatch_status:    { title: "Estado de despacho",   visible: false, order: 25 },
-                type_period:        { title: "Tipo Periodo",         visible: true,  order: 26 },
-                quantity_period:    { title: "Cantidad Periodo",     visible: true,  order: 27 },
-                paid:               { title: "Estado de Pago",       visible: false, order: 28 },
-                license_plate:      { title: "Placa",                visible: true,  order: 29 },
-                actions:            { title: "Acciones",             visible: true,  order: 30 },
+                personalized:       { title: "Personalizados",       visible: true,  order: 23 },
+                recurrence:         { title: "Recurrencia",          visible: false, order: 24 },
+                region:             { title: "Region",               visible: false, order: 25 },
+                dispatch_status:    { title: "Estado de despacho",   visible: false, order: 26 },
+                type_period:        { title: "Tipo Periodo",         visible: true,  order: 27 },
+                quantity_period:    { title: "Cantidad Periodo",     visible: true,  order: 28 },
+                paid:               { title: "Estado de Pago",       visible: false, order: 29 },
+                license_plate:      { title: "Placa",                visible: true,  order: 30 },
+                actions:            { title: "Acciones",             visible: true,  order: 31 },
             },
             customFieldColumns: [],
+            savedCustomFieldVisibilities: {},
             decimal_quantity: 2,
             // showDialogDeleteRelationInvoice: false,
             // dataDeleteRelation: {
@@ -449,12 +454,12 @@ export default {
             // }
         };
     },
-    created() {
+    async created() {
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
-        this.getColumnsToShow();
-        this.loadCustomFieldsColumns();
         this.loadDecimalQuantity();
+        await this.getColumnsToShow();
+        this.loadCustomFieldsColumns();
     },
     filters: {
         period(name) {
@@ -507,7 +512,14 @@ export default {
             Object.keys(this.columns).forEach(key => {
                 columnsPayload[key] = { title: this.columns[key].title, visible: this.columns[key].visible, order: this.columns[key].order };
             });
-            this.$http
+            if (updated !== undefined && columnsPayload.personalized) {
+                const fields = {};
+                this.customFieldColumns.forEach(field => {
+                    fields[field.slug] = field.visible;
+                });
+                columnsPayload.personalized.fields = fields;
+            }
+            return this.$http
                 .post("/validate_columns", {
                     columns: columnsPayload,
                     report: "sale_notes_index",
@@ -525,6 +537,9 @@ export default {
                                     }
                                 }
                             });
+                            if (currentCols.personalized && currentCols.personalized.fields) {
+                                this.savedCustomFieldVisibilities = currentCols.personalized.fields;
+                            }
                         } else {
                             this.$http.get('/column-visibility/sale_notes').then(res => {
                                 if (res.data.success && res.data.data) {
@@ -536,6 +551,9 @@ export default {
                                             }
                                         }
                                     });
+                                    if (res.data.data.personalized && res.data.data.personalized.fields) {
+                                        this.savedCustomFieldVisibilities = res.data.data.personalized.fields;
+                                    }
                                 }
                             }).catch(() => {});
                         }
@@ -550,18 +568,23 @@ export default {
                 const response = await this.$http.get(
                     "/configurations/custom-fields/sale-notes"
                 );
-                this.customFieldColumns = (response.data.data || []).map(field => ({
-                    ...field,
-                    visible: field.visible !== undefined ? field.visible : true
-                }));
+                const defaultVisible = this.columns.personalized
+                    ? this.columns.personalized.visible
+                    : true;
+                this.customFieldColumns = (response.data.data || []).map(field => {
+                    const savedVisible = this.savedCustomFieldVisibilities[field.slug];
+                    return {
+                        ...field,
+                        visible: savedVisible !== undefined ? savedVisible : defaultVisible
+                    };
+                });
             } catch (error) {
                 console.error("Error cargando columnas de campos personalizados:", error);
                 this.customFieldColumns = [];
             }
         },
         updateCustomFieldColumns() {
-            // Custom fields visibility is handled client-side for sale note columns.
-            // Persist here if needed by backend later.
+            this.getColumnsToShow(1);
         },
         isEditableCustomField(field) {
             return [

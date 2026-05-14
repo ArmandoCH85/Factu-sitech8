@@ -85,7 +85,19 @@
                                 :class="{ 'dp-item--checked': isActive(col.key) }"
                                 @click="toggleColumn(col.key)"
                             >
-                                <span class="dp-item__title">{{ col.title }}</span>
+                                <span class="dp-item__title">
+                                    {{ col.title }}
+                                    <el-tooltip
+                                        v-if="col.key === 'personalized'"
+                                        effect="dark"
+                                        placement="top"
+                                        content="Controla la posición y visibilidad por defecto del grupo de campos personalizados de este listado. Su orden define dónde se insertarán todos los campos personalizados, y su visibilidad establece el estado inicial con que los verán los usuarios."
+                                    >
+                                        <span class="dp-item__info" @click.stop>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top: -2px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        </span>
+                                    </el-tooltip>
+                                </span>
                                 <span class="dp-item__check" :class="{ 'dp-item__check--on': isActive(col.key) }">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                 </span>
@@ -202,6 +214,7 @@ const MODULES = {
             seller:           { title: 'Vendedor',            visible: true,  type: 'text'     },
             customer:         { title: 'Cliente',             visible: true,  type: 'customer' },
             state_type:       { title: 'Estado',              visible: true,  type: 'status'   },
+            personalized:     { title: 'Personalizados',      visible: true,  type: 'text'     },
             identifier:       { title: 'Pedido',              visible: true,  type: 'document' },
             documents:        { title: 'Comprobantes',        visible: true,  type: 'document' },
             sale_notes:       { title: 'Notas de venta',      visible: true,  type: 'document' },
@@ -322,6 +335,7 @@ const MODULES = {
             purchase_order:     { title: 'Orden de compra',      visible: true,  type: 'document' },
             payments:           { title: 'Pagos',                visible: true,  type: 'action'   },
             download:           { title: 'Descarga',             visible: true,  type: 'action'   },
+            personalized:       { title: 'Personalizados',       visible: true,  type: 'text'     },
             recurrence:         { title: 'Recurrencia',          visible: false, type: 'text'     },
             region:             { title: 'Región',               visible: false, type: 'text'     },
             dispatch_status:    { title: 'Estado de despacho',   visible: false, type: 'status'   },
@@ -347,6 +361,7 @@ const MODULES = {
             order_note:        { title: 'Pedidos',                    visible: false, type: 'document' },
             send_it:           { title: 'Correo enviado',             visible: false, type: 'boolean'  },
             state_type:        { title: 'Estado',                     visible: true,  type: 'status'   },
+            personalized:      { title: 'Personalizados',             visible: true,  type: 'text'     },
             user_name:         { title: 'Usuario',                    visible: false, type: 'text'     },
             exchange_rate_sale:{ title: 'Tipo de cambio',             visible: false, type: 'exchange' },
             currency_type_id:  { title: 'Moneda',                     visible: false, type: 'currency' },
@@ -462,22 +477,8 @@ export default {
             searchAvailable: '',
             searchActive: '',
             savedConfigs: {},
-            openSections: ['purchases'],
+            openSections: null,
             sections: [
-                {
-                    key: 'purchases',
-                    label: 'Compras',
-                    color: '#f59e0b',
-                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>',
-                    modules: ['purchases_index'],
-                },
-                {
-                    key: 'sales',
-                    label: 'Ventas',
-                    color: '#10b981',
-                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-receipt-2"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg>',
-                    modules: ['document_index', 'sale_notes_index'],
-                },
                 {
                     key: 'presale',
                     label: 'Preventa',
@@ -485,6 +486,20 @@ export default {
                     svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>',
                     modules: ['sale_opportunities_index', 'quotations_index', 'contracts_index', 'order_notes_index'],
                 },
+                {
+                    key: 'sales',
+                    label: 'Ventas',
+                    color: '#10b981',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-receipt-2"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2" /><path d="M14 8h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5m2 0v1.5m0 -9v1.5" /></svg>',
+                    modules: ['document_index', 'sale_notes_index'],
+                }, 
+                {
+                    key: 'purchases',
+                    label: 'Compras',
+                    color: '#f59e0b',
+                    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>',
+                    modules: ['purchases_index'],
+                },               
                 {
                     key: 'products',
                     label: 'Productos / Servicios',
@@ -820,6 +835,14 @@ export default {
 .dp-item--toggle:hover { background: var(--light-color); }
 
 .dp-item__title { flex: 1; }
+
+.dp-item__info {
+    color: var(--muted);
+    cursor: help;
+    margin-right: 6px;
+    transition: color 0.15s;
+}
+.dp-item__info:hover { color: var(--primary-color); }
 
 .dp-item__check {
     width: 18px;

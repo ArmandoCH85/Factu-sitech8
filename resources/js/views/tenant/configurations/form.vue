@@ -2536,6 +2536,11 @@ export default {
         });
 
         this.events()
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab) {
+            this.activeName = tab;
+        }
     },
     methods: {
 

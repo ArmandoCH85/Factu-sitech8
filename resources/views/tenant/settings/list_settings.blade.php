@@ -81,7 +81,7 @@
                         <a href="{{route('tenant.advanced.index')}}"><i class="ti ti-settings"></i>Avanzado</a>
                     </li>
                     <li>
-                        <a href="{{route('tenant.advanced.index')}}">Configuración de correo</a>
+                        <a href="{{route('tenant.advanced.index')}}?tab=mail"><i class="ti ti-mail"></i>Configuración de correo</a>
                     </li>
                     <li>
                         <a href="{{route('tenant.payment.generate.index')}}"><i class="ti ti-link"></i>Generador de link de pago</a>

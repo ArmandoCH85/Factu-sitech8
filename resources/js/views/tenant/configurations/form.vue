@@ -607,6 +607,22 @@
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="mail">
                         <span slot="label">Correo</span>
+                        <el-alert
+                            v-if="!form.smtp_host && !form.smtp_user"
+                            type="info"
+                            :closable="false"
+                            show-icon
+                            class="mb-3">
+                            <template slot="title">
+                                Está utilizando la configuración de correo predeterminada del sistema
+                            </template>
+                            <p class="mb-0">
+                                Sus comprobantes se están enviando correctamente sin necesidad de configurar nada. 
+                                Si desea utilizar su propia cuenta de correo personalizada (por ejemplo, para que 
+                                los correos lleguen con su dirección y dominio), complete los campos a continuación 
+                                y guarde los cambios.
+                            </p>
+                        </el-alert>
                         <div class="row">
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.smtp_host}" class="form-group">

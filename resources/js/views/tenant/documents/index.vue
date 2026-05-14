@@ -228,18 +228,18 @@
                             <td v-if="col.visible && col.key === 'customer'" :key="col.key">{{ row.customer_name }}<br /><small v-text="row.customer_number"></small></td>
                             <td v-if="col.visible && col.key === 'number'" :key="col.key">{{ row.number }}<br /><small v-text="row.document_type_description"></small><br /><small v-if="row.affected_document" v-text="row.affected_document"></small></td>
                             <td v-if="col.visible && col.key === 'notes'" :key="col.key">
-                                <template v-for="(note, i) in row.notes" :key="i">
-                                    <label class="d-block">{{ note.note_type_description }}: {{ note.description }}</label>
+                                <template v-for="(note, i) in row.notes">
+                                    <label :key="i" class="d-block">{{ note.note_type_description }}: {{ note.description }}</label>
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'dispatch'" :key="col.key">
-                                <template v-for="(dispatch, i) in row.dispatches" :key="i">
-                                    <label class="d-block">{{ dispatch.description }}</label>
+                                <template v-for="(dispatch, i) in row.dispatches">
+                                    <label :key="i" class="d-block">{{ dispatch.description }}</label>
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'sales_note'" :key="col.key">
-                                <template v-for="(salesNote, i) in row.sales_note" :key="i">
-                                    <label class="d-block">{{ salesNote.number_full }} ({{ salesNote.state_type_description }})</label>
+                                <template v-for="(salesNote, i) in row.sales_note">
+                                    <label :key="i" class="d-block">{{ salesNote.number_full }} ({{ salesNote.state_type_description }})</label>
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'order_note'" :key="col.key">

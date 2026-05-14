@@ -23,8 +23,8 @@
                         <path
                             d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"
                         />
-                        <path d="M16 5l3 3" /></svg
-                ></a>
+                        <path d="M16 5l3 3" /></svg>
+                    </a>
             </h2>
             <ol class="breadcrumbs">
                 <li class="active"><span>Pedidos</span></li>
@@ -191,13 +191,13 @@
                             </template>
                             <td v-if="col.visible && col.key === 'identifier'" :key="col.key">{{ row.identifier }}</td>
                             <td v-if="col.visible && col.key === 'documents'" :key="col.key">
-                                <template v-for="(document, i) in row.documents" :key="i">
-                                    <label v-text="showAnulateDoc(document)" class="d-block"></label>
+                                <template v-for="(document, i) in row.documents">
+                                    <label :key="i" v-text="showAnulateDoc(document)" class="d-block"></label>
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'sale_notes'" :key="col.key">
-                                <template v-for="(sale_note, i) in row.sale_notes" :key="i">
-                                    <label v-text="sale_note.number_full" class="d-block"></label>
+                                <template v-for="(sale_note, i) in row.sale_notes">
+                                    <label :key="i" text="sale_note.number_full" class="d-block"></label>
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'quotation'" :key="col.key">
@@ -206,8 +206,8 @@
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'dispatches'" :key="col.key">
-                                <template v-for="(dispach, i) in row.dispatches" :key="i">
-                                    <label v-text="dispach.number" class="d-block"></label>
+                                <template v-for="(dispach, i) in row.dispatches">
+                                    <label :key="i" v-text="dispach.number" class="d-block"></label>
                                 </template>
                             </td>
                             <td v-if="col.visible && col.key === 'mi_tienda_pe'" :key="col.key">

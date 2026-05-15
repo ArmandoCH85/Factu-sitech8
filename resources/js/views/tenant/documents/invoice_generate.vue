@@ -1237,14 +1237,17 @@
                                             width="8%">
                                             Cantidad
                                         </th>
-                                        <th class="text-end font-weight-bold">
+                                        <!-- <th class="text-end font-weight-bold">
                                             Valor Unitario
-                                        </th>
+                                        </th> -->
                                         <th class="text-end font-weight-bold">
                                             Precio Unitario
                                         </th>
-                                        <th class="text-end font-weight-bold">
+                                        <!-- <th class="text-end font-weight-bold">
                                             Subtotal
+                                        </th> -->
+                                        <th class="text-end font-weight-bold">
+                                            Descuento
                                         </th>
                                         <!--<th class="text-end font-weight-bold">Cargo</th>-->
                                         <th class="text-end font-weight-bold">
@@ -1476,7 +1479,7 @@
                                             </template>
                                         </td>
 
-                                        <td class="text-end">
+                                        <!-- <td class="text-end">
                                             <div
                                                 v-if="showEditableItems"
                                                 class="input-with-currency"
@@ -1525,7 +1528,7 @@
                                                     )
                                                 }}
                                             </template>
-                                        </td>
+                                        </td> -->
 
                                         <td class="text-end">
                                             <div
@@ -1578,7 +1581,7 @@
                                             </template>
                                         </td>
 
-                                        <td class="text-end">
+                                        <!-- <td class="text-end">
                                             <div
                                                 v-if="showEditableItems"
                                                 class="input-with-currency"
@@ -1625,8 +1628,12 @@
                                                 {{ currency_type.symbol }}
                                                 {{ row.total_value }}
                                             </template>
-                                        </td>
+                                        </td> -->
 
+                                        <td class="text-end">
+                                            {{ currency_type.symbol }}
+                                            {{ setTextDiscountItem(row) }}
+                                        </td>
                                         <td class="text-end">
                                             <div
                                                 v-if="showEditableItems"
@@ -2029,7 +2036,7 @@
                                                                 currency_type.symbol
                                                             }}
                                                             {{
-                                                                form.total_discount
+                                                                totalDiscount
                                                             }}
                                                         </td>
                                                     </tr>
@@ -2968,7 +2975,7 @@
                                         <td>DESCUENTOS TOTALES:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_discount }}
+                                            {{ totalDiscount }}
                                         </td>
                                     </tr>
 
@@ -4248,6 +4255,20 @@ export default {
                 c => String(c.id) === String(this.form.customer_id)
             );
             return customer || {};
+        },
+        totalDiscount() {
+            let total = 0;
+            if (this.form.items.length > 0) {
+                this.form.items.forEach(item => {
+                    item.discounts.forEach(discount => {
+                        total += discount.amount;
+                    });
+                });
+            }
+
+            let amount = this.form.discounts.length > 0 ? this.form.discounts[0].amount : 0;
+            let total_discount = this.isGlobalDiscountBase ? _.round(amount * 1.18, 2) : amount; 
+            return total + total_discount;
         }
     },
     async created() {
@@ -6571,6 +6592,7 @@ export default {
             this.form.total_isc = _.round(total_isc, 2);
 
             this.form.total_igv_free = _.round(total_igv_free, 2);
+            this.form.total_discount_item = _.round(total_discount, 2);
             this.form.total_discount = _.round(total_discount, 2);
             this.form.total_exportation = _.round(total_exportation, 2);
             this.form.total_taxed = _.round(total_taxed, 2);
@@ -6801,7 +6823,12 @@ export default {
 
             if (index > -1) {
                 this.form.discounts.splice(index, 1);
-                this.form.total_discount = 0;
+                if (this.form.total_discount_item > 0 ) {
+                    this.form.total_discount = this.form.total_discount_item;
+                    
+                } else {
+                    this.form.total_discount = 0;
+                }
             }
         },
         setConfigGlobalDiscountType() {
@@ -6841,7 +6868,7 @@ export default {
             }
 
             let input_global_discount = parseFloat(amount_discount);
-            if (input_global_discount > 0) {
+            if (this.total_global_discount &&  this.total_global_discount > 0) {
                 const percentage_igv = this.percentage_igv * 100;
                 let base = this.isGlobalDiscountBase
                     ? parseFloat(ctx.total_taxed + ctx.total_exportation + ctx.total_isc + ctx.total_plastic_bag_taxes)
@@ -6895,13 +6922,15 @@ export default {
                         this.$message.error(
                             "El total debe ser mayor a 0, verifique el tipo de descuento asignado (Configuración/Avanzado/Contable)"
                         );
+                    
+                    this.form.total_discount += _.round(amount, 2);
                 }
                 // descuentos que no afectan la bi
                 else {
                     this.form.total = _.round(this.form.total - amount, 2);
+                    this.form.total_discount += _.round(amount, 2);
                 }
 
-                this.form.total_discount = _.round(amount, 2);
                 this.setGlobalDiscount(
                     factor,
                     _.round(amount, 2),
@@ -6909,6 +6938,108 @@ export default {
                 );
             }
         },
+        /**
+         * Descuento global para repatir en items.
+         *  [(valor del item)/suma de todo los items] * descuento global
+         *
+         * @param ctx
+         */
+        // discountGlobalItems(ctx) {
+        //     let total_discounts_item = 0;
+        //     // Limpiar descuentos globales previamente distribuidos para no acumular en cada recalculo
+        //     this.form.items.forEach(item => {
+        //         if (item.discounts && item.discounts.length > 0) {
+        //             item.discounts = item.discounts.filter(d => !d.from_global_distribution);
+        //         }
+        //     });
+
+        //     if (!this.total_global_discount || this.total_global_discount <= 0) return;
+
+        //     // Si el monto incluye IGV (descuento exacto tipo "02"), extraemos la base sin IGV
+        //     let amount_discount = parseFloat(this.total_global_discount);
+        //     if (this.is_amount) {
+        //         if (this.recordDiscountsGlobal) {
+        //             if (this.recordDiscountsGlobal.discount_type_id === "02") {
+        //                 amount_discount = this.total_global_discount / (1 + this.percentage_igv);
+        //             }
+        //         } else if (
+        //             this.configuration.global_discount_type_id === "02" &&
+        //             this.configuration.exact_discount
+        //         ) {
+        //             amount_discount = this.total_global_discount / (1 + this.percentage_igv);
+        //         }
+        //     }
+
+        //     let total_base = parseFloat(ctx.total_taxed)
+        //         + parseFloat(ctx.total_exonerated)
+        //         + parseFloat(ctx.total_unaffected)
+        //         + parseFloat(ctx.total_exportation)
+        //         + parseFloat(ctx.total_free);
+
+        //     let global_amount = this.is_amount
+        //         ? parseFloat(amount_discount)
+        //         : _.round((parseFloat(amount_discount) / 100) * total_base, 2);
+
+        //     // Suma de todos los items (denominador de la formula)
+        //     let sum_items_value = _.sumBy(this.form.items, item => {
+        //         return item.total_value_without_rounding
+        //             ? parseFloat(item.total_value_without_rounding)
+        //             : parseFloat(item.total_value);
+        //     });
+
+        //     if (sum_items_value <= 0) return;
+
+        //     let discount_type_id = this.recordDiscountsGlobal
+        //         ? this.recordDiscountsGlobal.discount_type_id
+        //         : this.global_discount_type.id;
+        //     let description = this.recordDiscountsGlobal
+        //         ? this.recordDiscountsGlobal.description
+        //         : this.global_discount_type.description;
+
+        //     this.form.items.forEach(item => {
+        //         let item_value = item.total_value_without_rounding
+        //             ? parseFloat(item.total_value_without_rounding)
+        //             : parseFloat(item.total_value);
+
+        //         if (item_value <= 0) return;
+
+        //         // [(valor del item) / suma de todo los items] * descuento global
+        //         let item_discount_amount = _.round(
+        //             (item_value / sum_items_value) * global_amount,
+        //             2
+        //         );
+
+        //         if (item_discount_amount <= 0) return;
+
+        //         total_discounts_item += item_discount_amount;
+
+        //         let factor = _.round(item_discount_amount / item_value, 5);
+
+        //         item.discounts = item.discounts || [];
+        //         item.discounts.push({
+        //             discount_type_id: discount_type_id,
+        //             description: description,
+        //             factor: factor,
+        //             percentage: _.round(factor * 100, 5),
+        //             amount: item_discount_amount,
+        //             base: _.round(item_value, 2),
+        //             is_amount: true,
+        //             from_global_distribution: true
+        //         });
+        //     });
+
+        //     this.form.total_discount = _.round(total_discounts_item +, 2);
+        // },
+        // Descuento por item
+        setTextDiscountItem(item) {
+            let discount = 0;
+            item.discounts.forEach(dis => {
+                discount += dis.amount
+            });
+
+            return discount > 0 ? discount.toFixed(2) : "0";
+        },
+
         async deleteInitGuides() {
             await _.remove(this.form.guides, { number: null });
         },
@@ -7115,7 +7246,6 @@ export default {
                         this.$eventHub.$emit("reloadDataItems", null);
                         this.resetForm();
 
-                        console.log(response_sent.data);
                         if (!response_sent.data.success) {
                             this.failSendDocument = true;
 
@@ -7561,6 +7691,7 @@ export default {
             }
             this.showDialogPreview = true;
         },
+
         async validatePreview() {
             let errorSeries = false;
             _.forEach(this.form.items, row => {

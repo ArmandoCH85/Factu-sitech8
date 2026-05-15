@@ -786,7 +786,7 @@
                                         v-text="errors.change_free_affectation_igv[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-md-6 mt-3">
+                            <div v-if="activeCurrencyTypes.length > 1" class="col-md-6 mt-3">
                                 <label class="control-label">Moneda predeterminada
                                     <el-tooltip class="item" content="Solo en Nota de venta y CPE" effect="dark"
                                         placement="top-start">
@@ -795,7 +795,7 @@
                                 </label>
                                 <div :class="{ 'has-danger': errors.currency_type_id }" class="form-group">
                                     <el-select v-model="form.currency_type_id" @change="submit" filterable>
-                                        <el-option v-for="option in config.currency_types" :key="option.id"
+                                        <el-option v-for="option in activeCurrencyTypes" :key="option.id"
                                             :label="option.symbol + ' - ' + option.description"
                                             :value="option.id"></el-option>
                                     </el-select>
@@ -2494,6 +2494,10 @@ export default {
         ]),
         validateDiscountAffectBase() {
             return this.form.global_discount_type_id === '02';
+        },
+        activeCurrencyTypes() {
+            const list = (this.config && this.config.currency_types) ? this.config.currency_types : []
+            return list.filter(c => !!c.active)
         }
     },
     data() {
@@ -2543,6 +2547,7 @@ export default {
                 this.$store.commit('setConfiguration', this.form)
 
             }
+            this.ensureDefaultCurrencyType()
             // console.log(this.placeholder)
             this.getInventoryConfig()
             // Si auto_print ya está activo, garantizar que haya impresoras disponibles
@@ -2597,6 +2602,13 @@ export default {
                 this.printers = response.data.printers || []
             })
 
+        },
+        ensureDefaultCurrencyType() {
+            const actives = this.activeCurrencyTypes
+            if (actives.length === 1 && this.form.currency_type_id !== actives[0].id) {
+                this.form.currency_type_id = actives[0].id
+                this.submit()
+            }
         },
         initForm() {
             this.errors = {};

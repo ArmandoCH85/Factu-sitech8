@@ -168,7 +168,7 @@
                                        v-text="errors.unit_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div v-if="currency_types.length > 1" class="col-md-3">
                             <div :class="{'has-danger': errors.currency_type_id}"
                                  class="form-group">
                                 <label class="control-label">Moneda</label>
@@ -204,8 +204,7 @@
                                     class="form-control-feedback"
                                     v-text="errors.sale_affectation_igv_type_id[0]"></small>
                             </div>
-                        </div>
-                        <div class="col-12"></div>
+                        </div>                        
                         <div v-if="form.unit_type_id !='ZZ'"
                              v-show="recordId==null"
                              class="col-md-3">
@@ -1420,6 +1419,9 @@ export default {
                 this.loadConfiguration()
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
+                if (!this.recordId && this.currency_types.length === 1) {
+                    this.form.currency_type_id = this.currency_types[0].id
+                }
                 this.inventory_configuration = data.inventory_configuration;
                 this.next_internal_id = data.next_internal_id || null;
                 if (!this.recordId && this.inventory_configuration && this.inventory_configuration.generate_internal_id && !this.form.internal_id) {
@@ -1547,6 +1549,9 @@ export default {
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
+                    if (!this.recordId && this.currency_types.length === 1) {
+                        this.form.currency_type_id = this.currency_types[0].id
+                    }
                 })
         },
         changeLotsEnabled() {

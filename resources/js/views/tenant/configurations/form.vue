@@ -670,6 +670,10 @@
                                         <span v-if="loading_test">Probando...</span>
                                         <span v-else>Hacer prueba</span>
                                     </button>
+                                    <button type="button" class="btn btn-sm btn-primary" :disabled="loading_save_mail" @click="saveMailConfig">
+                                        <span v-if="loading_save_mail">Guardando...</span>
+                                        <span v-else>Guardar configuración</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2529,7 +2533,8 @@ export default {
             printers: [],
             loadingPrinters: false,
             placeholder: '',
-            activeName: 'second'
+            activeName: 'second',
+            loading_save_mail: false
         }
     },
     created() {
@@ -2920,6 +2925,28 @@ export default {
         },
         errorUpload(error) {
             this.$message({ message: 'Error al subir el archivo', type: 'error' })
+        },
+        saveMailConfig() {
+            this.loading_save_mail = true;
+            this.$http.post(`/${this.resource}`, this.form).then(response => {
+                let data = response.data;
+                if (data.success) {
+                    this.$message.success(data.message || 'Configuración de correo guardada');
+                } else {
+                    this.$message.error(data.message);
+                }
+                if (data.configuration !== undefined) {
+                    this.$store.commit('setConfiguration', data.configuration)
+                }
+            }).catch(error => {
+                if (error.response?.status === 422) {
+                    this.errors = error.response.data.errors;
+                } else {
+                    console.log(error);
+                }
+            }).then(() => {
+                this.loading_save_mail = false;
+            });
         }
     }
 }

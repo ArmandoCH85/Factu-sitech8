@@ -802,6 +802,11 @@ use Illuminate\Support\Facades\Log;
                 'enable_weight_in_dispatches' => $this->enable_weight_in_dispatches,
                 'auto_send_pdf_email' => (bool)$this->auto_send_pdf_email,
                 'printer_name_documents' => $this->printer_name_documents,
+                'smtp_host' => $this->smtp_host,
+                'smtp_port' => $this->smtp_port,
+                'smtp_user' => $this->smtp_user,
+                'smtp_password' => $this->smtp_password,
+                'smtp_encryption' => $this->smtp_encryption,
             ];
         }
 

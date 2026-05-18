@@ -624,7 +624,7 @@
                         @endisset
                     </small>
                 </td>
-                <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
+                <td class="text-right desc-9 align-top">{{ number_format(optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, 2) }}</td>
                 <td class="text-right desc-9 align-top font-bold">{{ number_format($row->total, 2) }}</td>
             </tr>
             <tr>

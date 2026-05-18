@@ -432,7 +432,7 @@
                 </small>
             </td>
             <td class="text-right desc align-top"
-                style="padding-right:5px;">{{ number_format($row->unit_price, 2) }}</td>
+                style="padding-right:5px;">{{ number_format(optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, 2) }}</td>
             <td class="text-right desc align-top">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>

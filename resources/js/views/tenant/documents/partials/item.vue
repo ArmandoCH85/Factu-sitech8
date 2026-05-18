@@ -1735,7 +1735,7 @@ export default {
         },
         clickAddDiscount() {
             this.form.discounts.push({
-                discount_type_id: null,
+                discount_type_id: "00",
                 discount_type: null,
                 description: null,
                 percentage: 0,

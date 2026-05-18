@@ -1575,7 +1575,7 @@
                                                 {{ currency_type.symbol }}
                                                 {{
                                                     getFormatUnitPriceRow(
-                                                        row.unit_price
+                                                        row.item.unit_price
                                                     )
                                                 }}
                                             </template>

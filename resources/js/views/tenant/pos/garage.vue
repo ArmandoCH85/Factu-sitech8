@@ -1269,15 +1269,20 @@ export default {
                 });
         },
         getQueryParameters() {
-            return queryString.stringify({
-                garage: 1,
+            let p = {
                 page: this.pagination.current_page
                     ? this.pagination.current_page
                     : 1,
                 input_item: this.input_item,
                 cat: this.category_selected,
                 limit: this.limit
-            });
+            };
+            
+            if (this.businessTurns && [true, 1, "1"].includes(this.businessTurns.active)) {
+                p.garage = 1;
+            }
+            
+            return queryString.stringify(p);
         },
         getColor(i) {
             return this.colors[i % this.colors.length];
@@ -2075,7 +2080,11 @@ export default {
                 this.loading = true;
                 let parameters = `input_item=${this.input_item}&cat=${
                     this.category_selected
-                }&garage=1`;
+                }`;
+                
+                if (this.businessTurns && [true, 1, "1"].includes(this.businessTurns.active)) {
+                    parameters += '&garage=1';
+                }
 
                 await this.$http
                     .get(`/${this.resource}/search_items_cat?${parameters}`)

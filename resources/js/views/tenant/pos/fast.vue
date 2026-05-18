@@ -1798,10 +1798,16 @@ export default {
             this.input_item = null;
         },
         filterItems() {
+            let filtered_items = this.all_items;
+            console.log("🔄 Evaluando filtro de Grifos. businessTurns:", this.businessTurns);
+            
+            if (this.businessTurns && [true, 1, "1"].includes(this.businessTurns.active)) {
+                filtered_items = filtered_items.filter(i => [true, 1, "1"].includes(i.calculate_quantity));
+            }
             if (this.place === "cat3") {
-                this.items = this.all_items;
+                this.items = filtered_items;
             } else {
-                this.items = this.all_items.map(i => {
+                this.items = filtered_items.map(i => {
                     // console.log(i.description);
                     // if (i.brand) {
                     //     var desc = `${i.description} - ${i.brand}`;

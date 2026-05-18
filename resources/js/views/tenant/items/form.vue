@@ -93,20 +93,6 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div v-show="form.unit_type_id !='ZZ'"
-                                 class="">
-                                <div :class="{'has-danger': errors.calculate_quantity}"
-                                     class="form-group">
-                                    <el-checkbox v-model="form.calculate_quantity">Calcular cantidad por precio
-                                    </el-checkbox>
-                                    <br>
-                                    <small v-if="errors.calculate_quantity"
-                                           class="form-control-feedback"
-                                           v-text="errors.calculate_quantity[0]"></small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
                             <div class="">
                                 <div :class="{'has-danger': errors.has_plastic_bag_taxes}"
                                      class="form-group">
@@ -116,6 +102,20 @@
                                     <small v-if="errors.has_plastic_bag_taxes"
                                            class="form-control-feedback"
                                            v-text="errors.has_plastic_bag_taxes[0]"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div v-show="['KGM', 'LTR', 'MTR', 'GLL'].includes(form.unit_type_id)"
+                                 class="">
+                                <div :class="{'has-danger': errors.calculate_quantity}"
+                                     class="form-group">
+                                    <el-checkbox v-model="form.calculate_quantity">Calcular cantidad por precio
+                                    </el-checkbox>
+                                    <br>
+                                    <small v-if="errors.calculate_quantity"
+                                           class="form-control-feedback"
+                                           v-text="errors.calculate_quantity[0]"></small>
                                 </div>
                             </div>
                         </div>

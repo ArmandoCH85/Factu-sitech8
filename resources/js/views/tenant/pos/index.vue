@@ -1381,11 +1381,20 @@ export default {
 
     computed: {
         layout_mode() {
-            return (
-                localStorage.getItem("layout_mode") ||
-                this.visuals.layout_mode ||
-                "default"
-            );
+            const cols = parseInt(this.configuration.colums_grid_item, 10);
+            switch (cols) {
+                case 2:
+                    return "default";
+                case 3:
+                    return "comfortable";
+                case 4:
+                    return "compact";
+                case 5:
+                case 6:
+                    return "stacked";
+                default:
+                    return "default";
+            }
         },
         ...mapState(["config"]),
         canSeeHistoryPurchase: function() {

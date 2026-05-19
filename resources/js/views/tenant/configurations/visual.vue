@@ -279,24 +279,24 @@
                         }"
                     >
                         <el-select
-                            v-model="form.layout_mode"
+                            v-model="form.colums_grid_item"
                             @change="submitViewPos"
                         >
                             <el-option
                                 label="Predeterminado"
-                                value="default"
+                                :value="2"
                             ></el-option>
                             <el-option
                                 label="Cómodo"
-                                value="comfortable"
+                                :value="3"
                             ></el-option>
                             <el-option
                                 label="Compacto"
-                                value="compact"
+                                :value="4"
                             ></el-option>
                             <el-option
                                 label="Apilado"
-                                value="stacked"
+                                :value="5"
                             ></el-option>
                         </el-select>
                         <small
@@ -648,16 +648,8 @@ export default {
                         this.applyBlackTheme(this.visuals.black_theme);
                     }
 
-                    const storedLayoutMode = localStorage.getItem(
-                        "layout_mode"
-                    );
-
-                    if (!this.form.layout_mode && !storedLayoutMode) {
-                        this.form.layout_mode = "default";
-                        localStorage.setItem("layout_mode", "default");
-                        this.submitViewPos(); // Enviar solo si nunca se ha establecido antes
-                    } else if (storedLayoutMode) {
-                        this.form.layout_mode = storedLayoutMode; // Usar el valor guardado localmente
+                    if (!this.form.colums_grid_item) {
+                        this.form.colums_grid_item = 2;
                     }
                 }
             });
@@ -708,20 +700,12 @@ export default {
                 });
         },
         submitViewPos() {
-            if (this.form.layout_mode === localStorage.getItem("layout_mode")) {
-                return;
-            }
-
             this.loading_submit = true;
             this.$http
                 .post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
-                        localStorage.setItem(
-                            "layout_mode",
-                            this.form.layout_mode
-                        );
                         setTimeout(() => {
                             location.reload();
                         }, 500);

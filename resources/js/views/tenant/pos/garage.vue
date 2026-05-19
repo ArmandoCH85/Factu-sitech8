@@ -210,7 +210,11 @@
                     </template>
                 </div>
 
-                <div v-if="place == 'prod' || place == 'cat2'" class="row product-pos-container">
+                <div
+                    v-if="place == 'prod' || place == 'cat2'"
+                    class="product-pos-container"
+                    :class="layout_mode"
+                >
                     <template v-for="(item, index) in items">
                         <div :key="index">
                             <section class="card product-item">
@@ -935,8 +939,26 @@
 }
 .product-pos-container {
     display: grid;
+}
+
+.product-pos-container.default {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 1rem;
+}
+
+.product-pos-container.comfortable {
     grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
     gap: 0.9rem;
+}
+
+.product-pos-container.compact {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+}
+
+.product-pos-container.stacked {
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 0.25rem;
 }
 
 .product-pos-container > * {
@@ -1052,6 +1074,22 @@ export default {
     },
 
     computed: {
+        layout_mode() {
+            const cols = parseInt(this.configuration.colums_grid_item, 10);
+            switch (cols) {
+                case 2:
+                    return "default";
+                case 3:
+                    return "comfortable";
+                case 4:
+                    return "compact";
+                case 5:
+                case 6:
+                    return "stacked";
+                default:
+                    return "default";
+            }
+        },
         getAffectationExoneratedIgv() {
             return _.filter(this.affectation_igv_types, row => {
                 return this.isExoneratedIgv(row.id);

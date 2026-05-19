@@ -846,7 +846,6 @@ class Facturalo
                     $base_pdf_template,
                     $width,
                     ($quantity_rows * 8) + $extra_by_item_description +200,
-                    true
                 ], true);
             }
 
@@ -858,8 +857,7 @@ class Facturalo
                     $template,
                     $base_pdf_template,
                     $width,
-                    $height,
-                    true
+                    $height
                 ]);
             }
         }

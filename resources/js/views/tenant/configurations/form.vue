@@ -740,8 +740,8 @@
                                     <small v-if="errors.affectation_igv_type_id" class="form-control-feedback"
                                         v-text="errors.affectation_igv_type_id[0]"></small>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mt-4">
+                            </div>                            
+                            <div v-if="!form.global_igv_handling" class="col-md-6 mt-4">
                                 <label class="control-label">Impuesto incluido en registro de productos
                                     <el-tooltip class="item" content="Se asignará automáticamente la opción 'Incluye IGV' al registrar un producto" effect="dark"
                                         placement="top-start">
@@ -1125,6 +1125,36 @@
                                     <small v-if="errors.group_items_generate_document" class="form-control-feedback"
                                         v-text="errors.group_items_generate_document[0]"></small>
                                 </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+                                <div class="d-flex flex-column align-items-start">
+                                    <div class="d-flex">
+                                        <div :class="{ 'has-danger': errors.global_igv_handling }" class="form-group">
+                                            <el-switch v-model="form.global_igv_handling"
+                                                @change="submit"></el-switch>
+                                            <small v-if="errors.global_igv_handling" class="form-control-feedback"
+                                                v-text="errors.global_igv_handling[0]"></small>
+                                        </div>
+                                        <label class="control-label ms-2">Manejo de IGV
+                                            <el-tooltip class="item" effect="dark" placement="top-start">
+                                                <div slot="content">
+                                                    <strong>Activado (global):</strong> todos los productos se registran con IGV incluido. El checkbox "Incluye Igv" se oculta del formulario de productos.<br />
+                                                    <strong>Desactivado (individual):</strong> el checkbox "Incluye Igv" se muestra y se configura por producto.
+                                                </div>
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label> 
+                                    </div>
+                                    <div>
+                                        <span v-if="form.global_igv_handling" class="text-muted small">
+                                            Todos los productos se registrarán con IGV incluido. El checkbox "Incluye IGV" no aparecerá en el formulario.
+                                        </span>
+                                        <span v-else class="text-muted small">
+                                            El checkbox "Incluye IGV" se mostrará en el formulario y podrás configurarlo producto por producto.
+                                        </span>
+                                    </div> 
+                                </div>                              
                             </div>
                         </div>
                     </el-tab-pane>
@@ -2628,6 +2658,7 @@ export default {
                 amount_plastic_bag_taxes: 0.1,
                 colums_grid_item: 4,
                 affectation_igv_type_id: '10',
+                global_igv_handling: true,
                 global_discount_type_id: '02',
                 terms_condition: null,
                 header_image: null,

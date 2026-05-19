@@ -62,10 +62,11 @@
                 <div class="col-md-3">
                     <div :class="{'has-danger': errors.sale_unit_price}"
                         class="form-group">
-                        <label class="control-label">Precio Unitario <span class="text-danger">*</span></label>
+                        <label class="control-label">Precio Unitario <small v-if="form.has_igv">(con IGV)</small> <small v-else>(sin IGV)</small><span class="text-danger">*</span></label>
                         <el-input v-model="form.sale_unit_price"
                                 dusk="sale_unit_price"
                                 @input="calculatePercentageOfProfitBySale"></el-input>
+                        <small v-if="saleUnitPriceBreakdown" class="text-muted">{{ saleUnitPriceBreakdown }}</small>
                         <small v-if="errors.sale_unit_price"
                             class="form-control-feedback"
                             v-text="errors.sale_unit_price[0]"></small>
@@ -95,7 +96,7 @@
                                 </div>
                             </div>
 
-                            <div v-show="show_has_igv" class="col-md-3 center-el-checkbox">
+                            <div v-show="show_has_igv && !globalIgvHandling" class="col-md-3 center-el-checkbox">
                                 <div  :class="{'has-danger': errors.has_igv}"
                                     class="form-group">
                                     <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox>
@@ -602,10 +603,11 @@
                                         <div class="short-div col-md-4">
                                             <div :class="{'has-danger': errors.purchase_unit_price}"
                                                 class="form-group">
-                                                <label class="control-label">Precio Unitario (Compra)</label>
+                                                <label class="control-label">Precio Unitario (Compra) <small v-if="form.has_igv">(con IGV)</small> <small v-else>(sin IGV)</small></label>
                                                 <el-input v-model="form.purchase_unit_price"
                                                         dusk="purchase_unit_price"
                                                         @input="calculatePercentageOfProfitByPurchase"></el-input>
+                                                <small v-if="purchaseUnitPriceBreakdown" class="text-muted">{{ purchaseUnitPriceBreakdown }}</small>
                                                 <small v-if="errors.purchase_unit_price"
                                                     class="form-control-feedback"
                                                     v-text="errors.purchase_unit_price[0]"></small>
@@ -772,6 +774,53 @@ export default {
         'vue-ckeditor': VueCkeditor.component,
         ckeditor: CKEditor.component
     },
+    computed: {
+        globalIgvHandling() {
+            if (this.tenantConfig && this.tenantConfig.global_igv_handling !== undefined) {
+                return !!this.tenantConfig.global_igv_handling
+            }
+            const config = this.$store && this.$store.state ? this.$store.state.config : null
+            if (config && config.global_igv_handling !== undefined) {
+                return !!config.global_igv_handling
+            }
+            return true
+        },
+        saleUnitPriceBreakdown() {
+            const price = parseFloat(this.form.sale_unit_price)
+            if (!price || price <= 0) return null
+            const IGV_RATE = 0.18
+            let base, igv, total
+            if (this.form.has_igv) {
+                total = price
+                base = price / (1 + IGV_RATE)
+                igv = total - base
+            } else {
+                base = price
+                igv = price * IGV_RATE
+                total = price + igv
+            }
+            return `${base.toFixed(2)} + ${igv.toFixed(2)} IGV = S/ ${total.toFixed(2)}`
+        },
+        purchaseUnitPriceBreakdown() {
+            const price = parseFloat(this.form.purchase_unit_price)
+            if (!price || price <= 0) return null
+            const IGV_RATE = 0.18
+            const hasIgv = (this.form.purchase_has_igv !== undefined && this.form.purchase_has_igv !== null)
+                ? this.form.purchase_has_igv
+                : this.form.has_igv
+            let base, igv, total
+            if (hasIgv) {
+                total = price
+                base = price / (1 + IGV_RATE)
+                igv = total - base
+            } else {
+                base = price
+                igv = price * IGV_RATE
+                total = price + igv
+            }
+            return `${base.toFixed(2)} + ${igv.toFixed(2)} IGV = S/ ${total.toFixed(2)}`
+        },
+    },
 
     data() {
         return {
@@ -818,6 +867,7 @@ export default {
             attribute_types: [],
             inventory_configuration: null,
             next_internal_id: null,
+            tenantConfig: null,
             editorConfig: {
                 toolbar: [
                     'heading',
@@ -833,6 +883,14 @@ export default {
     },
     created() {
         this.initForm()
+        this.$http.get('/configurations/record').then(response => {
+            if (response.data && response.data.data) {
+                this.tenantConfig = response.data.data
+                if (this.$store && this.$store.commit) {
+                    this.$store.commit('setConfiguration', this.tenantConfig)
+                }
+            }
+        })
         this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.unit_types = response.data.unit_types
@@ -1087,6 +1145,9 @@ export default {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        if (this.globalIgvHandling) {
+                            this.form.has_igv = true
+                        }
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                         this.changeAffectationIgvType()
                     })
@@ -1101,6 +1162,9 @@ export default {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        if (this.globalIgvHandling) {
+                            this.form.has_igv = true
+                        }
                         this.changeAffectationIgvType()
                     })
             }
@@ -1131,6 +1195,10 @@ export default {
             if (!this.has_percentage_perception) this.form.percentage_perception = null
 
             this.$refs.form_images.clear()
+
+            if (this.globalIgvHandling) {
+                this.form.has_igv = true
+            }
 
             this.loading_submit = true
             this.$http.post(`/${this.resource}`, this.form)

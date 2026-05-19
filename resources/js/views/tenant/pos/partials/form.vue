@@ -133,8 +133,9 @@
 
                                     <div class="col-md-4">
                                         <div class="form-group" :class="{'has-danger': errors.sale_unit_price}">
-                                            <label class="control-label">Precio Unitario (Venta) <span class="text-danger">*</span></label>
+                                            <label class="control-label">Precio Unitario (Venta) <small v-if="form.has_igv">(con IGV)</small> <small v-else>(sin IGV)</small><span class="text-danger">*</span></label>
                                             <el-input v-model="form.sale_unit_price" dusk="sale_unit_price" @input="calculatePercentageOfProfitBySale"></el-input>
+                                            <small v-if="saleUnitPriceBreakdown" class="text-muted">{{ saleUnitPriceBreakdown }}</small>
                                             <small class="form-control-feedback" v-if="errors.sale_unit_price" v-text="errors.sale_unit_price[0]"></small>
                                         </div>
                                     </div>
@@ -162,7 +163,7 @@
                                             <small class="form-control-feedback" v-if="errors.calculate_quantity" v-text="errors.calculate_quantity[0]"></small>
                                         </div>
                                     </div>
-                                    <div class="col-md-4 center-el-checkbox" v-show="show_has_igv">
+                                    <div class="col-md-4 center-el-checkbox" v-show="show_has_igv && !globalIgvHandling">
                                         <div class="form-group" :class="{'has-danger': errors.has_igv}">
                                             <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox><br>
                                             <small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>
@@ -184,8 +185,9 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group" :class="{'has-danger': errors.purchase_unit_price}">
-                                            <label class="control-label">Precio Unitario (Compra)</label>
+                                            <label class="control-label">Precio Unitario (Compra) <small v-if="form.has_igv">(con IGV)</small> <small v-else>(sin IGV)</small></label>
                                             <el-input v-model="form.purchase_unit_price" dusk="purchase_unit_price" @input="calculatePercentageOfProfitByPurchase"></el-input>
+                                            <small v-if="purchaseUnitPriceBreakdown" class="text-muted">{{ purchaseUnitPriceBreakdown }}</small>
                                             <small class="form-control-feedback" v-if="errors.purchase_unit_price" v-text="errors.purchase_unit_price[0]"></small>
                                         </div>
                                     </div>
@@ -254,6 +256,47 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
             ...mapState([
                 'config',
             ]),
+            globalIgvHandling() {
+                if (this.config && this.config.global_igv_handling !== undefined) {
+                    return !!this.config.global_igv_handling
+                }
+                return true
+            },
+            saleUnitPriceBreakdown() {
+                const price = parseFloat(this.form.sale_unit_price)
+                if (!price || price <= 0) return null
+                const IGV_RATE = 0.18
+                let base, igv, total
+                if (this.form.has_igv) {
+                    total = price
+                    base = price / (1 + IGV_RATE)
+                    igv = total - base
+                } else {
+                    base = price
+                    igv = price * IGV_RATE
+                    total = price + igv
+                }
+                return `${base.toFixed(2)} + ${igv.toFixed(2)} IGV = S/ ${total.toFixed(2)}`
+            },
+            purchaseUnitPriceBreakdown() {
+                const price = parseFloat(this.form.purchase_unit_price)
+                if (!price || price <= 0) return null
+                const IGV_RATE = 0.18
+                const hasIgv = (this.form.purchase_has_igv !== undefined && this.form.purchase_has_igv !== null)
+                    ? this.form.purchase_has_igv
+                    : this.form.has_igv
+                let base, igv, total
+                if (hasIgv) {
+                    total = price
+                    base = price / (1 + IGV_RATE)
+                    igv = total - base
+                } else {
+                    base = price
+                    igv = price * IGV_RATE
+                    total = price + igv
+                }
+                return `${base.toFixed(2)} + ${igv.toFixed(2)} IGV = S/ ${total.toFixed(2)}`
+            },
         },
         data() {
             return {
@@ -372,6 +415,9 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
+                            if (this.globalIgvHandling) {
+                                this.form.has_igv = true
+                            }
                             this.changeAffectationIgvType()
                         })
                 }
@@ -408,6 +454,9 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
             },
             submit() {
                 this.loading_submit = true
+                if (this.globalIgvHandling) {
+                    this.form.has_igv = true
+                }
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {

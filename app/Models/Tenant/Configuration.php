@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Log;
      * @property bool        $restrict_receipt_date
      * @property string      $affectation_igv_type_id
      * @property bool|null   $include_igv
+     * @property bool        $global_igv_handling
      * @property float|null  $percentage_allowance_charge
      * @property float       $igv_retention_percentage
      * @property bool|null   $active_allowance_charge
@@ -183,6 +184,7 @@ use Illuminate\Support\Facades\Log;
             'header_image',
             'igv_retention_percentage',
             'include_igv',
+            'global_igv_handling',
             'is_pharmacy',
             'item_name_pdf_description',
             'legend_footer',
@@ -393,6 +395,7 @@ use Illuminate\Support\Facades\Log;
             'edit_name_product' => 'bool',
             'restrict_receipt_date' => 'bool',
             'include_igv' => 'bool',
+            'global_igv_handling' => 'bool',
             'percentage_allowance_charge' => 'float',
             'igv_retention_percentage' => 'float',
             'active_allowance_charge' => 'bool',
@@ -651,6 +654,7 @@ use Illuminate\Support\Facades\Log;
                 'legend_footer_sale' => $this->legend_footer_sale,
                 'cotizaction_finance' => (bool)$this->cotizaction_finance,
                 'include_igv' => (bool)$this->include_igv,
+                'global_igv_handling' => (bool)$this->global_igv_handling,
                 'product_only_location' => (bool)$this->product_only_location,
                 'legend_footer' => (bool)$this->legend_footer,
                 'default_document_type_03' => (bool)$this->default_document_type_03,

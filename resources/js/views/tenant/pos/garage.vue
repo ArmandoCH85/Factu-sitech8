@@ -1,7 +1,7 @@
 <template>
     <div class="garage container-fluid p-0">
         <span class="module-title-marker" data-page-title="Venta Rápida"></span>
-        <div class="row page-header pr-0 no-gutters" style="height:auto">
+        <div class="row page-header pr-0 no-gutters" style="min-height:48px">
             <Keypress
                 key-event="keyup"
                 :key-code="112"
@@ -25,8 +25,8 @@
                     ></el-switch>
                 </h2>
             </div>
-            <div class="col-md-4">
-                <h2>
+            <div class="col-md-4 d-flex justify-content-center align-items-center gap-2">
+                <h2 class="px-0">
                     <el-tooltip
                         class="item"
                         effect="dark"
@@ -36,13 +36,13 @@
                         <button
                             type="button"
                             @click="back()"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
+                            class="btn btn-custom btn-sm"
                         >
                             <i class="fa fa-border-all"></i>
                         </button>
                     </el-tooltip>
                 </h2>
-                <h2>
+                <h2 class="px-0">
                     <el-tooltip
                         class="item"
                         effect="dark"
@@ -53,13 +53,13 @@
                             type="button"
                             :disabled="place == 'cat2'"
                             @click="setView('cat2')"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
+                            class="btn btn-custom btn-sm"
                         >
                             <i class="fa fa-bars"></i>
                         </button>
                     </el-tooltip>
                 </h2>
-                <h2>
+                <h2 class="px-0">
                     <el-tooltip
                         class="item"
                         effect="dark"
@@ -70,13 +70,13 @@
                             type="button"
                             :disabled="place == 'cat3'"
                             @click="setView('cat3')"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
+                            class="btn btn-custom btn-sm"
                         >
                             <i class="fas fa-list-ul"></i>
                         </button>
                     </el-tooltip>
                 </h2>
-                <h2>
+                <h2 class="px-0">
                     <el-tooltip
                         class="item"
                         effect="dark"
@@ -87,16 +87,16 @@
                             type="button"
                             :disabled="place == 'cat'"
                             @click="back()"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
+                            class="btn btn-custom btn-sm"
                         >
                             <i class="fa fa-undo"></i>
                         </button>
                     </el-tooltip>
                 </h2>
             </div>
-            <div class="col-md-4">
-                <div class="pull-right">
-                    <p class="pr-3 pt-2 mb-2 exchange-currency">
+            <div class="col-md-4" v-if="currency_types.length > 1">
+                <div class="pull-right h-100 d-flex align-items-center">
+                    <p class="pr-3 m-0 exchange-currency">
                         T.C.
                         <span>S/ {{ form.exchange_rate_sale }}</span> Cambiar
                         Moneda
@@ -1011,6 +1011,7 @@ export default {
             affectation_igv_types: [],
             all_customers: [],
             establishment: null,
+            currency_types: [],
             currency_type: {},
             form_item: {},
             customer: {},
@@ -1288,9 +1289,15 @@ export default {
             return this.colors[i % this.colors.length];
         },
         initCurrencyType() {
-            this.currency_type = _.find(this.currency_types, {
+            const exists = _.find(this.currency_types, {
                 id: this.form.currency_type_id
             });
+            if (!exists && this.currency_types.length > 0) {
+                this.form.currency_type_id = this.currency_types[0].id;
+                this.changeCurrencyType();
+                return;
+            }
+            this.currency_type = exists;
         },
         getFormPosLocalStorage() {
             let form_pos = localStorage.getItem("form_pos_garage");

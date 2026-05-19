@@ -1,7 +1,7 @@
 <template>
     <div class="pos container-fluid p-0">
         <span class="module-title-marker" data-page-title="Punto de Venta"></span>
-        <div class="row page-header pe-0 no-gutters" style="height:auto">
+        <div class="row page-header pe-0 no-gutters" style="min-height:48px">
             <Keypress
                 key-event="keyup"
                 :key-code="112"
@@ -73,7 +73,7 @@
                 </div>
             </div>
             <div class="col-md-3 pe-0">
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-center h-100 align-items-center">
                     <div v-if="!configuration.enable_list_product" class="col-6" style="padding-top: 2.5px;">
                         <el-select
                             v-model="selected_option_price"
@@ -154,8 +154,8 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="pull-right">
-                    <p class="pe-3 pt-2 mb-2 exchange-currency">
+                <div class="pull-right h-100 d-flex align-items-center" v-if="currency_types.length > 1">
+                    <p class="pe-3 exchange-currency m-0">
                         T.C.
                         <span>S/ {{ form.exchange_rate_sale }}</span> Cambiar
                         Moneda
@@ -1320,6 +1320,7 @@ export default {
             affectation_igv_types: [],
             all_customers: [],
             establishment: null,
+            currency_types: [],
             currency_type: {},
             form_item: {},
             customer: {},
@@ -1614,9 +1615,15 @@ export default {
             return this.colors[i % this.colors.length];
         },
         initCurrencyType() {
-            this.currency_type = _.find(this.currency_types, {
+            const exists = _.find(this.currency_types, {
                 id: this.form.currency_type_id
             });
+            if (!exists && this.currency_types.length > 0) {
+                this.form.currency_type_id = this.currency_types[0].id;
+                this.changeCurrencyType();
+                return;
+            }
+            this.currency_type = exists;
         },
         getFormPosLocalStorage() {
             let form_pos = localStorage.getItem("form_pos");

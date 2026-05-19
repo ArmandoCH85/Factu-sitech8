@@ -1009,7 +1009,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6 mt-4">
+                            <div class="col-md-6 mt-4" v-if="activeCurrencyTypes.length > 1">
                                 <label class="control-label">Modificar moneda al agregar producto
                                     <el-tooltip class="item"
                                         content="Disponible en Nuevo CPE, Notas de venta y Cotizaciones" effect="dark"
@@ -2640,9 +2640,17 @@ export default {
         },
         ensureDefaultCurrencyType() {
             const actives = this.activeCurrencyTypes
-            if (actives.length === 1 && this.form.currency_type_id !== actives[0].id) {
-                this.form.currency_type_id = actives[0].id
-                this.submit()
+            if (actives.length === 1) {
+                let needsSubmit = false
+                if (this.form.currency_type_id !== actives[0].id) {
+                    this.form.currency_type_id = actives[0].id
+                    needsSubmit = true
+                }
+                if (this.form.change_currency_item) {
+                    this.form.change_currency_item = false
+                    needsSubmit = true
+                }
+                if (needsSubmit) this.submit()
             }
         },
         initForm() {

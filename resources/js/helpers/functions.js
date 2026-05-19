@@ -132,7 +132,12 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     discount.factor = _.round(discount.percentage / 100, 5)
                     // discount.factor = _.round(discount.percentage / 100, 2)
 
-                    discount_base += discount.amount_exact !== 0 ? discount.amount_exact : discount.amount
+                    if (discount.amount_without_rounded) {
+                        discount_base += discount.amount_without_rounded
+                    } else {
+                        discount_base += discount.amount_exact !== 0 ? discount.amount_exact : discount.amount
+                    }
+
                 } else {
 
                     let aux_total_line = row.unit_price * row.quantity
@@ -163,7 +168,11 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     discount.base = _.round(total_value_partial, 2)
                     discount.amount = _.round(discount.base * discount.factor, 2)
                     // if (discount.discount_type.base) {
-                    discount_base += discount.amount
+                    if (discount.amount_without_rounded) {
+                        discount_base += discount.amount_without_rounded
+                    } else {
+                        discount_base += discount.amount_exact !== 0 ? discount.amount_exact : discount.amount
+                    }
                     // } else {
                     //     discount_no_base += discount.amount
                     // }

@@ -644,6 +644,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 @php
                     $showSerieColumn = false;
                     $showLoteColumn = false;
+                    $showDiscountItem = false;
                     foreach ($document->items as $row) {
                         if ($row->item->lots) {
                             $showSerieColumn = true;
@@ -652,11 +653,24 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     }
 
                     foreach ($document->items as $row) {
+                        $dis = optional($row->discounts)->{0};
+                        if (is_null($dis)) continue;
+
+                        if (count((array)$dis) > 0) {
+                            $showDiscountItem = true;
+                            break;
+                        }
+
+                    }
+
+                    foreach ($document->items as $row) {
                         if (isset($row->item->IdLoteSelected)) {
                             $showLoteColumn = true;
                             break;
                         }
                     }
+
+
                 @endphp
                 @empty($showSerieColumn) @else <th class="border-top-bottom text-left py-2 px-1">SERIE</th> @endempty
                 @if($showModelColumn)
@@ -669,6 +683,9 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     LOTE
                 </th> @endif
                 @if($showLoteColumn) <th class="border-top-bottom text-center py-2 px-1"> F. VENC. </th> @endif
+                @if ($showDiscountItem)
+                    <th class="border-top-bottom text-right pr-2 py-2 col-total">T.REAL</th>
+                @endif
                 <th class="border-top-bottom text-right py-2 col-total">P.UNIT</th>
                 <th class="border-top-bottom text-right py-2 pr-2" width="8%">DTO.</th>
                 <th class="border-top-bottom text-right py-2 col-total">TOTAL</th>
@@ -682,6 +699,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 if($showSerieColumn) $colspan_total++;
                 if($showModelColumn) $colspan_total++;
                 if($showBrandColumn) $colspan_total++;
+                if ($showDiscountItem) $colspan_total++;
                 if($showLoteColumn) {
                     $colspan_total++;
                     $colspan_total++;
@@ -804,6 +822,10 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                         {{ $cleanedDate }}
                     </td>
                 @endif
+                @if ($showDiscountItem)
+                    {{-- <td class="text-right align-top pr-2">{{ number_format($row->total_real, 2) }}</td> --}}
+                    <td class="text-right align-top pr-2">{{ number_format((optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price) * $row->quantity, 2) }}</td>
+                @endif
                 @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
                 <td class="text-right align-top">{{ $row->generalApplyNumberFormat( optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
                 @else
@@ -815,7 +837,8 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     @php
                     $total_discount_line = 0;
                     foreach ($row->discounts as $disto) {
-                    $total_discount_line = $total_discount_line + $disto->amount;
+                        $amount = $disto->discount_type_id == "00" ? $disto->amount * 1.18 : $disto->amount;
+                        $total_discount_line = $total_discount_line + $amount;
                     }
                     @endphp
                     {{ number_format($total_discount_line, 2) }}

@@ -884,7 +884,7 @@
                                     <small v-if="errors.global_discount_type_id" class="form-control-feedback"
                                         v-text="errors.global_discount_type_id[0]"></small>
 
-                                        <div class="col-md-12 mt-2">
+                                        <!-- <div class="col-md-12 mt-2">
                                             <div :class="{ 'has-danger': errors.exact_discoutn }"
                                             class="form-group" v-if="validateDiscountAffectBase">
                                             <label class="control-label"> Ajustar descuento automaticamente
@@ -900,7 +900,7 @@
                                             <small v-if="errors.exact_discount" class="form-control-feedback"
                                             v-text="errors.exact_discount[0]"></small>
                                         </div>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>

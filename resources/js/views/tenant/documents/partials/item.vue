@@ -2066,17 +2066,44 @@ export default {
             let IdLoteSelected = this.form.IdLoteSelected;
             let document_item_id = this.form.document_item_id;
 
+
+            // Configurar base, amount, porcentaje y factor de cada descuento
+            const igv_factor = 1 + this.percentageIgv;
+            const quantity = parseFloat(this.form.quantity);
+            const is_taxed = affectation_igv_type_id === "10";
+
+            const unit_value = is_taxed ? unit_price / igv_factor : unit_price;
+            
+            
+            const total_value_partial = unit_value * quantity;   // base imponible (sin IGV)
+            
+            const aux_total_line = unit_price * quantity;        // total con IGV
+
             this.form.discounts.forEach(discount => {
-                if (
-                    this.configuration.global_discount_type_id === "02" &&
-                    this.configuration.exact_discount &&
-                    (discount.discount_type && discount.discount_type.id == "00")
-                ) {
-                    discount.amount_exact = _.round(
-                        discount.amount / (1 + this.percentageIgv),
-                        2
-                    );
+                const affects_base = 
+                    discount.discount_type.base;
+                const base = affects_base ? total_value_partial : aux_total_line;
+
+                if (discount.is_amount) {
+                    // Monto fijo ingresado por el usuario
+                    const amount = parseFloat(discount.amount) || 0;
+                    const factor = base > 0 ? amount / base : 0;
+                    discount.base = _.round(base, 2);
+                    discount.amount = _.round(affects_base ?  amount / igv_factor : amount, 2);
+                    discount.amount_without_rounded = affects_base ? amount / igv_factor : amount; // monto sin redondear para cálculos posteriores
+                    discount.factor = _.round(factor, 5);
+                    discount.percentage = _.round(factor * 100, 5);
+                } else {
+                    // Porcentaje ingresado por el usuario
+                    const percentage = parseFloat(discount.percentage) || 0;
+                    const factor = percentage / 100;
+                    discount.base = _.round(base, 2);
+                    discount.factor = _.round(factor, 5);
+                    discount.percentage = percentage;
+                    discount.amount = _.round(affects_base ? base * factor : discount.amount, 2); // Vista para mostrar el monto del descuento con IGV incluido
+                    discount.amount_without_rounded = affects_base ? base * factor : discount.amount / igv_factor; // monto sin redondear para cálculos posteriores
                 }
+
             });
 
             this.row = calculateRowItem(

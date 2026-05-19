@@ -4257,18 +4257,27 @@ export default {
             return customer || {};
         },
         totalDiscount() {
-            let total = 0;
+            // Calculo por total (no por linea) para evitar diferencias de 0.01 por redondeo
+            const igv_factor = 1 + this.percentage_igv;
+            let total_items = 0;
+
             if (this.form.items.length > 0) {
                 this.form.items.forEach(item => {
+                    if (!item.discounts) return;
                     item.discounts.forEach(discount => {
-                        total += discount.amount;
+                        const is_base = discount.discount_type_id === "00";
+                        const base_amount = discount.amount_exact
+                            ? discount.amount_exact
+                            : discount.amount;
+                        total_items += is_base ? base_amount * igv_factor : discount.amount;
                     });
                 });
             }
 
-            let amount = this.form.discounts.length > 0 ? this.form.discounts[0].amount : 0;
-            let total_discount = this.isGlobalDiscountBase ? _.round(amount * 1.18, 2) : amount; 
-            return total + total_discount;
+            const global_amount = this.form.discounts.length > 0 ? this.form.discounts[0].amount : 0;
+            const total_global = this.isGlobalDiscountBase ? global_amount * igv_factor : global_amount;
+
+            return _.round(total_items + total_global, 2);
         }
     },
     async created() {
@@ -5068,7 +5077,7 @@ export default {
                 this.recordDiscountsGlobal = data.discounts[0]
                 let discount_type_id = data.discounts[0].discount_type_id
                 this.total_global_discount = discount_type_id !== "02" ? data.total_discount :
-                    _.round(Number(data.total_discount * 1.18).toFixed(3), 2);
+                    _.round(data.total_discount * (1 + this.percentage_igv), 2);
             }
 
 
@@ -7033,11 +7042,20 @@ export default {
         // Descuento por item
         setTextDiscountItem(item) {
             let discount = 0;
+            console.log(item.discounts);
+            
             item.discounts.forEach(dis => {
-                discount += dis.amount
+                console.log(dis.amount);
+                if (dis.discount_type.base) {
+                    discount += dis.amount *  parseFloat(1 + this.percentage_igv);
+                    
+                } else {
+                    discount += dis.amount ; 
+                }
             });
-
-            return discount > 0 ? discount.toFixed(2) : "0";
+            console.log("discount", discount);
+            
+            return discount > 0 ? _.round(discount, 2) : "0";
         },
 
         async deleteInitGuides() {

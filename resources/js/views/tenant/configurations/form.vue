@@ -901,7 +901,6 @@
                                             v-text="errors.exact_discount[0]"></small>
                                         </div>
                                         </div> -->
-                                    </div>
                                 </div>
                             </div>
 

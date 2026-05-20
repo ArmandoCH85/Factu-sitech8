@@ -265,9 +265,15 @@
                                 <button class="btn waves-effect waves-light btn-xs btn-primary" type="button" @click.prevent="clickHistory(row.id)"><i class="fa fa-history"></i></button>
                             </td>
                             <td v-if="col.visible && col.key === 'stock'" :key="col.key">
-                                <div v-if="config.product_only_location == true" :class="{ 'text-danger': row.stock < row.stock_min }">{{ row.stock }}</div>
+                                <div v-if="config.product_only_location == true" :class="{ 'text-danger': row.stock < row.stock_min }">
+                                    {{ formatStock(row.stock, row.unit_type_id) }} <!-- <small class="text-muted ms-1">{{ unitSymbol(row.unit_type_id) }}</small> -->
+                                </div>
                                 <div v-else>
-                                    <template v-if="typeUser == 'seller' && row.unit_type_id != 'ZZ'"><span :class="{ 'text-danger': row.stock < row.stock_min }">{{ row.stock }}</span></template>
+                                    <template v-if="typeUser == 'seller' && row.unit_type_id != 'ZZ'">
+                                        <span :class="{ 'text-danger': row.stock < row.stock_min }">
+                                            {{ formatStock(row.stock, row.unit_type_id) }}<!-- <small class="text-muted ms-1">{{ unitSymbol(row.unit_type_id) }}</small> -->
+                                        </span>
+                                    </template>
                                     <template v-else-if="typeUser != 'seller' && row.unit_type_id != 'ZZ'">
                                         <button class="btn waves-effect waves-light btn-xs btn-info" type="button" @click.prevent="clickWarehouseDetail(row.warehouses, row.item_unit_types)"><i class="fa fa-search"></i></button>
                                     </template>
@@ -675,6 +681,38 @@ export default {
         stripHtml(html) {
             if (!html) return html
             return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+        },
+        isDecimalUnit(unitTypeId) {
+            // Unidades de peso, volumen, longitud, área, tiempo: admiten decimales
+            const decimals = ['KGM','GRM','MGM','TNE','LBR','LTR','MLT','GLL','MTR','CMT','KMT','MTK','MTQ','HUR','DAY','MIN'];
+            return decimals.includes(unitTypeId);
+        },
+        unitSymbol(unitTypeId) {
+            const map = {
+                NIU: 'und', BX: 'caja', BO: 'bot', BG: 'bls', DZN: 'doc',
+                PK: 'paq', SET: 'jgo', PR: 'par', '4B': 'rollo', CEN: 'cien', MLR: 'mll',
+                KGM: 'kg', GRM: 'g', MGM: 'mg', TNE: 't', LBR: 'lb',
+                LTR: 'L', MLT: 'mL', GLL: 'gal',
+                MTR: 'm', CMT: 'cm', KMT: 'km', MTK: 'm²', MTQ: 'm³',
+                HUR: 'h', DAY: 'día', MIN: 'min',
+                ZZ: '',
+            };
+            return map[unitTypeId] !== undefined ? map[unitTypeId] : (unitTypeId || '').toLowerCase();
+        },
+        formatStock(stock, unitTypeId) {
+            const value = Number(stock) || 0;
+            let str;
+            if (this.isDecimalUnit(unitTypeId)) {
+                // Hasta 3 decimales, recortando ceros a la derecha
+                str = value.toFixed(3).replace(/\.?0+$/, '');
+            } else {
+                // Unidad discreta: entero
+                str = Math.round(value).toString();
+            }
+            // Separador de miles con coma (estándar Perú/SUNAT)
+            const parts = str.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.join('.');
         },
         toggleSelectAll(checked) {
             if (!this.visibleRows.length) return;

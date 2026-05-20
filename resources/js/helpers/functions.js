@@ -124,7 +124,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     discount.base = _.round(total_value_partial, 2)
                     //amount and percentage are equals in input
                     // discount.amount = _.round(discount.percentage, 2)
-                    discount.amount = getAmountFromInputDiscount(discount)
 
                     discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 5)
                     // discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
@@ -133,8 +132,10 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     // discount.factor = _.round(discount.percentage / 100, 2)
 
                     if (discount.amount_without_rounded) {
+                        discount.amount = discount.amount
                         discount_base += discount.amount_without_rounded
                     } else {
+                        discount.amount = getAmountFromInputDiscount(discount)
                         discount_base += discount.amount_exact !== 0 ? discount.amount_exact : discount.amount
                     }
 
@@ -152,6 +153,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     //amount and percentage are equals in input
                     // discount.amount = _.round(discount.percentage, 2)
                     discount.amount = getAmountFromInputDiscount(discount)
+                    // discount.amount = discount.amount
 
                     discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 2)
                     discount.factor = _.round(discount.percentage / 100, 5)
@@ -166,11 +168,12 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     discount.percentage = parseFloat(discount.percentage)
                     discount.factor = discount.percentage / 100
                     discount.base = _.round(total_value_partial, 2)
-                    discount.amount = _.round(discount.base * discount.factor, 2)
                     // if (discount.discount_type.base) {
                     if (discount.amount_without_rounded) {
+                        discount.amount = discount.amount
                         discount_base += discount.amount_without_rounded
                     } else {
+                        discount.amount = _.round(discount.base * discount.factor, 2)
                         discount_base += discount.amount_exact !== 0 ? discount.amount_exact : discount.amount
                     }
                     // } else {
@@ -182,6 +185,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
                     let aux_total_line = row.unit_price * row.quantity
                     discount.factor = _.round(discount.percentage / 100, 5)
+                    // discount.amount = discount.amount
                     discount.amount = _.round(aux_total_line * discount.factor, 2)
 
                     // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
@@ -349,7 +353,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         row.total_discount = _.round(total_discounts, 2)
     }
     // descuentos
-
 
     //valores sin redondeo, se usa en los calculos para mayor precision (método calculateTotal - Invoice)
     row.total_value_without_rounding = total_value

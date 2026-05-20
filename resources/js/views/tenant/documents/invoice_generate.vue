@@ -4266,15 +4266,15 @@ export default {
                     if (!item.discounts) return;
                     item.discounts.forEach(discount => {
                         const is_base = discount.discount_type_id === "00";
-                        const base_amount = discount.amount_exact
-                            ? discount.amount_exact
+                        const base_amount = discount.amount_without_rounded 
+                            ? discount.amount_without_rounded
                             : discount.amount;
                         total_items += is_base ? base_amount * igv_factor : discount.amount;
                     });
                 });
             }
 
-            const global_amount = this.form.discounts.length > 0 ? this.form.discounts[0].amount : 0;
+            const global_amount = this.form.discounts.length > 0 ? this.form.discounts[0].amount_without_rounded : 0;
             const total_global = this.isGlobalDiscountBase ? global_amount * igv_factor : global_amount;
 
             return _.round(total_items + total_global, 2);
@@ -6845,14 +6845,15 @@ export default {
                 id: this.configuration.global_discount_type_id
             });
         },
-        setGlobalDiscount(factor, amount, base) {
+        setGlobalDiscount(factor, amount, base, amount_without_rounded) {
             this.form.discounts.push({
                 discount_type_id: this.recordDiscountsGlobal ? this.recordDiscountsGlobal.discount_type_id : this.global_discount_type.id,
                 description: this.recordDiscountsGlobal ? this.recordDiscountsGlobal.description : this.global_discount_type.description,
                 factor: factor,
                 amount: amount,
                 base: base,
-                is_amount: this.is_amount
+                is_amount: this.is_amount,
+                amount_without_rounded: amount_without_rounded
             });
         },
         //Parametro ctx, mantiene los valores sin redondeo
@@ -6943,7 +6944,8 @@ export default {
                 this.setGlobalDiscount(
                     factor,
                     _.round(amount, 2),
-                    _.round(base, 2)
+                    _.round(base, 2),
+                    amount
                 );
             }
         },
@@ -7042,18 +7044,15 @@ export default {
         // Descuento por item
         setTextDiscountItem(item) {
             let discount = 0;
-            console.log(item.discounts);
             
             item.discounts.forEach(dis => {
                 console.log(dis.amount);
                 if (dis.discount_type.base) {
-                    discount += dis.amount *  parseFloat(1 + this.percentage_igv);
-                    
+                    discount += dis.amount_without_rounded * 1.18;
                 } else {
                     discount += dis.amount ; 
                 }
             });
-            console.log("discount", discount);
             
             return discount > 0 ? _.round(discount, 2) : "0";
         },

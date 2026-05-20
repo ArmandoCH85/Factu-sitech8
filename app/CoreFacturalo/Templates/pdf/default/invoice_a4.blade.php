@@ -837,7 +837,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     @php
                     $total_discount_line = 0;
                     foreach ($row->discounts as $disto) {
-                        $amount = $disto->discount_type_id == "00" ? $disto->amount * 1.18 : $disto->amount;
+                        $amount = $disto->discount_type_id == "00" ? $disto->amount_without_rounded * 1.18 : $disto->amount;
                         $total_discount_line = $total_discount_line + $amount;
                     }
                     @endphp

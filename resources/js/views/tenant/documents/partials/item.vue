@@ -2089,7 +2089,8 @@ export default {
                     const amount = parseFloat(discount.amount) || 0;
                     const factor = base > 0 ? amount / base : 0;
                     discount.base = _.round(base, 2);
-                    discount.amount = _.round(affects_base ?  amount / igv_factor : amount, 2);
+                    let amount_base = affects_base ?  amount / igv_factor : amount;
+                    discount.amount = Number((amount_base).toFixed(2));
                     discount.amount_without_rounded = affects_base ? amount / igv_factor : amount; // monto sin redondear para cálculos posteriores
                     discount.factor = _.round(factor, 5);
                     discount.percentage = _.round(factor * 100, 5);
@@ -2097,11 +2098,14 @@ export default {
                     // Porcentaje ingresado por el usuario
                     const percentage = parseFloat(discount.percentage) || 0;
                     const factor = percentage / 100;
+                    
+                    let amount_base = Number((affects_base ? base * factor : discount.amount / igv_factor).toFixed(2));
                     discount.base = _.round(base, 2);
                     discount.factor = _.round(factor, 5);
                     discount.percentage = percentage;
-                    discount.amount = _.round(affects_base ? base * factor : discount.amount, 2); // Vista para mostrar el monto del descuento con IGV incluido
+                    discount.amount = (amount_base); // Vista para mostrar el monto del descuento con IGV incluido
                     discount.amount_without_rounded = affects_base ? base * factor : discount.amount / igv_factor; // monto sin redondear para cálculos posteriores
+                    
                 }
 
             });

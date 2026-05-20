@@ -867,7 +867,7 @@ export default {
         {
             this.global_discount_type = _.find(this.global_discount_types, { id : this.globalDiscountTypeId})
         },
-        setGlobalDiscount(factor, amount, base)
+        setGlobalDiscount(factor, amount, base, amount_without_rounded)
         {
             let discount_text = '';
             if(this.global_discount_type && this.global_discount_type.description){
@@ -878,7 +878,8 @@ export default {
                 description: discount_text,
                 factor: factor,
                 amount: _.round(amount, 2),
-                base: base
+                base: base,
+                amount_without_rounded: amount_without_rounded    
             })
         },
         async discountGlobal(ctx) {
@@ -948,7 +949,7 @@ export default {
                 }
 
                 this.form.total_discount = _.round(amount, 2)
-                this.setGlobalDiscount(factor, _.round(amount,2), _.round(base,2))
+                this.setGlobalDiscount(factor, _.round(amount,2), _.round(base,2), amount)
                 let discount_inner = this.is_discount_amount ? this.discount_amount :  (total * this.discount_amount / 100)
                 this.enter_amount = _.round(total - discount_inner,2)
 

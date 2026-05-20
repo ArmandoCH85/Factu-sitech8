@@ -332,17 +332,12 @@ class CashController extends Controller
 
         if (isset($incomes[0])) {
             foreach ($incomes as $income) {
-                if( $income->payments[0]['payment_method_type']['id'] == "01"){
-                    if (in_array($income->state_type_id,['01','03','05','07','13'] )){
-                        $final_balance += ($income->currency_type_id == 'PEN') 
-                            ? $income->total 
-                            : ($income->total * $income->exchange_rate_sale);
-
-                    }
+                if (in_array($income->state_type_id, ['01','03','05','07','13'])) {
+                    $final_balance += ($income->currency_type_id == 'PEN')
+                        ? $income->total
+                        : ($income->total * $income->exchange_rate_sale);
                 }
-
             }
-
         }
 
 

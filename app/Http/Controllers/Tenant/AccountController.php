@@ -144,6 +144,67 @@ class AccountController extends Controller
         });
     }
 
+    public function planChangeTables()
+    {
+        $client = $this->getCurrentSystemClient();
+        $plans = Plan::orderBy('pricing')->get();
+
+        return [
+            'plans' => $plans,
+            'current_plan_id' => $client ? $client->plan_id : null,
+        ];
+    }
+
+    public function createPlanChangeOrder(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|integer|exists:plans,id',
+        ]);
+
+        $client = $this->getCurrentSystemClient();
+        if (!$client) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró el cliente asociado a esta empresa.',
+            ], 422);
+        }
+
+        $targetPlan = Plan::find($request->plan_id);
+        if ((int) $client->plan_id === (int) $targetPlan->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya cuenta con este plan activo.',
+            ], 422);
+        }
+
+        $currentPlan = $client->plan;
+        if ($currentPlan && (float) $targetPlan->pricing < (float) $currentPlan->pricing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No es posible bajar de plan desde aquí. Contacta a soporte para gestionar el cambio.',
+            ], 422);
+        }
+
+        $previousPlanName = optional($currentPlan)->name ?? 'Sin plan';
+
+        $order = PaymentOrder::create([
+            'order' => str_pad((PaymentOrder::count() + 1), 6, '0', STR_PAD_LEFT),
+            'date_of_due' => now()->toDateString(),
+            'amount' => $targetPlan->pricing,
+            'order_state_id' => 1,
+            'client_id' => $client->id,
+            'plan_id' => $targetPlan->id,
+            'description' => "Cambio de plan: {$previousPlanName} → {$targetPlan->name}",
+            'created_by' => 'Cambio de plan',
+        ]);
+
+        return [
+            'success' => true,
+            'order_uuid' => $order->uuid,
+            'payment_url' => $this->publicPaymentUrl($order->uuid),
+        ];
+    }
+
     public function updatePlan(Request $request)
     {
         try{

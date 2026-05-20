@@ -34,6 +34,13 @@ class PlanController extends Controller
         return $record;
     }
 
+    public function popular()
+    {
+        return [
+            'popular_plan' => Plan::where('is_popular', true)->select('id', 'name')->first(),
+        ];
+    }
+
     public function tables()
     {
         $plan_documents = PlanDocument::all(); 
@@ -106,6 +113,8 @@ class PlanController extends Controller
                 return $this->prepareModules($module);
             });
 
+        $popular_plan = Plan::where('is_popular', true)->select('id', 'name')->first();
+
         return compact(
             'plan_documents',
             'modules',
@@ -116,7 +125,8 @@ class PlanController extends Controller
             'group_restaurant',
             'group_hotel_apps',
             'group_pharmacy_apps',
-            'group_restaurant_apps'
+            'group_restaurant_apps',
+            'popular_plan'
         );
     }
 

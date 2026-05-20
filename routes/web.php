@@ -800,6 +800,8 @@ if ($hostname) {
             Route::get('cuenta/tables', 'Tenant\AccountController@tables');
             Route::post('cuenta/update_plan', 'Tenant\AccountController@updatePlan');
             Route::post('cuenta/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
+            Route::get('cuenta/plan_change/tables', 'Tenant\AccountController@planChangeTables');
+            Route::post('cuenta/plan_change/order', 'Tenant\AccountController@createPlanChangeOrder');
 
             //Payment Methods
             Route::get('payment_method/records', 'Tenant\PaymentMethodTypeController@records');
@@ -987,6 +989,7 @@ if ($hostname) {
             Route::get('plans', 'System\PlanController@index')->name('system.plans.index');
             Route::get('plans/records', 'System\PlanController@records');
             Route::get('plans/tables', 'System\PlanController@tables');
+            Route::get('plans/popular', 'System\PlanController@popular');
             Route::get('plans/record/{plan}', 'System\PlanController@record');
             Route::post('plans', 'System\PlanController@store');
             Route::delete('plans/{plan}', 'System\PlanController@destroy');

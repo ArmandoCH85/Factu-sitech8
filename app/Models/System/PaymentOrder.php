@@ -21,6 +21,7 @@ class PaymentOrder extends Model
         'amount',
         'order_state_id',
         'client_id',
+        'plan_id',
         'date_of_payment',
         'date_of_notification',
         'description',
@@ -53,6 +54,11 @@ class PaymentOrder extends Model
     public function order_state()
     {
         return $this->belongsTo(PaymentOrderState::class, 'order_state_id');
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class, 'plan_id');
     }
 
     public function getCollectionData()

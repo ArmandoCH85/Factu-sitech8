@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\System\PaymentOrder;
 use App\Models\Tenant\Document;
 use App\Observers\DocumentObserver;
+use App\Observers\PaymentOrderObserver;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
 			URL::forceScheme('https');
 		}
 		Document::observe(DocumentObserver::class);
+		PaymentOrder::observe(PaymentOrderObserver::class);
 
 		// ── AGREGADO (RECIENTE) ──────────────────────────────────────
         // Se movió este método desde ForgotPasswordController para centralizar

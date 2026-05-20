@@ -19,6 +19,16 @@
                             <label class="control-label">Precio</label>
                             <el-input v-model="form.pricing"></el-input>
                             <small class="form-control-feedback" v-if="errors.pricing" v-text="errors.pricing[0]"></small>
+                            <el-checkbox
+                                v-model="form.is_popular"
+                                :disabled="popularLockedByOtherPlan"
+                                class="mt-2"
+                            >
+                                Destacar como "Popular" en la vista del cliente
+                            </el-checkbox>
+                            <small v-if="popularLockedByOtherPlan" class="form-text text-muted d-block">
+                                El plan <strong>{{ popular_plan.name }}</strong> ya está marcado como Popular. Desmárcalo primero para destacar este.
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -197,6 +207,7 @@
                 group_hotel_apps: [],
                 group_pharmacy_apps: [],
                 group_restaurant_apps: [],
+                popular_plan: null,
                 defaultProps: {
                     children: 'childrens',
                     label: 'description'
@@ -205,6 +216,11 @@
                     children: 'childrens',
                     label: 'description'
                 },
+            }
+        },
+        computed: {
+            popularLockedByOtherPlan() {
+                return !!(this.popular_plan && this.popular_plan.id !== this.form.id);
             }
         },
         created() 
@@ -220,6 +236,7 @@
                 this.group_hotel_apps = response.data.group_hotel_apps
                 this.group_pharmacy_apps = response.data.group_pharmacy_apps
                 this.group_restaurant_apps = response.data.group_restaurant_apps
+                this.popular_plan = response.data.popular_plan
             })
         },
         methods: {
@@ -240,6 +257,7 @@
                     id: null,
                     name: null,
                     pricing: null,
+                    is_popular: false,
                     limit_users: null,
                     limit_documents: null,
                     plan_documents:[],
@@ -262,6 +280,9 @@
             create() {
 
                 this.titleDialog = (this.recordId)? 'Editar plan':'Nuevo plan'
+                this.$http.get(`/${this.resource}/popular`).then(response => {
+                    this.popular_plan = response.data.popular_plan
+                })
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             this.setData(response.data.data)

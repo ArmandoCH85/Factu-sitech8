@@ -185,7 +185,7 @@
             <items-form
                 :showDialog.sync="showDialog"
                 :recordId="recordId"
-                :fromRestaurant="true"
+                variant="restaurant"
             ></items-form>
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
@@ -260,7 +260,7 @@
 }
 </style>
 <script>
-import ItemsForm from "@views/items_ecommerce/form.vue";
+import ItemsForm from "@views/items/form.vue";
 import WarehousesDetail from "@views/items_ecommerce/partials/warehouses.vue";
 import ItemsImport from "./import.vue";
 import DataTable from "@components/DataTable.vue";

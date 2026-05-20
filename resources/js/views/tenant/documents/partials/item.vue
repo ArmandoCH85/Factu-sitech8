@@ -719,7 +719,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                        </div>                                        
+                                        </div>
                                     </div>
                                     </template>
                                     <div v-if="charge_types.length > 0">
@@ -881,7 +881,7 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
-                                        </div>                                        
+                                        </div>
                                     </div>
                                 </el-collapse-item>
                             </el-collapse>
@@ -2073,14 +2073,14 @@ export default {
             const is_taxed = affectation_igv_type_id === "10";
 
             const unit_value = is_taxed ? unit_price / igv_factor : unit_price;
-            
-            
+
+
             const total_value_partial = unit_value * quantity;   // base imponible (sin IGV)
-            
+
             const aux_total_line = unit_price * quantity;        // total con IGV
 
             this.form.discounts.forEach(discount => {
-                const affects_base = 
+                const affects_base =
                     discount.discount_type.base;
                 const base = affects_base ? total_value_partial : aux_total_line;
 

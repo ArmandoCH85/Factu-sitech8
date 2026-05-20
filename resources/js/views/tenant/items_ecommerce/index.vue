@@ -149,6 +149,7 @@
             <items-form
                 :showDialog.sync="showDialog"
                 :recordId="recordId"
+                variant="ecommerce"
             ></items-form>
 
             <!-- <items-import :showDialog.sync="showImportDialog"></items-import> -->
@@ -223,7 +224,7 @@
 }
 </style>
 <script>
-import ItemsForm from "./form.vue";
+import ItemsForm from "@views/items/form.vue";
 import WarehousesDetail from "./partials/warehouses.vue";
 // import ItemsImport from './import.vue'
 import DataTable from "../../../components/DataTable.vue";

@@ -1,6 +1,5 @@
 <template>
     <el-dialog :close-on-click-modal="false"
-               :title="titleDialog"
                :visible="showDialog"
                append-to-body
                class="pt-0"
@@ -8,13 +7,39 @@
                width="65%"
                @close="close"
                @open="create">
+        <span slot="title" class="ifb-dialog-title">
+            <span class="ifb-dialog-title-text">{{ titleDialog }}</span>
+            <span class="ifb-dialog-title-actions">
+                <template v-if="editingLayout">
+                    <el-button size="mini" plain @click="resetLayoutFromHeader">
+                        <i class="el-icon-refresh-left"></i> Restablecer
+                    </el-button>
+                    <el-button size="mini"
+                               type="primary"
+                               :loading="layout_saving"
+                               @click="confirmLayoutFromHeader">
+                        <i class="el-icon-check"></i> Listo
+                    </el-button>
+                </template>
+                <template v-else>
+                    <el-button size="mini" plain icon="el-icon-set-up" @click="enterLayoutEditFromHeader">
+                        Personalizar barra
+                    </el-button>
+                </template>
+            </span>
+        </span>
         <form autocomplete="off"
+              :class="{ 'layout-editing-active': editingLayout }"
               @submit.prevent="submit">
 
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <div :class="{'has-danger': errors.internal_id}"
-                         class="form-group">
+            <item-form-pinned-bar ref="pinnedBar"
+                                  :variant="resolvedVariant"
+                                  :pinned-fields="pinned_fields"
+                                  :saving="layout_saving"
+                                  @editing-changed="editingLayout = $event"
+                                  @save="onSaveLayout">
+                <template #internal_id>
+                    <div :class="{'has-danger': errors.internal_id}" class="form-group">
                         <template v-if="inventory_configuration && inventory_configuration.generate_internal_id">
                             <label class="control-label">Código Interno
                                 <el-tooltip class="item"
@@ -24,9 +49,7 @@
                                     <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
-                            <el-input
-                                v-model="form.internal_id"
-                                dusk="internal_id"></el-input>
+                            <el-input v-model="form.internal_id" dusk="internal_id"></el-input>
                             <small v-if="errors.internal_id"
                                    class="form-control-feedback"
                                    v-text="errors.internal_id[0]"></small>
@@ -40,28 +63,24 @@
                                     <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
-                            <el-input v-model="form.internal_id"
-                                      dusk="internal_id"></el-input>
+                            <el-input v-model="form.internal_id" dusk="internal_id"></el-input>
                             <small v-if="errors.internal_id"
                                    class="form-control-feedback"
                                    v-text="errors.internal_id[0]"></small>
                         </template>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div :class="{'has-danger': errors.description}"
-                         class="form-group">
+                </template>
+                <template #description>
+                    <div :class="{'has-danger': errors.description}" class="form-group">
                         <label class="control-label">Nombre<span class="text-danger">*</span></label>
-                        <el-input v-model="form.description"
-                                  dusk="description"></el-input>
+                        <el-input v-model="form.description" dusk="description"></el-input>
                         <small v-if="errors.description"
                                class="form-control-feedback"
                                v-text="errors.description[0]"></small>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div :class="{'has-danger': errors.sale_unit_price}"
-                         class="form-group">
+                </template>
+                <template #sale_unit_price>
+                    <div :class="{'has-danger': errors.sale_unit_price}" class="form-group">
                         <label class="control-label">Precio Unitario <small v-if="form.has_igv">(con IGV)</small> <small v-else>(sin IGV)</small><span class="text-danger">*</span></label>
                         <el-input v-model="form.sale_unit_price"
                                   dusk="sale_unit_price"
@@ -71,15 +90,199 @@
                                class="form-control-feedback"
                                v-text="errors.sale_unit_price[0]"></small>
                     </div>
-                </div>
-            </div>
+                </template>
+                <template #second_name>
+                    <div :class="{'has-danger': errors.second_name}" class="form-group">
+                        <label class="control-label">Nombre secundario</label>
+                        <el-input v-model="form.second_name" dusk="second_name"></el-input>
+                        <small v-if="errors.second_name"
+                               class="form-control-feedback"
+                               v-text="errors.second_name[0]"></small>
+                    </div>
+                </template>
+                <template #name>
+                    <div :class="{'has-danger': errors.name}" class="form-group">
+                        <label class="control-label">Descripción</label>
+                        <el-input v-model="form.name" dusk="name"></el-input>
+                        <small v-if="errors.name"
+                               class="form-control-feedback"
+                               v-text="errors.name[0]"></small>
+                    </div>
+                </template>
+                <template #model>
+                    <div :class="{'has-danger': errors.model}" class="form-group">
+                        <label class="control-label">Modelo</label>
+                        <el-input v-model="form.model" dusk="model"></el-input>
+                        <small v-if="errors.model"
+                               class="form-control-feedback"
+                               v-text="errors.model[0]"></small>
+                    </div>
+                </template>
+                <template #unit_type_id>
+                    <div :class="{'has-danger': errors.unit_type_id}" class="form-group">
+                        <label class="control-label">Unidad</label>
+                        <el-select v-model="form.unit_type_id" dusk="unit_type_id">
+                            <el-option v-for="option in unit_types"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.unit_type_id"
+                               class="form-control-feedback"
+                               v-text="errors.unit_type_id[0]"></small>
+                    </div>
+                </template>
+                <template #currency_type_id>
+                    <div :class="{'has-danger': errors.currency_type_id}" class="form-group">
+                        <label class="control-label">Moneda</label>
+                        <el-select v-model="form.currency_type_id" dusk="currency_type_id">
+                            <el-option v-for="option in currency_types"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.currency_type_id"
+                               class="form-control-feedback"
+                               v-text="errors.currency_type_id[0]"></small>
+                    </div>
+                </template>
+                <template #sale_affectation_igv_type_id>
+                    <div :class="{'has-danger': errors.sale_affectation_igv_type_id}" class="form-group">
+                        <label class="control-label">Tipo de afectación</label>
+                        <el-select v-model="form.sale_affectation_igv_type_id"
+                                   filterable
+                                   @change="changeAffectationIgvType">
+                            <el-option v-for="option in affectation_igv_types"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.sale_affectation_igv_type_id"
+                               class="form-control-feedback"
+                               v-text="errors.sale_affectation_igv_type_id[0]"></small>
+                    </div>
+                </template>
+                <template #barcode>
+                    <div :class="{'has-danger': errors.barcode}" class="form-group">
+                        <label class="control-label">Código de barra</label>
+                        <el-input v-model="form.barcode"></el-input>
+                        <small v-if="errors.barcode"
+                               class="form-control-feedback"
+                               v-text="errors.barcode[0]"></small>
+                    </div>
+                </template>
+                <template #has_igv>
+                    <div :class="{'has-danger': errors.has_igv}" class="form-group">
+                        <label class="control-label">Incluye IGV</label>
+                        <el-checkbox v-model="form.has_igv">Sí</el-checkbox>
+                    </div>
+                </template>
+                <template #has_plastic_bag_taxes>
+                    <div :class="{'has-danger': errors.has_plastic_bag_taxes}" class="form-group">
+                        <label class="control-label">Impuesto a la Bolsa Plástica</label>
+                        <el-checkbox v-model="form.has_plastic_bag_taxes">Sí</el-checkbox>
+                    </div>
+                </template>
+                <template #calculate_quantity>
+                    <div :class="{'has-danger': errors.calculate_quantity}" class="form-group">
+                        <label class="control-label">Calcular cantidad por precio</label>
+                        <el-checkbox v-model="form.calculate_quantity">Sí</el-checkbox>
+                    </div>
+                </template>
+                <template #stock>
+                    <div :class="{'has-danger': errors.stock}" class="form-group">
+                        <label class="control-label">Stock Inicial</label>
+                        <el-input v-model="form.stock"></el-input>
+                        <small v-if="errors.stock"
+                               class="form-control-feedback"
+                               v-text="errors.stock[0]"></small>
+                    </div>
+                </template>
+                <template #stock_min>
+                    <div :class="{'has-danger': errors.stock_min}" class="form-group">
+                        <label class="control-label">Stock Mínimo</label>
+                        <el-input v-model="form.stock_min"></el-input>
+                        <small v-if="errors.stock_min"
+                               class="form-control-feedback"
+                               v-text="errors.stock_min[0]"></small>
+                    </div>
+                </template>
+                <template #warehouse_id>
+                    <div :class="{'has-danger': errors.warehouse_id}" class="form-group">
+                        <label class="control-label">Almacén</label>
+                        <el-select v-model="form.warehouse_id" filterable>
+                            <el-option v-for="option in warehouses"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.warehouse_id"
+                               class="form-control-feedback"
+                               v-text="errors.warehouse_id[0]"></small>
+                    </div>
+                </template>
+                <template #category_id>
+                    <div :class="{'has-danger': errors.category_id}" class="form-group">
+                        <label class="control-label">Categoría</label>
+                        <el-select v-model="form.category_id" clearable filterable>
+                            <el-option v-for="option in categories"
+                                       :key="option.id"
+                                       :label="option.name"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.category_id"
+                               class="form-control-feedback"
+                               v-text="errors.category_id[0]"></small>
+                    </div>
+                </template>
+                <template #brand_id>
+                    <div :class="{'has-danger': errors.brand_id}" class="form-group">
+                        <label class="control-label">Marca</label>
+                        <el-select v-model="form.brand_id" clearable filterable>
+                            <el-option v-for="option in brands"
+                                       :key="option.id"
+                                       :label="option.name"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.brand_id"
+                               class="form-control-feedback"
+                               v-text="errors.brand_id[0]"></small>
+                    </div>
+                </template>
+                <template #purchase_unit_price>
+                    <div :class="{'has-danger': errors.purchase_unit_price}" class="form-group">
+                        <label class="control-label">Precio Unitario (Compra) <small v-if="form.purchase_has_igv">(con IGV)</small> <small v-else>(sin IGV)</small></label>
+                        <el-input v-model="form.purchase_unit_price"
+                                  @input="calculatePercentageOfProfitByPurchase"></el-input>
+                        <small v-if="errors.purchase_unit_price"
+                               class="form-control-feedback"
+                               v-text="errors.purchase_unit_price[0]"></small>
+                    </div>
+                </template>
+                <template #purchase_affectation_igv_type_id>
+                    <div :class="{'has-danger': errors.purchase_affectation_igv_type_id}" class="form-group">
+                        <label class="control-label">Tipo de afectación (Compra)</label>
+                        <el-select v-model="form.purchase_affectation_igv_type_id"
+                                   @change="changePurchaseAffectationIgvType">
+                            <el-option v-for="option in affectation_igv_types"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                        </el-select>
+                        <small v-if="errors.purchase_affectation_igv_type_id"
+                               class="form-control-feedback"
+                               v-text="errors.purchase_affectation_igv_type_id[0]"></small>
+                    </div>
+                </template>
+            </item-form-pinned-bar>
 
             <el-tabs v-model="activeName" @tab-click="handleTabClick">
-                <el-tab-pane class
+                <el-tab-pane v-if="showTab('general')"
+                             class
                              name="first">
                     <span slot="label">General</span>
                     <div class="row">
-                        <div v-show="!globalIgvHandling" class="col-md-3">
+                        <div v-show="!globalIgvHandling && !isPinned('has_igv')" class="col-md-3 field-pinnable">
                             <div v-show="show_has_igv"
                                  class="">
                                 <div :class="{'has-danger': errors.has_igv}"
@@ -92,8 +295,9 @@
                                            v-text="errors.has_igv[0]"></small>
                                 </div>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('has_igv')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-4">
+                        <div v-show="!isPinned('has_plastic_bag_taxes')" class="col-md-4 field-pinnable">
                             <div class="">
                                 <div :class="{'has-danger': errors.has_plastic_bag_taxes}"
                                      class="form-group">
@@ -105,8 +309,9 @@
                                            v-text="errors.has_plastic_bag_taxes[0]"></small>
                                 </div>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('has_plastic_bag_taxes')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-5">
+                        <div v-show="!isPinned('calculate_quantity')" class="col-md-5 field-pinnable">
                             <div v-show="['KGM', 'LTR', 'MTR', 'GLL'].includes(form.unit_type_id)"
                                  class="">
                                 <div :class="{'has-danger': errors.calculate_quantity}"
@@ -119,8 +324,9 @@
                                            v-text="errors.calculate_quantity[0]"></small>
                                 </div>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('calculate_quantity')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-6">
+                        <div v-show="!isPinned('second_name')" class="col-md-6 field-pinnable">
                             <div :class="{'has-danger': errors.second_name}"
                                  class="form-group">
                                 <label class="control-label">Nombre secundario </label>
@@ -130,8 +336,9 @@
                                        class="form-control-feedback"
                                        v-text="errors.second_name[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('second_name')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-6">
+                        <div v-show="!isPinned('name')" class="col-md-6 field-pinnable">
                             <div :class="{'has-danger': errors.name}"
                                  class="form-group">
                                 <label class="control-label">Descripción</label>
@@ -141,8 +348,9 @@
                                        class="form-control-feedback"
                                        v-text="errors.name[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('name')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-3">
+                        <div v-show="!isPinned('model')" class="col-md-3 field-pinnable">
                             <div :class="{'has-danger': errors.model}"
                                  class="form-group">
                                 <label class="control-label">Modelo</label>
@@ -152,8 +360,9 @@
                                        class="form-control-feedback"
                                        v-text="errors.model[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('model')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-2">
+                        <div v-show="!isPinned('unit_type_id')" class="col-md-2 field-pinnable">
                             <div :class="{'has-danger': errors.unit_type_id}"
                                  class="form-group">
                                 <label class="control-label">Unidad</label>
@@ -168,8 +377,11 @@
                                        class="form-control-feedback"
                                        v-text="errors.unit_type_id[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('unit_type_id')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div v-if="currency_types.length > 1" class="col-md-3">
+                        <div v-if="currency_types.length > 1"
+                             v-show="!isPinned('currency_type_id')"
+                             class="col-md-3 field-pinnable">
                             <div :class="{'has-danger': errors.currency_type_id}"
                                  class="form-group">
                                 <label class="control-label">Moneda</label>
@@ -184,8 +396,9 @@
                                        class="form-control-feedback"
                                        v-text="errors.currency_type_id[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('currency_type_id')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-4">
+                        <div v-show="!isPinned('sale_affectation_igv_type_id')" class="col-md-4 field-pinnable">
                             <div :class="{'has-danger': errors.sale_affectation_igv_type_id}"
                                  class="form-group">
                                 <label class="control-label">Tipo de afectación</label>
@@ -205,10 +418,11 @@
                                     class="form-control-feedback"
                                     v-text="errors.sale_affectation_igv_type_id[0]"></small>
                             </div>
-                        </div>                        
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('sale_affectation_igv_type_id')"><i class="el-icon-top"></i> Fijar arriba</button>
+                        </div>
                         <div v-if="form.unit_type_id !='ZZ'"
-                             v-show="recordId==null"
-                             class="col-md-3">
+                             v-show="recordId==null && !isPinned('warehouse_id')"
+                             class="col-md-3 field-pinnable">
                             <div :class="{'has-danger': errors.warehouse_id}"
                                  class="form-group">
                                 <label class="control-label">
@@ -231,9 +445,10 @@
                                        class="form-control-feedback"
                                        v-text="errors.warehouse_id[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('warehouse_id')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div v-show="recordId==null && form.unit_type_id !='ZZ'"
-                             class="col-md-3">
+                        <div v-show="recordId==null && form.unit_type_id !='ZZ' && !isPinned('stock')"
+                             class="col-md-3 field-pinnable">
                             <div :class="{'has-danger': errors.stock}"
                                  class="form-group">
                                 <label class="control-label">Stock Inicial</label>
@@ -242,9 +457,10 @@
                                        class="form-control-feedback"
                                        v-text="errors.stock[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('stock')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div v-show="form.unit_type_id !='ZZ'"
-                             class="col-md-3">
+                        <div v-show="form.unit_type_id !='ZZ' && !isPinned('stock_min')"
+                             class="col-md-3 field-pinnable">
                             <div :class="{'has-danger': errors.stock_min}"
                                  class="form-group">
                                 <label class="control-label">Stock Mínimo</label>
@@ -253,6 +469,7 @@
                                        class="form-control-feedback"
                                        v-text="errors.stock_min[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('stock_min')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
                         <div v-show="form.unit_type_id !='ZZ' && form.lots_enabled"
                              class="col-md-3">
@@ -268,7 +485,7 @@
                                        v-text="errors.date_of_due[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div v-show="!isPinned('barcode')" class="col-md-3 field-pinnable">
                             <div :class="{'has-danger': errors.barcode}"
                                  class="form-group">
                                 <label class="control-label">Código de barra</label>
@@ -277,6 +494,7 @@
                                        class="form-control-feedback"
                                        v-text="errors.barcode[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('barcode')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.item_code}"
@@ -569,7 +787,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane class
-                             v-if="!isService"
+                             v-if="!isService && showTab('warehouses')"
                              name="second">
                     <span slot="label">Almacenes</span>
                     <div class="row">
@@ -602,7 +820,7 @@
                         </div>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane class  v-if="!isService" name="third">
+                <el-tab-pane class v-if="!isService && showTab('presentations')" name="third">
                     <span slot="label">Presentaciones</span>
                     <div class="row">
                         <div v-show="form.unit_type_id !='ZZ'"
@@ -704,7 +922,7 @@
                                                 v-show="row.showPrices === true"
                                                 :key="'prices-' + index"
                                                 class="prices-row"
-                                            >   
+                                            >
                                                 <td></td>
                                                 <td colspan="3" class="pt-0 pb-2 td-prices-list">
                                                     <ItemPricesTable
@@ -724,12 +942,13 @@
                             </div>
                         </div>
                         <div class="col add-row-table" v-if="config.enable_list_product || !config.enable_list_product && form.item_unit_types.length < 1" @click="clickAddRow">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M9 12h6" /><path d="M12 9v6" /></svg> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M9 12h6" /><path d="M12 9v6" /></svg>
                             Agregar lista de precios
                         </div>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane class
+                <el-tab-pane v-if="showTab('attributes')"
+                             class
                              name="fourth">
                     <span slot="label">Atributos</span>
                     <div class="row">
@@ -752,7 +971,8 @@
                         </div>
                         <div class="col-md-9">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div v-show="!isPinned('category_id')" class="col-md-6 field-pinnable">
+                                    <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('category_id')"><i class="el-icon-top"></i> Fijar arriba</button>
                                     <div :class="{'has-danger': errors.category_id}"
                                          class="form-group">
                                         <label class="control-label">
@@ -812,7 +1032,8 @@
                                                v-text="errors.category_id[0]"></small>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div v-show="!isPinned('brand_id')" class="col-md-6 field-pinnable">
+                                    <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('brand_id')"><i class="el-icon-top"></i> Fijar arriba</button>
                                     <div :class="{'has-danger': errors.brand_id}"
                                          class="form-group">
                                         <label class="control-label">
@@ -929,11 +1150,11 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane class
-                             v-if="!isService"
+                             v-if="!isService && showTab('purchase')"
                              name="five">
                     <span slot="label">Compra</span>
                     <div class="row">
-                        <div class="col-md-8">
+                        <div v-show="!isPinned('purchase_affectation_igv_type_id')" class="col-md-8 field-pinnable">
                             <div :class="{'has-danger': errors.purchase_affectation_igv_type_id}"
                                  class="form-group">
                                 <label class="control-label">Tipo de afectación</label>
@@ -948,8 +1169,9 @@
                                        class="form-control-feedback"
                                        v-text="errors.purchase_affectation_igv_type_id[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('purchase_affectation_igv_type_id')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
-                        <div class="col-md-4">
+                        <div v-show="!isPinned('purchase_unit_price')" class="col-md-4 field-pinnable">
                             <div :class="{'has-danger': errors.purchase_unit_price}"
                                  class="form-group">
                                 <label class="control-label">Precio Unitario <small v-if="form.purchase_has_igv">(con IGV)</small> <small v-else>(sin IGV)</small></label>
@@ -961,6 +1183,7 @@
                                        class="form-control-feedback"
                                        v-text="errors.purchase_unit_price[0]"></small>
                             </div>
+                            <button v-if="editingLayout" type="button" class="pin-from-form-btn" @click.prevent="pinFromForm('purchase_unit_price')"><i class="el-icon-top"></i> Fijar arriba</button>
                         </div>
                         <div v-show="purchase_show_has_igv && !globalIgvHandling"
                              class="col-md-4 center-el-checkbox pt-2">
@@ -1047,7 +1270,7 @@
                     </div>
                 </el-tab-pane>
 
-                <el-tab-pane v-if="canShowExtraData"
+                <el-tab-pane v-if="canShowExtraData && showTab('extra_info')"
                              class
                              name="last">
                     <span slot="label">Informacion Adicional</span>
@@ -1056,8 +1279,22 @@
                     ></extra-info>
                 </el-tab-pane>
 
+                <el-tab-pane v-if="resolvedVariant === 'restaurant'"
+                             class
+                             name="supplies">
+                    <span slot="label">Insumos</span>
+                    <supplies-tab :itemId="recordId"></supplies-tab>
+                </el-tab-pane>
+
+                <el-tab-pane v-if="resolvedVariant === 'restaurant'"
+                             class
+                             name="modifiers">
+                    <span slot="label">Modificadores</span>
+                    <modifiers-tab :itemId="recordId"></modifiers-tab>
+                </el-tab-pane>
+
                 <el-tab-pane class
-                             v-if="form.is_for_production && canSeeProduction"
+                             v-if="form.is_for_production && canSeeProduction && showTab('production')"
                              name="six">
                     <span slot="label">Producción</span>
                     <div class="row">
@@ -1232,27 +1469,53 @@
 <script>
 import LotsForm from './partials/lots.vue'
 import ExtraInfo from './partials/extra_info.vue'
+import ItemFormPinnedBar from './_pinned_bar.vue'
+import { getDefaultLayout, getAvailableFields } from './_form_fields_catalog'
+import SuppliesTab from "@viewsModuleRestaurant/items/supplies-tab.vue";
+import ModifiersTab from "@viewsModuleRestaurant/items/modifiers-tab.vue";
 import {mapActions, mapState} from "vuex";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../helpers/modal_item";
 import ItemPricesTable from "@components/items/partials/ItemPricesTable.vue";
 
 
+const ALLOWED_VARIANTS = ['standard', 'ecommerce', 'restaurant']
+
+const TABS_BY_VARIANT = {
+    standard:   ['general', 'warehouses', 'presentations', 'attributes', 'purchase', 'extra_info', 'production'],
+    ecommerce:  ['general', 'extra_info'],
+    restaurant: ['general', 'supplies', 'modifiers'],
+}
+
 export default {
-    props: [
-        'showDialog',
-        'recordId',
-        'external',
-        'type',
-        'pharmacy',
-        'onlyShowAllDetails',
-        'input_item',
-    ],
+    props: {
+        showDialog: { default: false },
+        recordId: { default: null },
+        external: { default: false },
+        type: { default: null },
+        pharmacy: { default: false },
+        onlyShowAllDetails: { default: null },
+        input_item: { default: null },
+        variant: {
+            type: String,
+            default: 'standard',
+            validator: (v) => ALLOWED_VARIANTS.includes(v),
+        },
+    },
     components: {
         LotsForm,
         ExtraInfo,
-        ItemPricesTable
+        ItemPricesTable,
+        ItemFormPinnedBar,
+        SuppliesTab,
+        ModifiersTab,
     },
     computed: {
+        resolvedVariant() {
+            return ALLOWED_VARIANTS.includes(this.variant) ? this.variant : 'standard'
+        },
+        pinnedKeysSet() {
+            return new Set((this.pinned_fields || []).map(p => p.field_key))
+        },
         forOnlyShowAllDetails()
         {
             if(this.onlyShowAllDetails != undefined && this.onlyShowAllDetails != null) return this.onlyShowAllDetails
@@ -1422,7 +1685,10 @@ export default {
             lastClickedTab: null,
             fromPharmacy: false,
             inventory_configuration: null,
-            next_internal_id: null
+            next_internal_id: null,
+            pinned_fields: [],
+            layout_saving: false,
+            editingLayout: false,
         }
     },
     async created() {
@@ -1431,6 +1697,7 @@ export default {
             this.fromPharmacy = true;
         }
         await this.initForm();
+        this.loadLayout();
 
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
@@ -2276,6 +2543,70 @@ this.activeName = null
                 .catch(error => {
                     console.error('Error al obtener la sucursal activa:', error);
                 });
+        },
+        showTab(tabKey) {
+            const allowed = TABS_BY_VARIANT[this.resolvedVariant] || TABS_BY_VARIANT.standard
+            return allowed.includes(tabKey)
+        },
+        isPinned(fieldKey) {
+            return this.pinnedKeysSet.has(fieldKey)
+        },
+        loadLayout() {
+            this.$http.get(`/item-form-layout/${this.resolvedVariant}`)
+                .then(response => {
+                    const data = response.data && response.data.data ? response.data.data : null
+                    const available = getAvailableFields(this.resolvedVariant).map(f => f.key)
+                    const remote = data && Array.isArray(data.pinned_fields) ? data.pinned_fields : []
+                    const filtered = remote.filter(p => available.includes(p.field_key))
+                    this.pinned_fields = filtered.length > 0
+                        ? filtered
+                        : getDefaultLayout(this.resolvedVariant)
+                })
+                .catch(() => {
+                    this.pinned_fields = getDefaultLayout(this.resolvedVariant)
+                })
+        },
+        pinFromForm(fieldKey) {
+            if (this.$refs.pinnedBar && typeof this.$refs.pinnedBar.pinField === 'function') {
+                this.$refs.pinnedBar.pinField(fieldKey);
+            }
+        },
+        enterLayoutEditFromHeader() {
+            if (this.$refs.pinnedBar && typeof this.$refs.pinnedBar.enterEditMode === 'function') {
+                this.$refs.pinnedBar.enterEditMode();
+            }
+        },
+        resetLayoutFromHeader() {
+            if (this.$refs.pinnedBar && typeof this.$refs.pinnedBar.resetLayout === 'function') {
+                this.$refs.pinnedBar.resetLayout();
+            }
+        },
+        confirmLayoutFromHeader() {
+            if (this.$refs.pinnedBar && typeof this.$refs.pinnedBar.confirmEdit === 'function') {
+                this.$refs.pinnedBar.confirmEdit();
+            }
+        },
+        onSaveLayout(pinned, done) {
+            this.layout_saving = true
+            this.$http.put(`/item-form-layout/${this.resolvedVariant}`, { pinned_fields: pinned })
+                .then(response => {
+                    if (response.data && response.data.success) {
+                        this.pinned_fields = response.data.data.pinned_fields
+                        this.$message.success(response.data.message || 'Configuración guardada')
+                        if (typeof done === 'function') done()
+                    } else {
+                        this.$message.error('No se pudo guardar la configuración')
+                    }
+                })
+                .catch(error => {
+                    const msg = error.response && error.response.data && error.response.data.message
+                        ? error.response.data.message
+                        : 'No se pudo guardar la configuración'
+                    this.$message.error(msg)
+                })
+                .then(() => {
+                    this.layout_saving = false
+                })
         },
     }
 }

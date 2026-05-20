@@ -39,5 +39,6 @@
     "WhatsAppApi": true,
     "FullSuscription": true,
     "CustomField": true,
-    "ClaimsBook": true
+    "ClaimsBook": true,
+    "ItemFormLayout": true
 }

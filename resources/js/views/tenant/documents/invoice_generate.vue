@@ -7126,7 +7126,7 @@ export default {
                             response.data.data.id;
 
                         // this.savePaymentMethod();
-                        this.saveCashDocument();
+                        // this.saveCashDocument();
 
                         this.autoPrintDocument();
                         await this.autoSendPdfMail();

@@ -23,6 +23,7 @@ use App\Http\Controllers\Tenant\SaleNoteController;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Relations\BelongsTo;
+    use Illuminate\Database\Eloquent\Relations\HasMany;
 
     /**
      * Class UserRelSuscriptionPlan
@@ -45,6 +46,7 @@ use App\Http\Controllers\Tenant\SaleNoteController;
      * @property int|null             $quantity_period
      * @property int|null             $parent_customer_id
      * @property Person|null          $parent_customer_relation
+     * @property string               $subscription_status
      * @property int|null             $customer_id
      * @property Person|null          $customer_relation
      * @property Carbon|null          $automatic_date_of_issue
@@ -96,6 +98,12 @@ use App\Http\Controllers\Tenant\SaleNoteController;
     {
         use UsesTenantConnection;
 
+
+        const STATUS_AUTHORIZED = 'authorized';
+        const STATUS_PAUSED = 'paused';
+        const STATUS_FINISHED = 'finished';
+        const STATUS_CANCELED = 'canceled';
+
         protected $casts = [
             'user_id' => 'int',
             'suscription_plan_id' => 'int',
@@ -139,6 +147,8 @@ use App\Http\Controllers\Tenant\SaleNoteController;
             'suscription_plan_id',
             'cat_period_id',
             'items',
+            'subscription_status',
+            'orders_created',
             'children_customer_id',
             'children_customer',
             'editable',
@@ -1016,6 +1026,15 @@ use App\Http\Controllers\Tenant\SaleNoteController;
         }
 
         /**
+         * @return HasMany
+         */
+        public function suscription_orders(): HasMany
+        {
+            return $this->hasMany(SuscriptionOrder::class, 'suscription_id')
+            ->where('type', SuscriptionOrder::TYPE_SUSCRIPTION_ORDER);
+        }
+
+        /**
          * @return int
          */
         public function getUserId(): int
@@ -1167,5 +1186,58 @@ use App\Http\Controllers\Tenant\SaleNoteController;
             $this->section = $section;
             return $this;
         }
+        public function scopeWhereActive(Builder $query)
+    {
+        return $query->where('subscription_status', 'authorized')
+                ->orWhere('subscription_status', 'paused')->get();
+    }
 
+        public function createOrder(array $data = []): SuscriptionOrder 
+    {
+        $_data = [
+            'suscription_id' => $this->id,
+            'type' => SuscriptionOrder::TYPE_SUSCRIPTION_ORDER,
+            'amount' => $this->total,
+            'date_of_payment' => $data['date_of_payment'] ?? null,
+            'date_of_issue' => $data['date_of_issue'] ?? Carbon::now()->format('Y-m-d'),
+            'date_of_due' => $this->orderCreationDate()->format('Y-m-d'),
+            'status' => 'pending',
+            'payment_mp_id' => null
+        ];
+
+        $this->orders_created += 1;
+        $this->save();
+
+        return SuscriptionOrder::create($_data);
+    }
+
+
+        public function getCurrentDateOfDue()
+        {
+
+            $lastOrder = $this->suscription_orders()->latest('date_of_due')->first();
+
+            if ($lastOrder) {
+                // dump("lastorder",$lastOrder->date_of_due);
+                return $lastOrder->date_of_due;
+            }
+            // dump("lastorder",$this->start_date);
+
+            return $this->start_date;
+        }
+
+        public function orderCreationDate(): Carbon
+        {
+            $date = $this->getCurrentDateOfDue();
+            return match ($this->cat_period_id) {
+                1 => Carbon::parse($date)->addMonth(),
+                2 => Carbon::parse($date)->addYear(),
+                3 => Carbon::parse($date)->addDay(),
+                4 => Carbon::parse($date)->addWeek(),
+                5 => Carbon::parse($date)->addDays(15),
+                6 => Carbon::parse($date)->addMonths(2),
+                7 => Carbon::parse($date)->addMonths(3),
+                8 => Carbon::parse($date)->addMonths(6),
+            };
+        }
     }

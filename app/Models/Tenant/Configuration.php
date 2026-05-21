@@ -343,6 +343,7 @@ use Illuminate\Support\Facades\Log;
             'price3_label',
             'enable_weight_in_dispatches',
             'auto_send_pdf_email',
+            'before_day_creation_suscription_order',
             'printer_name_documents',
         ];
 

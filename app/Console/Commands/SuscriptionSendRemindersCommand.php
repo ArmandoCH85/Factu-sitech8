@@ -10,56 +10,65 @@ use Modules\FullSuscription\Models\Tenant\SuscriptionPaymentReminder;
 
 class SuscriptionSendRemindersCommand extends Command
 {
-    protected $signature = 'suscription:send-reminders';
-    protected $description = 'Envía recordatorios de pago de suscripciones según configuración';
 
+    const MEDIUM_WS = 'whatsapp';
+    const MEDIUM_EMAIL = 'email';
+
+    const TYPE_BEFORE = 'before';
+    const TYPE_SAME_DAY = 'same_day';
+    const TYPE_AFTER = 'after';
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'send-payment-reminders:run';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Ejecuta toda los recordatorios de pago de afiliaciones programados para el día';
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
     public function handle()
     {
-        $currentTime = Carbon::now()->format('H:i');
-        $today       = Carbon::today();
-
         $reminders = SuscriptionPaymentReminder::all();
 
-        foreach ($reminders as $reminder) {
-            if ($reminder->reminder_time->format('H:i') !== $currentTime) {
-                continue;
-            }
 
-            $targetDate = $this->resolveTargetDate($today, $reminder->reminder_type, (int) $reminder->reminder_days);
+        if ($reminders->count() > 0) {
+            foreach ($reminders as $reminder) {
+                $medium = $reminder->shipping_medium;
+                $type = $reminder->reminder_type;
+                $days = $reminder->reminder_days;
+                $time = $reminder->reminder_time;
 
-            if (!$targetDate) {
-                continue;
-            }
+                $now = now();
+                if ($now->hour == $time->hour && $now->minute == $time->minute) {
+                    $orders = SuscriptionOrder::whereIn('status', ['pending', 'rejected', 'expired']);
 
-            $orders = SuscriptionOrder::where('status', SuscriptionOrder::STATUS_PENDING)
-                ->whereDate('date_of_due', $targetDate->toDateString())
-                ->get();
+                    if ($type == self::TYPE_BEFORE) {
+                        $orders->whereDate('date_of_due', Carbon::now()->addDays($days));
+                    } else if ($type == self::TYPE_SAME_DAY) {
+                        $orders->whereDate('date_of_due', Carbon::now());
+                    } else if ($type == self::TYPE_AFTER) {
+                        $orders->whereDate('date_of_due', Carbon::now()->subDays($days));
+                    }
+                    $orders = $orders->get();
 
-            foreach ($orders as $order) {
-                try {
-                    $order->notification([$reminder->shipping_medium]);
-                } catch (\Throwable $th) {
-                    Log::error('suscription:send-reminders error al enviar notificación:', [
-                        'order_id'    => $order->id,
-                        'reminder_id' => $reminder->id,
-                        'error'       => $th->getMessage(),
-                        'line'        => $th->getLine(),
-                        'file'        => $th->getFile(),
-                    ]);
+                    foreach ($orders as $order) {
+                        $order->notification([$medium]);
+                    }
                 }
+
             }
-
-            $this->info("Recordatorio {$reminder->id} procesado: {$orders->count()} órdenes notificadas para {$targetDate->toDateString()}");
         }
-    }
 
-    private function resolveTargetDate(Carbon $today, string $reminderType, int $reminderDays): ?Carbon
-    {
-        return match ($reminderType) {
-            SuscriptionPaymentReminder::REMINDER_TYPE_BEFORE   => $today->copy()->addDays($reminderDays),
-            SuscriptionPaymentReminder::REMINDER_TYPE_SAME_DAY => $today->copy(),
-            SuscriptionPaymentReminder::REMINDER_TYPE_AFTER    => $today->copy()->subDays($reminderDays),
-            default => null,
-        };
+        return Command::SUCCESS;
     }
 }

@@ -66,8 +66,6 @@ export default {
     },
     methods:  {
         submit() {
-            console.log(this.form);
-            
             let config  = { 
                 settings: {
                     title : this.form.description,
@@ -105,7 +103,6 @@ export default {
             const Culqi = new CulqiCheckout(this.publicKey, config);
 
             Culqi.culqi = () =>  {
-                console.log(Culqi);
                 
                 if (Culqi.token) {
                     this.form.email = Culqi.token.email ? Culqi.token.email : this.form.email;
@@ -120,15 +117,27 @@ export default {
                         currency_code: this.form.currency,
                     }).then(response => {
                         const data = response.data
+                        console.log(data);
+                        
                         this.$emit('submit', {
-                            paid: data.paid,
+                            status : response.data.result.outcome.type,
                             customer: this.form._customer
                         });
                         Culqi.close();
                     }).catch(error => {
+                        console.log(error);
+                        
                         const msg = error.response?.data?.user_message
                             || 'Error al procesar el pago. Intente nuevamente.';
-                        this.showCulqiError(msg);
+                        
+                        let status = error.response?.data?.result?.type ;
+                        this.$emit('submit', {
+                            status : status,
+                            customer: this.form._customer
+                        });
+                        Culqi.close();
+
+                        this.$message.error(msg);
                     });
                 } else if (Culqi.order) {
                     // orden pendiente, sin acción por ahora

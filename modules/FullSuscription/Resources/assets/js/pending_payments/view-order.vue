@@ -95,7 +95,7 @@
           Este pago ya fue procesado correctamente
         </div>
         <template v-else>
-            <checkout-tenant @submit="submit" :form="form" :disabled="!customerComplete || isSubmitting">
+            <checkout-tenant @submit="changeStatus" :form="form">
             </checkout-tenant>
         <div  class="order-alert order-alert--warning">
 
@@ -119,11 +119,24 @@
 
 <script>
 export default {
-  props: ['order', 'company'],
+  props: ['order', 'company', 'suscription', 'person'],
 
   data() {
     return {
       resource: '/full-suscription/pending-payments',
+    }
+  },
+  created() {
+    
+    this.form = {
+      order_id: this.order.id + '-' + Date.now(),
+      amount: this.order.amount * 100,
+      currency: 'PEN',
+      description: this.order.number, 
+      customer: {
+        email: this.person.email
+      }
+
     }
   },
 
@@ -188,7 +201,11 @@ export default {
       return map[status] || status
     },
     changeStatus(data) {
-      this.$http.post(`${this.resource}/${this.order.id}/change-status-orders`, data)
+      this.$http.post(`${this.resource}/${this.order.id}/change-status-orders`, {
+          status: data.status,
+          order_id: this.form.order_id,
+          customer: data.customer
+      })
         .then(response => {})
     }
   },

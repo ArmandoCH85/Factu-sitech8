@@ -36,10 +36,16 @@ class SuscriptionOrder extends ModelTenant
     const STATUS_REJECTED = 'rejected';
     const STATUS_EXPIRED  = 'expired';
 
+    const TYPE_NEW_SUSCRIPTION   = 'new_suscription';
+    const TYPE_SUSCRIPTION_ORDER = 'suscription_order';
+
     protected $fillable = [
         'suscription_id',
+        'type',
         'external_id',
+        'person_number',
         'number',
+        'count_rejected_payments',
         'amount',
         'date_of_payment',
         'date_of_due',
@@ -65,13 +71,13 @@ class SuscriptionOrder extends ModelTenant
         parent::boot();
 
         static::creating(function (self $order) {
-            if (empty($order->number)) {
+            if (empty($order->number) && $order->type === self::TYPE_SUSCRIPTION_ORDER) {
                 $last  = static::whereNotNull('number')->orderByDesc('id')->value('number');
                 $next  = $last ? (intval(substr($last, 3)) + 1) : 1;
                 $order->number = 'SO-' . str_pad($next, 4, '0', STR_PAD_LEFT);
             }
 
-            if (empty($order->external_id)) {
+            if (empty($order->external_id) && $order->type === self::TYPE_SUSCRIPTION_ORDER) {
                 do {
                     $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
                 } while (static::where('external_id', $code)->exists());
@@ -98,6 +104,14 @@ class SuscriptionOrder extends ModelTenant
             ['value' => self::STATUS_CANCELED,  'description' => 'Cancelado'],
             ['value' => self::STATUS_REJECTED,  'description' => 'Rechazado'],
             ['value' => self::STATUS_EXPIRED,   'description' => 'Expirado'],
+        ];
+    }
+
+    public static function getOrderTypes(): array
+    {
+        return [
+            ['value' => self::TYPE_NEW_SUSCRIPTION,   'description' => 'Nueva suscripción'],
+            ['value' => self::TYPE_SUSCRIPTION_ORDER, 'description' => 'Orden de suscripción'],
         ];
     }
 
@@ -225,7 +239,7 @@ class SuscriptionOrder extends ModelTenant
             'number_full'        => $this->documentable ? $this->documentable->number_full : null,
             'download_pdf_a4'    => $this->documentable ? $this->documentable->download_external_pdf : null,
             'total'              => $this->amount,
-            'checkout_url'       => $this->getUrl(),
+            'checkout_url'       => $this->external_id ?  $this->getUrl() : null,
             'state_type_id'      => $this->documentable ? $this->documentable->state_type_id : null,
             'count_notification' => $this->count_notification ?? 0,
             'date_notification'  => $this->date_notification ? $this->date_notification->format('d/m/Y H:i') : null,

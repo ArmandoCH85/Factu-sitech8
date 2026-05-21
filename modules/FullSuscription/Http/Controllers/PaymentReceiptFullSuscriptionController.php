@@ -44,6 +44,7 @@ use Modules\FullSuscription\Http\Resources\SuscriptionPlansCollection;
         public function Records(Request $request)
         {
             $orders = SuscriptionOrder::query();
+            $orders->where('type', SuscriptionOrder::TYPE_SUSCRIPTION_ORDER);
 
             if ($request->has('column') && $request->has('value')) {
                 $columns = $request->input('column');

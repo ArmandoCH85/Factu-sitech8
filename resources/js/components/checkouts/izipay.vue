@@ -145,13 +145,9 @@ export default {
 
                 this.$http.post(`${this.resource}/transaction`, { uuid: uuid })
                     .then(response => {
-                        console.log(response.data);
-                        console.log(this.form);
-                        
-                        // this.$emit('submit', response.data.paid)
                         if (response.data.success) {
                             this.$emit('submit', {
-                                paid: response.data.paid,
+                                status : response.data.result.answer.status,
                                 customer: this.form._customer
                             });
                             this.$message.success('Pago realizado con éxito');

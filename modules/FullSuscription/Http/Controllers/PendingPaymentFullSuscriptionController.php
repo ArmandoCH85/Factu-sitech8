@@ -4,9 +4,11 @@ namespace Modules\FullSuscription\Http\Controllers;
 
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Person;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\FullSuscription\Models\Tenant\SuscriptionOrder;
+use Modules\Payment\Models\PaymentConfiguration;
 
 class PendingPaymentFullSuscriptionController extends Controller
 {
@@ -64,24 +66,22 @@ class PendingPaymentFullSuscriptionController extends Controller
     public function changeStatusOrders(string $id, Request $request)
     {
         $validated = $request->validate([
-            'status' => 'required|boolean', // Este es el estado que me devulve los checkouts, true es pagado y falso es pendiente o cualquier otro estado
-            'order_id' => 'required|integer', // Este es el id de la orden que me devuelve los checkouts
+            'status' => 'required',
+            'order_id' => 'required', // Este es el id de la orden que me devuelve los checkouts
         ]);
 
         $order= SuscriptionOrder::findOrFail($validated['order_id']);
 
-        
-
-        // $order->update([
-        //     'status' => $validated['status'] ? SuscriptionOrder::STATUS_PAID : SuscriptionOrder::STATUS_PENDING,
-        // ])
-
-        // if ($order->status === SuscriptionOrder::STATUS_PAID) {
-        //     $order->date_of_payment = now();
-        //     $order->generate();
-        // }
-
-        // $order->save();
+        if ($this->returnStatusOrder($validated['status']) === SuscriptionOrder::STATUS_PAID) {
+            $order->status = SuscriptionOrder::STATUS_PAID;
+            $order->date_of_payment = now();
+            $order->generate();
+            $order->save();
+        } else if ($this->returnStatusOrder($validated['status']) === SuscriptionOrder::STATUS_REJECTED) {
+            $order->status = SuscriptionOrder::STATUS_REJECTED;
+            $order->count_rejected_payments += 1;
+            $order->save();
+        }
 
         return response()->json(['success' => true]);
     }
@@ -102,8 +102,12 @@ class PendingPaymentFullSuscriptionController extends Controller
             'ruc'  => $co->number,
             'logo' => $co->logo ? asset('storage/uploads/logos/' . $co->logo) : null,
         ];
+        $public_key = PaymentConfiguration::GetPublicKey();
+        $suscription = $order->suscription;
+        $person = Person::where('id', $suscription->parent_customer_id)
+                        ->orWhere('id', $suscription->customer_id)->first();
 
-        return view('full_suscription::pending_payments.view-order', compact('order', 'company'));
+        return view('full_suscription::pending_payments.view-order', compact('order', 'company', 'public_key', 'suscription', 'person'));
     }
 
     public function sendNotify(Request $request)
@@ -124,5 +128,15 @@ class PendingPaymentFullSuscriptionController extends Controller
         $order->notification(['email']);
 
         return response()->json(['success' => true]);
+    }
+    public function returnStatusOrder(string $status)
+    {
+            // Izipay y Culqi
+        return match($status) {
+                'venta_exitosa' => SuscriptionOrder::STATUS_PAID,
+                'operacion_denegada' => SuscriptionOrder::STATUS_REJECTED,
+                'PAID' => SuscriptionOrder::STATUS_PAID,
+                default => SuscriptionOrder::STATUS_PENDING,
+            };
     }
 }

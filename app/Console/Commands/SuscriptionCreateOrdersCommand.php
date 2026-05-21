@@ -5,107 +5,61 @@ namespace App\Console\Commands;
 use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Modules\FullSuscription\Models\Tenant\CatPeriod;
-use Modules\FullSuscription\Models\Tenant\SuscriptionOrder;
 use Modules\FullSuscription\Models\Tenant\UserRelSuscriptionPlan;
 
 class SuscriptionCreateOrdersCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = 'suscription:create-orders';
-    protected $description = 'Crea órdenes de cobro para suscripciones próximas a vencer';
 
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Create Ordenes de las suscripciones de las suscripciones activas respecto a su frecuencia de cobro';
+
+    /**
+     * Execute the console command.
+     * Campos importantes 
+     * - periodo (lapsos de tiempo para crear la orden)
+     * - fecha de emision
+     * - cantidad de suscripcion a crear (si no es ilimitado)
+     * @return int
+     */
     public function handle()
     {
-        $config             = Configuration::first();
-        $daysBeforeCreation = (int) ($config->before_day_creation_suscription_order ?? 1);
-        $today              = Carbon::today();
-
-        $suscriptions = UserRelSuscriptionPlan::with(['suscription_plan', 'cat_period'])
-            ->where(function ($query) {
-                $query->whereNull('subscription_status')
-                      ->orWhere('subscription_status', 'authorized');
-            })
-            ->get();
+        $suscriptions = UserRelSuscriptionPlan::whereActive();
 
         foreach ($suscriptions as $suscription) {
-            try {
-                $this->processSubscription($suscription, $today, $daysBeforeCreation);
-            } catch (\Throwable $th) {
-                Log::error('suscription:create-orders error al procesar suscripción:', [
-                    'suscription_id' => $suscription->id,
-                    'error'          => $th->getMessage(),
-                    'line'           => $th->getLine(),
-                    'file'           => $th->getFile(),
+            $before_day_creation = Configuration::select('before_day_creation_suscription_order')->first()->before_day_creation_suscription_order;
+            $plan = $suscription->suscription_plan;
+            $order_creattion_date = $suscription->getCurrentDateOfDue();
+            $count = $suscription->orders_created;
+            $quantity_period = $suscription->quantity_period;
+
+            if ($order_creattion_date->subDays($before_day_creation)->isToday()) {
+
+                if ($plan->unlimited) {
+                    $suscription->createOrder();
+                } else if (($count < $quantity_period)) {
+                    $suscription->createOrder();
+                }
+            }
+
+            if ($count === $quantity_period) {
+                // Si se ha alcanzado la cantidad de periodos, se marca la afiliación como finalizada
+                $suscription->update([
+                    'status' => 'finished'
                 ]);
             }
         }
+
+        return Command::SUCCESS;
     }
 
-    private function processSubscription(UserRelSuscriptionPlan $suscription, Carbon $today, int $daysBeforeCreation): void
-    {
-        if (!$suscription->start_date || !$suscription->cat_period_id) {
-            return;
-        }
-
-        $catPeriod = $suscription->cat_period ?? CatPeriod::find($suscription->cat_period_id);
-        if (!$catPeriod) {
-            return;
-        }
-
-        $ordersCreated = (int) ($suscription->orders_created ?? 0);
-
-        // Si el plan es finito y ya se crearon todas las órdenes, no hacer nada
-        $plan = $suscription->suscription_plan;
-        if ($plan && !$plan->unlimited && $suscription->quantity_period && $ordersCreated >= $suscription->quantity_period) {
-            return;
-        }
-
-        $nextDueDate = $this->calculateNextDueDate(
-            Carbon::parse($suscription->start_date->format('Y-m-d')),
-            $catPeriod->period,
-            $ordersCreated
-        );
-
-        $creationDate = $nextDueDate->copy()->subDays($daysBeforeCreation);
-
-        if ($today->lt($creationDate) || $today->gt($nextDueDate)) {
-            return;
-        }
-
-        $exists = SuscriptionOrder::where('suscription_id', $suscription->id)
-            ->whereDate('date_of_due', $nextDueDate->toDateString())
-            ->exists();
-
-        if ($exists) {
-            return;
-        }
-
-        SuscriptionOrder::create([
-            'suscription_id' => $suscription->id,
-            'amount'         => $suscription->total ?? 0,
-            'date_of_issue'  => $today,
-            'date_of_due'    => $nextDueDate,
-            'status'         => SuscriptionOrder::STATUS_PENDING,
-        ]);
-
-        $suscription->orders_created = $ordersCreated + 1;
-        $suscription->save();
-
-        $this->info("Orden creada para suscripción #{$suscription->id} con vencimiento {$nextDueDate->toDateString()}");
-    }
-
-    private function calculateNextDueDate(Carbon $startDate, string $period, int $ordersCreated): Carbon
-    {
-        return match ($period) {
-            'Y' => $startDate->addYears($ordersCreated),
-            'D' => $startDate->addDays($ordersCreated),
-            'W' => $startDate->addWeeks($ordersCreated),
-            'Q' => $startDate->addDays($ordersCreated * 15),
-            'B' => $startDate->addMonths($ordersCreated * 2),
-            'T' => $startDate->addMonths($ordersCreated * 3),
-            'S' => $startDate->addMonths($ordersCreated * 6),
-            default => $startDate->addMonths($ordersCreated),
-        };
-    }
 }

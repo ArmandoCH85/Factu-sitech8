@@ -59,10 +59,12 @@ class PaymentGatewayController extends Controller
 
             return response()->json([
                 'success' => true,
+                'result' => $charge,
                 'paid'    => $paid,
             ]);
 
         } catch (\Culqi\Error\UnhandledError $e) {
+            // dd($e);
             $error = json_decode($e->getMessage());
             Log::error('Culqi charge error', ['body' => $e->getMessage()]);
 
@@ -71,6 +73,7 @@ class PaymentGatewayController extends Controller
                 'paid'             => false,
                 'merchant_message' => $error->merchant_message ?? 'Error al procesar el cobro',
                 'user_message'     => $error->user_message     ?? 'La compra no pudo ser procesada',
+                'result' => $error
             ], 400);
 
         } catch (\Culqi\Error\CulqiException $e) {
@@ -182,6 +185,7 @@ class PaymentGatewayController extends Controller
     
         return [
             'success' => $result ? true : false,
+            'result' => $result,
             'paid' => $paid,
         ];
     }

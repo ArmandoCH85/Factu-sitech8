@@ -226,7 +226,7 @@ use Modules\Payment\Models\PaymentConfiguration;
                 
                 $validated = $request->validate([
                     'plan_id' => 'required',
-                    'status' => 'required|boolean',
+                    'status' => 'required', // va a venir el status del pago del mismo checkout
                     'customer' => 'required|array',
                     'customer.identity_document_type_id' => 'required',
                     'customer.number' => 'required|string',
@@ -239,21 +239,57 @@ use Modules\Payment\Models\PaymentConfiguration;
 
                 $person = $this->createPerson($validated['customer']);
 
-                $_data = $this->createSuscriptionData($plan, $person, [
-                    'date_of_issue' => $date_of_issue,
-                ]);
 
-                $suscription = UserRelSuscriptionPlan::create($_data);
+                $order = SuscriptionOrder::where('person_number', $validated['customer']['number'])
+                                        ->whereNull('suscription_id')
+                                        ->where('type', SuscriptionOrder::TYPE_NEW_SUSCRIPTION)->first();
+                
+                
+                if (!$order) {
+                    $_data_order = [
+                            'amount' => $plan->total,
+                            'date_of_payment' => null,
+                            'person_number' => $validated['customer']['number'],
+                            'currency' => 'PEN',
+                            'status' => $this->returnStatusOrder($validated['status']),
+                            'type' => SuscriptionOrder::TYPE_NEW_SUSCRIPTION,
+                            'date_of_issue' => $date_of_issue,
+                    ];
+                    $order = SuscriptionOrder::create($_data_order);
+                }
 
-                $order = SuscriptionOrder::create([
-                    'suscription_id' => $suscription->id,
-                    'plan_id' => $plan->id,
-                    'amount' => $plan->total,
-                    'date_of_payment' => $validated['status'] ? $date_of_issue : null,
-                    'currency' => 'PEN',
-                    'status' => $validated['status'] ? SuscriptionOrder::STATUS_PAID : SuscriptionOrder::STATUS_PENDING,
-                    'date_of_issue' => $date_of_issue,
-                ]);
+
+                if ($this->returnStatusOrder($validated['status']) === SuscriptionOrder::STATUS_PAID) {
+                    $_data = $this->createSuscriptionData($plan, $person, [
+                        'date_of_issue' => $date_of_issue,
+                        'status' => $validated['status'],
+                    ]);
+
+                    $suscription = UserRelSuscriptionPlan::create($_data);
+
+                    $_data_order = [
+                            'amount' => $plan->total,
+                            'date_of_payment' => now()->toDateTimeString(),
+                            'person_number' => $validated['customer']['number'],
+                            'suscription_id' => $suscription->id,
+                            'currency' => 'PEN',
+                            'status' => SuscriptionOrder::STATUS_PAID,
+                            'type' => SuscriptionOrder::TYPE_SUSCRIPTION_ORDER,
+                            'date_of_issue' => $date_of_issue,
+                    ];
+
+                    if ($order) {
+                        $order->update([
+                            'suscription_id' => $suscription->id,
+                            'status' => SuscriptionOrder::STATUS_PAID,
+                            'date_of_payment' => now()->toDateTimeString(),
+                        ]);
+                    }
+
+                    
+                    SuscriptionOrder::create($_data_order);
+
+                }
 
                 DB::connection('tenant')->commit();
 
@@ -261,7 +297,7 @@ use Modules\Payment\Models\PaymentConfiguration;
                     'success' => true,
                     'message' => 'Suscripción creada con éxito',
                     'data' => [
-                        'suscription' => $suscription,
+                        'suscription' => isset($suscription) ? $suscription : null,
                         'order' => $order,
                     ]
                 ];
@@ -274,45 +310,48 @@ use Modules\Payment\Models\PaymentConfiguration;
             }
         }
         private function createSuscriptionData(SuscriptionPlan $plan, Person $person, $array) : array
-    {
+        {
 
-        $total = $plan->total;
-        $taxed = $total / 1.18;
-        $igv = $total - $taxed;
+            $total = $plan->total;
+            $taxed = $total / 1.18;
+            $igv = $total - $taxed;
 
-        $total = number_format($total, 2, '.', '');
-        $taxed = number_format($taxed, 2, '.', '');
-        $igv = number_format($igv, 2, '.', '');
-        return  [
-            'total_prepayment' => 0,
-            'quantity_period' => $plan->quantity_period,
-            'total_charge' => 0,
-            'total_discount' => 0,
-            'total_exportation' => 0,
-            'start_date' => $array['date_of_issue'],
-            'created_at' => $array['date_of_issue'],
-            'total_free' => 0,
-            'suscription_plan_id' => $plan->id,
-            'total_taxed' => $taxed,
-            'total_unaffected' => 0,
-            'total' => $total,
-            'total_exonerated' => 0,
-            'total_igv' => $igv,
-            'total_igv_free' => 0,
-            'total_isc' => 0,
-            'total_other_taxes' => 0,
-            'total_prepayment' => 0,
-            'total_taxes' => $igv,
-            'total_value' => $taxed,
-            'parent_customer_id' => $person->id,
-            'parent_customer' => $person->toArray(),
-            'customer' => $person->toArray(),
-            'set_mp' => false,
-            'items' => null,
-            'cat_period_id' => $plan->cat_period_id,
-            // 'status' => $value['status'],
-            ];
-    }
+            $total = number_format($total, 2, '.', '');
+            $taxed = number_format($taxed, 2, '.', '');
+            $igv = number_format($igv, 2, '.', '');
+            return  [
+                'total_prepayment' => 0,
+                'quantity_period' => $plan->quantity_period,
+                'total_charge' => 0,
+                'total_discount' => 0,
+                'total_exportation' => 0,
+                'start_date' => $array['date_of_issue'],
+                'created_at' => $array['date_of_issue'],
+                'total_free' => 0,
+                'suscription_plan_id' => $plan->id,
+                'total_taxed' => $taxed,
+                'total_unaffected' => 0,
+                'total' => $total,
+                'total_exonerated' => 0,
+                'total_igv' => $igv,
+                'total_igv_free' => 0,
+                'total_isc' => 0,
+                'total_other_taxes' => 0,
+                'total_prepayment' => 0,
+                'total_taxes' => $igv,
+                'total_value' => $taxed,
+                'parent_customer_id' => $person->id,
+                'customer_id' => $person->id,
+                'user_id' => $person->id,
+                'parent_customer_id' => $person->id,
+                'parent_customer' => $person->toArray(),
+                'customer' => $person->toArray(),
+                'set_mp' => false,
+                'items' => null,
+                'cat_period_id' => $plan->cat_period_id,
+                'subscription_status' => $this->returnStatus($array['status']),
+                ];
+        }
 
 
         private function createPerson(array $data): Person
@@ -350,5 +389,24 @@ use Modules\Payment\Models\PaymentConfiguration;
         return $person;
     }
 
+        public function returnStatus(string $status)
+        {
+            return match($status) {
+                'PAID' => UserRelSuscriptionPlan::STATUS_AUTHORIZED,
+                'venta_exitosa' => UserRelSuscriptionPlan::STATUS_AUTHORIZED,
+                default => UserRelSuscriptionPlan::STATUS_PAUSED,
+            };
+        }
+
+        public function returnStatusOrder(string $status)
+        {
+            // Izipay y Culqi
+            return match($status) {
+                'venta_exitosa' => SuscriptionOrder::STATUS_PAID,
+                'operacion_denegada' => SuscriptionOrder::STATUS_REJECTED,
+                'PAID' => SuscriptionOrder::STATUS_PAID,
+                default => SuscriptionOrder::STATUS_PENDING,
+            };
+        }
 
     }

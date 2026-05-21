@@ -238,7 +238,7 @@ export default {
       this.isSubmitting = true
       try {
         await this.$http.post(`/full_suscription/plans/create-suscription`, {
-          status: data.paid,
+          status: data.status,
           plan_id: this.planId,
           customer: data.customer
         })

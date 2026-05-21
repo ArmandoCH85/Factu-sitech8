@@ -64,7 +64,7 @@
                 @foreach($records as $key => $value)
                     @php
                     /** @var \App\Models\Tenant\Item $value */
-                        $item_unit_types = $value->item_unit_types->toArray();
+                        $item_unit_types = $value->item_unit_types->values();
                     @endphp
                     <tr>
                         <td class="celda">{{$loop->iteration}}</td>
@@ -101,12 +101,12 @@
                                 $precio_3 = '';
                                 if(isset($item_unit_types[$i])){
                                     $temp = $item_unit_types[$i];
-                                    $unidad = $temp['unit_type_id'];
-                                    $descripcion = $temp['description'];
-                                    $factor = $temp['quantity_unit'];
-                                    $precio_1 = $temp['price1'];
-                                    $precio_2 = $temp['price2'];
-                                    $precio_3 = $temp['price3'];
+                                    $unidad      = $temp->unit_type_id;
+                                    $descripcion = $temp->description;
+                                    $factor      = $temp->quantity_unit;
+                                    $precio_1 = optional($temp->prices->firstWhere('price_label_id', 1))->price ?? 0;
+                                    $precio_2 = optional($temp->prices->firstWhere('price_label_id', 2))->price ?? 0;
+                                    $precio_3 = optional($temp->prices->firstWhere('price_label_id', 3))->price ?? 0;
                                 }
                             @endphp
                             <td>{{$unidad}}</td>

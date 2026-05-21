@@ -1360,7 +1360,7 @@ class ItemController extends Controller
             $items->whereBetween('items.created_at', [$d_start, $d_end]);
         }
 
-        $records =  $items->get();
+        $records = $items->with('item_unit_types.prices')->get();
         return (new ItemExport())
             ->setExtraData($extradata)
             ->records($records)

@@ -14,12 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::connection('tenant')->table('configurations')->updateOrInsert(
-            ['id' => 1],
-            [
+        DB::connection('tenant')->table('configurations')
+            ->where('id', 1)
+            ->update([
                 'exact_discount' => true,
-            ]
-        );  
+            ]);
     }
 
     /**
@@ -29,11 +28,10 @@ return new class extends Migration
      */
     public function down()
     {
-        DB::connection('tenant')->table('configurations')->updateOrInsert(
-            ['id' => 1],
-            [
+        DB::connection('tenant')->table('configurations')
+            ->where('id', 1)
+            ->update([
                 'exact_discount' => false,
-            ]
-        );  
+            ]);
     }
 };

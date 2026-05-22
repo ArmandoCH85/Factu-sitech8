@@ -21984,7 +21984,7 @@ div.welcome-card .welcome-subtitle{
 }
 .el-message--success .el-message__content,
 .el-message .el-icon-success{
-    color: #fff !important;
+    color: var(--success) !important;
 }
 .el-message--error {
     background-color: color-mix(in srgb, var(--danger) 70%, #ffffff);
@@ -21992,7 +21992,7 @@ div.welcome-card .welcome-subtitle{
 }
 .el-message--error .el-message__content,
 .el-message .el-icon-error{
-    color: #fff !important;
+    color: var(--danger) !important;
 }
 .el-message--warning {
     background-color: color-mix(in srgb, var(--warning) 70%, #ffffff);
@@ -22000,7 +22000,7 @@ div.welcome-card .welcome-subtitle{
 }
 .el-message--warning .el-message__content,
 .el-message .el-icon-warning{
-    color: #fff !important;
+    color: var(--warning) !important;
 }
 .border-bottom-dashed {
     border-bottom-style: dashed !important;

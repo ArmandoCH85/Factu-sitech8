@@ -139,12 +139,9 @@
             })
         },
         async mounted () { 
-
-            
             await this.$http.get(`/${this.resource}/data_table`).then((response) => {
                 this.categories = response.data.categories
-                this.person_types = response.data.person_types 
-
+                this.person_types = [{ id: 'all', description: 'TODOS' }, ...response.data.person_types]
             });
 
             await this.$http.get(`/${this.resource}/filter`)

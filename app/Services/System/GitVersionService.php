@@ -24,8 +24,21 @@ class GitVersionService
             return '';
         }
 
+        foreach (['safe.directory='.base_path(), 'safe.directory=*'] as $safeDirectory) {
+            $version = $this->runGitDescribe($safeDirectory);
+
+            if ($version !== '') {
+                return $version;
+            }
+        }
+
+        return '';
+    }
+
+    private function runGitDescribe(string $safeDirectory): string
+    {
         $process = new Process(
-            ['git', '-c', 'safe.directory='.base_path(), 'describe', '--tags'],
+            ['git', '-c', $safeDirectory, 'describe', '--tags'],
             base_path()
         );
         $process->setTimeout(15);
@@ -62,6 +75,51 @@ class GitVersionService
             return null;
         }
 
-        return $tags[0]['name'] ?? null;
+        $tag = $tags[0]['name'] ?? null;
+
+        if ($tag === null) {
+            return null;
+        }
+
+        return $this->enrichTagWithCommit($tag) ?? $tag;
+    }
+
+    /**
+     * Cuando git describe no corre (p. ej. PHP-FPM como www-data), arma una cadena
+     * similar usando el último commit de la rama actual vía API.
+     */
+    private function enrichTagWithCommit(string $tag): ?string
+    {
+        $token = config('git.token');
+
+        if (! $token) {
+            return null;
+        }
+
+        $projectUrl = preg_replace('#/repository/tags.*$#', '', config('git.project_tags_url'));
+
+        $response = Http::withHeaders([
+            'PRIVATE-TOKEN' => $token,
+        ])->get($projectUrl.'/repository/commits', [
+            'per_page' => 1,
+        ]);
+
+        if (! $response->successful()) {
+            return null;
+        }
+
+        $commits = $response->json();
+
+        if (! is_array($commits) || count($commits) === 0) {
+            return null;
+        }
+
+        $shortId = $commits[0]['short_id'] ?? null;
+
+        if (! $shortId) {
+            return null;
+        }
+
+        return $tag.'-g'.$shortId;
     }
 }

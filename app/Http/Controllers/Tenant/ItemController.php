@@ -1361,9 +1361,12 @@ class ItemController extends Controller
         }
 
         $records = $items->with('item_unit_types.prices')->get();
+        $price_labels = PriceLabel::active()->ordered()->get();
+        
         return (new ItemExport())
             ->setExtraData($extradata)
             ->records($records)
+            ->priceLabels($price_labels)
             ->download('Reporte_Items_'.Carbon::now().'.xlsx');
 
     }

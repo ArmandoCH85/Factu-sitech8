@@ -54,9 +54,9 @@
                         <th>Unidad</th>
                         <th>Descripcion</th>
                         <th>Factor</th>
-                        <th>Precio 1</th>
-                        <th>Precio 2</th>
-                        <th>Precio 3</th>
+                        @foreach($price_labels as $label)
+                            <th>{{ $label->label }}</th>
+                        @endforeach
                     @endfor
                 </tr>
                 </thead>
@@ -93,28 +93,14 @@
                         <td class="celda">{{$value->date_of_due }}</td>
                         @for($i=0;$i<$max_prices_columns;$i++)
                             @php
-                                $unidad = '';
-                                $descripcion = '';
-                                $factor = '';
-                                $precio_1 = '';
-                                $precio_2 = '';
-                                $precio_3 = '';
-                                if(isset($item_unit_types[$i])){
-                                    $temp = $item_unit_types[$i];
-                                    $unidad      = $temp->unit_type_id;
-                                    $descripcion = $temp->description;
-                                    $factor      = $temp->quantity_unit;
-                                    $precio_1 = optional($temp->prices->firstWhere('price_label_id', 1))->price ?? 0;
-                                    $precio_2 = optional($temp->prices->firstWhere('price_label_id', 2))->price ?? 0;
-                                    $precio_3 = optional($temp->prices->firstWhere('price_label_id', 3))->price ?? 0;
-                                }
+                                $temp = $item_unit_types[$i] ?? null;
                             @endphp
-                            <td>{{$unidad}}</td>
-                            <td>{{$descripcion}}</td>
-                            <td>{{$factor}}</td>
-                            <td>{{$precio_1}}</td>
-                            <td>{{$precio_2}}</td>
-                            <td>{{$precio_3}}</td>
+                            <td>{{ $temp ? $temp->unit_type_id : '' }}</td>
+                            <td>{{ $temp ? $temp->description : '' }}</td>
+                            <td>{{ $temp ? $temp->quantity_unit : '' }}</td>
+                            @foreach($price_labels as $label)
+                                <td>{{ $temp ? (optional($temp->prices->firstWhere('price_label_id', $label->id))->price ?? 0) : '' }}</td>
+                            @endforeach
                         @endfor
                     </tr>
                 @endforeach

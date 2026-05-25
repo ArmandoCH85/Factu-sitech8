@@ -111,6 +111,17 @@ export default {
             pse_providers: [] // Lista de proveedores PSE
         }
     },
+    watch: {
+        'form.pse_provider_id'() {
+            this.$delete(this.errors, 'pse_provider_id')
+        },
+        'form.user_pse'() {
+            this.$delete(this.errors, 'user_pse')
+        },
+        'form.password_pse'() {
+            this.$delete(this.errors, 'password_pse')
+        }
+    },
     created() {
         this.initForm()
         this.getData()
@@ -118,7 +129,11 @@ export default {
     },
     methods: {
         submit(){
-
+            this.errors = {}   
+            if (!this.validateForm()) {
+                this.$message.error('Complete todos los campos obligatorios')
+                return
+            }
             this.loading_submit = true
             this.$http.post(`/${this.resource}/store-send-pse`, this.form)
                 .then(response => {
@@ -140,6 +155,24 @@ export default {
                 })
 
         },
+        validateForm() {
+            this.errors = {}
+
+            // Solo validar si el servicio PSE está habilitado
+            if (this.form.send_document_to_pse) {
+                if (!this.form.pse_provider_id) {
+                    this.$set(this.errors, 'pse_provider_id', ['Debe seleccionar un proveedor PSE'])
+                }
+                if (!this.form.user_pse) {
+                    this.$set(this.errors, 'user_pse', ['Debe ingresar el usuario de autenticación'])
+                }
+                if (!this.form.password_pse) {
+                    this.$set(this.errors, 'password_pse', ['Debe ingresar la contraseña de autenticación'])
+                }
+            }
+
+            return Object.keys(this.errors).length === 0
+        },
         initForm(){
 
             this.form = {
@@ -159,7 +192,7 @@ export default {
         getData() {
             this.$http.get(`/${this.resource}/record-send-pse`)
                 .then(response => {
-                    this.form = response.data
+                    this.form = { ...this.form, ...response.data }
                 })
         },
         getPseProviders() {

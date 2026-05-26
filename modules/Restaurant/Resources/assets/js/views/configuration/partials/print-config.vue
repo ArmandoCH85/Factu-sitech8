@@ -1,9 +1,21 @@
 <template>
-  <div>
+  <div class="card-body h-100 buhoprinter-config">
+    <div class="d-flex align-items-center">
+        <div class="tag-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-printer"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 15a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2l0 -4" /></svg>
+        </div>
+        <div class="d-flex align-items-center justify-content-between gap-2 ms-3 w-100">
+            <div class="d-flex flex-column">
+                <h3 class="text-primary fw-bold m-0">Integración con BuhoPrinter</h3>
+                <div class="pt-1">
+                  <el-tag type="primary" class="mx-0">Servicio externo de impresión</el-tag>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Encabezado y switch principal -->
-    <div class="row mb-4">
-      <div class="col-md-12">
-        <h5><b>Integración con BuhoPrinter:</b></h5>
+    <div class="row py-3">
+      <div class="col-12 info-text">
         <span class="text-muted">
           Activa esta opción para conectar la empresa con el servicio de impresión local BuhoPrinter.
           Al activar, el sistema detectará automáticamente el agente en esta red e intentará registrar
@@ -12,7 +24,7 @@
       </div>
     </div>
 
-    <div class="row mb-4" v-loading="loading">
+    <div class="row info-text mb-3" v-loading="loading">
       <!-- Switch de activación -->
       <div class="col-md-3">
         <label class="control-label d-block">Activar impresión con BuhoPrinter</label>
@@ -100,9 +112,9 @@
     </div>
 
     <!-- Indicador de estado (solo informativo) -->
-    <div class="row mb-4" v-if="form.printer_enabled">
-      <div class="col-md-12">
-        <div class="alert" :class="statusAlertClass" role="alert">
+    <div class="row mb-3" v-if="form.printer_enabled">
+      <div class="col-12 px-0">
+        <div class="alert m-0" :class="statusAlertClass" role="alert">
           <i :class="statusIconClass" class="me-2"></i>
           <b>Estado de última verificación:</b>
           <span v-if="checking"> Verificando conexión con BuhoPrinter...</span>
@@ -122,12 +134,12 @@
 
     <!-- Lista de impresoras registradas -->
     <template v-if="form.printer_enabled && printers.length > 0">
-      <div class="row mt-3">
-        <div class="col-md-12">
-          <h6 class="text-muted mb-2">
-            <i class="fa fa-print mr-1"></i>
+      <div class="row mb-3">
+        <div class="col-12 px-0">
+          <h5 class="text-muted mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-printer me-1" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 15a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2l0 -4" /></svg>
             Impresoras registradas ({{ printers.length }})
-          </h6>
+          </h5>
           <div class="table-responsive">
             <table class="table table-sm table-hover">
               <thead>
@@ -154,9 +166,9 @@
     </template>
 
     <!-- Mensaje cuando no hay impresoras aún -->
-    <div class="row" v-else-if="form.printer_enabled && printers.length === 0 && !checking">
-      <div class="col-md-12">
-        <div class="alert alert-info">
+    <div class="row mb-3" v-else-if="form.printer_enabled && printers.length === 0 && !checking">
+      <div class="col-12 px-0">
+        <div class="alert alert-info m-0">
           <i class="fa fa-info-circle mr-1"></i>
           No hay impresoras registradas. Activa la opción y usa
           <b>"Verificar y actualizar"</b> para detectar las impresoras disponibles.
@@ -165,19 +177,25 @@
     </div>
 
     <!-- Botones de acción -->
-    <div class="row mt-4">
-      <div class="col-md-12">
+    <div class="row">
+      <div class="col-12 px-0 d-flex">
         <el-button
           type="success"
           :loading="saving"
           :disabled="loading"
-          @click="saveConfig">Guardar configuración</el-button>
+          @click="saveConfig">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-device-floppy" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M10 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>
+          Guardar configuración
+        </el-button>
         <el-button
           type="primary"
           class="ms-2"
           :loading="checking"
           :disabled="!form.printer_enabled || loading"
-          @click="checkAndSync">Verificar y actualizar</el-button>
+          @click="checkAndSync">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-refresh" style="margin-top: -2px;"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>
+          Verificar y actualizar
+        </el-button>
       </div>
     </div>
   </div>

@@ -2755,9 +2755,98 @@ div.welcome-card .welcome-subtitle{
 }
 .el-tabs--border-card>.el-tabs__header .el-tabs__item {
     border: none;
+    color: color-mix(in srgb, var(--black-dark) 70%, #ffffff);
 }
 .coverage-config-message {
     border-radius: 8px !important;
+}
+.advanced-settings {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+}
+.advanced-settings .el-tabs__nav {
+    background-color: #fff;
+    padding: 5px 5px 5px 6px;
+}
+.advanced-settings.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover {
+    background-color: color-mix(in srgb, var(--black-primary) 5%, #ffffff00);
+    border-radius: 8px;
+}
+.advanced-settings.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
+    color: var(--black-primary) !important;
+    background-color: color-mix(in srgb, var(--black-primary) 15%, #ffffff00);
+    border: none;
+}
+.advanced-settings .dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--black-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--black-primary) 20%, #ffffff00);
+}
+.advanced-settings .card-body {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+.advanced-settings .options-count{
+    background-color: color-mix(in srgb, var(--black-primary) 15%, #ffffff00);
+    color: color-mix(in srgb, var(--black-dark) 70%, #ffffff) !important;
+    border-radius: 8px;
+}
+.advanced-settings .card-body .header-card{
+    border-bottom: 1px solid color-mix(in srgb, var(--black-accent) 40%, #ffffff);
+}
+.adv-conf-container div.col-12{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: start;
+    align-items: center;
+    padding:  10px 0;
+}
+.adv-conf-container div.inputs-column {
+    padding:  10px 0;
+}
+.adv-conf-container div.col-12 label {
+    margin-top: 0px;
+    margin-left: 5px;
+}
+.adv-conf-container div.inputs-column label {
+    margin-top: 0px;
+}
+.advanced-settings .el-tabs__content {
+    padding-right: .25rem;
+    padding-left: .25rem;
+}
+.tag-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 8px;
+    flex: 0 0 auto;
+    background-color: var(--black-primary);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--black-primary) 20%, #ffffff00);
+}
+.route-path-reports {
+    background-color: color-mix(in srgb, var(--black-accent) 25%, #ffffff00);
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--black-dark) 70%, #ffffff);
+}
+.route-path-reports a {
+    color: color-mix(in srgb, var(--black-dark) 70%, #ffffff) !important;
+}
+.buhoprinter-config .info-text{
+    padding: 10px;
+    border: 1px solid color-mix(in srgb, var(--black-highlight) 96%, #000000);
+    border-radius: 8px;
 }
 /* ############################ ESTILOS MODO OSCURO ########################### */
 html.dark, html.dark body {

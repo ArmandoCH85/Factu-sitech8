@@ -1423,6 +1423,47 @@ html.sidebar-light .establishment-selector-container{
 .cbm-wrap{
     margin: -18px -18px 28px -18px !important;
 }
+.advanced-settings .el-tabs__nav {
+    border-radius: 6px !important;
+}
+.advanced-settings.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
+    color: var(--primary-color) !important;
+    background-color: color-mix(in srgb, var(--primary-color) 15%, #ffffff00);
+    border-radius: 4px;
+}
+.advanced-settings.el-tabs--border-card>.el-tabs__header .el-tabs__item:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 5%, #ffffff00);
+    border-radius: 4px;
+    color: var(--primary-color);
+}
+.advanced-settings .dot {
+    background: var(--primary-color);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary-color) 20%, #ffffff00);
+}
+.tag-icon {
+    background-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--primary-color) 20%, #ffffff00);
+}
+.advanced-settings .options-count {
+    background-color: color-mix(in srgb, var(--primary-color) 15%, #ffffff00);
+    color: color-mix(in srgb, var(--dark-color) 70%, #ffffff) !important;
+    border-radius: 6px;
+}
+.advanced-settings .card-body .header-card {
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 40%, #ffffff);
+}
+.route-path-reports {
+    background-color: color-mix(in srgb, var(--accent-color) 25%, #ffffff00);
+    color: color-mix(in srgb, var(--dark-color) 70%, #ffffff);
+}
+.buhoprinter-config .info-text {
+    border: 1px solid color-mix(in srgb, var(--accent-color) 96%, #000000);
+    border-radius: 6px;
+}
+.text-primary {
+    color: var(--primary-color) !important;
+}
 /* modo oscuro */
 html.dark .table-responsive.payment {
     border: 1px solid var(--inputs-dark);

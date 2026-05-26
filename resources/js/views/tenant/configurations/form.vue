@@ -201,7 +201,7 @@
                                 <label class="control-label">
                                     Mostrar cantidad unificada al agregar un mismo producto
                                     <el-tooltip class="item"
-                                        content="Al agregar un mismo producto más de una vez, se unificará en una sola línea sumando las cantidades - Disponible para Factura, Boleta, Cotización y Notas de venta"
+                                        content="Al agregar un mismo producto más de una vez, se unificará en una sola línea sumando las cantidades - Disponible para Factura, Boleta y Notas de venta"
                                         effect="dark" placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>

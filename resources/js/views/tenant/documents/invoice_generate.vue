@@ -4283,6 +4283,7 @@ export default {
     async created() {
         await this.initComponent();
         await this.getPercentageIgv();
+         
         this.loading_form = true;
         this.$eventHub.$on("reloadDataPersons", customer_id => {
             this.reloadDataCustomers(customer_id);
@@ -6351,6 +6352,28 @@ export default {
                     this.setTotalExchangePoints();
                     this.recalculateUsedPointsForExchange(row);
                 }
+            } else if (this.shouldUnifyAmountItems(row)) {
+                const index = this.getUnifiedItemIndex(row);
+
+                if (index !== -1) {
+                    const newItem = JSON.parse(
+                        JSON.stringify(this.form.items[index])
+                    );
+
+                    newItem.quantity =
+                        parseFloat(newItem.quantity) + parseFloat(row.quantity);
+
+                    const unifiedRow = await calculateRowItem(
+                        newItem,
+                        row.item.currency_type_id,
+                        this.form.exchange_rate_sale,
+                        row.percentage_igv
+                    );
+
+                    this.form.items[index] = unifiedRow;
+                } else {
+                    this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
             } else if (enable_barcode_quick_sale || enable_search_on_enter) {
                 let index = this.form.items.findIndex(
                     item => item.item.internal_id === row.item.internal_id
@@ -6373,6 +6396,38 @@ export default {
             }
 
             await this.calculateTotal();
+        },
+        shouldUnifyAmountItems(row) {
+            return (
+                this.config &&
+                this.config.show_unify_amount_items &&
+                row.item &&
+                !row.item.series_enabled &&
+                !row.item.lots_enabled
+            );
+        },
+        getUnifiedItemIndex(row) {
+            const presentationId = _.get(row, "item.presentation.id", null);
+
+            return this.form.items.findIndex(item => {
+                const itemPresentationId = _.get(
+                    item,
+                    "item.presentation.id",
+                    null
+                );
+
+                return (
+                    String(item.item_id) === String(row.item_id) &&
+                    String(itemPresentationId || "") ===
+                        String(presentationId || "") &&
+                    String(item.affectation_igv_type_id || "") ===
+                        String(row.affectation_igv_type_id || "") &&
+                    String(item.unit_price || "") ===
+                        String(row.unit_price || "") &&
+                    String(item.warehouse_id || "") ===
+                        String(row.warehouse_id || "")
+                );
+            });
         },
         clickRemoveItem(index) {
             this.form.items.splice(index, 1);

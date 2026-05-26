@@ -2088,6 +2088,7 @@ export default {
                     // Monto fijo ingresado por el usuario
                     const amount = parseFloat(discount.amount) || 0;
                     const factor = base > 0 ? amount / base : 0;
+                    
                     discount.base = _.round(base, 2);
                     let amount_base = affects_base ?  amount / igv_factor : amount;
                     discount.amount = Number((amount_base).toFixed(2));

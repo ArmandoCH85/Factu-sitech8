@@ -116,10 +116,14 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         row.discounts.forEach((discount, index) => {
 
             let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
+            console.log("discount calcualte total");
+            console.log(discount);
+            
+            
 
             if (discount.is_amount)
             {
-                if (discount.discount_type.base)
+                if (discount.discount_type && discount.discount_type.base || discount.discount_type_id === '00')
                 {
                     discount.base = _.round(total_value_partial, 2)
                     //amount and percentage are equals in input
@@ -163,7 +167,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
             } else {
 
-                if (discount.discount_type.base) {
+                if (discount.discount_type &&  discount.discount_type.base || discount.discount_type_id === '00') {
 
                     discount.percentage = parseFloat(discount.percentage)
                     discount.factor = discount.percentage / 100

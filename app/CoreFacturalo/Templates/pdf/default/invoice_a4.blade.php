@@ -11,7 +11,8 @@ $itinerant = $document->itinerant;
 //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
 // $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
-$accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
+$templatePdf = (new TemplatePdf);
+$accounts = $templatePdf->getBankAccountsForPdf($document->establishment_id);
 
 if($document_base) {
 
@@ -837,6 +838,7 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     @php
                     $total_discount_line = 0;
                     foreach ($row->discounts as $disto) {
+                        if ($disto->from_global_distribution) continue;
                         $amount = $disto->discount_type_id == "00" ? $disto->amount_without_rounded * 1.18 : $disto->amount;
                         $total_discount_line = $total_discount_line + $amount;
                     }

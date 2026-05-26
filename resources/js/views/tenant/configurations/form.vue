@@ -366,22 +366,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-12">
-                                            <label class="control-label">
-                                                Mostrar cantidad unificada al agregar un mismo producto
-                                                <el-tooltip class="item"
-                                                    content="Al agregar un mismo producto más de una vez, se unificará en una sola línea sumando las cantidades - Disponible para Factura, Boleta, Cotización y Notas de venta"
-                                                    effect="dark" placement="top-start">
-                                                    <i class="fa fa-info-circle"></i>
-                                                </el-tooltip>
-                                            </label>
-                                            <div :class="{ 'has-danger': errors.show_unify_amount_items }" class="form-group">
-                                                <el-switch v-model="form.show_unify_amount_items"
-                                                            @change="submit"></el-switch>
-                                                <small v-if="errors.show_unify_amount_items" class="form-control-feedback"
-                                                    v-text="errors.show_unify_amount_items[0]"></small>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

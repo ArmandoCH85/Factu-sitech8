@@ -207,7 +207,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6 mt-4">
+                                        <div class="col-12">
                                             <label class="control-label">
                                                 Mostrar cantidad unificada al agregar un mismo producto
                                                 <el-tooltip class="item"

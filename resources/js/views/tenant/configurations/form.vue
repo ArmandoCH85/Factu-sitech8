@@ -197,6 +197,23 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Mostrar cantidad unificada al agregar un mismo producto
+                                    <el-tooltip class="item"
+                                        content="Al agregar un mismo producto más de una vez, se unificará en una sola línea sumando las cantidades - Disponible para Factura, Boleta, Cotización y Notas de venta"
+                                        effect="dark" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{ 'has-danger': errors.show_unify_amount_items }" class="form-group">
+                                    <el-switch v-model="form.show_unify_amount_items"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_unify_amount_items" class="form-control-feedback"
+                                        v-text="errors.show_unify_amount_items[0]"></small>
+                                </div>
+                            </div>
+
                             <template>
                                 <div v-if="typeUser != 'integrator'" class="col-md-4 mt-4">
                                     <label class="control-label">
@@ -2771,6 +2788,7 @@ export default {
                 add_description_to_document_item: false,
                 show_item_description_pack: false,
                 show_weighted_cost_purchase: false,
+                show_unify_amount_items: false,
                 enabled_dispatch_ticket_pdf_individual: false,
                 condition_sale_purchase_price_to_item: false,
                 show_seller_in_pdf: true,

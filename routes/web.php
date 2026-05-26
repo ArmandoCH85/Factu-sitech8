@@ -892,8 +892,8 @@ if ($hostname) {
             });
         });
 
-        //guest-Register
-        Route::prefix('guest-register')->group(function () {
+        //Register
+        Route::prefix('register')->group(function () {
 
             Route::get('/disabled', 'System\GuestRegisterController@disabled')->name('guest.register.disabled');
 

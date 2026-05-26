@@ -174,7 +174,7 @@ export default {
     },
     computed: {
         registerUrl() {
-            return window.location.origin + '/guest-register';
+            return window.location.origin + '/register';
         },
         allPlans() {
             // Usar planes pasados desde PHP (prop) o los cargados desde API

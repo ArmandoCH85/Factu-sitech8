@@ -329,7 +329,7 @@ export default {
     mixins: [serviceNumber],
     data() {
         return {
-            resource: "guest-register",
+            resource: "register",
             form: {},
             errors: {},
             loading_submit: false,

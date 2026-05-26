@@ -1032,6 +1032,9 @@ if ($hostname) {
             Route::post('configurations/bg', 'System\ConfigurationController@storeBgLogin');
             Route::post('configurations/other-configuration', 'System\ConfigurationController@storeOtherConfiguration');
             Route::get('configurations/get-other-configuration', 'System\ConfigurationController@getOtherConfiguration');
+            Route::post('configurations/update-guest-register', 'System\ConfigurationController@updateGuestRegister');
+            Route::get('configurations/get-settings', 'System\ConfigurationController@getSettings');
+            Route::post('configurations/update-toggle', 'System\ConfigurationController@updateToggle');
             Route::post('configurations/upload-tenant-ads', 'System\ConfigurationController@uploadTenantAds');
 
             Route::get('companies/record', 'System\CompanyController@record');

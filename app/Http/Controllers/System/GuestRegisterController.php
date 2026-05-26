@@ -39,9 +39,10 @@ class GuestRegisterController extends Controller
      */
     private function getDataRegister()
     {
-        $configuration = Configuration::select(['use_login_global', 'login'])->first();
+        $configuration = Configuration::select(['use_login_global', 'login', 'guest_register_plan_id'])->first();
         $use_login_global = $configuration->use_login_global;
         $login = $configuration->login;
+        $plan_default = $configuration->guest_register_plan_id;
         $default_background_image_login = asset('images/'.self::DEFAULT_BACKGROUND_IMAGE_LOGIN);
         $base_url = '.' . config('tenant.app_url_base');
 
@@ -56,7 +57,7 @@ class GuestRegisterController extends Controller
             ->orderBy('pricing')
             ->get();
 
-        return compact('login', 'use_login_global', 'default_background_image_login', 'base_url', 'plans');
+        return compact('login', 'use_login_global', 'default_background_image_login', 'base_url', 'plans', 'plan_default');
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\System\Skin as SystemSkin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\System\Client;
+use App\Models\System\Plan;
 use Hyn\Tenancy\Environment;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,10 @@ class ConfigurationController extends Controller
     public function index()
     {
         $configuration = Configuration::first();
-        return view('system.configuration.index', compact('configuration'));
+        $plans = Plan::where('id', '!=', 1)
+            ->select('id', 'name', 'pricing', 'limit_documents', 'limit_users')
+            ->get();
+        return view('system.configuration.index', compact('configuration', 'plans'));
     }
 
     public function record()
@@ -291,6 +295,9 @@ class ConfigurationController extends Controller
         if ($request->has('enable_guest_register')) {
             $record->enable_guest_register = (bool) $request->enable_guest_register;
         }
+        if ($request->has('guest_register_plan_id')) {
+            $record->guest_register_plan_id = $request->guest_register_plan_id;
+        }
         $record->save();
 
         return [
@@ -310,7 +317,8 @@ class ConfigurationController extends Controller
                                 'regex_password_client',
                                 'tenant_show_ads',
                                 'tenant_image_ads',
-                                'enable_guest_register'
+                                'enable_guest_register',
+                                'guest_register_plan_id'
                             ])
                             ->firstOrFail();
     }

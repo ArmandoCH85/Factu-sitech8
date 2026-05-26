@@ -9,6 +9,7 @@
         <system-guest-register-register
             :base-url="{{json_encode($base_url)}}"
             :plans="{{json_encode($plans)}}"
+            :plan-default="{{json_encode($plan_default)}}"
         >
             <template slot="form-logo">
                 @include('system.guest-register.partials.form_logo')

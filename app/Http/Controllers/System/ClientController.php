@@ -190,7 +190,7 @@
                 $current_month_end = $current_day->endOfMonth()->format('Y-m-d');
                 $row->current_count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$current_month_start, $current_month_end])->count(); // contador mensual
                 $row->count_doc_pse = DB::connection('tenant')->table('documents')->where('send_to_pse', true)->count();
-                // dd($row->count_doc_pse);
+                //dd($row->count_doc_pse);
 
                 $row->count_doc = DB::connection('tenant')
                     ->table('configurations')

@@ -25,7 +25,9 @@ class Configuration extends Model
         'apk_url',
         'login',
         'use_login_global',
-        'enable_guest_register', // Añadir aquí
+        'enable_guest_register',
+        'guest_register_plan_id',
+        'enable_guest_register',
         'regex_password_client',
         'tenant_show_ads',
         'tenant_image_ads',

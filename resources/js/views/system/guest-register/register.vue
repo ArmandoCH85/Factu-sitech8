@@ -135,6 +135,33 @@
                     <div class="col-md-12">
                         <div
                             :class="{
+                                'has-danger': errors.name || errors.uuid,
+                            }"
+                            class="form-group"
+                        >
+                            <label class="control-label">
+                                Nombre de la empresa
+                            </label>
+                            <el-input
+                                v-model="form.name"
+                                class="form-control form-top"
+                            >
+                            </el-input>
+                            <small
+                                v-if="errors.name"
+                                class="invalid-feedback"
+                                v-text="errors.name[0]"
+                            ></small>
+                            <small
+                                v-if="errors.uuid"
+                                class="invalid-feedback"
+                                v-text="errors.uuid[0]"
+                            ></small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div
+                            :class="{
                                 'has-danger': errors.subdomain || errors.uuid,
                             }"
                             class="form-group"
@@ -287,11 +314,16 @@ import { serviceNumber } from "../../../mixins/functions";
 export default {
     props: {
         baseUrl: {
+            type: String,
             required: true,
         },
         plans: {
             type: Array,
             default: () => [],
+        },
+        planDefault: {
+            type: [Number, String],
+            default: null,
         },
     },
     mixins: [serviceNumber],
@@ -384,7 +416,7 @@ export default {
                 number: "",
                 password: null,
                 subdomain: null,
-                plan_id: null,
+                plan_id: this.planDefault,
                 guest_register: {},
             };
 

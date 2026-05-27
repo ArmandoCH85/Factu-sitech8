@@ -349,6 +349,7 @@ class CashController extends Controller
                         }
                     } else {
                         $usado .= '<br> state_type_id: '.$document->state_type_id.'<br>';
+                            // dump($methods_payment, $record);
                         foreach ($methods_payment as $record) {
                             $record_total = $pays
                                 ->where('payment_method_type_id', $record->id)
@@ -383,8 +384,13 @@ class CashController extends Controller
                             }
                         }
                         foreach ($methods_payment as $record) {
-                            if ($record->is_credit) {
-                                $record->sum += $document->total - $pagado;
+
+                            $total = $document->fee->where('payment_method_type_id', $record->id)->sum('amount');
+
+                            if ($total > 0) {
+                                if ($record->is_credit) {
+                                    $record->sum += $document->total - $pagado;
+                                }
                             }
                         }
                     }

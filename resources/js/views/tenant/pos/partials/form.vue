@@ -115,6 +115,52 @@
                                                         <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
                                                     </div>
                                                 </div>
+                                                <div class="short-div col-md-4">
+                                                    <div :class="{'has-danger': errors.category_id}"
+                                                         class="form-group">
+                                                        <label class="control-label">Categoría</label>
+                                                        <el-input v-if="form_category.add == true"
+                                                                  v-model="form_category.name"
+                                                                  dusk="item_code"
+                                                                  style="margin-bottom:1.5%;"></el-input>
+
+                                                        <el-select v-if="form_category.add == false"
+                                                                   v-model="form.category_id"
+                                                                   clearable
+                                                                   filterable
+                                                                   :filter-method="filterCategories"
+                                                                   @visible-change="onCategoryDropdownChange"
+                                                                   @keydown.enter.native.prevent="createCategoryFromSearch">
+                                                            <el-option v-for="option in filteredCategories"
+                                                                       :key="option.id"
+                                                                       :label="option.name"
+                                                                       :value="option.id"></el-option>
+                                                            <template slot="empty">
+                                                                <p v-if="loading_search" class="el-select-dropdown__empty">
+                                                                    Cargando...
+                                                                </p>
+                                                                <p v-else-if="categorySearchQuery" class="el-select-dropdown__empty">
+                                                                    No se encontraron resultados
+                                                                </p>
+
+                                                                <p v-else class="el-select-dropdown__empty">
+                                                                    No hay categorías. <br> Escriba el nombre y presione Enter para crear
+                                                                </p>
+
+                                                                <div
+                                                                    v-if="!loading_search && categorySearchQuery"
+                                                                    class="el-select-dropdown__item new-option"
+                                                                    @click.stop="createCategoryFromSearch"
+                                                                >
+                                                                    <span>Crear categoría "{{ categorySearchQuery }}"</span>
+                                                                </div>
+                                                            </template>
+                                                        </el-select>
+                                                        <small v-if="errors.category_id"
+                                                               class="form-control-feedback"
+                                                               v-text="errors.category_id[0]"></small>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -301,6 +347,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
         data() {
             return {
                 loading_submit: false,
+                loading_search: false,
                 headers: headers_token,
                 warehouse:{},
 
@@ -311,6 +358,10 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
                 unit_types: [],
                 currency_types: [],
                 system_isc_types: [],
+                categories: [],
+                filteredCategories: [],
+                categorySearchQuery: '',
+                form_category: {add: false, name: null, id: null},
                 activeName: 'first',
                 affectation_igv_types: [],
                 show_has_igv:true,
@@ -337,6 +388,8 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
+                    this.categories = response.data.categories || []
+                    this.filteredCategories = this.categories
                     this.warehouse = (response.data.warehouse) ? response.data.warehouse:{id:1, establishment_id:1, description:'Almacén Oficina Principal'}
 
                     this.form.sale_affectation_igv_type_id =  (this.config.affectation_igv_type_id) ? this.config.affectation_igv_type_id : (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -367,6 +420,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
                     description: null,
                     second_name:null,
                     name:null,
+                    category_id: null,
                     unit_type_id: 'NIU',
                     currency_type_id: 'PEN',
                     sale_unit_price: 0,
@@ -495,6 +549,54 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
                 if (this.form.system_isc_type_id !== '03') {
                     this.form.suggested_price = 0
                 }
+            },
+            filterCategories(query) {
+                this.categorySearchQuery = query
+
+                if (query) {
+                    this.filteredCategories = this.categories.filter(category => {
+                        return category.name.toLowerCase().includes(query.toLowerCase())
+                    })
+                } else {
+                    this.filteredCategories = this.categories
+                }
+            },
+            onCategoryDropdownChange(visible) {
+                if (!visible) {
+                    this.categorySearchQuery = ''
+                } else {
+                    this.filteredCategories = this.categories
+                }
+            },
+            createCategoryFromSearch() {
+                const categoryName = this.categorySearchQuery
+
+                if (!categoryName || categoryName.trim() === '') {
+                    return
+                }
+
+                this.form_category.name = categoryName
+
+                this.$http.post(`/categories`, this.form_category)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.categories.push(response.data.data)
+                            this.filteredCategories = this.categories
+
+                            this.$nextTick(() => {
+                                this.form.category_id = response.data.data.id
+                            })
+
+                            this.form_category.name = null
+                            this.categorySearchQuery = ''
+                        } else {
+                            this.$message.error('No se guardaron los cambios')
+                        }
+                    })
+                    .catch(error => {
+                        this.$message.error('Error al crear la categoría')
+                    })
             }
         }
     }

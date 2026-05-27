@@ -508,6 +508,7 @@
 
             <purchase-form-item :showDialog.sync="showDialogAddItem"
                                 :currency-type-id-active="form.currency_type_id"
+                                :currency-types="currency_types"
                                 :exchange-rate-sale="form.exchange_rate_sale"
                                 :localHasGlobalIgv="localHasGlobalIgv"
                                 :percentage-igv="percentage_igv"

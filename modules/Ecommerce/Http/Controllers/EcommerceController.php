@@ -158,7 +158,7 @@ class EcommerceController extends Controller
             'unit_type_id' => $row->unit_type_id,
             'description' => $description,
             'category' => $row->category,
-            'stock' => $row->stock,
+            'stock' => $row->getStockByWarehouseMain(),
             // 'description' => $row->description,
             'technical_specifications' => $row->technical_specifications,
             'name' => $row->name,

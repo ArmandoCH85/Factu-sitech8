@@ -4972,6 +4972,7 @@ export default {
                 this.changeDocumentType();
             }
             this.form.id = data.id;
+            this.form.custom_fields_data = data.custom_fields_data;
             this.form.hash = data.hash;
             this.form.number = data.number;
             this.form.date_of_issue = moment(data.date_of_issue).format(

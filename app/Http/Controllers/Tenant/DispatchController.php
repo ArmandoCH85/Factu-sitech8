@@ -270,6 +270,7 @@ class DispatchController extends Controller
                 'reference_purchase_id' => $document->reference_purchase_id,
                 'document_data' => $document->reference_documents?? [],
                 'reference_documents' => $document->reference_documents?? [],
+                'custom_fields_data' => $document->custom_fields_data 
             ];
         } else {
             $observations = '';

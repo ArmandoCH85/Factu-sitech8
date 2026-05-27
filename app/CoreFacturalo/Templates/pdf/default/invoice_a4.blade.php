@@ -683,10 +683,10 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     LOTE
                 </th> @endif
                 @if($showLoteColumn) <th class="border-top-bottom text-center py-2 px-1"> F. VENC. </th> @endif
-                @if ($showDiscountItem)
-                    <th class="border-top-bottom text-right pr-2 py-2 col-total">T.REAL</th>
-                @endif
                 <th class="border-top-bottom text-right py-2 col-total">P.UNIT</th>
+                @if ($showDiscountItem)
+                    <th class="border-top-bottom text-right pl-4 col-total">P.TOTAL</th>
+                @endif
                 <th class="border-top-bottom text-right py-2 pr-2" width="8%">DTO.</th>
                 <th class="border-top-bottom text-right py-2 col-total">TOTAL</th>
             </tr>
@@ -822,14 +822,15 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                         {{ $cleanedDate }}
                     </td>
                 @endif
-                @if ($showDiscountItem)
-                    {{-- <td class="text-right align-top pr-2">{{ number_format($row->total_real, 2) }}</td> --}}
-                    <td class="text-right align-top pr-2">{{ number_format((optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price) * $row->quantity, 2) }}</td>
-                @endif
                 @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
                 <td class="text-right align-top">{{ $row->generalApplyNumberFormat( optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
                 @else
                 <td class="text-right align-top">{{ number_format(optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, 2) }}</td>
+                @endif
+
+                @if ($showDiscountItem)
+                    {{-- <td class="text-right align-top pr-2">{{ number_format($row->total_real, 2) }}</td> --}}
+                    <td class="text-right align-top pr-2">{{ number_format((optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price) * $row->quantity, 2) }}</td>
                 @endif
 
                 <td class="text-right align-top pr-2">

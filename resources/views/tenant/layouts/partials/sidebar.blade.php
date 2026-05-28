@@ -363,9 +363,15 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
 
                                 {{-- Venta Rápida --}}
                                 @if(in_array('pos_garage', $vc_module_levels))
+                                @php
+                                    $business_turns_active = \Modules\BusinessTurn\Models\BusinessTurn::where('id', 4)->value('active');
+                                @endphp
                                     <li class="{{ ($firstLevel === 'pos' && $secondLevel === 'garage') ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{ route('tenant.pos.garage') }}">Venta rápida <span
-                                                style="font-size:.65rem;">(Grifos y Markets)</span></a>
+                                        <a class="nav-link" href="{{ route('tenant.pos.garage') }}">Venta rápida
+                                            @if($business_turns_active)
+                                                <span style="font-size:.65rem;">(Grifos y Markets)</span>
+                                            @endif
+                                        </a>
                                     </li>
                                 @endif
 
@@ -776,7 +782,7 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                                                             Egresos - M. Pago</a>
                                                     </li>
                                                 @endif
-                                                @if(in_array('purchases_expenses', $vc_module_levels))
+                                                @if(in_array('bank_loan', $vc_module_levels))
                                                     <li class="{{ ($firstLevel === 'bank_loan') ? 'nav-active' : '' }}">
                                                         <a class="nav-link" href="{{route('tenant.bank_loan.index')}}">Credito Bancario</a>
                                                     </li>

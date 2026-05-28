@@ -132,14 +132,14 @@
                     <tr slot-scope="{ index, row }" :class="{'anulate_color': row.state_type_id === '11'}">
                         <template v-for="col in orderedColumns">
                             <td v-if="col.visible && col.key === 'seller_name'" :key="col.key" class="text-end">{{ row.seller_name }}</td>
-                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-center">{{ formatDate(row.date_of_issue) }}</td>
-                            <td v-if="col.visible && col.key === 'date_payment'" :key="col.key" class="text-center">{{ formatDate(row.date_of_payment) }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-center">{{ row.date_of_issue | toDate }}</td>
+                            <td v-if="col.visible && col.key === 'date_payment'" :key="col.key" class="text-center">{{ row.date_of_payment | toDate }}</td>
                             <td v-if="col.visible && col.key === 'customer'" :key="col.key">{{ row.customer_name }}<br /><small v-text="row.customer_number"></small></td>
                             <td v-if="col.visible && col.key === 'full_number'" :key="col.key">{{ row.full_number }}</td>
                             <td v-if="col.visible && col.key === 'state_type'" :key="col.key">{{ row.state_type_description }}</td>
                             <td v-if="col.visible && col.key === 'exchange_rate_sale'" :key="col.key" class="text-center">{{ row.exchange_rate_sale }}</td>
                             <td v-if="col.visible && col.key === 'currency_type'" :key="col.key" class="text-center">{{ row.currency_type_id }}</td>
-                            <td v-if="col.visible && col.key === 'due_date'" :key="col.key" class="text-end">{{ formatDate(row.due_date) }}</td>
+                            <td v-if="col.visible && col.key === 'due_date'" :key="col.key" class="text-end">{{ row.due_date | toDate }}</td>
                             <td v-if="col.visible && col.key === 'total_exportation'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_exportation) }}</td>
                             <td v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_free) }}</td>
                             <td v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end text-nowrap">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_unaffected) }}</td>

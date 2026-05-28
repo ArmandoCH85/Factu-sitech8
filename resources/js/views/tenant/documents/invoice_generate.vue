@@ -62,6 +62,7 @@
                                             :picker-options="datEmision"
                                             :readonly="readonly_date_of_due"
                                             type="date"
+                                            :format="dpDateFormat"
                                             value-format="yyyy-MM-dd"
                                             @change="changeDateOfIssue"
                                         ></el-date-picker>
@@ -87,6 +88,7 @@
                                             :clearable="false"
                                             :readonly="readonly_date_of_due"
                                             type="date"
+                                            :format="dpDateFormat"
                                             value-format="yyyy-MM-dd"
                                         ></el-date-picker>
                                         <small
@@ -2303,7 +2305,7 @@
                                                                                     :clearable="
                                                                                         false
                                                                                     "
-                                                                                    format="dd/MM/yyyy"
+                                                                                    :format="dpDateFormat"
                                                                                     type="date"
                                                                                     @change="
                                                                                         changeCreditFeeDate(
@@ -2460,7 +2462,7 @@
                                                                                     :clearable="
                                                                                         false
                                                                                     "
-                                                                                    format="dd/MM/yyyy"
+                                                                                    :format="dpDateFormat"
                                                                                     type="date"
                                                                                     value-format="yyyy-MM-dd"
                                                                                     :readonly="
@@ -3119,7 +3121,7 @@
                                                                     :clearable="
                                                                         false
                                                                     "
-                                                                    format="dd/MM/yyyy"
+                                                                    :format="dpDateFormat"
                                                                     type="date"
                                                                     @change="
                                                                         changeCreditFeeDate(
@@ -3252,7 +3254,7 @@
                                                                     :clearable="
                                                                         false
                                                                     "
-                                                                    format="dd/MM/yyyy"
+                                                                    :format="dpDateFormat"
                                                                     type="date"
                                                                     value-format="yyyy-MM-dd"
                                                                 >

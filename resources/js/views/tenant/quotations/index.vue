@@ -89,7 +89,7 @@
                         :class="{ anulate_color: row.state_type_id == '11' }"
                     >
                         <template v-for="col in orderedColumns">
-                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ formatDate(row.date_of_issue) }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ row.date_of_issue | toDate }}</td>
                             <td v-if="col.visible && col.key === 'delivery_date'" :key="col.key" class="text-center">{{ row.delivery_date }}</td>
                             <td v-if="col.visible && col.key === 'registered_by'" :key="col.key">{{ row.user_name }}</td>
                             <td v-if="col.visible && col.key === 'seller'" :key="col.key">{{ row.seller_name }}</td>
@@ -129,7 +129,7 @@
                                         <table>
                                             <tr><td><strong>O. Venta: </strong></td><td><strong>{{ row.sale_opportunity_number_full }}</strong></td></tr>
                                             <tr><td><strong>Detalle: </strong></td><td><strong>{{ row.sale_opportunity.detail }}</strong></td></tr>
-                                            <tr class="mt-4 mb-4"><td><strong>F. Emisión:</strong></td><td><strong>{{ row.date_of_issue }}</strong></td></tr>
+                                            <tr class="mt-4 mb-4"><td><strong>F. Emisión:</strong></td><td><strong>{{ row.date_of_issue | toDate }}</strong></td></tr>
                                         </table>
                                         <div class="table-responsive mt-4">
                                             <table class="table">

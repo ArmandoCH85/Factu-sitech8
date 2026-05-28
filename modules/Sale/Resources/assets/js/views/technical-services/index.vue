@@ -74,7 +74,7 @@
                         <td class="text-end">{{ row.cellphone }}</td>
                         <td class="text-end">{{ row.id }}</td>
                         <td class="text-start">
-                            {{ formatDate(row.date_of_issue) }}
+                            {{ row.date_of_issue | toDate }}
                         </td>
                         <td class="text-center">{{ row.serial_number }}</td>
                         <td class="text-center">{{ formatDecimal(row.cost) }}</td>

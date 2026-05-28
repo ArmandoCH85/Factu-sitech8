@@ -152,8 +152,8 @@
                         :class="{ anulate_color: row.state_type_id == '11' }"
                     >
                         <template v-for="col in orderedColumns">
-                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ formatDate(row.date_of_issue) }}</td>
-                            <td v-if="col.visible && col.key === 'delivery_date'" :key="col.key" class="text-center">{{ formatDate(row.delivery_date) }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ row.date_of_issue | toDate }}</td>
+                            <td v-if="col.visible && col.key === 'delivery_date'" :key="col.key" class="text-center">{{ row.delivery_date | toDate }}</td>
                             <td v-if="col.visible && col.key === 'seller'" :key="col.key">{{ row.user_name }}</td>
                             <td v-if="col.visible && col.key === 'customer'" :key="col.key">{{ row.customer_name }}<br /><small v-text="row.customer_number"></small></td>
                             <td v-if="col.visible && col.key === 'state_type'" :key="col.key">

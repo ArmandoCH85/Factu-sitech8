@@ -60,6 +60,7 @@
                                     <el-date-picker
                                         v-model="form.date_of_issue"
                                         type="date"
+                                        :format="dpDateFormat"
                                         value-format="yyyy-MM-dd"
                                         :clearable="false"
                                         @change="changeDateOfIssue"
@@ -1513,7 +1514,7 @@
                                                                                     :clearable="
                                                                                         false
                                                                                     "
-                                                                                    format="dd/MM/yyyy"
+                                                                                    :format="dpDateFormat"
                                                                                     type="date"
                                                                                     value-format="yyyy-MM-dd"
                                                                                     :readonly="

@@ -64,6 +64,7 @@
                                     <el-date-picker
                                         v-model="form.date_of_issue"
                                         type="date"
+                                        :format="dpDateFormat"
                                         value-format="yyyy-MM-dd"
                                         :clearable="false"
                                         @change="changeDateOfIssue"
@@ -89,6 +90,7 @@
                                     <el-date-picker
                                         v-model="form.due_date"
                                         type="date"
+                                        :format="dpDateFormat"
                                         value-format="yyyy-MM-dd"
                                         :clearable="true"
                                         :picker-options="pickerOptions"
@@ -1466,7 +1468,7 @@
                                                                 :clearable="
                                                                     false
                                                                 "
-                                                                format="dd/MM/yyyy"
+                                                                :format="dpDateFormat"
                                                                 type="date"
                                                                 @change="
                                                                     changeCreditFeeDate(
@@ -1623,7 +1625,7 @@
                                                                 :clearable="
                                                                     false
                                                                 "
-                                                                format="dd/MM/yyyy"
+                                                                :format="dpDateFormat"
                                                                 type="date"
                                                                 value-format="yyyy-MM-dd"
                                                                 :readonly="

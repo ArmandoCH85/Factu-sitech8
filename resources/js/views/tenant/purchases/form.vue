@@ -64,10 +64,11 @@
                             <div class="col-6 col-lg-2">
                                 <div :class="{'has-danger': errors.date_of_issue}"
                                      class="form-group">
-                                    <label class="control-label">Fec Emisión</label>
+                                    <label class="control-label">Fec. Emisión</label>
                                     <el-date-picker v-model="form.date_of_issue"
                                                     :clearable="false"
                                                     type="date"
+                                                    :format="dpDateFormat"
                                                     value-format="yyyy-MM-dd"
                                                     :readonly="readonly_date_of_due"
                                                     @change="changeDateOfIssue"></el-date-picker>
@@ -85,6 +86,7 @@
                                                     :clearable="false"
                                                     type="date"
                                                     :readonly="readonly_date_of_due"
+                                                    :format="dpDateFormat"
                                                     value-format="yyyy-MM-dd"></el-date-picker>
                                     <small v-if="errors.date_of_due"
                                            class="form-control-feedback"

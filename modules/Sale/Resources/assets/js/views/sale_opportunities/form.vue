@@ -33,7 +33,7 @@
                             <div class="form-group col-lg-6 col-12 ms-auto" :class="{'has-danger': errors.date_of_issue}">
                                 <!--<label class="control-label">Fecha de emisión</label>-->
                                 <label class="control-label">Fec. Emisión</label>
-                                <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd"
+                                <el-date-picker v-model="form.date_of_issue" type="date" :format="dpDateFormat" value-format="yyyy-MM-dd"
                                                 :clearable="false" @change="changeDateOfIssue"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_issue"
                                        v-text="errors.date_of_issue[0]"></small>

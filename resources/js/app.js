@@ -60,6 +60,49 @@ Vue.use(VueClipboard)
 
 import moment from 'moment';
 
+// Formato de fecha/hora configurable por el usuario (Configuración general > formato).
+// El valor vive en store.state.config (hidratado desde el backend vía getCollectionData)
+// y se almacena como token de moment.js. Si todavía no está disponible se usa el
+// formato histórico para no alterar la vista en instalaciones existentes.
+const DATE_PARSE_FORMATS = ['YYYY-MM-DD HH:mm:ss', moment.ISO_8601, 'YYYY-MM-DD', 'DD-MM-YYYY', 'DD/MM/YYYY'];
+const TIME_PARSE_FORMATS = ['HH:mm:ss', 'HH:mm', moment.ISO_8601];
+
+function configDateFormat() {
+    return (store.state.config && store.state.config.date_format) || 'DD-MM-YYYY';
+}
+
+function configTimeFormat() {
+    return (store.state.config && store.state.config.time_format) || 'HH:mm:ss';
+}
+
+// Las fechas llegan en formatos mixtos según la vista (ISO desde unas, DD-MM-YYYY desde
+// otras), por eso se intenta primero un parseo estricto multi-formato y, si falla, se cae
+// al parseo permisivo de moment (comportamiento previo del filtro).
+function parseFlexible(value, formats) {
+    const m = moment(value, formats, true);
+    return m.isValid() ? m : moment(value);
+}
+
+// El resto (MM, HH, hh, mm, ss) coincide. Esta función traduce el token guardado
+// (moment) al token que entiende el prop `format` de el-date-picker.
+// IMPORTANTE: solo afecta el display del input; el `value-format` (lo que va al backend)
+// se mantiene en ISO en cada componente que lo usa, así la request al backend no cambia.
+function momentToElementUIFormat(token) {
+    if (!token) return '';
+    return String(token).replace(/YYYY/g, 'yyyy').replace(/DD/g, 'dd').replace(/\bA\b/g, 'a');
+}
+
+Vue.mixin({
+    computed: {
+        dpDateFormat() {
+            return momentToElementUIFormat(configDateFormat());
+        },
+        dpTimeFormat() {
+            return momentToElementUIFormat(configTimeFormat());
+        }
+    }
+});
+
 Vue.mixin({
     filters: {
         toDecimals(number, decimal = 2) {
@@ -70,16 +113,17 @@ Vue.mixin({
         },
         toDate(date) {
             if (date) {
-                return moment(date).format('DD/MM/YYYY');
+                return parseFlexible(date, DATE_PARSE_FORMATS).format(configDateFormat());
             }
             return '';
         },
         toTime(time) {
             if (time) {
-                if (time.length === 5) {
-                    return moment(time + ':00', 'HH:mm:ss').format('HH:mm:ss');
+                const fmt = configTimeFormat();
+                if (typeof time === 'string' && time.length === 5) {
+                    return moment(time + ':00', 'HH:mm:ss').format(fmt);
                 }
-                return moment(time, 'HH:mm:ss').format('HH:mm:ss');
+                return parseFlexible(time, TIME_PARSE_FORMATS).format(fmt);
             }
             return '';
         },

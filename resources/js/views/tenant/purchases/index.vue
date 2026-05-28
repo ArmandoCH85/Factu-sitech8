@@ -85,8 +85,8 @@
                     </tr>
                     <tr slot-scope="{ index, row }" :class="{'anulate_color': row.state_type_id === '11'}">
                         <template v-for="col in orderedColumns">
-                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ formatDate(row.date_of_issue) }}</td>
-                            <td v-if="col.visible && col.key === 'date_of_due'" :key="col.key" class="text-center" :class="{ 'text-danger': row.state_type_payment_description != 'Pagado' && isDateWarning(row.date_of_due) }">{{ formatDate(row.date_of_due) }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_issue'" :key="col.key" class="text-start">{{ row.date_of_issue | toDate }}</td>
+                            <td v-if="col.visible && col.key === 'date_of_due'" :key="col.key" class="text-center" :class="{ 'text-danger': row.state_type_payment_description != 'Pagado' && isDateWarning(row.date_of_due) }">{{ row.date_of_due | toDate }}</td>
                             <td v-if="col.visible && col.key === 'supplier'" :key="col.key">{{ row.supplier_name }}<br /><small v-text="row.supplier_number"></small></td>
                             <td v-if="col.visible && col.key === 'state_type'" :key="col.key">{{ row.state_type_description }}</td>
                             <td v-if="col.visible && col.key === 'payment_state'" :key="col.key" :class="row.state_type_payment_description == 'Pagado' ? 'text-success' : 'text-warning'">{{ row.state_type_payment_description }}</td>

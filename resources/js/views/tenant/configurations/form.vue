@@ -629,7 +629,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 col-12">
                                             <label class="control-label">
                                                 Habilitar búsqueda avanzada
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
@@ -658,6 +658,43 @@
                                                     @change="submit"></el-input-number>
                                                 <small v-if="errors.decimal_quantity" class="form-control-feedback"
                                                     v-text="errors.decimal_quantity[0]"></small>
+                                            </div>
+                                        </div>
+
+                                        <div v-if="typeUser != 'integrator'" class="col-md-6">
+                                            <label class="control-label">Formato de fecha
+                                                <el-tooltip class="item" effect="dark" placement="top-start"
+                                                    content="Formato con el que se muestran las fechas en los listados (no afecta el almacenamiento ni los comprobantes electrónicos).">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{ 'has-danger': errors.date_format }" class="form-group w-50">
+                                                <el-select v-model="form.date_format" @change="submit" class="w-100">
+                                                    <el-option label="20-05-2026  (DD-MM-YYYY)" value="DD-MM-YYYY"></el-option>
+                                                    <el-option label="20/05/2026  (DD/MM/YYYY)" value="DD/MM/YYYY"></el-option>
+                                                    <el-option label="20·05·2026  (DD·MM·YYYY)" value="DD·MM·YYYY"></el-option>
+                                                    <el-option label="2026-05-20  (YYYY-MM-DD, ISO)" value="YYYY-MM-DD"></el-option>
+                                                </el-select>
+                                                <small v-if="errors.date_format" class="form-control-feedback"
+                                                    v-text="errors.date_format[0]"></small>
+                                            </div>
+                                        </div>
+
+                                        <div v-if="typeUser != 'integrator'" class="col-md-6">
+                                            <label class="control-label">Formato de hora
+                                                <el-tooltip class="item" effect="dark" placement="top-start"
+                                                    content="Formato con el que se muestran las horas en los listados.">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{ 'has-danger': errors.time_format }" class="form-group w-50">
+                                                <el-select v-model="form.time_format" @change="submit" class="w-100">
+                                                    <el-option label="14:30  (24h)" value="HH:mm"></el-option>
+                                                    <el-option label="14:30:45  (24h con segundos)" value="HH:mm:ss"></el-option>
+                                                    <el-option label="02:30 PM  (12h)" value="hh:mm A"></el-option>
+                                                </el-select>
+                                                <small v-if="errors.time_format" class="form-control-feedback"
+                                                    v-text="errors.time_format[0]"></small>
                                             </div>
                                         </div>
                                     </div>
@@ -3527,6 +3564,8 @@ export default {
                 sunat_alternate_server: false,
                 subtotal_account: null,
                 decimal_quantity: null,
+                date_format: 'DD-MM-YYYY',
+                time_format: 'HH:mm:ss',
                 amount_plastic_bag_taxes: 0.1,
                 colums_grid_item: 4,
                 affectation_igv_type_id: '10',

@@ -1756,24 +1756,7 @@ export default {
             recordItem: null,
             total_discount_no_base: 0,
             selected_option_price: null,
-            price_options: [
-                {
-                    id: 1,
-                    description: "Precio principal"
-                },
-                {
-                    id: "price1",
-                    description: "Precio 1"
-                },
-                {
-                    id: "price2",
-                    description: "Precio 2"
-                },
-                {
-                    id: "price3",
-                    description: "Precio 3"
-                }
-            ],
+            price_options: [],
             enabled_discount_global: false,
             is_amount: true,
             total_global_discount: 0,
@@ -1792,17 +1775,11 @@ export default {
         }
     },
     async created() {
-        this.selected_option_price = this.price_options[0].id;
         this.loadConfiguration();
         this.$store.commit("setConfiguration", this.configuration);
-        
-        // Actualizar price_options con los labels personalizados
-        if (this.config) {
-            this.price_options[1].description = this.config.price1_label || 'Precio 1';
-            this.price_options[2].description = this.config.price2_label || 'Precio 2';
-            this.price_options[3].description = this.config.price3_label || 'Precio 3';
-        }
-        
+
+        await this.loadPriceOptions();
+
         await this.initForm();
         await this.$http.get(`/${this.resource}/tables`).then(response => {
             const data = response.data;
@@ -2079,6 +2056,46 @@ export default {
             window.open(`/items/show-item-detail/${id}`);
         },
         ...mapActions(["loadConfiguration"]),
+        async loadPriceOptions() {
+            try {
+                const response = await this.$http.get('/price-labels/active');
+                const labels = response.data.data || [];
+
+                const mainLabel = (this.config && this.config.price1_label) ? this.config.price1_label : 'Precio principal';
+                this.price_options = [
+                    {
+                        id: 1,
+                        description: mainLabel,
+                        price_label_id: null
+                    }
+                ];
+
+                labels.forEach(label => {
+                    this.price_options.push({
+                        id: `price_label_${label.id}`,
+                        description: label.label,
+                        price_label_id: label.id
+                    });
+                });
+
+                const defaultLabel = labels.find(l => l.is_default);
+                if (defaultLabel) {
+                    this.selected_option_price = `price_label_${defaultLabel.id}`;
+                } else if (this.price_options.length > 0) {
+                    this.selected_option_price = this.price_options[0].id;
+                }
+            } catch (error) {
+                console.error('Error al cargar price_options:', error);
+                this.price_options = [
+                    {
+                        id: 1,
+                        description: "Precio principal",
+                        price_label_id: null
+                    }
+                ];
+                this.selected_option_price = 1;
+            }
+        },
         clickAddItem() {
             this.recordItem = null;
             this.showDialogAddItem = true;
@@ -2105,7 +2122,7 @@ export default {
             }
 
             this.selected_option_price = customer?.price_label_id
-                ? `price${customer.price_label_id}`
+                ? `price_label_${customer.price_label_id}`
                 : 1;
         },
         changeTermsCondition() {
@@ -2642,7 +2659,7 @@ export default {
                     );
 
                     this.selected_option_price = customer?.price_label_id
-                        ? `price${customer.price_label_id}`
+                        ? `price_label_${customer.price_label_id}`
                         : 1;
                 });
         },

@@ -159,6 +159,8 @@ if ($hostname) {
             Route::put('price-labels/{id}', 'Tenant\PriceLabelController@update');
             Route::delete('price-labels/{id}', 'Tenant\PriceLabelController@destroy');
             Route::post('price-labels/update-order', 'Tenant\PriceLabelController@updateOrder');
+            Route::post('price-labels/{id}/set-default', 'Tenant\PriceLabelController@setDefault');
+            Route::post('price-labels/clear-default', 'Tenant\PriceLabelController@clearDefault');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');

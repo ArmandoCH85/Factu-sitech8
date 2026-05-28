@@ -22304,6 +22304,9 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
     border: 1px solid color-mix(in srgb, #444444 96%, #000000);
     border-radius: 8px;
 }
+.el-tag--small {
+    line-height: normal !important;
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

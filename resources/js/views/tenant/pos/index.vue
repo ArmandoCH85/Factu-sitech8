@@ -1491,8 +1491,11 @@ export default {
                     });
                 });
 
-                // Seleccionar la primera opción por defecto
-                if (this.price_options.length > 0) {
+                // Seleccionar el label marcado como default, o el primero como fallback
+                const defaultLabel = labels.find(l => l.is_default);
+                if (defaultLabel) {
+                    this.selected_option_price = `price_label_${defaultLabel.id}`;
+                } else if (this.price_options.length > 0) {
                     this.selected_option_price = this.price_options[0].id;
                 }
             } catch (error) {

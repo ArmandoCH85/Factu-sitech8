@@ -2445,6 +2445,12 @@ export default {
                         price_label_id: label.id
                     });
                 });
+
+                // Seleccionar el label marcado como default; si no hay, queda con el ya asignado (Precio Principal)
+                const defaultLabel = labels.find(l => l.is_default);
+                if (defaultLabel) {
+                    this.selected_option_price = `price_label_${defaultLabel.id}`;
+                }
             } catch (error) {
                 console.error('Error al cargar price labels:', error);
             }

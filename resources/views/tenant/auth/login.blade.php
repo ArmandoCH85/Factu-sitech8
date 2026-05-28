@@ -66,7 +66,7 @@
                 iniciar sesión
             </button>
             <div class="text-center p-4 password-down">
-                <<a href="{{ route('password.request') }}" tabindex="5">¿Has olvidado tu contraseña?</a>
+                <a href="{{ route('password.request') }}" tabindex="5">¿Has olvidado tu contraseña?</a>
             </div>
             @include('tenant.auth.partials.socials')
         </form>

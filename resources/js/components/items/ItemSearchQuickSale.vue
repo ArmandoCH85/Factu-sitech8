@@ -142,6 +142,13 @@
             if (storedSearchByBarcode !== null) {
                 this.search_item_by_barcode = JSON.parse(storedSearchByBarcode);
             }
+            const storedSearchOnEnter = localStorage.getItem('search_on_enter');
+            if (storedSearchOnEnter !== null) {
+                this.searchOnEnter = JSON.parse(storedSearchOnEnter);
+                if (this.searchOnEnter) {
+                    this.items = [];
+                }
+            }
         },
         methods:
         {
@@ -319,6 +326,7 @@
                 }
             },
             changeSearchOnEnter() {
+                localStorage.setItem('search_on_enter', JSON.stringify(this.searchOnEnter));
                 if(this.searchOnEnter) {
                     this.items = []
                 }

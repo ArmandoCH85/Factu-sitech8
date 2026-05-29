@@ -9,7 +9,7 @@
     @endphp
 
     <br>
-    <table class="full-width" style="border: 1px solid #000;">
+    <table class="full-width" style="border: 1px solid #000; width: 90%; margin: auto;">
         <tr>
             <td class="desc">@include('pdf.partials.company_document_header_names_plain')</td>
             <td class="text-right desc">Fecha: {{ $document->created_at->format('Y-m-d H:i') }}</td>

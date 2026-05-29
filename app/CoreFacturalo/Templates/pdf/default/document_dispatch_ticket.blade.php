@@ -7,7 +7,7 @@
 </head>
 <body class="ticket">
 <div style="height:10pt"></div>
-<table class="full-width">
+<table class="full-width" class="width: 90%; margin: auto;">
     <tr>
         <td class="text-center">@include('pdf.partials.company_document_header_names')</td>
     </tr>

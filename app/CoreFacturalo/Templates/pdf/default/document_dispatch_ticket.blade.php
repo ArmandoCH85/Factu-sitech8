@@ -7,7 +7,7 @@
 </head>
 <body class="ticket">
 <div style="height:10pt"></div>
-<table class="full-width" class="width: 90%; margin: auto;">
+<table style="margin: auto;">
     <tr>
         <td class="text-center">@include('pdf.partials.company_document_header_names')</td>
     </tr>
@@ -18,7 +18,7 @@
         <td class="text-center pb-1"><h5>{{ $document_number }}</h5></td>
     </tr>
 </table>
-<table class="full-width">
+<table style="margin: auto;">
     <tr >
         <td width="" class="pt-1"><p class="desc">F. Emisión:</p></td>
         <td width="" class="pt-1"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>

@@ -88,14 +88,13 @@
                     <span class="old-price">{{ $record->currency_type['symbol'] }} {{ number_format( ($record->sale_unit_price * 1.2 ) , 2 ) }}</span>
                     <span class="product-price">{{ $record->currency_type['symbol'] }} {{ number_format($record->sale_unit_price, 2) }}</span>
                 </div><!-- End .price-box -->
-
                 <div class="product-desc">
                     @if ($record->category && $record->category->name)
                         <p class="product-category hsja">Categoría: <span> {{$record->category->name}} </span></p>
                     @endif
-                    <p class="product-stock">Disponible: <span>{{number_format(($record->stock), 0)}} </span>
+                    <p class="product-stock">Disponible: <span>{{number_format(($record->getStockByWarehouseMain()), 0)}} </span>
                     <?php
-                    if($record->stock > 0){?>
+                    if($record->getStockByWarehouseMain() > 0){?>
                         <span
                         class="alert-stock" role="alert">En stock</span>
                     <?php

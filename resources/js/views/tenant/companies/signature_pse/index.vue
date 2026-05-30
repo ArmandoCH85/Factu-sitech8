@@ -55,21 +55,21 @@
                                         :label="option.description"
                                         :value="option.id"></el-option>
                                 </el-select>
-                                <small class="form-control-feedback" v-if="errors.pse_provider_id" v-text="errors.pse_provider_id[0]"></small>
+                                <small class="form-control-feedback text-danger" v-if="errors.pse_provider_id" v-text="errors.pse_provider_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-6 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.user_pse}">
                                 <label class="control-label">Usuario autenticación <span class="text-danger">*</span></label>
                                 <el-input v-model="form.user_pse"></el-input>
-                                <small class="form-control-feedback" v-if="errors.user_pse" v-text="errors.user_pse[0]"></small>
+                                <small class="form-control-feedback text-danger" v-if="errors.user_pse" v-text="errors.user_pse[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-6 mt-3">
                             <div class="form-group" :class="{'has-danger': errors.password_pse}">
                                 <label class="control-label">Contraseña autenticación <span class="text-danger">*</span></label>
                                 <el-input v-model="form.password_pse" show-password></el-input>
-                                <small class="form-control-feedback" v-if="errors.password_pse" v-text="errors.password_pse[0]"></small>
+                                <small class="form-control-feedback text-danger" v-if="errors.password_pse" v-text="errors.password_pse[0]"></small>
                             </div>
                         </div>
                         <!-- <div class="col-md-12 mt-3">

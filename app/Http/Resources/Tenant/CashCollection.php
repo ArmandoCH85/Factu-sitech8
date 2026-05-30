@@ -37,7 +37,7 @@ class CashCollection extends ResourceCollection
                 'state' => (bool) $row->state, 
                 'state_description' => ($row->state) ? 'Aperturada':'Cerrada',
                 'reference_number' => $row->reference_number,
-
+                'user_email' => optional($row->user)->email,
             ];
         });
     }

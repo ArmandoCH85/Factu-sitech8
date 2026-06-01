@@ -1445,11 +1445,10 @@ export default {
             let amount = total ? total: this.form.total
             this.inputDiscountAmount()
 
-            if (this.rowsItems < 1) {
+            if (!this.form.items || this.form.items.length < 1) {
                 this.form.payments = [];
                 this.payments = [];
                 this.setAmount(0);
-                this.setFormPosLocalStorage && this.setFormPosLocalStorage();
                 return;
             }
 

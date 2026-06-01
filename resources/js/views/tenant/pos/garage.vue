@@ -287,21 +287,6 @@
                                         <h5
                                             class="font-weight-semibold text-center m-0"
                                         >
-                                            <button
-                                                v-if="
-                                                    configuration.options_pos &&
-                                                        edit_unit_price
-                                                "
-                                                type="button"
-                                                class="btn btn-xs btn-primary-pos"
-                                                @click="
-                                                    clickOpenInputEditUP(index)
-                                                "
-                                            >
-                                                <span style="font-size:16px;"
-                                                    >&#9998;</span
-                                                >
-                                            </button>
                                             {{ item.currency_type_symbol }}
                                             {{ item.sale_unit_price }}
                                         </h5>
@@ -771,11 +756,7 @@
                                                     @input="
                                                         calculateQuantity(index)
                                                     "
-                                                    @blur="
-                                                        blurCalculateQuantity(
-                                                            index
-                                                        )
-                                                    "
+                                                    @blur="changeRowTotalGarage(index)"
                                                     :readonly="!edit_unit_price && !item.item.calculate_quantity"
                                                 >
                                                 </el-input>
@@ -1150,6 +1131,38 @@ export default {
         }
     },
     methods: {
+        changeRowTotalGarage(index) {
+            const item = this.form.items[index];
+
+            if (item.item.calculate_quantity) {
+                this.blurCalculateQuantity(index);
+                return;
+            }
+
+            const quantity = parseFloat(item.quantity);
+            const newTotal = parseFloat(item.total);
+
+            if (isNaN(newTotal) || isNaN(quantity) || quantity <= 0) {
+                this.blurCalculateQuantity(index);
+                return;
+            }
+
+            // Precio unitario bruto (con IGV) desde el total
+            const newUnitPrice = newTotal / quantity;
+            item.item.unit_price = newUnitPrice;
+
+            // Guardar también en sale_unit_price para que cambiar la cantidad NO lo revierta
+            item.item.sale_unit_price = item.item.has_igv
+                ? newUnitPrice
+                : newUnitPrice / (1 + this.percentage_igv);
+
+            this.row = calculateRowItem(item, this.form.currency_type_id, 1, this.percentage_igv);
+            this.row["unit_type_id"] = item.unit_type_id;
+            this.form.items[index] = this.row;
+
+            this.calculateTotal();
+            this.setFormPosLocalStorage();
+        },
         enabledSearchItemByBarcode() {
             if (this.configuration.search_item_by_barcode) {
                 this.search_item_by_barcode = true;

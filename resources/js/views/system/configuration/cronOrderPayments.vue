@@ -166,14 +166,19 @@ export default {
         loadMessage(text) {
             if (!text) return '';
             const allowedVariables = Object.keys(this.variablesDisponibles);
-            // Reemplaza {{variable}} por <span> atómico
-            let html = text.replace(/\{\{([^}]+)\}\}/g, (match, variable) => {
-                if (allowedVariables.includes(variable)) {
-                    return `<span class="variable-tag" contenteditable="false">{{${variable}}}</span>`;
+
+            // Normaliza formato viejo @variable_x → {{x}}
+            text = text.replace(/@variable_(\w+)/g, '{{$1}}');
+
+            // (lo que ya tenías) convierte {{x}} en chips
+            let html = text.replace(/\{\{\s*([^}]+?)\s*\}\}/g, (match, variable) => {
+                const v = variable.trim();
+                if (allowedVariables.includes(v)) {
+                    return `<span class="variable-tag" contenteditable="false">{{${v}}}</span>`;
                 }
                 return match;
             });
-            // Reemplaza saltos de línea por <br>
+
             return html.replace(/\n/g, '<br>');
         },
 

@@ -1114,7 +1114,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6 mt-4">
+                                        <div class="col-12">
                                             <label class="control-label">Restringir venta de productos menores al precio de compra
                                                 <el-tooltip class="item"
                                                     content="Validar que el precio de compra del producto no sea superior al de venta - Disponible Ventas/Comprobante electrónico - Nota de venta"
@@ -1810,7 +1810,7 @@
                                     </div>
                                     <div class="row mx-0 adv-conf-container">
                                         <div class="col-12">
-                                            <label class="">Mostrar cuentas bancarias
+                                            <label class="control-label">Mostrar cuentas bancarias
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">Visualizar cuentas bancarias en pdf
                                                     </div>
@@ -1828,7 +1828,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label class="">Visualizar vendedor
+                                            <label class="control-label">Visualizar vendedor
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">Visualizar vendedor que genero un comprobante en el pdf
                                                     </div>
@@ -2085,7 +2085,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label>
+                                            <label class="control-label">
                                                 Activar servicios
                                                 <el-tooltip class="item"
                                                     content="Muestra los servicios en el punto de venta. Si está desactivado, no se podrán vender."
@@ -2104,7 +2104,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label>
+                                            <label class="control-label">
                                                 Habilitar vista categorias y productos
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">
@@ -2173,7 +2173,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label>
+                                            <label class="control-label">
                                                 Modificar tipo de afectación
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">
@@ -2196,7 +2196,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label>
+                                            <label class="control-label">
                                                 Convertir a CPE
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">
@@ -2306,7 +2306,7 @@
                                     </div>
                                     <div class="row mx-0 adv-conf-container">
                                         <div class="col-12">
-                                            <label>
+                                            <label class="control-label">
                                                 Mostrar historial de precio de costos
                                                 <el-tooltip class="item"
                                                     content="Permite a los usuarios con perfil Vendedor, ver el historial de precio de costos"
@@ -2325,7 +2325,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label>
+                                            <label class="control-label">
                                                 Habilitar restricción para descuento
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">
@@ -3178,7 +3178,7 @@
                                         </div>
 
                                         <div class="col-12">
-                                            <label class="">Clientes
+                                            <label class="control-label">Clientes
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
                                                     <div slot="content">Leyenda: Top de clientes</div>
                                                     <i class="fa fa-info-circle"></i>

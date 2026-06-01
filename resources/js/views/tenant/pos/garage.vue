@@ -577,7 +577,7 @@
                                             </el-tooltip>
                                         </el-col>
 
-                                        <el-col
+                                        <!-- <el-col
                                             :span="6"
                                             v-if="
                                                 allowedChangeAffectationExoneratedIgv(
@@ -631,7 +631,7 @@
                                                     </button>
                                                 </el-popover>
                                             </el-tooltip>
-                                        </el-col>
+                                        </el-col> -->
                                     </el-row>
                                 </div>
                             </section>

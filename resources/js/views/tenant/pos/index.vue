@@ -806,21 +806,12 @@
                                                 <span>
                                                     {{ currency_type.symbol }}
                                                 </span>
-                                                <span
-                                                    v-text="item.total.toFixed(2)"
-                                                    @input="
-                                                        calculateQuantity(index)
-                                                    "
-                                                    @blur="
-                                                        blurCalculateQuantity(index)
-                                                    "
-                                                    :contenteditable="
-                                                        !item.item
-                                                            .calculate_quantity
-                                                            ? 'false'
-                                                            : 'true'
-                                                    "
-                                                ></span>
+                                                <el-input
+                                                    v-model="item.total"
+                                                    size="mini"
+                                                    @blur="changeRowTotal(index)"
+                                                    :readonly="!edit_unit_price && !item.item.calculate_quantity"
+                                                ></el-input>
                                             </span>
                                         </template>
                                         <template v-else>
@@ -1452,7 +1443,10 @@ export default {
                 return true;
             }
             if (this.typeUser === "seller") {
-                return this.configuration.allow_edit_unit_price_to_seller;
+                return (
+                    this.configuration.allow_edit_unit_price_to_seller ||
+                    (this.user && this.user.permission_edit_item_prices)
+                );
             }
             return false;
         },
@@ -1464,6 +1458,35 @@ export default {
         }
     },
     methods: {
+        changeRowTotal(index) {
+            const item = this.form.items[index];
+
+            if (item.item.calculate_quantity) {
+                this.blurCalculateQuantity(index);
+                return;
+            }
+
+            const quantity = parseFloat(item.quantity);
+            const newTotal = parseFloat(item.total);
+
+            if (isNaN(newTotal) || isNaN(quantity) || quantity <= 0) {
+                this.blurCalculateQuantity(index);
+                return;
+            }
+
+            const newUnitPrice = newTotal / quantity;
+            item.item.unit_price = newUnitPrice;
+            item.item.sale_unit_price = item.item.has_igv
+                ? newUnitPrice
+                : newUnitPrice / (1 + this.percentage_igv);
+
+            this.row = calculateRowItem(item, this.form.currency_type_id, 1, this.percentage_igv);
+            this.row["unit_type_id"] = item.unit_type_id;
+            this.form.items[index] = this.row;
+
+            this.calculateTotal();
+            this.setFormPosLocalStorage();
+        },
         ...mapActions(["loadConfiguration"]),
         /**
          * Cargar opciones de precio desde la API de price_labels activos

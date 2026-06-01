@@ -278,7 +278,7 @@
                                 <div class="col-lg-4 position-relative">
                                     <span slot="prepend" class="currency-symbol-span">{{ currencyTypeActive.symbol }}</span>
                                     <div class="form-group amount-container">
-                                        <label class="control-label text-start w-100">Ingrese monto</label>
+                                        <label class="control-label text-start w-100">Ingrese montosss</label>
                                         <el-input ref="enter_amount"
                                                   v-model="enter_amount"
                                                   @input="enterAmount()"

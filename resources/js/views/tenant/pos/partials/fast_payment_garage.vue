@@ -1444,6 +1444,15 @@ export default {
         checkPaymentGarage(total = null) {
             let amount = total ? total: this.form.total
             this.inputDiscountAmount()
+
+            if (this.rowsItems < 1) {
+                this.form.payments = [];
+                this.payments = [];
+                this.setAmount(0);
+                this.setFormPosLocalStorage && this.setFormPosLocalStorage();
+                return;
+            }
+
             if (this.form.payments.length == 0) {
                 this.$refs.componentMultiplePaymentGarage.clickAddPayment(amount)
                 this.setAmount(this.form.total)

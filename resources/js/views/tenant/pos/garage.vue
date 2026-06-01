@@ -776,10 +776,7 @@
                                                             index
                                                         )
                                                     "
-                                                    :readonly="
-                                                        !item.item
-                                                            .calculate_quantity
-                                                    "
+                                                    :readonly="!edit_unit_price && !item.item.calculate_quantity"
                                                 >
                                                 </el-input>
                                             </template>

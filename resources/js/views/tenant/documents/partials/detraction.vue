@@ -58,6 +58,13 @@
                         </div>
 
                         <div class="col-md-6">
+                            <div class="short-div col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Fondo de garantía
+                                        </label>
+                                        <el-input v-model="detraction.guarantee_fund"></el-input>
+                                    </div>
+                            </div>
                             <div class="form-group" >
                                 <label class="control-label">Imágen constancia</label>
                                 <el-upload class="uploader"

@@ -555,6 +555,7 @@ class DocumentInput
                 $exchange_rate = $retention['exchange_rate'];
                 $amount_pen = $retention['amount_pen'];
                 $amount_usd = $retention['amount_usd'];
+                $guarantee_fund = isset($retention['guarantee_fund']) ? $retention['guarantee_fund'] : 0;
 
                 return [
                     'code' => $code,
@@ -569,6 +570,7 @@ class DocumentInput
                     'voucher_number' => null,
                     'voucher_amount' => null,
                     'voucher_filename' => null,
+                    'guarantee_fund' => $guarantee_fund
                 ];
             }
         }
@@ -588,6 +590,7 @@ class DocumentInput
                 $amount = $detraction['amount'];
                 $payment_method_id = $detraction['payment_method_id'];
                 $bank_account = $detraction['bank_account'];
+                $guarantee_fund = isset($detraction['guarantee_fund']) ? $detraction['guarantee_fund'] : 0;
 
 
                 //detraction transport
@@ -638,6 +641,7 @@ class DocumentInput
                 return [
                     'detraction_type_id' => $detraction_type_id,
                     'percentage' => $percentage,
+                    'guarantee_fund' => $guarantee_fund,
                     'amount' => $amount,
                     'payment_method_id' => $payment_method_id,
                     'bank_account' => $bank_account,

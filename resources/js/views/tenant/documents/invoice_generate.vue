@@ -4299,7 +4299,9 @@ export default {
             return _.round(total_items + total_global, 2);
         },
         guarantee_fund: function() {
-            let fund_obj = Object.keys(this.form.detraction).length > 0 ? this.form.detraction : this.form.retention 
+            let detraction = this.form.detraction || {};
+            let retention = this.form.retention || {};
+            let fund_obj = Object.keys(detraction).length > 0 ? detraction : retention
             return fund_obj.guarantee_fund ? fund_obj.guarantee_fund : 0
         }
     },
@@ -5014,7 +5016,7 @@ export default {
             this.form.perception = data.perception;
             this.form.note = data.note;
             this.form.plate_number = data.plate_number;
-            this.form.payments = data.payments;
+            this.form.payments = data.payments || [];
             this.form.prepayments = data.prepayments || [];
             this.form.legends = [];
             // this.form.detraction = data.detraction;
@@ -5097,11 +5099,11 @@ export default {
                 ? "03"
                 : data.payment_condition_id;
             this.form.fee = data.fee;
-            this.form.retention = data.retention;
+            this.form.retention = data.retention ? data.retention : {};
 
             this.form.quotation_id = data.quotation_id;
 
-            if (data.discounts[0]) {
+            if (data.discounts && data.discounts[0]) {
                 this.recordDiscountsGlobal = data.discounts[0]
                 let discount_type_id = data.discounts[0].discount_type_id
                 this.total_global_discount = discount_type_id !== "02" ? data.total_discount :
@@ -5278,7 +5280,9 @@ export default {
                         }
                     } else {
                         this.form.payment_destination_id = this.payment_destinations[0].id;
-                        this.form.payments[0].payment_destination_id = this.payment_destinations[0].id;
+                        if (this.form.payments[0] !== undefined) {
+                            this.form.payments[0].payment_destination_id = this.payment_destinations[0].id;
+                        }
                     }
                 }
             }

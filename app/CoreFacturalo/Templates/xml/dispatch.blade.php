@@ -226,9 +226,9 @@
                 $carrier_vehicle_and_driver_registration_indicator = $document['transport_tuc'] && $document['transport_mode_type_id'] != '02' && $document['has_transport_driver_01'] ==true;
             @endphp
             @if (
-                $document['transport_mode_type_id'] !== '02'
-                && !($document['transport_mode_type_id'] === '01' && $document['is_transport_m1l'])
-                && !($document['transport_mode_type_id'] === '01' && !$document['is_transport_m1l'] && $carrier_vehicle_and_driver_registration_indicator)
+                $document['transport_mode_type_id'] === '02'
+                || ($document['transport_mode_type_id'] === '01' && $document['is_transport_m1l'])
+                || ($document['transport_mode_type_id'] === '01' && !$document['is_transport_m1l'] && $carrier_vehicle_and_driver_registration_indicator)
             )
             <!-- FECHA DE INICIO DEL TRASLADO o FECHA DE ENTREGA DE BIENES AL TRANSPORTISTA -->
                 <cac:LoadingTransportEvent>

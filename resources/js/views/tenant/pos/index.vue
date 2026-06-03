@@ -1350,6 +1350,7 @@ export default {
     async created() {
         await this.loadPriceOptions();
         this.loadConfiguration();
+        this.enabledSearchItemByBarcode();
         this.$store.commit("setConfiguration", this.configuration2);
 
         await this.initForm();
@@ -1458,6 +1459,11 @@ export default {
         }
     },
     methods: {
+        enabledSearchItemByBarcode() {
+            if (this.configuration.search_item_by_barcode) {
+                this.search_item_by_barcode = true;
+            }
+        },
         changeRowTotal(index) {
             const item = this.form.items[index];
 

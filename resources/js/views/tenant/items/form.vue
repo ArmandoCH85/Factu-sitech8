@@ -599,6 +599,21 @@
                             </div>
                         </div>
 
+                        <div class="col-md-3">
+                            <div :class="{'has-danger': errors.preparation_area_id}" class="form-group">
+                                <label class="control-label">Areas de preparación</label>
+                                <el-select v-model="form.preparation_area_id" dusk="preparation_area_id" onchange="changePreparationArea">
+                                    <el-option v-for="option in preparation_areas"
+                                               :key="option.id"
+                                               :label="option.name"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                                <small v-if="errors.preparation_area_id"
+                                    class="form-control-feedback"
+                                    v-text="errors.preparation_area_id[0]"></small>
+                            </div>
+                        </div>
+
                         <div class="col-12 mt-2">
                             <div class="table-responsive table-border-none">
                                 <table class="table table-sm mb-0 table-borderless">
@@ -1689,6 +1704,7 @@ export default {
             pinned_fields: [],
             layout_saving: false,
             editingLayout: false,
+            preparation_areas: [],
         }
     },
     async created() {
@@ -1698,6 +1714,12 @@ export default {
         }
         await this.initForm();
         this.loadLayout();
+
+        // Cargar las area de preparación
+        await this.$http.get(`/restaurant/preparation-areas`).then(response => {
+            this.preparation_areas = response.data.data
+            console.log('preparation_areas', this.preparation_areas)
+        })
 
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
@@ -2003,12 +2025,19 @@ export default {
                 restrict_sale_cpe: false,
                 warehouse_id: null,
 
+                preparation_area_id: null,
+                preparation_area: null,
+
             }
 
             this.show_has_igv = true
             this.purchase_show_has_igv = true
             this.enabled_percentage_of_profit = false
             this.loadCurrentEstablishment()
+        },
+        changePreparationArea() {
+            const selectedArea = this.preparation_areas.find(area => area.id === this.form.preparation_area_id);
+            this.form.preparation_area = selectedArea ? selectedArea.description : null;
         },
         onSuccess(response, file, fileList) {
             if (response.success) {
@@ -2090,6 +2119,7 @@ this.activeName = null
             if (this.recordId) {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
+                        console.log(response.data.data)
                         this.form = response.data.data;
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false;
 

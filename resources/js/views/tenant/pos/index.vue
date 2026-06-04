@@ -2355,6 +2355,9 @@ export default {
 
                 this.row["unit_type_id"] = item.unit_type_id;
 
+                // Preservar la presentation (calculateRowItem no la copia)
+                this.row.presentation = exist_item.presentation;
+
                 this.form.items[pos] = this.row;
             } else {
                 response = await this.getStatusStock(

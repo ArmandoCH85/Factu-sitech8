@@ -406,7 +406,7 @@ class Facturalo
     public function createPdf($document = null, $type = null, $format = null, $output = 'pdf') {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
-        $pdf = new Mpdf(['packTableData' => true]);
+        $pdf = new Mpdf();
 
         $format_pdf = $this->actions['format_pdf'] ?? null;
 
@@ -578,7 +578,6 @@ class Facturalo
             if ($format_pdf === 'ticket_58') $heightQr += 10; // evita una pagina en blanco cuando esta el qr
 
             $pdf = new Mpdf([
-                'packTableData' => true,
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
@@ -668,7 +667,6 @@ class Facturalo
             $diferencia = 148 - (float)$height;
 
             $pdf = new Mpdf([
-                'packTableData' => true,
                 'mode' => 'utf-8',
                 'format' => [
                     210,
@@ -728,7 +726,6 @@ class Facturalo
                 ];
 
                 $pdf = new Mpdf([
-                    'packTableData' => true,
                     'fontDir' => array_merge($fontDirs, [$templateFontDir]),
                     'fontdata' => $fontData + $customFontData,
                     'margin_top' => $pdf_margin_top,
@@ -740,7 +737,6 @@ class Facturalo
 
             } else {
                 $pdf = new Mpdf([
-                    'packTableData' => true,
                     'margin_top' => $pdf_margin_top,
                     'margin_right' => $pdf_margin_right,
                     'margin_bottom' => $pdf_margin_bottom,
@@ -1844,7 +1840,7 @@ class Facturalo
     public function previewPdf($document = null, $type = null, $format = null, $output = 'pdf') {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
-        $pdf = new Mpdf(['packTableData' => true]);
+        $pdf = new Mpdf();
 
         $format_pdf = $this->actions['format_pdf'] ?? null;
 
@@ -1999,7 +1995,6 @@ class Facturalo
             }
 
             $pdf = new Mpdf([
-                'packTableData' => true,
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
@@ -2087,7 +2082,6 @@ class Facturalo
             $diferencia = 148 - (float)$height;
 
             $pdf = new Mpdf([
-                'packTableData' => true,
                 'mode' => 'utf-8',
                 'format' => [
                     210,
@@ -2147,7 +2141,6 @@ class Facturalo
                 ];
 
                 $pdf = new Mpdf([
-                    'packTableData' => true,
                     'fontDir' => array_merge($fontDirs, [$templateFontDir]),
                     'fontdata' => $fontData + $customFontData,
                     'margin_top' => $pdf_margin_top,
@@ -2159,7 +2152,6 @@ class Facturalo
 
             } else {
                 $pdf = new Mpdf([
-                    'packTableData' => true,
                     'margin_top' => $pdf_margin_top,
                     'margin_right' => $pdf_margin_right,
                     'margin_bottom' => $pdf_margin_bottom,

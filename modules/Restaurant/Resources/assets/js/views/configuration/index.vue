@@ -534,6 +534,9 @@
                         :value="p.name">
                       </el-option>
                     </el-select>
+                    <p style="text-align: justify; font-size: 0.5em;" class="text-muted mt-2">
+                      Si el producto no tiene un área de preparación asignada, se imprimirá automáticamente en la impresora seleccionada.
+                    </p>
                   </div>
                 </div>
                 <div class="col-md-4">

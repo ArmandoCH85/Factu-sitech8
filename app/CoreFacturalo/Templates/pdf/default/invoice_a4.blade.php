@@ -37,6 +37,7 @@ $logo = "{$establishment->logo}";
 
 $configuration_decimal_quantity= App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
 $configurationInPdf= App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationInPdf();
+$configurationEnableGuaranteeFund = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationShowGuaranteeFund();
 $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
 
 @endphp
@@ -1014,10 +1015,12 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                 <td colspan="{{ $colspan_total }}" class="text-right font-bold pr-2">M. PENDIENTE: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_pending_payment, 2) }}</td>
             </tr>
-            <tr>
-                <td colspan="{{ $colspan_total }}" class="text-right font-bold pr-2">FONDO DE GARANTIA: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($value_ob->guarantee_fund, 2) }}</td>
-            </tr>
+                @if ($configurationEnableGuaranteeFund->enabled_guarantee_fund)
+                    <tr>
+                        <td colspan="{{ $colspan_total }}" class="text-right font-bold pr-2">FONDO DE GARANTIA: {{ $document->currency_type->symbol }}</td>
+                        <td class="text-right font-bold">{{ number_format($value_ob->guarantee_fund, 2) }}</td>
+                    </tr>
+                @endif
             @endif
 
             @if($balance < 0)

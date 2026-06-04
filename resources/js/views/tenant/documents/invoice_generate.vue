@@ -865,7 +865,7 @@
                                                             "
                                                         ></el-switch>
                                                     </div>
-                                                    <div class="form-group ps-2 col-md-8" v-if="form.has_retention">
+                                                    <div class="form-group ps-2 col-md-8" v-if="config.enabled_guarantee_fund && form.has_retention">
                                                         <label class="control-label">Fondo de garantía
                                                         </label>
                                                         <el-input v-model="form.retention.guarantee_fund"></el-input>
@@ -1867,7 +1867,7 @@
                                                             <!-- <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td> -->
                                                         </tr>
                                                     </template>
-                                                    <template v-if="form.detraction || form.retention">
+                                                    <template v-if=" config.enabled_guarantee_fund && (form.detraction || form.retention)">
                                                         <tr v-if="form.detraction.guarantee_fund > 0 || form.retention.guarantee_fund > 0">
                                                             <td width="60%">FONDO DE GARANTIA:</td>
                                                             <td>{{ currency_type.symbol }} {{ guarantee_fund }}</td>
@@ -2891,7 +2891,7 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template v-if="form.detraction || form.retention">
+                                    <template v-if="config.enabled_guarantee_fund && (form.detraction || form.retention)">
                                             <tr v-if="form.detraction.guarantee_fund > 0 || form.retention.guarantee_fund > 0">
                                                 <td width="60%">FONDO DE GARANTIA:</td>
                                                 <td>{{ currency_type.symbol }} {{ guarantee_fund }}</td>
@@ -7307,11 +7307,14 @@ export default {
                     );
             }
 
+            console.log(this.config.enabled_guarantee_fund, this.form.detraction, this.form.retention, this.form.total_pending_payment)
 
-            let fund_obj = Object.keys(this.form.detraction).length > 0 ? this.form.detraction : this.form.retention 
+            if (this.config.enabled_guarantee_fund) {
+                let fund_obj = Object.keys(this.form.detraction).length > 0 ? this.form.detraction : this.form.retention 
 
-            if(parseFloat(fund_obj.guarantee_fund) > this.form.total_pending_payment) {
-                return this.$message.error('El fondo de garantía no puede ser mayor al monto pendiente')
+                if(parseFloat(fund_obj.guarantee_fund) > this.form.total_pending_payment) {
+                    return this.$message.error('El fondo de garantía no puede ser mayor al monto pendiente')
+                }
             }
 
             // validacion sistema por puntos

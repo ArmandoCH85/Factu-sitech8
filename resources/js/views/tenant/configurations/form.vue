@@ -982,6 +982,17 @@
                                                         v-text="errors.available_detraction_for_amount_minor[0]"></small>
                                             </div>
                                         </div>
+                                        <div class="col-12">
+                                            <label class="control-label">Habilitar fondo de garantia para detracción o retención</label>
+                                            <div :class="{ 'has-danger': errors.enabled_guarantee_fund}"
+                                                    class="form-group">
+                                                <el-switch v-model="form.enabled_guarantee_fund"
+                                                               @change="submit"></el-switch>
+                                                <small v-if="errors.enabled_guarantee_fund"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.enabled_guarantee_fund[0]"></small>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>

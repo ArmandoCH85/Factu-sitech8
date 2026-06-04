@@ -150,6 +150,7 @@ use Illuminate\Support\Facades\Log;
      * @property string|null $qrchat_auth_key
      * @property bool $enable_list_product
      * @property bool $available_cash_report_seller
+     * @property bool $enabled_guarantee_fund
      */
     class Configuration extends ModelTenant
     {
@@ -351,6 +352,7 @@ use Illuminate\Support\Facades\Log;
             'auto_send_pdf_email',
             'before_day_creation_suscription_order',
             'printer_name_documents',
+            'enabled_guarantee_fund',
         ];
 
         protected $casts = [
@@ -503,6 +505,7 @@ use Illuminate\Support\Facades\Log;
             'was_verified_guest_user' => 'bool',
             'enable_consigned' => 'bool',
             'enable_weight_in_dispatches' => 'bool',
+            'enabled_guarantee_fund' => 'bool',
             'auto_send_pdf_email' => 'bool',
         ];
 
@@ -818,6 +821,7 @@ use Illuminate\Support\Facades\Log;
                 'smtp_user' => $this->smtp_user,
                 'smtp_password' => $this->smtp_password,
                 'smtp_encryption' => $this->smtp_encryption,
+                'enabled_guarantee_fund' => $this->enabled_guarantee_fund,
             ];
         }
 
@@ -2660,6 +2664,11 @@ use Illuminate\Support\Facades\Log;
         public function scopeAvailableReportSeller($query)
         {
             return $query->select('available_cash_report_seller')->first();
+        }
+
+        public function scopeGetConfigurationShowGuaranteeFund($query)
+        {
+            return $query->select('enabled_guarantee_fund')->first();
         }
 
         /**

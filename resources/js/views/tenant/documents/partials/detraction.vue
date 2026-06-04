@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <div class="short-div col-md-12">
+                            <div v-if="configuration.enabled_guarantee_fund" class="short-div col-md-12">
                                     <div class="form-group">
                                         <label class="control-label">Fondo de garantía
                                         </label>

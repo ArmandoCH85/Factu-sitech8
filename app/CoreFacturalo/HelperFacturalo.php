@@ -174,7 +174,19 @@ class HelperFacturalo
             ]);
         // }
 
-        $pdf->writeHTML($html_dispatch_ticket, HTMLParserMode::HTML_BODY);
+        $previous = set_error_handler(function ($severity, $message, $file = '', $line = 0) use (&$previous) {
+            if ($severity === E_WARNING && strpos($message, 'Trying to access array offset on') !== false) {
+                return true;
+            }
+
+            return $previous ? ($previous)($severity, $message, $file, $line) : false;
+        });
+
+        try {
+            $pdf->writeHTML($html_dispatch_ticket, HTMLParserMode::HTML_BODY);
+        } finally {
+            restore_error_handler();
+        }
     }
 
 }

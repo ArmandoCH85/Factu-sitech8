@@ -2712,6 +2712,8 @@ export default {
                             this.loading = false;
                             this.filterItems();
                         }
+
+                        this.ChangeSelectedPrice()
                     });
             } else {
                 this.getRecords();
@@ -2865,6 +2867,8 @@ export default {
                             this.cleanInput();
                             this.loading = false;
                         }
+
+                        this.ChangeSelectedPrice()
 
                     });
             } else {

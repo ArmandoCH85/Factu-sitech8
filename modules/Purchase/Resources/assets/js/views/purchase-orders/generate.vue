@@ -351,26 +351,41 @@ export default {
         },
 
         setData() {
+            let oc = this.purchase_quotation;
 
-            let oc = this.purchase_quotation
+            // Asignación de fechas y IDs
+            this.form.date_of_issue = oc.date_of_issue;
+            this.form.date_of_due = oc.date_of_issue;
+            this.form.time_of_issue = oc.time_of_issue;
+            this.form.purchase_quotation_id = oc.id;
 
-            // this.form.establishment_id =  null
-            this.form.date_of_issue = oc.date_of_issue
-            this.form.date_of_due = oc.date_of_issue
-            this.form.time_of_issue = oc.time_of_issue
-            this.form.purchase_quotation_id = oc.id
+            // Procesar items de forma segura (creando un nuevo array para no alterar el original)
+            if (oc.items && oc.items.length > 0) {
+                this.form.items = oc.items.map(it => ({
+                    ...it, // Copia las propiedades existentes
+                    unit_price: 0,
+                    total_igv: 0,
+                    total_value: 0,
+                    total: 0,
+                    discounts: [],
+                    charges: []
+                }));
+            } else {
+                this.form.items = [];
+            }
 
-            oc.items.forEach(it => {
-                it.unit_price = 0
-                it.total_igv = 0
-                it.total_value = 0
-                it.total = 0
-                it.discounts = []
-                it.charges = []
-            });
+            console.log(this.form.items);
 
-            this.form.items = oc.items
+            const suppliersArray = oc.suppliers ? Object.values(oc.suppliers) : [];
 
+            if (suppliersArray.length === 1) {
+                const primerProveedor = suppliersArray[0];
+                this.$set(this.form, 'supplier_id', primerProveedor.supplier_id || primerProveedor.id);
+                this.$set(this.form, 'supplier', primerProveedor.name); 
+            } else {
+                this.$set(this.form, 'supplier_id', null);
+                this.$set(this.form, 'supplier', null);
+            }
         },
         addRow(row) {
             this.form.items.push(row)

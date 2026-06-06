@@ -14,6 +14,8 @@ import 'bootstrap/dist/js/bootstrap.bundle.js'; // Incluye Popper
 // Luego Element UI
 import '../sass/element-ui.scss';
 import 'element-ui/lib/theme-chalk/index.css';
+import { MessageBox } from 'element-ui'
+import Swal from 'sweetalert2'
 
 // Personalizar textos del idioma español
 lang.el.select.noData = 'No se encontraron resultados'
@@ -33,10 +35,33 @@ ElementUI.Select.computed.readonly = function () {
 export default ElementUI;
 
 Vue.use(ElementUI, { size: 'small' })
+// Interceptor global: sesión vencida por inactividad (419)
+let sessionExpiredShown = false;
 Vue.prototype.$eventHub = new Vue()
 
 // Tenant app: only tenant components here
 import './tenant-components'
+if (Vue.prototype.$http) {
+    Vue.prototype.$http.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 419 && !sessionExpiredShown) {
+                sessionExpiredShown = true;
+                Swal.fire({
+                    title: 'Sesión cerrada por inactividad',
+                    text: 'Por seguridad tu sesión expiró. Pulsa Continuar para recargar y seguir trabajando.',
+                    icon: 'warning',
+                    confirmButtonText: 'Continuar',
+                    confirmButtonColor: '#5b21b6', // morado tipo botón Guardar
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then(() => window.location.reload());
+                return new Promise(() => {});
+            }
+            return Promise.reject(error);
+        }
+    );
+}
 
 // Importar scripts migrados desde dom-fixes.js
 import { applyThemeAndShowContent, setupHeaderDomEvents, setupEcommerceAuthHandlers, updateTenantPageTitle } from './tenant/dom-fixes';
@@ -177,3 +202,9 @@ if (sidebarMultiUserRoots && sidebarMultiUserRoots.length) {
         });
     });
 }
+// Mantener viva la sesión mientras la pestaña esté abierta
+setInterval(() => {
+    if (Vue.prototype.$http) {
+        Vue.prototype.$http.get('/keep-alive').catch(() => {});
+    }
+}, 5 * 60 * 1000);

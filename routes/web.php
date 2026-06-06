@@ -36,6 +36,9 @@ if ($hostname) {
         // Route::get('/ecommerce/color-ecommerce', [\App\Http\Controllers\Tenant\ConfigurationController::class, 'getColorEcommerce']);
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant','check.email.verified'])->group(function () {
+            Route::get('keep-alive', function () {
+                return response()->noContent(); // 204
+            });
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('list-reports', 'Tenant\SettingController@listReports');
             Route::get('list-extras', 'Tenant\SettingController@listExtras');

@@ -17,9 +17,9 @@ class TenancyDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            PolymorphicRelationSeeder::class,
-        ]);
+        // $this->call([
+        //     PolymorphicRelationSeeder::class,
+        // ]);
 
         // $id = DB::table('items')->insertGetId(
         //     ['name' => 'Laptop Razer', 'second_name' => 'Laptop Razer', 'description' => 'Laptop Razer','item_type_id' => '01',

@@ -178,6 +178,15 @@ class PurchaseOrderController extends Controller
             $this->purchase_order->items()->delete();
 
             foreach ($data['items'] as $row) {
+                $numeric_fields = [
+                    'unit_value', 'unit_price', 'total_base_igv', 'total_igv',
+                    'total_base_isc', 'total_isc', 'total_base_other_taxes',
+                    'total_other_taxes', 'total_taxes', 'total_value', 'total',
+                    'total_charge', 'total_discount'
+                ];
+                foreach ($numeric_fields as $field) {
+                    $row[$field] = $row[$field] ?? 0;
+                }
                 $this->purchase_order->items()->create($row);
             }
 

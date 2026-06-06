@@ -1370,7 +1370,10 @@ export default {
         await this.enabledSearchItemByBarcode();
         this.enabledCategoriesProductsView();
     },
+    async mounted() {
 
+        await this.ChangeSelectedPrice()
+    },
     computed: {
         layout_mode() {
             const cols = parseInt(this.configuration.colums_grid_item, 10);
@@ -1522,11 +1525,14 @@ export default {
 
                 // Seleccionar el label marcado como default, o el primero como fallback
                 const defaultLabel = labels.find(l => l.is_default);
+                console.log(defaultLabel);
+                
                 if (defaultLabel) {
                     this.selected_option_price = `price_label_${defaultLabel.id}`;
                 } else if (this.price_options.length > 0) {
                     this.selected_option_price = this.price_options[0].id;
                 }
+                console.log(this.selected_option_price);
             } catch (error) {
                 console.error('Error al cargar price_options:', error);
                 // Fallback a precio principal si falla la carga
@@ -1640,12 +1646,14 @@ export default {
                         this.pagination.total = 0;
                     }
                     this.fixItems();
+                    this.ChangeSelectedPrice()
                 });
         },
         getQueryParameters() {
             return queryString.stringify({
                 page: this.pagination.current_page
                     ? this.pagination.current_page
+
                     : 1,
                 input_item: this.input_item,
                 cat: this.category_selected,
@@ -3024,8 +3032,12 @@ export default {
             if (item.description == null) return 0;
             return item.description.length;
         },
-        ChangeSelectedPrice() {
+        async ChangeSelectedPrice() {
             // recorrer items
+            console.log("aaaaaa");
+            
+            console.log(this.items);
+            
             
             this.items.forEach(row => {
                     if(row.item_unit_types && row.item_unit_types.length > 0) {
@@ -3034,6 +3046,7 @@ export default {
 
                         // Extraer price_label_id del selectedOptionPrice
                         let priceLabelId = null;
+                        console.log(priceLabelId, this.selected_option_price);
                         if(typeof this.selected_option_price === 'string' && this.selected_option_price.startsWith('price_label_')) {
                             priceLabelId = parseInt(this.selected_option_price.replace('price_label_', ''));
                         }
@@ -3044,6 +3057,7 @@ export default {
                         
                         // Buscar y asignar el precio correspondiente usando 'id'
                         if(priceLabelId && first_list.prices && first_list.prices.length > 0) {
+                            
                             
                             const priceObj = first_list.prices.find(p => p.price_label_id == priceLabelId);
                             

@@ -797,7 +797,18 @@
                                 </div>
                             </div>
                         </template>
-
+                        <div class="col-md-12 mt-4 text-center" v-if="showTab('imagen')">
+                            <label class="control-label d-block mb-2">Imagen</label>
+                            <el-upload :action="`/${resource}/upload`"
+                                    :data="{'type': 'items'}"
+                                    :headers="headers"
+                                    :on-success="onSuccess"
+                                    :show-file-list="false"
+                                    class="avatar-uploader item-image-uploader">
+                                <img v-if="form.image_url" :src="form.image_url" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
+                        </div>
                     </div>
                 </el-tab-pane>
 
@@ -1498,7 +1509,7 @@ const ALLOWED_VARIANTS = ['standard', 'ecommerce', 'restaurant']
 const TABS_BY_VARIANT = {
     standard:   ['general', 'warehouses', 'presentations', 'attributes', 'purchase', 'extra_info', 'production'],
     ecommerce:  ['general', 'extra_info'],
-    restaurant: ['general', 'supplies', 'modifiers'],
+    restaurant: ['general', 'supplies', 'modifiers', 'imagen'],
 }
 
 export default {
@@ -2656,5 +2667,31 @@ this.activeName = null
 }
 .btn-chevron.rotated i{
     transform: rotate(90deg);
+}
+.item-image-uploader {
+    display: inline-block;   /* para que el text-center lo centre */
+}
+.item-image-uploader ::v-deep .el-upload {
+    width: 300px;
+    height: 220px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+}
+.item-image-uploader ::v-deep .el-upload:hover {
+    border-color: #409EFF;
+}
+.item-image-uploader ::v-deep .avatar {
+    width: 300px;
+    height: 220px;
+    object-fit: cover;
+}
+.item-image-uploader ::v-deep .avatar-uploader-icon {
+    font-size: 48px;
+    color: #8c939d;
 }
 </style>

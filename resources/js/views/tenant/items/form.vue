@@ -599,7 +599,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-3" v-if="resolvedVariant === 'restaurant'">
                             <div :class="{'has-danger': errors.preparation_area_id}" class="form-group">
                                 <label class="control-label">Areas de preparación</label>
                                 <el-select v-model="form.preparation_area_id" dusk="preparation_area_id" onchange="changePreparationArea">

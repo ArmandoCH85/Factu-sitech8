@@ -350,7 +350,7 @@ export default {
 
         },
 
-        setData() {
+        async setData() {
             let oc = this.purchase_quotation;
 
             // Asignación de fechas y IDs
@@ -369,7 +369,9 @@ export default {
                         affectation_igv_type_id: fullItem
                             ? fullItem.purchase_affectation_igv_type_id
                             : (it.affectation_igv_type_id || '10'),
-                        unit_price: 0,
+                        unit_price: fullItem
+                        ? (parseFloat(fullItem.purchase_unit_price) || parseFloat(fullItem.sale_unit_price) || 0)
+                        : (parseFloat(it.unit_price) || 0),
                         unit_value: 0,
                         total_base_igv: 0,
                         total_igv: 0,
@@ -397,6 +399,10 @@ export default {
             } else {
                 this.$set(this.form, 'supplier_id', null);
                 this.$set(this.form, 'supplier', null);
+            }
+
+            for (let index = 0; index < this.form.items.length; index++) {
+                await this.clickAddItem(index);
             }
         },
         addRow(row) {

@@ -5157,6 +5157,9 @@ export default {
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
 
             this.filterSeriesForTable();
+            if (!this.form.custom_fields_data) {
+                this.$set(this.form, 'custom_fields_data', {});
+            }
         },
         filterSeriesForTable() {
             if (this.table) {

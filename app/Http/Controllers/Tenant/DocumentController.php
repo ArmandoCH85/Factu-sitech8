@@ -72,12 +72,16 @@ use Modules\Inventory\Models\{
     InventoryConfiguration
 };
 use App\Models\Tenant\Cash;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 
 class DocumentController extends Controller
 {
     use FinanceTrait;
     use OfflineTrait;
     use StorageDocument;
+    use SystemActivityTrait;
+
+    private $route_path;
 
     private $max_count_payment = 0;
 
@@ -237,6 +241,9 @@ class DocumentController extends Controller
         $cash = Cash::where([['user_id', auth()->user()->id], ['state', true]])->first();
 
         if (!$cash) {
+            if (!$this->userCanAccessCash()) {
+                return redirect('/documents')->with('toast_warning', 'Comunícate con el administrador para acceder a la configuración de Finanzas.');
+            }
             return redirect()->route('tenant.cash.index', ['redirect_reason' => 'no_cash_document']);
         }
 
@@ -253,11 +260,30 @@ class DocumentController extends Controller
         $cash = Cash::where([['user_id', auth()->user()->id], ['state', true]])->first();
 
         if (!$cash) {
+            if (!$this->userCanAccessCash()) {
+                return redirect('/documents')->with('toast_warning', 'Comunícate con el administrador para acceder a la configuración de Finanzas.');
+            }
             return redirect()->route('tenant.cash.index', ['redirect_reason' => 'no_cash_document']);
         }
 
         $is_contingency = 0;
         return view('tenant.documents.form_tensu', compact('is_contingency'));
+    }
+
+    private function userCanAccessCash(): bool
+    {
+        // Simula una petición GET a /cash con el usuario actual
+        $cashRequest = \Illuminate\Http\Request::create('cash', 'GET');
+        $cashRequest->setUserResolver(fn () => auth()->user());
+
+        $passed = false;
+        $middleware = new \App\Http\Middleware\RedirectModuleLevel();
+        $middleware->handle($cashRequest, function () use (&$passed) {
+            $passed = true;            // si llega aquí, el middleware dejó pasar => sí puede entrar a /cash
+            return response('ok');
+        });
+
+        return $passed;                // false => el middleware redirigiría => sin acceso a caja
     }
 
 

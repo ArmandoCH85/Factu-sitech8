@@ -83,10 +83,10 @@
         </div>
 
         <!-- ── Main Row ───────────────────────────────────────────── -->
-        <div class="row mb-5 px-2">
+        <div class="row px-2 mb-md-4">
 
             <!-- Gráfico -->
-            <div class="col-lg-8 d-flex flex-column">
+            <div class="col-lg-8 d-flex flex-column mb-3">
                 <div class="card flex-fill">
                     <div class="card-body p-0 m-0">
                         <div class="row">
@@ -112,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 d-flex flex-column">
+            <div class="col-lg-4 d-flex flex-column mb-3">
 
                 <!-- Card única: ambas donas -->
                 <div class="card mb-0 flex-fill">

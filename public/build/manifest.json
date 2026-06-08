@@ -75,14 +75,14 @@
     "src": "resources/js/app.js"
   },
   "resources/js/system.css": {
-    "file": "assets/system-96de097d.css",
+    "file": "assets/system-955add9d.css",
     "src": "resources/js/system.css"
   },
   "resources/js/system.js": {
     "css": [
-      "assets/system-96de097d.css"
+      "assets/system-955add9d.css"
     ],
-    "file": "assets/system-e0eac8cc.js",
+    "file": "assets/system-0418b1a9.js",
     "imports": [
       "_vue-clipboard-0b989d9d.js",
       "__plugin-vue2_normalizer-fcd81e8a.js"

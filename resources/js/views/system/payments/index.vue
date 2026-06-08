@@ -16,7 +16,7 @@
             <div class="row">
                 
                 <template v-for="pay in sortedPayments">
-                <div class="col-12 col-sm-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-3 mb-3 mb-md-2">
                     <div class="status-container p-3 d-flex align-items-center justify-content-between" :style="{backgroundColor: getClassStatePay(pay.id)}">
                         <div>
                             <span class="status-price">S/ {{ parseFloat(pay.total).toFixed(2) }}</span>

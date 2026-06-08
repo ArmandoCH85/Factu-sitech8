@@ -363,7 +363,7 @@
             clickRemoveItem(index) {
                 this.form.items.splice(index, 1)
             }, 
-            async validateSuppliers(){
+            /*async validateSuppliers(){
 
                 let cont = 0
                 await this.form.suppliers.forEach(element => {
@@ -376,12 +376,12 @@
                     return {success:false, message:'El campo correo electrónico es requerido'}
 
                 return {success:true}
-            },
+            },*/
             async submit() {
                  
-                let validate = await this.validateSuppliers()
+                /*let validate = await this.validateSuppliers()
                 if(!validate.success)
-                    return this.$message.error(validate.message);
+                    return this.$message.error(validate.message);*/
 
 
                 this.loading_submit = true

@@ -824,14 +824,15 @@ $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
                     </td>
                 @endif
                 @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
-                <td class="text-right align-top">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
+                <td class="text-right align-top">{{ $row->generalApplyNumberFormat( optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
                 @else
-                <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
+                <td class="text-right align-top">{{ number_format(optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, 2) }}</td>
                 @endif
 
                 @if ($showDiscountItem)
                     {{-- <td class="text-right align-top pr-2">{{ number_format($row->total_real, 2) }}</td> --}}
-                    <td class="text-right align-top pr-2">{{ number_format($row->unit_price * $row->quantity, 2) }}</td>
+                    <td class="text-right align-top pr-2">{{ number_format((optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price) * $row->quantity, 2) }}</td>
+
                 @endif
 
                 <td class="text-right align-top pr-2">

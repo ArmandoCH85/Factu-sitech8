@@ -760,74 +760,71 @@
                                     v-for="(item, index) in form.items"
                                     :key="index"
                                 >
-                                    <td class="">
-                                        <p class="item-description">
-                                            {{ item.item.description }} 
-                                            <template v-if="item.presentation &&
-                                                item.presentation.hasOwnProperty(
-                                                    'description'
-                                                )
-                                             " >
-                                             {{ item.item.presentation
-                                                          .description
-                                              }}
-                                            </template>
-                                        </p>
-                                        <small>{{ item.unit_type_id }}</small
-                                        ><br />
-                                        <small
-                                            v-html="nameSets(item.item_id)"
-                                        ></small>
-                                    </td>
-                                    <td
-                                        style="width: 80px; vertical-align: top"
-                                    >
-                                        <el-input
-                                            v-model="item.item.aux_quantity"
-                                            @input="
-                                                    clickAddItem(
-                                                        item,
-                                                        index,
-                                                        true,
+                                    <td>
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <p class="item-description mb-0">
+                                                {{ item.item.description }}
+                                                <template v-if="item.presentation &&
+                                                    item.presentation.hasOwnProperty(
+                                                        'description'
                                                     )
-                                            "
-                                            @keyup.enter.native="
-                                                keyupEnterQuantity
-                                            "
-                                        ></el-input>
-                                    </td>
-
-                                    <td
-                                        class="font-weight-semibold"
-                                        style="width: 80px; text-align: right"
-                                    >
-                                        <template v-if="edit_unit_price">
-                                            <span class="d-flex">
-                                                <span>
-                                                    {{ currency_type.symbol }}
-                                                </span>
-                                                <el-input
-                                                    v-model="item.total"
-                                                    size="mini"
-                                                    @blur="changeRowTotal(index)"
-                                                    :readonly="!edit_unit_price && !item.item.calculate_quantity"
-                                                ></el-input>
-                                            </span>
-                                        </template>
-                                        <template v-else>
-                                            {{ item.total }}
-                                        </template>
-                                    </td>
-                                    <td
-                                        class="text-end"
-                                        style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top"
-                                    >
-                                        <a
-                                            class="btn btn-sm btn-default text-danger btn-trash-product-pos"
-                                            @click="clickDeleteItem(item)"
-                                        >
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                                 " >
+                                                 {{ item.item.presentation
+                                                              .description
+                                                  }}
+                                                </template>
+                                            </p>
+                                            <a
+                                                class="btn btn-sm btn-default text-danger btn-trash-product-pos"
+                                                @click="clickDeleteItem(item)"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                            <div>
+                                                <small>{{ item.unit_type_id }}</small>
+                                                <small
+                                                    v-html="nameSets(item.item_id)"
+                                                ></small>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-end gap-4">
+                                                <div :style="{ width: Math.min(120, Math.max(50, String(item.item.aux_quantity == null ? '' : item.item.aux_quantity).length * 9 + 24)) + 'px' }">
+                                                    <el-input
+                                                        v-model="item.item.aux_quantity"
+                                                        @input="
+                                                                clickAddItem(
+                                                                    item,
+                                                                    index,
+                                                                    true,
+                                                                )
+                                                        "
+                                                        @keyup.enter.native="
+                                                            keyupEnterQuantity
+                                                        "
+                                                    ></el-input>
+                                                </div>
+                                                <div class="font-weight-semibold text-end">
+                                                    <template v-if="edit_unit_price">
+                                                        <span class="d-flex align-items-center">
+                                                            <span class="me-2">
+                                                                {{ currency_type.symbol }}
+                                                            </span>
+                                                            <el-input
+                                                                v-model="item.total"
+                                                                size="mini"
+                                                                :style="{ width: Math.min(120, Math.max(70, String(item.total == null ? '' : item.total).length * 9 + 24)) + 'px' }"
+                                                                @blur="changeRowTotal(index)"
+                                                                :readonly="!edit_unit_price && !item.item.calculate_quantity"
+                                                            ></el-input>
+                                                        </span>
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ currency_type.symbol }} {{ item.total }}
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -3119,5 +3116,14 @@ export default {
 @keyframes float {
   0%, 100% { transform: translateY(0);    }
   50%       { transform: translateY(-2px); }
+}
+
+.item-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

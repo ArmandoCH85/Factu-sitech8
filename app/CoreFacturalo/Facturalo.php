@@ -475,7 +475,7 @@ class Facturalo
         {
             $base_pdf_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
 
-            $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
+            $width = ($format_pdf === 'ticket_58') ? 56 : 72 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
             if(config('tenant.enabled_template_ticket_70')) $width = 70;
             if($format_pdf === 'ticket_50') $width = 45;

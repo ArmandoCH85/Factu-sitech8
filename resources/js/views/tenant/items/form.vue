@@ -2134,6 +2134,8 @@ this.activeName = null
                         this.form = response.data.data;
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false;
 
+                        this.enabled_percentage_of_profit = parseFloat(this.form.percentage_of_profit) > 0;
+
                         if (this.globalIgvHandling) {
                             this.form.has_igv = true;
                             this.form.purchase_has_igv = true;
@@ -2185,6 +2187,7 @@ this.activeName = null
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        this.enabled_percentage_of_profit = parseFloat(this.form.percentage_of_profit) > 0;
                         if (this.globalIgvHandling) {
                             this.form.has_igv = true
                             this.form.purchase_has_igv = true

@@ -2058,10 +2058,24 @@ export default {
             this.form.unit_price = unit_price;
             this.form.item.unit_price = unit_price;
             this.form.item.presentation = this.item_unit_type;
-            this.form.affectation_igv_type = _.find(
-                this.affectation_igv_types,
-                { id: affectation_igv_type_id }
-            );
+
+            let operation_type = await _.find(this.operation_types, {
+                id: this.operationTypeId
+            });
+
+            if (operation_type.exportation) {
+               this.form.affectation_igv_type = _.find(
+                    this.affectation_igv_types,
+                    { id: "40" }
+               )
+            } else {
+                this.form.affectation_igv_type = _.find(
+                    this.affectation_igv_types,
+                    { id: affectation_igv_type_id }
+                );
+
+            }
+
 
             let IdLoteSelected = this.form.IdLoteSelected;
             let document_item_id = this.form.document_item_id;
@@ -2109,7 +2123,7 @@ export default {
                 }
 
             });
-
+            
             this.row = calculateRowItem(
                 this.form,
                 this.currencyTypeIdActive,

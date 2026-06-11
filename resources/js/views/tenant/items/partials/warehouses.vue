@@ -26,10 +26,10 @@
                                     <th
                                         class="text-right"
                                         :class="{
-                                            'text-danger': row.stock <= 0
+                                            'text-danger': Number(row.stock) <= 0
                                         }"
                                     >
-                                        {{ row.stock }}
+                                        {{ (row.stock == null) ? '-' : Number(row.stock).toFixed(2) }}
                                     </th>
                                 </tr>
                             </tbody>

@@ -39,6 +39,7 @@ $configuration_decimal_quantity= App\CoreFacturalo\Helpers\Template\TemplateHelp
 $configurationInPdf= App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationInPdf();
 $configurationEnableGuaranteeFund = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationShowGuaranteeFund();
 $type = App\CoreFacturalo\Helpers\Template\TemplateHelper::getTypeSoap();
+$total_pending_payment = $document->total_pending_payment;
 
 @endphp
 <html>

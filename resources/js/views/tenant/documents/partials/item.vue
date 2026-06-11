@@ -2093,14 +2093,31 @@ export default {
 
             const aux_total_line = unit_price * quantity;        // total con IGV
 
+            // El precio del item puede estar en una moneda distinta a la del documento.
+            // El unit_price (y por tanto base/amount) está en la moneda del item, pero
+            // calculateRowItem convierte la línea a la moneda del documento. Aquí se
+            // convierten los montos del descuento a la moneda del documento (mismo
+            // criterio que usa calculateRowItem con el unit_price) para que el descuento
+            // sea compatible cuando el documento está en dólares. Si las monedas
+            // coinciden, doc_factor = 1 y no hay cambio.
+            const item_currency =
+                this.form.item.currency_type_id || this.currencyTypeIdActive;
+            let doc_factor = 1;
+            if (item_currency !== this.currencyTypeIdActive && this.exchangeRateSale) {
+                doc_factor =
+                    item_currency === "PEN"
+                        ? 1 / this.exchangeRateSale // item en Soles -> documento en Dólares
+                        : this.exchangeRateSale; // item en Dólares -> documento en Soles
+            }
+
             this.form.discounts.forEach(discount => {
                 const affects_base =
                     discount.discount_type.base;
-                const base = affects_base ? total_value_partial : aux_total_line;
+                const base = (affects_base ? total_value_partial : aux_total_line) * doc_factor;
 
                 if (discount.is_amount) {
-                    // Monto fijo ingresado por el usuario
-                    const amount = parseFloat(discount.amount) || 0;
+                    // Monto fijo ingresado por el usuario (en la moneda del item) -> documento
+                    const amount = (parseFloat(discount.amount) || 0) * doc_factor;
                     const factor = base > 0 ? amount / base : 0;
                     discount.base = _.round(base, 2);
                     let amount_base = affects_base ?  amount / igv_factor : amount;
@@ -2112,14 +2129,14 @@ export default {
                     // Porcentaje ingresado por el usuario
                     const percentage = parseFloat(discount.percentage) || 0;
                     const factor = percentage / 100;
-                    
-                    let amount_base = Number((affects_base ? base * factor : discount.amount / igv_factor).toFixed(2));
+
+                    let amount_base = Number((affects_base ? base * factor : (discount.amount * doc_factor) / igv_factor).toFixed(2));
                     discount.base = _.round(base, 2);
                     discount.factor = _.round(factor, 5);
                     discount.percentage = percentage;
                     discount.amount = (amount_base); // Vista para mostrar el monto del descuento con IGV incluido
                     discount.amount_without_rounded = affects_base ? base * factor : discount.amount / igv_factor; // monto sin redondear para cálculos posteriores
-                    
+
                 }
 
             });

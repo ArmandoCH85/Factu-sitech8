@@ -824,15 +824,20 @@ $total_pending_payment = $document->total_pending_payment;
                         {{ $cleanedDate }}
                     </td>
                 @endif
+                @php
+                    $unit_price_item = $row->getUnitPrice();
+                    $price_total_item = $unit_price_item * $row->quantity;
+                @endphp
                 @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
-                <td class="text-right align-top">{{ $row->generalApplyNumberFormat( optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
+                
+                <td class="text-right align-top">{{ $row->generalApplyNumberFormat( $unit_price_item, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
                 @else
-                <td class="text-right align-top">{{ number_format(optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price, 2) }}</td>
+                <td class="text-right align-top">{{ number_format($unit_price_item, 2) }}</td>
                 @endif
 
                 @if ($showDiscountItem)
                     {{-- <td class="text-right align-top pr-2">{{ number_format($row->total_real, 2) }}</td> --}}
-                    <td class="text-right align-top pr-2">{{ number_format((optional($row->item)->unit_price ? $row->item->unit_price : $row->unit_price) * $row->quantity, 2) }}</td>
+                    <td class="text-right align-top pr-2">{{ number_format( $price_total_item , 2) }}</td>
 
                 @endif
 

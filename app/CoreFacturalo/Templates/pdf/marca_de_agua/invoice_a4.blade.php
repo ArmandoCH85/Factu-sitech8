@@ -663,10 +663,12 @@
                         {{ $information }} <br>
                     @endif
                 @endforeach
-                @php
-                    $value_ob = $document->detraction ? $document->detraction : $document->retention;
-                    $total_pending_payment = $document->total_pending_payment - $value_ob->guarantee_fund;
-                @endphp
+                @if ($document->retention || $document->detraction)
+                    @php
+                        $value_ob = $document->detraction ? $document->detraction : $document->retention;
+                        $total_pending_payment = $document->total_pending_payment - $value_ob->guarantee_fund;
+                    @endphp
+                @endif
                 @if($document->retention)
                     <span class="font-bold">Información de la retención</span>
                     <br><span class="">Valor total del comprobante: </span>{{$document->currency_type->symbol}}

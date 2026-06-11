@@ -5520,7 +5520,20 @@ export default {
             this.showDialogAddItem = true;
         },
         getFormatUnitPriceRow(unit_price) {
-            return _.round(unit_price, 6);
+            // El precio base siempre está guardado en Soles (PEN).
+            // Si el comprobante está en Dólares (USD) se convierte usando el tipo de cambio.
+            let price = parseFloat(unit_price) || 0;
+
+            if (this.form.currency_type_id === "USD") {
+                const exchange_rate =
+                    parseFloat(this.form.exchange_rate_sale) || 0;
+
+                if (exchange_rate > 0) {
+                    price = price / exchange_rate;
+                }
+            }
+
+            return _.round(price, 2);
             // return unit_price.toFixed(6)
         },
         discountGlobalPrepayment() {
@@ -7135,7 +7148,6 @@ export default {
             let discount = 0;
             
             item.discounts.forEach(dis => {
-                console.log(dis.amount);
                 if (dis.discount_type.base) {
                     discount += dis.amount_without_rounded * 1.18;
                 } else {

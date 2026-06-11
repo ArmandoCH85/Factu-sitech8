@@ -526,6 +526,7 @@
         }
 
 
+
         /**
          *
          * Filtro para no incluir relaciones en consulta
@@ -602,5 +603,14 @@
         public function setAdditionalDataAttribute($value)
         {
             $this->attributes['additional_data'] = (is_null($value)) ? null : json_encode($value);
+        }
+
+        public function getUnitPrice() 
+        {
+            $unit_price = optional($this->item)->unit_price ? $this->item->unit_price : $this->unit_price;
+
+
+            return $this->isCurrencyTypeUsd() ? $unit_price / $this->document->exchange_rate_sale : $unit_price;
+
         }
     }

@@ -350,6 +350,12 @@
 
             $client->config_system_env = $config->config_system_env;
 
+            $client->smtp_host       = $config->smtp_host;
+            $client->smtp_port       = $config->smtp_port;
+            $client->smtp_user       = $config->smtp_user;
+            $client->smtp_password   = $config->smtp_password;
+            $client->smtp_encryption = $config->smtp_encryption;
+
             $company = DB::connection('tenant')
                 ->table('companies')
                 ->first();

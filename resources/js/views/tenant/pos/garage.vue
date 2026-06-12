@@ -1118,16 +1118,7 @@ export default {
             };
         },
         edit_unit_price() {
-            if (this.typeUser === "admin") {
-                return true;
-            }
-            if (this.typeUser === "seller") {
-                return (
-                    this.configuration.allow_edit_unit_price_to_seller ||
-                    (this.user && this.user.permission_edit_item_prices)
-                );
-            }
-            return false;
+            return this.user && this.user.permission_edit_item_prices;
         }
     },
     methods: {

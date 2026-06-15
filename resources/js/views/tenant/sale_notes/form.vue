@@ -3433,6 +3433,28 @@ export default {
                 error_by_item: error_by_item
             };
         },
+        async autoSendPdfMail(customer = null) {
+            if (!this.config.auto_send_pdf_email) return;
+
+            const c = customer || this.getCustomer;
+            if (!c || !c.email) {
+                this.$message.warning('El cliente no tiene correo registrado. No se pudo enviar el comprobante.');
+                return;
+            }
+
+            this.$http.post(`/${this.resource}/email`, {
+                customer_email: c.email,
+                id: this.saleNotesNewId
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success('El correo fue enviado satisfactoriamente');
+                } else {
+                    this.$message.error('Error al enviar el correo');
+                }
+            }).catch(() => {
+                this.$message.error('Error al enviar el correo');
+            });
+        },
         async submit() {
             if (this.config.affect_all_documents) {
                 this.form.terms_condition = this.config.terms_condition_sale;
@@ -3489,13 +3511,16 @@ export default {
             this.loading_submit = true;
             this.$http
                 .post(`/${this.resource}`, this.form)
-                .then(response => {
+                .then(async response => {
                     if (response.data.success) {
                         this.form_payment.sale_note_id = response.data.data.id;
                         this.$eventHub.$emit("reloadDataItems", null);
                         // if(!this.id) this.sale_note_payment()
-                        this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
+                        const customerForMail = this.getCustomer;
+                        await this.autoSendPdfMail(customerForMail);
+                        this.resetForm();
+                        //this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
                         this.saveCashDocument(response.data.data.id);
 

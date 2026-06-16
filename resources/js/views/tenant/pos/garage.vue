@@ -801,6 +801,8 @@
                                 ref="componentFastPaymentGarage"
                                 :configuration="configuration"
                                 :type-user="typeUser"
+                                :customer_email="customerEmail"
+                                :config="config"
                             ></fast-payment>
                         </template>
                     </div>
@@ -1119,6 +1121,10 @@ export default {
         },
         edit_unit_price() {
             return this.user && this.user.permission_edit_item_prices;
+        },
+        customerEmail() {
+            const customer = _.find(this.all_customers, c => String(c.id) === String(this.form.customer_id));
+            return customer ? customer.email : null;
         }
     },
     methods: {

@@ -460,7 +460,9 @@ export default {
         'isPrint',
         'rowsItems',
         'configuration',
-        'typeUser'
+        'typeUser',
+        'customer_email',
+        'config'
     ],
     data() {
         return {
@@ -1197,6 +1199,27 @@ export default {
             this.cleanPayments()
             // this.filterSeries()
         },
+        async autoSendPdfMail() {
+            if (!this.config.auto_send_pdf_email) return;
+
+            if (!this.customer_email) {
+                this.$message.warning('El cliente no tiene correo registrado.');
+                return;
+            }
+
+            this.$http.post(`/${this.resource_documents}/email`, {
+                customer_email: this.customer_email,
+                id: this.documentNewId
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success('El correo fue enviado satisfactoriamente');
+                } else {
+                    this.$message.error('Error al enviar el correo');
+                }
+            }).catch(() => {
+                this.$message.error('Error al enviar el correo');
+            });
+        },
         async clickPayment() {
             // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
@@ -1293,7 +1316,7 @@ export default {
 
                     // Almacena la URL del PDF de ticket para impresión con BuhoPrinter
                     this.printTicketUrl = response.data?.links?.print_ticket ?? null;
-
+                    this.autoSendPdfMail();
                     this.showDialogOptions = true;
 
                     // this.savePaymentMethod();

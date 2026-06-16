@@ -73,13 +73,14 @@ class DemoRestoreBackupDatabase extends Command
 
             $this->dropAllTables($database);
 
+            $passwordParam = $this->password ? '-p' . escapeshellarg($this->password) : '';
             // Construir el comando para restaurar
             $command = sprintf(
-                '%s -h %s -u %s -p%s %s < %s 2>&1',
+                '%s -h %s -u %s %s %s < %s 2>&1',
                 $bin,
                 escapeshellarg($this->host),
                 escapeshellarg($this->username),
-                escapeshellarg($this->password),
+                $passwordParam,
                 escapeshellarg($database),
                 escapeshellarg($backupPath)
             );

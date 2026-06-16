@@ -242,7 +242,7 @@ class DocumentController extends Controller
 
         if (!$cash) {
             if (!$this->userCanAccessCash()) {
-                return redirect('/documents')->with('toast_warning', 'Comunícate con el administrador para acceder a la configuración de Finanzas.');
+                return redirect('/documents')->with('toast_warning', 'No tienes permisos para abrir caja. Contacta al administrador para acceder a la configuración de Finanzas.');
             }
             return redirect()->route('tenant.cash.index', ['redirect_reason' => 'no_cash_document']);
         }
@@ -261,7 +261,7 @@ class DocumentController extends Controller
 
         if (!$cash) {
             if (!$this->userCanAccessCash()) {
-                return redirect('/documents')->with('toast_warning', 'Comunícate con el administrador para acceder a la configuración de Finanzas.');
+                return redirect('/documents')->with('toast_warning', 'No tienes permisos para abrir caja. Contacta al administrador para acceder a la configuración de Finanzas.');
             }
             return redirect()->route('tenant.cash.index', ['redirect_reason' => 'no_cash_document']);
         }

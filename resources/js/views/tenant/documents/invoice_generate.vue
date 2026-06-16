@@ -1582,7 +1582,8 @@
                                                 {{ currency_type.symbol }}
                                                 {{
                                                     getFormatUnitPriceRow(
-                                                        row.item.unit_price
+                                                        row.item.unit_price,
+                                                        row
                                                     )
                                                 }}
                                             </template>
@@ -5519,18 +5520,22 @@ export default {
             this.recordItem = null;
             this.showDialogAddItem = true;
         },
-        getFormatUnitPriceRow(unit_price) {
+        getFormatUnitPriceRow(unit_price, row) {
             // El precio base siempre está guardado en Soles (PEN).
             // Si el comprobante está en Dólares (USD) se convierte usando el tipo de cambio.
             let price = parseFloat(unit_price) || 0;
-
-            if (this.form.currency_type_id === "USD") {
-                const exchange_rate =
+            const exchange_rate =
                     parseFloat(this.form.exchange_rate_sale) || 0;
+                    console.log(row);
+                    
+
+            if (this.form.currency_type_id === "USD" ) {
 
                 if (exchange_rate > 0) {
                     price = price / exchange_rate;
                 }
+            } else if (this.form.currency_type_id === 'PEN' && row.item.currency_type_id === 'USD') {
+                price = price * exchange_rate;
             }
 
             return _.round(price, 2);

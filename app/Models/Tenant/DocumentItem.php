@@ -608,7 +608,7 @@
         public function getUnitPrice() 
         {
             $unit_price = optional($this->item)->unit_price ? $this->item->unit_price : $this->unit_price;
-
+            if ($this->document->currency_type_id === 'PEN' && $this->item->currency_type_id === 'USD') return $unit_price * $this->document->exchange_rate_sale ;
 
             return $this->isCurrencyTypeUsd() ? $unit_price / $this->document->exchange_rate_sale : $unit_price;
 

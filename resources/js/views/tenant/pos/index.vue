@@ -1021,6 +1021,8 @@
                 :currency-type-active="currency_type"
                 :exchange-rate-sale="form.exchange_rate_sale"
                 :customer="customer"
+                :customer_email="customerEmail"
+                :config="config"
                 :soapCompany="soapCompany"
                 :businessTurns="businessTurns"
                 :is-print="isPrint"
@@ -1443,6 +1445,11 @@ export default {
                 this.electronic_scale_barcode &&
                 this.electronic_scale_data.pass_validations
             );
+        },
+        customerEmail() {
+            const customer = _.find(this.all_customers, c => String(c.id) === String(this.form.customer_id));
+            console.log('found customer:', customer);
+            return customer ? customer.email : null;
         }
     },
     methods: {

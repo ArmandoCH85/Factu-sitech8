@@ -628,7 +628,9 @@ export default {
         'percentageIgv',
         'configuration',
         'typeUser',
-        'authUser'
+        'authUser',
+        'customer_email',
+        'config'
     ],
 
     data() {
@@ -1447,6 +1449,27 @@ export default {
                 message: message,
             }
         },
+        async autoSendPdfMail() {
+            if (!this.config.auto_send_pdf_email) return;
+
+            if (!this.customer_email) {
+                this.$message.warning('El cliente no tiene correo registrado.');
+                return;
+            }
+
+            this.$http.post(`/${this.resource_documents}/email`, {
+                customer_email: this.customer_email,
+                id: this.documentNewId
+            }).then(response => {
+                if (response.data.success) {
+                    this.$message.success('El correo fue enviado satisfactoriamente');
+                } else {
+                    this.$message.error('Error al enviar el correo');
+                }
+            }).catch(() => {
+                this.$message.error('Error al enviar el correo');
+            });
+        },
         async clickPayment()
         {
             // validacion restriccion de productos
@@ -1527,7 +1550,7 @@ export default {
 
                     this.documentNewId = response.data.data.id;
                     // this.showDialogOptions = true;
-
+                    this.autoSendPdfMail();
                     this.showOptionsDialog(response_sent)
 
                     // this.savePaymentMethod();

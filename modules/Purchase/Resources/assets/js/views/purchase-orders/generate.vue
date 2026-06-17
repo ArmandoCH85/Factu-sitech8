@@ -370,8 +370,8 @@ export default {
                             ? fullItem.purchase_affectation_igv_type_id
                             : (it.affectation_igv_type_id || '10'),
                         unit_price: fullItem
-                        ? (parseFloat(fullItem.purchase_unit_price) || parseFloat(fullItem.sale_unit_price) || 0)
-                        : (parseFloat(it.unit_price) || 0),
+                            ? parseFloat(fullItem.purchase_unit_price) || 0
+                            : parseFloat(it.unit_price) || 0,
                         unit_value: 0,
                         total_base_igv: 0,
                         total_igv: 0,

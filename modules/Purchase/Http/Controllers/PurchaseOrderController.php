@@ -187,6 +187,10 @@ class PurchaseOrderController extends Controller
                 foreach ($numeric_fields as $field) {
                     $row[$field] = $row[$field] ?? 0;
                 }
+                if (empty($row['item']) && !empty($row['item_id'])) {
+                    $itemModel = \App\Models\Tenant\Item::find($row['item_id']);
+                    if ($itemModel) $row['item'] = $itemModel->toArray();
+                }
                 $this->purchase_order->items()->create($row);
             }
 

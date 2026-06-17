@@ -1,4 +1,5 @@
 import './bootstrap';
+import Swal from 'sweetalert2';
 
 import 'bootstrap/dist/js/bootstrap.bundle.js'; // Incluye Popper
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -71,6 +72,30 @@ export default ElementUI;
 
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
+
+// Interceptor: sesión vencida por inactividad (419)
+let sessionExpiredShown = false;
+if (Vue.prototype.$http) {
+    Vue.prototype.$http.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 419 && !sessionExpiredShown) {
+                sessionExpiredShown = true;
+                Swal.fire({
+                    title: 'Sesión cerrada por inactividad',
+                    text: 'Por seguridad tu sesión expiró. Pulsa Continuar para recargar y seguir trabajando.',
+                    icon: 'warning',
+                    confirmButtonText: 'Continuar',
+                    confirmButtonColor: '#5b21b6',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then(() => window.location.reload());
+                return new Promise(() => {});
+            }
+            return Promise.reject(error);
+        }
+    );
+}
 
 // System components only
 Vue.component('system-support-configuration', SystemSupportConfiguration);

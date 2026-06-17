@@ -5526,7 +5526,6 @@ export default {
             let price = parseFloat(unit_price) || 0;
             const exchange_rate =
                     parseFloat(this.form.exchange_rate_sale) || 0;
-                    console.log(row);
                     
 
             if (this.form.currency_type_id === row.item.currency_type_id) return price
@@ -7226,20 +7225,19 @@ export default {
         async submit() {
             // validar monto total y cliente_id para "Clientes varios"
             const monto = parseFloat(this.form.total) || 0;
-            const clienteId = this.form.customer_id;
+
+            let customer = _.find(this.customers, {
+                id: this.form.customer_id
+            });
 
             // Si monto > 700 y cliente_id = 1 (Clientes varios)
-            if (monto > 700 && clienteId === 1) {
+            if (monto > 700 && (customer.number === "99999999" && customer.identity_document_type_id === "0")) {
                 this.$alert('Ventas mayores a S/ 700 requieren un cliente con DNI registrado.', 'Cliente Requerido', {
                     confirmButtonText: 'Entendido',
                     type: 'error'
                 });
                 return false;
             }
-
-            let customer = _.find(this.customers, {
-                id: this.form.customer_id
-            });
 
             if (customer) {
                 this.validateCustomerRetention(customer.identity_document_type_id)

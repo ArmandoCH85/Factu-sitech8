@@ -136,6 +136,11 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         view()->composer(
+            'tenant.account.payment_index',
+            'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
+        );
+
+        view()->composer(
             'tenant.layouts.partials.sidebar_styles',
             'App\Http\ViewComposers\Tenant\ConfigurationVisualViewComposer'
         );

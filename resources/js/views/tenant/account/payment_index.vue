@@ -6,7 +6,7 @@
         <li class="active"><span>Pagos</span></li>
       </ol>
       <div class="right-wrapper pull-right">
-        <a type="button" class="btn btn-custom btn-sm mt-2 me-2" href="/cuenta/configuration">
+        <a v-if="canConfigure" type="button" class="btn btn-custom btn-sm mt-2 me-2" href="/cuenta/configuration">
           <i class="fas fa-cogs"></i> Configuración
         </a>
       </div>
@@ -106,6 +106,12 @@
 
 <script>
 export default {
+  props: {
+    canConfigure: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       resource: 'cuenta',

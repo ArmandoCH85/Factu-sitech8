@@ -2188,6 +2188,8 @@ export default {
                     let dato = response.data.data.quotation;
                     this.form.id = dato.id;
                     this.form.customer_id = dato.customer_id;
+                    this.customers = this.customers.filter(el => el.id !== this.form.customer_id)
+                    this.customers.push(response.data.data.customer)
                     this.form.currency_type_id = dato.currency_type_id;
                     this.form.payment_method_type_id = dato.payment_method_type_id;
                     this.form.date_of_due = dato.date_of_due;

@@ -825,7 +825,7 @@ $total_pending_payment = $document->total_pending_payment;
                     </td>
                 @endif
                 @php
-                    $unit_price_item = $row->getUnitPrice();
+                    $unit_price_item = $row->getUnitPrice(($configuration['is_preview']) , $document);
                     $price_total_item = $unit_price_item * $row->quantity;
                 @endphp
                 @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)

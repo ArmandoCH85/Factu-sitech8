@@ -22,11 +22,11 @@
     "file": "assets/_plugin-vue2_normalizer-ceb821ee.css",
     "src": "_plugin-vue2_normalizer.css"
   },
-  "_vue-clipboard-0748b7fe.js": {
+  "_vue-clipboard-0476b9c6.js": {
     "css": [
       "assets/vue-clipboard-aa33dfa0.css"
     ],
-    "file": "assets/vue-clipboard-0748b7fe.js",
+    "file": "assets/vue-clipboard-0476b9c6.js",
     "imports": [
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ]
@@ -58,16 +58,16 @@
     "src": "node_modules/element-ui/lib/theme-chalk/fonts/element-icons.woff"
   },
   "resources/js/app.css": {
-    "file": "assets/app-31552d12.css",
+    "file": "assets/app-c1fdd0a1.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-31552d12.css"
+      "assets/app-c1fdd0a1.css"
     ],
-    "file": "assets/app-b3c94af9.js",
+    "file": "assets/app-58473492.js",
     "imports": [
-      "_vue-clipboard-0748b7fe.js",
+      "_vue-clipboard-0476b9c6.js",
       "__plugin-vue2_normalizer-fcd81e8a.js",
       "_claim_form-bae5a303.js"
     ],
@@ -82,9 +82,9 @@
     "css": [
       "assets/system-5b696ea6.css"
     ],
-    "file": "assets/system-ce6e1d04.js",
+    "file": "assets/system-1ec76912.js",
     "imports": [
-      "_vue-clipboard-0748b7fe.js",
+      "_vue-clipboard-0476b9c6.js",
       "__plugin-vue2_normalizer-fcd81e8a.js"
     ],
     "isEntry": true,

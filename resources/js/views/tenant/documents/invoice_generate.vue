@@ -5529,6 +5529,8 @@ export default {
                     console.log(row);
                     
 
+            if (this.form.currency_type_id === row.item.currency_type_id) return price
+
             if (this.form.currency_type_id === "USD" ) {
 
                 if (exchange_rate > 0) {

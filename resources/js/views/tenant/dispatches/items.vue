@@ -116,6 +116,7 @@
                     item.IdLoteSelected = this.form.IdLoteSelected;
                     item.unit_price = item.sale_unit_price;
                     item.total_value = item.sale_unit_price*this.form.quantity;
+                    item.total = item.sale_unit_price * this.form.quantity;
                     this.$emit('addItem', {
                         item,
                         quantity: this.form.quantity,

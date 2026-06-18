@@ -1744,10 +1744,16 @@ a.ws-flotante {
         border: 1px solid #ffffff !important;
         color: var(--black-dark) !important;
     }
-    html.sidebarMode-dark .logo-light {
+    html.sidebarMode-dark:not(.dark) .logo-light {
+    display: block;
+    }
+    html.sidebarMode-dark:not(.dark) .logo-dark {
+        display: none;
+    }
+    html.sidebarMode-dark.dark .logo-light {
         display: var(--show-light-logo, none);
     }
-    html.sidebarMode-dark .logo-dark {
+    html.sidebarMode-dark.dark .logo-dark {
         display: var(--show-dark-logo, block);
     }
     html.sidebarMode-dark .establishment-selector-container{

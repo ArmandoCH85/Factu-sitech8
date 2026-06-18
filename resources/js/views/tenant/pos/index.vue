@@ -2839,7 +2839,6 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/search_items?${parameters}`)
                     .then(response => {
-                        // console.log("buah");
                         if (response.data.items.length > 0) {
 
                             let presentation = response.data.items[0].unit_type.length > 0 ? true: false
@@ -2906,7 +2905,7 @@ export default {
                 //busqueda comun
                 else {
                     if (this.items.length == 1) {
-                        // console.log(this.items)
+                        console.log(this.items)
                         this.clickAddItem(this.items[0], 0);
                         this.filterItems();
                     }
@@ -3061,7 +3060,7 @@ export default {
             {
                 
                 if(!this.configuration.enable_list_product && this.selected_option_price !== 1) {
-                    if(row.item_unit_types.length) {
+                    if(Array.isArray( row.item_unit_types) &&  row.item_unit_types.length) {
                         let first_list = row.item_unit_types[0];
 
                         // Extraer price_label_id del selectedOptionPrice (formato: "price_label_2")

@@ -417,14 +417,17 @@ export default {
             await this.clickAddItem(index)
         },
         async clickAddItem(index) {
-            this.form.items[index].unit_price = parseFloat(this.form.items[index].unit_price) || 0
-            this.form.items[index].item.unit_price = this.form.items[index].unit_price
-
-            this.form.items[index].item.presentation = [];
-            this.form.items[index].affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.items[index].affectation_igv_type_id})
-            this.row = await calculateRowItem(this.form.items[index], this.form.currency_type_id, this.exchangeRateSale, this.percentage_igv)
-            this.form.items[index] = this.sanitizeRow(this.row)
-            await this.calculateTotal()
+            try {
+                this.form.items[index].unit_price = parseFloat(this.form.items[index].unit_price) || 0
+                this.form.items[index].item.unit_price = this.form.items[index].unit_price
+                this.form.items[index].item.presentation = [];
+                this.form.items[index].affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.items[index].affectation_igv_type_id})
+                this.row = await calculateRowItem(this.form.items[index], this.form.currency_type_id, this.exchangeRateSale, this.percentage_igv)
+                this.form.items[index] = this.sanitizeRow(this.row)
+                await this.calculateTotal()
+            } catch(e) {
+                console.error('clickAddItem error index', index, e)
+            }
 
             // this.initForm()
             // this.initializeFields()

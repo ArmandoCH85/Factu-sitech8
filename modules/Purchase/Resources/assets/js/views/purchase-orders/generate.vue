@@ -410,11 +410,13 @@ export default {
             this.calculateTotal()
         },
         async inputUnitPrice(index) {
-            this.form.items[index].item = await _.find(this.items, {'id': this.form.items[index].item_id})
-            // this.form.unit_price = this.form.item.purchase_unit_price
-            this.form.items[index].affectation_igv_type_id = this.form.items[index].item.purchase_affectation_igv_type_id
-            // this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
-            await this.clickAddItem(index)
+            const found = _.find(this.items, {'id': this.form.items[index].item_id});
+            if (found) {
+                this.form.items[index].item = found;
+                this.form.items[index].affectation_igv_type_id = found.purchase_affectation_igv_type_id;
+            }
+            // si no se encuentra, mantiene el item que ya tiene
+            await this.clickAddItem(index);
         },
         async clickAddItem(index) {
             try {

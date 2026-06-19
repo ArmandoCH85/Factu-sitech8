@@ -540,8 +540,8 @@
                                                         [Lotes]
                                                     </a>
                                                 </td>
-                                                <td class="text-end">S/{{ getFormatQuantity(row.unit_price) }}</td>
-                                                <td class="text-end">S/{{ getFormatQuantity(row.total) }}</td>
+                                                <td class="text-end">S/{{ getFormatQuantity(row.unit_price || row.item?.unit_price || 0) }}</td>
+                                                <td class="text-end">S/{{ getFormatQuantity(row.total || row.item?.total || 0) }}</td>
                                                 <td class="text-end">
                                                     <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                         type="button" @click.prevent="clickRemoveItem(index)">x
@@ -1101,6 +1101,11 @@ export default {
 
         if (this.parentId) {
             this.form = Object.assign({}, this.form, this.document);
+            this.form.items = this.form.items.map(row => ({
+                ...row,
+                unit_price: row.unit_price || row.item?.unit_price || 0,
+                total: row.total || row.item?.total || 0,
+            }));
             this.calculatePackagesFromItems();
             await this.reloadDataCustomers(this.form.customer_id);
             await this.getDeliveryAddresses(this.form.customer_id);

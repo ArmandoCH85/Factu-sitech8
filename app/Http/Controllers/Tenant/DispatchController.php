@@ -235,6 +235,8 @@ class DispatchController extends Controller
                 'weight' => $weight,
                 'name_product_pdf' => $name_product_pdf,
                 'IdLoteSelected' => $IdLoteSelected,
+                'unit_price' => $item->item->unit_price ?? 0,
+                'total' => $item->item->total ?? 0,
             ];
         }
 

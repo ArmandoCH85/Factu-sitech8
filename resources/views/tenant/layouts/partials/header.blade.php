@@ -510,11 +510,60 @@
                             Estilos y temas</a>
                     </li>
 
-                    <li class="divider my-2"></li>
+                    @php
+                        $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
+                        $current =  auth()->user()->establishment_id;
 
-                    <li class="multi-user-content px-4 pb-1">
+                        $headerVisual = optional(App\Models\Tenant\Configuration::first())->visual;
+
+                        $headerMultiUserCount = 0;
+                        if (config('configuration.multi_user_enabled')) {
+                            try {
+                                $headerWebsite = app(\Hyn\Tenancy\Environment::class)->tenant();
+                                $headerCurrentClient = \App\Models\System\Client::currentClientByWebsite($headerWebsite)->first();
+                                if ($headerCurrentClient && auth()->check()) {
+                                    $headerCurrentUser = auth()->user();
+                                    if (!empty($headerCurrentUser->is_multi_user) && $headerCurrentUser->is_multi_user) {
+                                        $headerOriginMulti = \Modules\MultiUser\Models\System\MultiUser::find($headerCurrentUser->multi_user_id);
+                                        if ($headerOriginMulti) {
+                                            $headerMultiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $headerOriginMulti->origin_client_id)
+                                                ->where('origin_user_id', $headerOriginMulti->origin_user_id)
+                                                ->count() + 1;
+                                        }
+                                    } else {
+                                        $headerMultiUserCount = \Modules\MultiUser\Models\System\MultiUser::where('origin_client_id', $headerCurrentClient->id)
+                                            ->where('origin_user_id', $headerCurrentUser->id)
+                                            ->count() + 1;
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                $headerMultiUserCount = 0;
+                            }
+                        }
+                        $headerShowMultiUser = $headerMultiUserCount > 1 && config('configuration.multi_user_enabled');
+                        $headerDefaultSidebarVisibility = (count($establishments) > 1) || $headerShowMultiUser;
+
+                        if (is_object($headerVisual) && property_exists($headerVisual, 'branch_selector_in_sidebar')) {
+                            $branchSelectorInSidebar = (bool) $headerVisual->branch_selector_in_sidebar;
+                        } elseif (is_array($headerVisual) && array_key_exists('branch_selector_in_sidebar', $headerVisual)) {
+                            $branchSelectorInSidebar = (bool) $headerVisual['branch_selector_in_sidebar'];
+                        } else {
+                            $branchSelectorInSidebar = $headerDefaultSidebarVisibility;
+                        }
+
+                        $headerMultiUserPresent = config('configuration.multi_user_enabled') && $headerShowMultiUser;
+                        $headerMultiUserVisible = $headerMultiUserPresent && !$branchSelectorInSidebar;
+                        $headerBranchVisible = (auth()->user()->type == 'admin') && !$branchSelectorInSidebar;
+                        $headerSectionVisible = $headerMultiUserVisible || $headerBranchVisible;
+                    @endphp
+
+                    <li id="multi-user-content-divider" class="divider my-2" @if(!$headerSectionVisible) style="display: none;" @endif></li>
+
+                    <li id="multi-user-content-li" class="multi-user-content px-4 pb-1" data-branch-in-sidebar="{{ $branchSelectorInSidebar ? '1' : '0' }}" @if(!$headerSectionVisible) style="display: none;" @endif>
                         @if(config('configuration.multi_user_enabled'))
-                            <tenant-multi-users-change-client></tenant-multi-users-change-client>
+                            <div id="header-multi-user-selector-container" style="display: {{ $branchSelectorInSidebar ? 'none' : 'block' }};">
+                                <tenant-multi-users-change-client></tenant-multi-users-change-client>
+                            </div>
                         @endif
                         {{-- <div id="reception-component-container" style="width: 100%;">
                             <reception-component
@@ -523,15 +572,13 @@
                                 :establishments="{{ isset($establishments) ? json_encode($establishments) : json_encode([]) }}"
                             ></reception-component>
                         </div> --}}
-                        @php
-                            $establishments = App\Models\Tenant\Establishment::select('id', 'description')->get();
-                            $current =  auth()->user()->establishment_id;
-                        @endphp
                         @if (auth()->user()->type == 'admin')
-                           <tenant-hotel-sucursale
-                            :establishments='@json($establishments)'
-                            :current_establishment={{ $current }}
-                           ></tenant-hotel-sucursale>
+                           <div id="header-establishment-selector-container" style="display: {{ $branchSelectorInSidebar ? 'none' : 'block' }};">
+                               <tenant-hotel-sucursale
+                                :establishments='@json($establishments)'
+                                :current_establishment={{ $current }}
+                               ></tenant-hotel-sucursale>
+                           </div>
                         @endif
                     </li>
 

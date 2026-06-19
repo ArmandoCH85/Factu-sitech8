@@ -73,7 +73,7 @@ try {
 
 $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_devolutions', 'inventory_report_kardex', 'inventory_report', 'inventory_report_valued_kardex'])->isEmpty() && in_array('inventory_transfers', $vc_module_levels);
 ?>
-<aside id="sidebar-left" class="sidebar-left {{ ($showInSidebar && $canShowBranchSelector && $showMultiUser) ? 'show-both-selectors' : (($showInSidebar && ($canShowBranchSelector || $showMultiUser)) ? 'show-branch-selector' : '') }}">
+<aside id="sidebar-left" class="sidebar-left {{ ($showInSidebar && $canShowBranchSelector && $showMultiUser) ? 'show-both-selectors' : (($showInSidebar && ($canShowBranchSelector || $showMultiUser)) ? 'show-branch-selector' : 'no-branch-selector') }}">
     <div class="sidebar-header sidebar-header-desktop">
         <div class="logo-container-sidebar pe-2">
             <a href="{{ route('tenant.dashboard.index') }}" class="logo pt-2 pt-md-0">
@@ -1924,6 +1924,36 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
             });
         }
 
+        function reconcileHeaderSelectorsSection() {
+            var li = document.getElementById('multi-user-content-li');
+            if (!li) return;
+            var divider = document.getElementById('multi-user-content-divider');
+
+            var branchInSidebar = li.getAttribute('data-branch-in-sidebar') === '1';
+            var branchSelector = document.getElementById('header-establishment-selector-container');
+
+            var multiUserHasContent = !!document.querySelector('#header-multi-user-selector-container select[name="multi_user_id"]');
+
+            var multiUserVisible = multiUserHasContent && !branchInSidebar;
+            var branchVisible = !!branchSelector && !branchInSidebar;
+            var sectionVisible = multiUserVisible || branchVisible;
+
+            li.style.display = sectionVisible ? '' : 'none';
+            if (divider) {
+                divider.style.display = sectionVisible ? '' : 'none';
+            }
+        }
+
+        document.addEventListener('tenant-multi-users-mounted', function() {
+            reconcileHeaderSelectorsSection();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            reconcileHeaderSelectorsSection();
+            setTimeout(reconcileHeaderSelectorsSection, 800);
+            setTimeout(reconcileHeaderSelectorsSection, 2500);
+        });
+
         // Listener para cambios de visibilidad del selector de establecimiento en sidebar
         window.addEventListener('branchSelectorVisibilityChanged', function(event) {
             const selectorContainer = document.getElementById('sidebar-establishment-selector-container');
@@ -1963,6 +1993,22 @@ $showTransfer = collect($vc_module_levels)->intersect(['inventory', 'inventory_d
                 if (multiUserSelectorDropdown) {
                     multiUserSelectorDropdown.style.display = showInSidebarEvent ? 'block' : 'none';
                 }
+
+                var headerBranchSelector = document.getElementById('header-establishment-selector-container');
+                if (headerBranchSelector) {
+                    headerBranchSelector.style.display = showInSidebarEvent ? 'none' : 'block';
+                }
+
+                var headerMultiUserSelector = document.getElementById('header-multi-user-selector-container');
+                if (headerMultiUserSelector) {
+                    headerMultiUserSelector.style.display = showInSidebarEvent ? 'none' : 'block';
+                }
+
+                var headerSectionLi = document.getElementById('multi-user-content-li');
+                if (headerSectionLi) {
+                    headerSectionLi.setAttribute('data-branch-in-sidebar', showInSidebarEvent ? '1' : '0');
+                }
+                reconcileHeaderSelectorsSection();
 
                 var shouldShowBranch = !!selectorContainer && showInSidebarEvent;
                 var shouldShowMulti = !!multiuserSelector && showInSidebarEvent;

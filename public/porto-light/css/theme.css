@@ -22308,6 +22308,27 @@ html.sidebar-left-collapsed .sidebar-left .contain-icon-establishment {
 .el-tag--small {
     line-height: normal !important;
 }
+.el-notification__title {
+    font-weight: 700;
+    font-size: 16px !important;
+    margin: 0 !important;
+    line-height: normal;
+}
+.el-notification__content {
+    margin: 0 !important;
+}
+.el-notification .el-icon-info {
+    color: var(--info);
+}
+.el-notification .el-icon-danger {
+    color: var(--danger);
+}
+.el-notification .el-icon-warning {
+    color: var(--warning);
+}
+.el-notification .el-icon-success {
+    color: var(--success);
+}
 @media (max-width: 768px) {
     .support-sidebar {
         width: 100%;

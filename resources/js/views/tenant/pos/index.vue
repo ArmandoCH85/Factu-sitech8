@@ -2217,7 +2217,13 @@ export default {
                 return;
             }
 
-            this.loading = true;
+            let addingNotification = this.$notify({
+                title: "",
+                message: "Agregando...",
+                type: "info",
+                duration: 0
+            });
+
             let exchangeRateSale = this.form.exchange_rate_sale;
             let presentation = item.presentation;
             let exist_item = false;
@@ -2281,6 +2287,7 @@ export default {
                     if (!response.success) {
                         item.item.aux_quantity = item.quantity;
                         this.loading = false;
+                        addingNotification.close();
                         return this.$message.error(response.message);
                     }
 
@@ -2292,6 +2299,7 @@ export default {
                     );
                     if (!response.success) {
                         this.loading = false;
+                        addingNotification.close();
                         return this.$message.error(response.message);
                     }
 
@@ -2361,6 +2369,7 @@ export default {
                 );
                 if (!response.success) {
                     this.loading = false;
+                    addingNotification.close();
                     return this.$message.error(response.message);
                 }
 
@@ -2427,11 +2436,13 @@ export default {
 
             // console.log("pos", this.row);
 
+            addingNotification.close();
+
             this.$notify({
                 title: "",
                 message: "Producto añadido!",
                 type: "success",
-                duration: 700
+                duration: 1000
             });
 
             this.cleanInput();
@@ -2443,7 +2454,6 @@ export default {
             // console.log(this.row)
             // console.log(this.form.items)
             await this.calculateTotal();
-            this.loading = false;
 
             await this.setFormPosLocalStorage();
 

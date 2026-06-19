@@ -7233,13 +7233,15 @@ export default {
                 id: this.form.customer_id
             });
 
-            // Si monto > 700 y cliente_id = 1 (Clientes varios)
-            if (monto > 700 && (customer.number === "99999999" && customer.identity_document_type_id === "0")) {
-                this.$alert('Ventas mayores a S/ 700 requieren un cliente con DNI registrado.', 'Cliente Requerido', {
-                    confirmButtonText: 'Entendido',
-                    type: 'error'
-                });
-                return false;
+            if (customer) {
+                // Si monto > 700 y cliente_id = 1 (Clientes varios)
+                if (monto > 700 && (customer.number === "99999999" && customer.identity_document_type_id === "0")) {
+                    this.$alert('Ventas mayores a S/ 700 requieren un cliente con DNI registrado.', 'Cliente Requerido', {
+                        confirmButtonText: 'Entendido',
+                        type: 'error'
+                    });
+                    return false;
+                }
             }
 
             if (customer) {

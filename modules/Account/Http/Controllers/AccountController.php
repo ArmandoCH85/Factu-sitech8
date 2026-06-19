@@ -13,6 +13,7 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
 use Modules\Account\Exports\ReportAccountingSumeriusExport;
+use Modules\Account\Exports\ReportAccountingEjbExport;
 use App\Exports\GeneralFormatExport;
 use Modules\Company\Models\Company;
 use App\Http\Controllers\System\ClientController;
@@ -124,6 +125,19 @@ class AccountController extends Controller
                         ->data($data)
                         ->view_name('account::accounting.templates.excel_siscont') 
                         ->download($filename.'.xlsx');
+            
+            case 'ejb_excel':
+                $ejb_records = $this->getDocumentsEjb($d_start, $d_end);
+                $data = [
+                    'records' => $this->getStructureEjbExcel($ejb_records),
+                ];
+                            
+                return (new ReportAccountingEjbExport)
+                        ->data($data)
+                        ->download($filename . '.xlsx');
+                            
+            default:
+                abort(400, 'Formato de exportación no soportado: ' . $type);
         
         }
     }
@@ -369,6 +383,124 @@ class AccountController extends Controller
 
         return $document_type;
 
+    }
+    private function getDocumentsEjb($d_start, $d_end)
+    {
+        return Document::query()
+            ->with(['invoice', 'items', 'note.affected_document'])
+            ->whereBetween('date_of_issue', [$d_start, $d_end])
+            ->whereIn('document_type_id', ['01', '03', '07', '08'])
+            ->whereIn('currency_type_id', ['PEN', 'USD'])
+            ->orderBy('series')
+            ->orderBy('number')
+            ->get();
+    }
+
+    private function getStructureEjbExcel($documents)
+    {
+        $company_account = CompanyAccount::first();
+
+        return $documents->transform(function ($row) use ($company_account) {
+            $income_account = null;
+            $receivable = null;
+
+            if ($row->hasNationalCurrency()) {
+                $income_account = $company_account->subtotal_pen;
+                $receivable = $company_account->total_pen;
+            } else {
+                $income_account = $company_account->subtotal_usd;
+                $receivable = $company_account->total_usd;
+            }
+
+            $total_exportation = 0;
+            $total_unaffected = 0;
+            $total_exonerated = 0;
+            $total_isc = 0;
+            $total_igv = 0;
+            $total_plastic_bag_taxes = 0;
+            $total = 0;
+
+            if ($row->hasAcceptedState()) {
+                $total_exportation = $row->generalApplyNumberFormat($row->total_exportation);
+                $total_unaffected = $row->generalApplyNumberFormat($row->total_unaffected);
+                $total_exonerated = $row->generalApplyNumberFormat($row->total_exonerated);
+                $total_isc = $row->generalApplyNumberFormat($row->total_isc);
+                $total_igv = $row->generalApplyNumberFormat($row->total_igv);
+                $total_plastic_bag_taxes = $row->generalApplyNumberFormat($row->total_plastic_bag_taxes);
+                $total = $row->generalApplyNumberFormat($row->total);
+            }
+
+            $date_of_due = $row->invoice ? $row->invoice->date_of_due : $row->date_of_issue;
+
+            $ref_date_excel = '';
+            $ref_document_type = '';
+            $ref_series = '';
+            $ref_number = '';
+
+            if (in_array($row->document_type_id, ['07', '08']) && $row->note) {
+                $affected = $row->note->affected_document ?: $row->note->data_affected_document;
+
+                if ($affected) {
+                    $ref_date_excel = $this->toEjbDate($affected->date_of_issue);
+                    $ref_document_type = $this->getShortDocumentTypeConcarSimple($affected->document_type_id);
+                    $ref_series = $affected->series;
+                    $ref_number = str_pad($affected->number, 8, '0', STR_PAD_LEFT);
+                }
+            }
+
+            $document_type = $this->getShortDocumentTypeConcarSimple($row->document_type_id);
+            $number = str_pad($row->number, 8, '0', STR_PAD_LEFT);
+
+            return [
+                'customer_number' => (string) $row->customer->number,
+                'document_type' => $document_type,
+                'series' => $row->series,
+                'number' => $number,
+                'date_of_issue_excel' => $this->toEjbDate($row->date_of_issue),
+                'date_of_due_excel' => $this->toEjbDate($date_of_due),
+                'currency_type_id' => $row->currency_type_id === 'PEN' ? 'MN' : 'US',
+                'total_igv' => $this->getEjbIgvCode($row),
+                'total' => $total,
+                'total_unaffected' => $total_unaffected,
+                'total_isc' => $total_isc,
+                'others' => 0,
+                'total_plastic_bag_taxes' => $total_plastic_bag_taxes,
+                'income_account' => $income_account,
+                'ref_date_excel' => $ref_date_excel,
+                'ref_document_type' => $ref_document_type,
+                'ref_series' => $ref_series,
+                'ref_number' => $ref_number,
+                'cost_center' => '',
+                'subdiary' => $this->getEjbSubdiary($row),
+                'receivable' => $receivable,
+                'gloss' => "VENTA {$document_type} {$row->series}-{$number}",
+            ];
+        });
+    }
+
+    private function getEjbSubdiary(Document $document): string
+    {
+        $affectation_type_id = optional($document->items->first())->affectation_igv_type_id;
+
+        return [
+            '10' => '05',
+            '20' => '06',
+            '30' => '07',
+        ][$affectation_type_id] ?? '';
+    }
+
+    private function getEjbIgvCode(Document $document): string
+    {
+        $has_taxed_affectation = $document->items->contains(function ($item) {
+            return in_array($item->affectation_igv_type_id, ['10', '11', '12', '13', '14', '15', '16', '17']);
+        });
+
+        return $has_taxed_affectation ? '118' : '0';
+    }
+
+    private function toEjbDate($date): string
+    {
+        return Carbon::parse($date)->format('d/m/Y');
     }
 
 

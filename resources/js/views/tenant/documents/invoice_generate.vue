@@ -4999,6 +4999,10 @@ export default {
                 // this.series = this.onSetSeries(this.form.document_type_id, this.series);
                 this.changeDocumentType();
             }
+
+            this.customers = this.customers.filter(el => el.id !== data.customer_id)
+            this.customers.push(data.customer)
+
             this.form.id = data.id;
             this.form.custom_fields_data = data.custom_fields_data;
             this.form.hash = data.hash;

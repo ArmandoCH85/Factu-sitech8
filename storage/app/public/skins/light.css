@@ -859,6 +859,9 @@ html.sidebar-gray ul.nav-main li .nav-children li a:after {
     border: none !important;
     padding: 5px !important;
 }
+.btn-edit-person {
+    right: 40px;
+}
 @media only screen and (min-width: 767px){
     .welcome-component {
         margin-right: -18px;

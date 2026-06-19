@@ -1684,6 +1684,10 @@ body .v-modal {
 .btn-add-new:hover{
     color: var(--dark-color);
 }
+.btn-edit-person {
+    right: 30px;
+    border-radius: 0 !important;
+}
 /* estilos login */
 .auth .form-group label{
     border-bottom: none !important;

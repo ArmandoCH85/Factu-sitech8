@@ -697,6 +697,9 @@ a.ws-flotante {
     margin-left: 4px;
     cursor: pointer;
 }
+.btn-edit-person {
+    right: 40px;
+}
 html.sidebar-light:not(.dark) .style-switcher {
     background: #ffffff !important;
 }

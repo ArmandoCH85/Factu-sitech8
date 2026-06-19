@@ -2359,6 +2359,9 @@ html.sidebar-light:not(.dark) .style-switcher:before{
     top: 34px;
     right: 14px;
 }
+.btn-edit-person {
+    right: 40px;
+}
 .btn-add-new:hover{
     opacity: 1;
 }

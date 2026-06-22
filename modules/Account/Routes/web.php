@@ -25,6 +25,8 @@ if($hostname) {
                 Route::get('summary-report', 'SummaryReportController@index')->name('tenant.account_summary_report.index');
                 Route::get('summary-report/records', 'SummaryReportController@records');
                 Route::get('summary-report/format/download', 'SummaryReportController@download');
+                Route::get('tables-ejb', 'AccountController@tablesEjb' );
+                Route::post('ejb', 'AccountController@storeEjb');
 
             });
 

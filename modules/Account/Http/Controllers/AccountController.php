@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Document;
 use App\Http\Controllers\Controller;
 use Modules\Account\Models\CompanyAccount;
+use Modules\Account\Models\EjbReportConfiguration;
+use Illuminate\Support\Facades\DB;
 use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
@@ -17,6 +19,8 @@ use Modules\Account\Exports\ReportAccountingEjbExport;
 use App\Exports\GeneralFormatExport;
 use Modules\Company\Models\Company;
 use App\Http\Controllers\System\ClientController;
+use App\Models\Tenant\BankAccount;
+use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
 use Modules\Account\Exports\ReportAccountingConcarSimpleExport;
 
@@ -451,6 +455,7 @@ class AccountController extends Controller
             $document_type = $this->getShortDocumentTypeConcarSimple($row->document_type_id);
             $number = str_pad($row->number, 8, '0', STR_PAD_LEFT);
 
+            $ebj_configuration = EjbReportConfiguration::where('document_type_id', $row->document_type_id)->first();
             return [
                 'customer_number' => (string) $row->customer->number,
                 'document_type' => $document_type,
@@ -474,6 +479,13 @@ class AccountController extends Controller
                 'subdiary' => $this->getEjbSubdiary($row),
                 'receivable' => $receivable,
                 'gloss' => "VENTA {$document_type} {$row->series}-{$number}",
+                '' => '',
+                '' => '',
+                '' => '',
+                '' => '',
+                'automatic_payment_account' => $ebj_configuration ? ($row->currency_type_id === 'PEN' ? $ebj_configuration->bank_account_pen->number : $ebj_configuration->bank_account_usd->number) : '',
+                'automatic_payment_document_number' => "{$document_type} {$row->series}-{$number}",
+                'automatic_payment_amount' => $total,
             ];
         });
     }
@@ -1588,4 +1600,50 @@ class AccountController extends Controller
         }
         return redirect()->back();
     }
+
+    public function recordConfigurationEjb()
+    {
+        
+    }
+
+    public function tablesEjb()
+    {
+        $banks = BankAccount::all();
+        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '08'])->get();
+        $records = EjbReportConfiguration::all();
+
+        return [
+            'banks' => $banks,
+            'document_types' => $document_types,
+            'records' => $records
+        ];
+    }
+
+    public function storeEjb(Request $request)
+    {
+        $records = $request->input('records', []);
+
+        DB::connection('tenant')->transaction(function () use ($records) {
+            EjbReportConfiguration::query()->delete();
+
+            foreach ($records as $record) {
+                if (empty($record['document_type_id'])) {
+                    continue;
+                }
+
+                EjbReportConfiguration::create([
+                    'document_type_id'    => $record['document_type_id'],
+                    'bank_account_pen_id' => $record['account_soles_id'] ?? null,
+                    'bank_account_usd_id' => $record['account_dolares_id'] ?? null,
+                ]);
+            }
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Configuración guardada'
+        ];
+    }
+
+
 }

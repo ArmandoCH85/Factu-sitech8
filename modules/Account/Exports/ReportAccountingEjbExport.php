@@ -92,9 +92,9 @@ class ReportAccountingEjbExport extends DefaultValueBinder implements FromArray,
                 '',
                 '',
                 '',
-                '',
-                '',
-                '',
+                $row['automatic_payment_account'],
+                $row['automatic_payment_document_number'],
+                $row['automatic_payment_amount'],
             ];
         })->toArray();
     }

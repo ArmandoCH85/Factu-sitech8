@@ -58,9 +58,9 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ $row['automatic_payment_account']}}</td>
+            <td>{{ $row['automatic_payment_document_number']}}</td>
+            <td>{{ $row['automatic_payment_amount']}}</td>
         </tr>
     @endforeach
 </table>

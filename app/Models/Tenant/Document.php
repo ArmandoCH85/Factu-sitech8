@@ -346,7 +346,7 @@ class Document extends ModelTenant
             }
         }
 
-        if ($total_discount_item == 0 && $total_discount_global == 0) {
+        if ($this->total_value > 0 && $total_discount_item == 0 && $total_discount_global == 0) {
             $factor = ($this->total_value + $this->total_taxes) / $this->total_value;
             return round($this->total_discount * $factor, 2);
         }

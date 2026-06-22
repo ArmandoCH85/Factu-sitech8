@@ -2869,9 +2869,8 @@ export default {
 
             if (customer.price_label_id) {
                 this.selected_option_price = `price_label_${customer.price_label_id}`;
-            } else {
-                this.selected_option_price = 1;
-            }
+            } 
+
 
             this.getConsigneds();
         },

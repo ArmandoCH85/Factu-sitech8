@@ -7332,8 +7332,6 @@ export default {
                     );
             }
 
-            console.log(this.config.enabled_guarantee_fund, this.form.detraction, this.form.retention, this.form.total_pending_payment)
-
             if (this.config.enabled_guarantee_fund) {
                 let fund_obj = Object.keys(this.form.detraction).length > 0 ? this.form.detraction : this.form.retention 
 

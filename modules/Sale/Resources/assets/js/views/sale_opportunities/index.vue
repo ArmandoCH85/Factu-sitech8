@@ -348,7 +348,7 @@ export default {
                     window.location.href = `/purchase-orders/sale-opportunity/${command.id}`;
                     break;
                 case 'generateQuotation':
-                    window.location.href = `/quotations/create/${command.id}`;
+                    window.location.href = `/quotations/create/${command.id}/sale_opportunity`;
                     break;
                 case 'edit':
                     window.location.href = `/${this.resource}/create/${command.id}`;

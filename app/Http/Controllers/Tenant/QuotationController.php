@@ -65,14 +65,16 @@ class QuotationController extends Controller
     }
 
 
-    public function create($saleOpportunityId = null)
+    public function create($id = null, $type = null)
     {
         $resourceId = null;
+        $saleOpportunityId = null;
 
-        if ($saleOpportunityId && is_numeric($saleOpportunityId)) {
-            if (Quotation::find($saleOpportunityId)) {
-                $resourceId = (int) $saleOpportunityId;
-                $saleOpportunityId = null;
+        if ($id && is_numeric($id)) {
+            if ($type === 'sale_opportunity') {
+                $saleOpportunityId = (int) $id;
+            } elseif (Quotation::find($id)) {
+                $resourceId = (int) $id;
             }
         }
 

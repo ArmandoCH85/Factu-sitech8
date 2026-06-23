@@ -1982,4 +1982,9 @@ class Document extends ModelTenant
         return null;
     }
 
+
+    public function has_cash()
+    {
+        return $this->payments->contains('is_cash', true);
+    }
 }

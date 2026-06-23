@@ -126,7 +126,7 @@
                 }
             },
             async create() {
-                this.titleDialog = this.recordId ? 'Editar' : 'Nuevo'
+                this.titleDialog = this.recordId ? 'Editar Configuración de EJB' : 'Nueva Configuración de EJB'
 
                 this.loading = true
                 await this.getRecords()

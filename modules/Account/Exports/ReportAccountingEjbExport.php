@@ -106,6 +106,7 @@ class ReportAccountingEjbExport extends DefaultValueBinder implements FromArray,
             'D' => NumberFormat::FORMAT_TEXT,
             'R' => NumberFormat::FORMAT_TEXT,
             'T' => NumberFormat::FORMAT_TEXT,
+            'U' => NumberFormat::FORMAT_TEXT,
         ];
     }
 

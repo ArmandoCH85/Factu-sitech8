@@ -103,7 +103,7 @@
                                     <el-option key="contasis" value="contasis" label="CONTASIS"></el-option>
                                     <el-option key="adsoft" value="adsoft" label="ADSOFT"></el-option>
                                     <el-option key="sumerius" value="sumerius" label="SUMERIUS"></el-option>
-                                    <el-option key="ejb" value="ejb_excel" label="Reporte EJB"></el-option>
+                                    <el-option key="ejb" value="ejb_excel" label="EJB EXCEL"></el-option>
                                 </el-select>
                                 <el-tooltip v-if="form.type === 'ejb_excel'" content="Configuración" effect="dark" placement="top">
                                     <el-button class="ms-2" icon="el-icon-setting" @click.prevent="clickConfiguration()"></el-button>

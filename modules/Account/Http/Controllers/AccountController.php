@@ -403,17 +403,22 @@ class AccountController extends Controller
     private function getStructureEjbExcel($documents)
     {
         $company_account = CompanyAccount::first();
+        $account_debit_debit = [
+            'debit' => 101101,
+            'credit' => 104101,
+        ];
 
-        return $documents->transform(function ($row) use ($company_account) {
+        return $documents->transform(function ($row) use ($company_account, $account_debit_debit) {
+            $ebj_configuration = EjbReportConfiguration::where('document_type_id', $row->document_type_id)->first();
             $income_account = null;
-            $receivable = null;
+            $receivable = $ebj_configuration ? ($row->currency_type_id === 'PEN' ? $ebj_configuration->bank_account_pen->number : $ebj_configuration->bank_account_usd->number) : '';
 
             if ($row->hasNationalCurrency()) {
                 $income_account = $company_account->subtotal_pen;
-                $receivable = $company_account->total_pen;
+                // $receivable = $company_account->total_pen;
             } else {
                 $income_account = $company_account->subtotal_usd;
-                $receivable = $company_account->total_usd;
+                // $receivable = $company_account->total_usd;
             }
 
             $total_exportation = 0;
@@ -455,7 +460,16 @@ class AccountController extends Controller
             $document_type = $this->getShortDocumentTypeConcarSimple($row->document_type_id);
             $number = str_pad($row->number, 8, '0', STR_PAD_LEFT);
 
-            $ebj_configuration = EjbReportConfiguration::where('document_type_id', $row->document_type_id)->first();
+
+            $automatic_payment_account = null;
+            if ($row->payments && $row->payments->count() == 0) {
+                $automatic_payment_account = '';
+            } else if ($row->payments->contains('payment_method_type_id', "01")) {
+                $automatic_payment_account = $account_debit_debit['debit'];
+            } else {
+                $automatic_payment_account = $account_debit_debit['credit'];
+            }
+
             return [
                 'customer_number' => (string) $row->customer->number,
                 'document_type' => $document_type,
@@ -483,7 +497,7 @@ class AccountController extends Controller
                 '' => '',
                 '' => '',
                 '' => '',
-                'automatic_payment_account' => $ebj_configuration ? ($row->currency_type_id === 'PEN' ? $ebj_configuration->bank_account_pen->number : $ebj_configuration->bank_account_usd->number) : '',
+                'automatic_payment_account' => $automatic_payment_account,
                 'automatic_payment_document_number' => "{$document_type} {$row->series}-{$number}",
                 'automatic_payment_amount' => $total,
             ];

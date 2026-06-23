@@ -2068,6 +2068,7 @@ export default {
                     this.affectation_igv_types,
                     { id: "40" }
                )
+               this.form.affectation_igv_type_id = this.form.affectation_igv_type.id
             } else {
                 this.form.affectation_igv_type = _.find(
                     this.affectation_igv_types,

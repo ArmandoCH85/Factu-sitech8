@@ -124,6 +124,7 @@ class DocumentController extends Controller
     // TODO: refactorizar para usar el mismo método en el controller de sale notes
     public function records(Request $request)
     {
+        $auth_id = auth()->user()->id;
         $cacheParams = [
             'category_id' => $request->category_ido,
             'page' => $request->page,
@@ -139,7 +140,7 @@ class DocumentController extends Controller
             'series' => $request->series,
             'state_type_id' => $request->state_type_id,
         ];
-        $cacheKey = 'document_list_' . md5(json_encode($cacheParams));
+        $cacheKey = 'document_list_' . "user-$auth_id" . "_" . md5(json_encode($cacheParams));
         if ($this->pingCache()) {
             return $this->cacheWithTagKey(
                 $cacheKey,

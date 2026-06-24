@@ -22,6 +22,7 @@ use App\Http\Controllers\System\ClientController;
 use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
+use Illuminate\Support\Collection;
 use Modules\Account\Exports\ReportAccountingConcarSimpleExport;
 
 
@@ -405,7 +406,7 @@ class AccountController extends Controller
         $company_account = CompanyAccount::first();
         $account_debit_debit = [
             'debit' => 101101,
-            'credit' => 104101,
+            'transfer' => 104101,
         ];
 
         return $documents->transform(function ($row) use ($company_account, $account_debit_debit) {
@@ -424,6 +425,7 @@ class AccountController extends Controller
             $total_exportation = 0;
             $total_unaffected = 0;
             $total_exonerated = 0;
+            $total_value = 0;
             $total_isc = 0;
             $total_igv = 0;
             $total_plastic_bag_taxes = 0;
@@ -432,6 +434,7 @@ class AccountController extends Controller
             if ($row->hasAcceptedState()) {
                 $total_exportation = $row->generalApplyNumberFormat($row->total_exportation);
                 $total_unaffected = $row->generalApplyNumberFormat($row->total_unaffected);
+                $total_value = $row->generalApplyNumberFormat($row->total_value);
                 $total_exonerated = $row->generalApplyNumberFormat($row->total_exonerated);
                 $total_isc = $row->generalApplyNumberFormat($row->total_isc);
                 $total_igv = $row->generalApplyNumberFormat($row->total_igv);
@@ -461,13 +464,24 @@ class AccountController extends Controller
             $number = str_pad($row->number, 8, '0', STR_PAD_LEFT);
 
 
-            $automatic_payment_account = null;
-            if ($row->payments && $row->payments->count() == 0) {
-                $automatic_payment_account = '';
-            } else if ($row->payments->contains('payment_method_type_id', "01")) {
-                $automatic_payment_account = $account_debit_debit['debit'];
-            } else {
-                $automatic_payment_account = $account_debit_debit['credit'];
+            $automatic_payment_amount = '';
+            $automatic_payment_account = '';
+
+            if ($row->payments instanceof Collection && $row->payment_condition_id === '01') {
+                $total_payments = $row->payments->count();
+                $row->payments->each(function($row, $index) use(&$automatic_payment_account, &$automatic_payment_amount, $account_debit_debit, $total_payments) {
+                    $automatic_payment_amount .= "$row->payment";
+                    if ($row->payment_method_type_id === '01') {
+                        $automatic_payment_account .= $account_debit_debit['debit'];
+                    } else {
+                        $automatic_payment_account .= $account_debit_debit['transfer'];
+                    }
+
+                    if (($index + 1) != $total_payments) {
+                        $automatic_payment_amount .= ", ";
+                        $automatic_payment_account .= ", ";
+                    }
+                });
             }
 
             return [
@@ -478,8 +492,8 @@ class AccountController extends Controller
                 'date_of_issue_excel' => $this->toEjbDate($row->date_of_issue),
                 'date_of_due_excel' => $this->toEjbDate($date_of_due),
                 'currency_type_id' => $row->currency_type_id === 'PEN' ? 'MN' : 'US',
-                'total_igv' => $this->getEjbIgvCode($row),
-                'total' => $total,
+                'total_igv' => $row->total_igv,
+                'total' => $total_value,
                 'total_unaffected' => $total_unaffected,
                 'total_isc' => $total_isc,
                 'others' => 0,
@@ -499,7 +513,7 @@ class AccountController extends Controller
                 '' => '',
                 'automatic_payment_account' => $automatic_payment_account,
                 'automatic_payment_document_number' => "{$document_type} {$row->series}-{$number}",
-                'automatic_payment_amount' => $total,
+                'automatic_payment_amount' => $automatic_payment_amount,
             ];
         });
     }

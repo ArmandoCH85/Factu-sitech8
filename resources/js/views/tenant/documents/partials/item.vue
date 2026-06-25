@@ -2120,6 +2120,7 @@ export default {
                     // Monto fijo ingresado por el usuario (en la moneda del item) -> documento
                     const amount = (parseFloat(discount.amount) || 0) * doc_factor;
                     const factor = base > 0 ? amount / base : 0;
+                    
                     discount.base = _.round(base, 2);
                     let amount_base = affects_base ?  amount / igv_factor : amount;
                     discount.amount = Number((amount_base).toFixed(2));

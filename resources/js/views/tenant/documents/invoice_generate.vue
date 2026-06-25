@@ -2036,10 +2036,7 @@
                                                     </tr>
 
                                                     <tr
-                                                        v-if="
-                                                            form.total_discount >
-                                                                0
-                                                        "
+                                                        v-if="totalDiscount > 0"
                                                     >
                                                         <td>
                                                             DESCUENTOS TOTALES:
@@ -2990,7 +2987,7 @@
                                         </td>
                                     </tr>
 
-                                    <tr v-if="form.total_discount > 0">
+                                    <tr v-if="totalDiscount > 0">
                                         <td>DESCUENTOS TOTALES:</td>
                                         <td>
                                             {{ currency_type.symbol }}
@@ -4283,6 +4280,8 @@ export default {
             if (this.form.items.length > 0) {
                 this.form.items.forEach(item => {
                     if (!item.discounts) return;
+                    console.log(item.discounts);
+                    
                     item.discounts.forEach(discount => {
                         const is_base = discount.discount_type_id === "00";
                         const base_amount = discount.amount_without_rounded 
@@ -4295,6 +4294,8 @@ export default {
 
             const global_amount = this.form.discounts.length > 0 ? this.form.discounts[0].amount_without_rounded : 0;
             const total_global = this.isGlobalDiscountBase ? global_amount * igv_factor : global_amount;
+            console.log({ total_items, total_global });
+            
 
             return _.round(total_items + total_global, 2);
         },
@@ -6747,11 +6748,12 @@ export default {
 
             }
 
+            
             // this.form.subtotal = _.round(total + this.form.total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total + this.form.total_plastic_bag_taxes - this.total_discount_no_base, 2)
 
             if (this.enabled_discount_global)
-                this.discountGlobal(totals_without_rounding);
+                this.discountGlobalItems(totals_without_rounding);
 
             if (this.prepayment_deduction) this.discountGlobalPrepayment();
 
@@ -7066,98 +7068,280 @@ export default {
          *
          * @param ctx
          */
-        // discountGlobalItems(ctx) {
-        //     let total_discounts_item = 0;
-        //     // Limpiar descuentos globales previamente distribuidos para no acumular en cada recalculo
-        //     this.form.items.forEach(item => {
-        //         if (item.discounts && item.discounts.length > 0) {
-        //             item.discounts = item.discounts.filter(d => !d.from_global_distribution);
-        //         }
-        //     });
+        /**
+         * Elimina IN-PLACE los descuentos marcados como from_global_distribution
+         * de todos los items. Usa splice en reversa para mutar el mismo array
+         * (no crea uno nuevo), de modo que cualquier referencia externa al array
+         * también vea la eliminación y los objetos descuento queden sin referencias
+         * vivas para ser liberados por el GC.
+         */
+        clearGlobalDistributionDiscounts() {
+            this.form.items.forEach((item, index) => {
+                item.discounts = item.discounts.filter( le => !le.from_global_distribution) || [];
+                // if (!item.discounts || item.discounts.length === 0) return;
+                // let changed = false;
+                // for (let i = item.discounts.length - 1; i >= 0; i--) {
+                //     if (item.discounts[i].from_global_distribution) {
+                //         item.discounts.splice(i, 1);
+                //         changed = true;
+                //     }
+                // }
+                // if (changed) {
+                //     this.form.items.splice(
+                //         index,
+                //         1,
+                //         calculateRowItem(
+                //             item,
+                //             this.form.currency_type_id,
+                //             this.form.exchange_rate_sale,
+                //             this.percentage_igv
+                //         )
+                //     );
+                // }
+            });
+        },
+        discountGlobalItems(ctx) {
+             let total_discounts_item = 0;
+             // Limpiar descuentos globales previamente distribuidos para no acumular en cada recalculo
+             this.clearGlobalDistributionDiscounts();
 
-        //     if (!this.total_global_discount || this.total_global_discount <= 0) return;
+             if (!this.total_global_discount || this.total_global_discount <= 0) return;
 
-        //     // Si el monto incluye IGV (descuento exacto tipo "02"), extraemos la base sin IGV
-        //     let amount_discount = parseFloat(this.total_global_discount);
-        //     if (this.is_amount) {
-        //         if (this.recordDiscountsGlobal) {
-        //             if (this.recordDiscountsGlobal.discount_type_id === "02") {
-        //                 amount_discount = this.total_global_discount / (1 + this.percentage_igv);
-        //             }
-        //         } else if (
-        //             this.configuration.global_discount_type_id === "02" &&
-        //             this.configuration.exact_discount
-        //         ) {
-        //             amount_discount = this.total_global_discount / (1 + this.percentage_igv);
-        //         }
-        //     }
+             // Si el monto incluye IGV (descuento exacto tipo "02"), extraemos la base sin IGV
+             let amount_discount = parseFloat(this.total_global_discount);
+             if (this.is_amount) {
+                 if (this.recordDiscountsGlobal) {
+                     if (this.recordDiscountsGlobal.discount_type_id === "02") {
+                        amount_discount = this.total_global_discount / (1 + this.percentage_igv);
+                    }
+                } else if (
+                    this.configuration.global_discount_type_id === "02" &&
+                    this.configuration.exact_discount
+                ) {
+                    amount_discount = this.total_global_discount / (1 + this.percentage_igv);
+                }
+            }
 
-        //     let total_base = parseFloat(ctx.total_taxed)
-        //         + parseFloat(ctx.total_exonerated)
-        //         + parseFloat(ctx.total_unaffected)
-        //         + parseFloat(ctx.total_exportation)
-        //         + parseFloat(ctx.total_free);
+            let total_base = parseFloat(ctx.total_taxed)
+                + parseFloat(ctx.total_exonerated)
+                + parseFloat(ctx.total_unaffected)
+                + parseFloat(ctx.total_exportation)
+                + parseFloat(ctx.total_free);
 
-        //     let global_amount = this.is_amount
-        //         ? parseFloat(amount_discount)
-        //         : _.round((parseFloat(amount_discount) / 100) * total_base, 2);
+            let global_amount = this.is_amount
+                ? parseFloat(amount_discount)
+                : _.round((parseFloat(amount_discount) / 100) * total_base, 2);
 
-        //     // Suma de todos los items (denominador de la formula)
-        //     let sum_items_value = _.sumBy(this.form.items, item => {
-        //         return item.total_value_without_rounding
-        //             ? parseFloat(item.total_value_without_rounding)
-        //             : parseFloat(item.total_value);
-        //     });
+            // Suma de todos los items (denominador de la formula)
+            let sum_items_value = _.sumBy(this.form.items, item => {
+                return item.total_value_without_rounding
+                    ? parseFloat(item.total_value_without_rounding)
+                    : parseFloat(item.total_value);
+            });
 
-        //     if (sum_items_value <= 0) return;
+            if (sum_items_value <= 0) return;
 
-        //     let discount_type_id = this.recordDiscountsGlobal
-        //         ? this.recordDiscountsGlobal.discount_type_id
-        //         : this.global_discount_type.id;
-        //     let description = this.recordDiscountsGlobal
-        //         ? this.recordDiscountsGlobal.description
-        //         : this.global_discount_type.description;
+            let discount_type_id = this.recordDiscountsGlobal
+                ? this.recordDiscountsGlobal.discount_type_id
+                : this.global_discount_type.id;
+            let description = this.recordDiscountsGlobal
+                ? this.recordDiscountsGlobal.description
+                : this.global_discount_type.description;
+            
+            this.form.items.forEach((item, index) => {
+                let item_value = item.total_value_without_rounding
+                    ? parseFloat(item.total_value_without_rounding)
+                    : parseFloat(item.total_value);
 
-        //     this.form.items.forEach(item => {
-        //         let item_value = item.total_value_without_rounding
-        //             ? parseFloat(item.total_value_without_rounding)
-        //             : parseFloat(item.total_value);
+                if (item_value <= 0) return;
 
-        //         if (item_value <= 0) return;
+                // [(valor del item) / suma de todo los items] * descuento global
+                let item_discount_amount = 
+                    (item_value / sum_items_value) * global_amount
 
-        //         // [(valor del item) / suma de todo los items] * descuento global
-        //         let item_discount_amount = _.round(
-        //             (item_value / sum_items_value) * global_amount,
-        //             2
-        //         );
+                if (item_discount_amount <= 0) return;
 
-        //         if (item_discount_amount <= 0) return;
+                total_discounts_item += item_discount_amount;
 
-        //         total_discounts_item += item_discount_amount;
+                console.log("amount discount item 1", item_discount_amount);
+                console.log("amount discount item round", _.round(item_discount_amount, 2));
+                
+                let factor = _.round(item_discount_amount / item_value, 5);
 
-        //         let factor = _.round(item_discount_amount / item_value, 5);
+                item.discounts = item.discounts || [];
+                
+                let $_discount_type_id  = discount_type_id === "02" ? "00" : "01"
+                
 
-        //         item.discounts = item.discounts || [];
-        //         item.discounts.push({
-        //             discount_type_id: discount_type_id,
-        //             description: description,
-        //             factor: factor,
-        //             percentage: _.round(factor * 100, 5),
-        //             amount: item_discount_amount,
-        //             base: _.round(item_value, 2),
-        //             is_amount: true,
-        //             from_global_distribution: true
-        //         });
-        //     });
+                
+                item.discounts.push({
+                    discount_type_id: $_discount_type_id, 
+                    discount_type : _.filter(this.discount_types, { id: $_discount_type_id }), 
+                    description: description,
+                    factor: factor,
+                    percentage: _.round(factor * 100, 5),
+                    amount: _.round(item_discount_amount, 2),
+                    base: _.round(item_value, 2),
+                    is_amount: true,
+                    amount_without_rounded: item_discount_amount,
+                    from_global_distribution: true
+                });
 
-        //     this.form.total_discount = _.round(total_discounts_item +, 2);
-        // },
+                item = this.recalcItemBasesAndIgv(item);
+
+            });
+
+            let amount = 0;
+            let factor = 0;
+                if (this.is_amount) {
+                    amount = global_amount;
+                    factor = _.round(amount / total_base, 5);
+                } else {
+                    factor = _.round(global_amount / 100, 5);
+                    amount = global_amount;
+                }
+
+
+                if (this.isGlobalDiscountBase) {
+
+                    let total_taxed = total_base  - amount;
+                    let total_igv = total_taxed * this.percentage_igv;
+                    let total_taxes =
+                        total_igv + ctx.total_isc + ctx.total_plastic_bag_taxes;
+                    let total_out = _.round(
+                        ctx.total_exonerated + ctx.total_unaffected + ctx.total_exportation + ctx.total_free,
+                        2
+                    );
+                    let total = total_taxed + total_out + total_taxes;
+
+                    this.form.total_taxed = _.round(
+                        parseFloat(total_taxed.toFixed(3)),
+                         2
+                     );
+
+                    this.form.total_value = total_taxed + total_out;
+                    console.log(this.percentage_igv);
+                    
+
+                    this.form.total_igv = _.round(
+                        total_taxed * this.percentage_igv,
+                        2
+                    );
+
+                    //impuestos (isc + igv + icbper)
+                    this.form.total_taxes = _.round(
+                        parseFloat(total_taxes.toFixed(3)),
+                        2
+                    );
+                    this.form.total = _.round(total, 2);
+                    this.form.subtotal = this.form.total;
+
+                    if (this.form.total <= 0)
+                        this.$message.error(
+                            "El total debe ser mayor a 0, verifique el tipo de descuento asignado (Configuración/Avanzado/Contable)"
+                        );
+                    
+                    this.form.total_discount += _.round(amount, 2);
+                }
+                // descuentos que no afectan la bi
+                else {
+                    this.form.total = _.round(this.form.total - amount, 2);
+                    this.form.total_discount += _.round(amount, 2);
+                }
+
+            // this.form.total_discount = _.round(total_discounts_item, 2);
+        },
+        /**
+         * Recalcula los totales del item considerando los descuentos que afectan
+         * a la base imponible, para CUALQUIER afectación (gravada, exonerada,
+         * inafecta, exportación o gratuita). El descuento reduce siempre el
+         * total_value y la base imponible del item; el IGV solo se genera cuando
+         * la afectación es gravada ('10') — en el resto queda en 0 por norma SUNAT.
+         */
+        recalcItemBasesAndIgv(item) {
+            const pigv = this.percentage_igv;
+            const affectation = item.affectation_igv_type_id;
+
+            const unit_value = affectation === '10'
+                ? parseFloat(item.unit_price) / (1 + pigv)
+                : parseFloat(item.unit_price);
+
+            const total_value_partial = unit_value * parseFloat(item.quantity);
+
+            let discount_base = 0;
+            let discount_no_base = 0;
+            if (item.discounts && item.discounts.length > 0) {
+                item.discounts.forEach(d => {
+                    if (!d.from_global_distribution) return;
+                    const amount = d.amount_without_rounded ? d.amount_without_rounded : d.amount;
+                    discount_base += parseFloat(amount);
+                });
+            }
+
+            // Aplica a todas las afectaciones: reduce el valor del item
+            const total_value = total_value_partial - discount_base - discount_no_base;
+            // Aplica a todas: reduce la base imponible (relevante solo si paga IGV)
+            const total_base_igv = total_value_partial - discount_base;
+
+            // IGV por afectación
+            let total_igv = 0;
+            switch (affectation) {
+                case '10': // Gravada
+                    total_igv = total_base_igv * pigv;
+                    break;
+                case '20': // Exonerada
+                case '30': // Inafecta - Operación Onerosa
+                case '31': // Inafecta - Retiro por Bonificación
+                case '32': // Inafecta - Retiro
+                case '33': // Inafecta - Retiro por Muestras Médicas
+                case '34': // Inafecta - Retiro por Convenio Colectivo
+                case '35': // Inafecta - Retiro por Premio
+                case '36': // Inafecta - Retiro por Publicidad
+                case '40': // Exportación
+                case '21': // Exonerada - Transferencia Gratuita
+                case '37': // Inafecta - Transferencia Gratuita
+                default:
+                    total_igv = 0;
+                    break;
+            }
+
+            const total_isc = parseFloat(item.total_isc || 0);
+            const total_plastic_bag_taxes = parseFloat(item.total_plastic_bag_taxes || 0);
+            const total_taxes = total_igv + total_isc + total_plastic_bag_taxes;
+            const total = total_value + total_taxes;
+
+            const quantity = parseFloat(item.quantity);
+            // Recalcular unit_price para que SUNAT no marque diferencia entre
+            // (unit_price * quantity) y el total de línea tras el descuento base.
+            const new_unit_price = quantity > 0
+                ? (total_value + total_taxes - discount_no_base) / quantity
+                : parseFloat(item.unit_price);
+
+            // item.unit_value = _.round(unit_value,2);
+            item.unit_price = _.round(new_unit_price, 6);
+            item.total_value = _.round(total_value, 2);
+            item.total_base_igv = _.round(total_base_igv, 2);
+            item.total_igv = _.round(total_igv, 2);
+            item.total_taxes = _.round(total_taxes, 2);
+            item.total_discount = _.round(discount_base + discount_no_base, 2);
+            item.total = _.round(total, 2);
+
+            item.total_value_without_rounding = total_value;
+            item.total_base_igv_without_rounding = total_base_igv;
+            item.total_igv_without_rounding = total_igv;
+            item.total_taxes_without_rounding = total_taxes;
+            item.total_without_rounding = total;
+
+            return item;
+        },
         // Descuento por item
         setTextDiscountItem(item) {
             let discount = 0;
             
             item.discounts.forEach(dis => {
-                if (dis.discount_type.base) {
+                if (dis.from_global_distribution) return;
+                    
+                if (dis.discount_type && dis.discount_type.base) {
                     discount += dis.amount_without_rounded * 1.18;
                 } else {
                     discount += dis.amount ; 

@@ -440,6 +440,7 @@ class DocumentInput
                     $discounts[] = [
                         'discount_type_id' => $discount_type_id,
                         'amount_without_rounded'  => $amount_without_rounded,
+                        'from_global_distribution' => $row['from_global_distribution'] ?? null, // para identificar si el descuento viene de una distribución global o es un descuento directo del item
                         'description' => $description,
                         'factor' => $factor,
                         'amount' => $amount,

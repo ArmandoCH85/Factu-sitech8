@@ -330,21 +330,27 @@ class Document extends ModelTenant
     {
         // dd($this->items);
         $total_discount_item = 0;
-        $this->items->each(function ($it) use (&$total_discount_item) {
+        $total_discount_global = 0;
+        $this->items->each(function ($it) use (&$total_discount_item, &$total_discount_global) {
             if ($it->discounts) {
                 foreach ($it->discounts as $dis) {
-                    $total_discount_item +=  $dis->discount_type_id == "00" ? $dis->amount_without_rounded * 1.18 : $dis->amount;
+                    $amount = $dis->discount_type_id == "00" ? $dis->amount_without_rounded * 1.18 : $dis->amount;
+                    if (isset($dis->from_global_distribution) && $dis->from_global_distribution)  {
+                        $total_discount_global += $amount;
+                    } else {
+                        $total_discount_item +=  $amount;
+
+                    }
                 }
             }
         });
 
-        $total_discount_global = 0;
 
-        if ($this->discounts) {
-            foreach ($this->discounts as $dis) {
-                $total_discount_global +=  $dis->discount_type_id == "02" ? $dis->amount_without_rounded * 1.18 : $dis->amount;
-            }
-        }
+        // if ($this->discounts) {
+        //     foreach ($this->discounts as $dis) {
+        //         $total_discount_global +=  $dis->discount_type_id == "02" ? $dis->amount_without_rounded * 1.18 : $dis->amount;
+        //     }
+        // }
 
         if ($this->total_value > 0 && $total_discount_item == 0 && $total_discount_global == 0) {
             $factor = ($this->total_value + $this->total_taxes) / $this->total_value;

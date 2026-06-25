@@ -1332,9 +1332,16 @@ use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
         public function download($external_id, $format = 'a4')
         {
-            $purchase = SaleOpportunity::where('external_id', $external_id)->first();
+            // Corregido: Se reemplaza SaleOpportunity por \App\Models\Tenant\Purchase
+            $purchase = \App\Models\Tenant\Purchase::where('external_id', $external_id)->first();
 
             if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el archivo relacionado");
+
+            // Validar existencia física del PDF de compra en storage.
+            // Si falta, se fuerza su regeneración en caliente
+            if (!$this->existFileInStorage($purchase->filename, 'purchase')) {
+                $this->createPdf($purchase, $format, $purchase->filename);
+            }
 
             return $this->downloadStorage($purchase->filename, 'purchase');
         }

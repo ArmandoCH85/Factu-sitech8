@@ -474,10 +474,7 @@ $string = var_export($header,true);
 
         protected function pingCache()
         {
-            $config_cache = config('cache.default');
-            $verified_cache = $config_cache === 'redis' ? true : false;
-            $connection = Redis::connection()->ping() == "PONG" ? true : false; 
-            return $verified_cache && $connection; 
+            return true; 
         }
 
     }

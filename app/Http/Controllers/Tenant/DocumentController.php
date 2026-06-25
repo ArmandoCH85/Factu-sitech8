@@ -1401,7 +1401,6 @@ class DocumentController extends Controller
             $records = $records->where('additional_information', 'like', '%' . $observations . '%');
         }
 
-        //dd($records);
         return $records;
     }
 

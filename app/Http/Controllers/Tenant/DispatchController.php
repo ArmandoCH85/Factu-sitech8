@@ -606,6 +606,11 @@ class DispatchController extends Controller
         switch ($type) {
             case 'pdf':
                 $folder = 'pdf';
+                // Validar existencia física del PDF. 
+                // Si el archivo fue purgado, invocar al orquestador para reconstruir la guía en segundo plano.
+                if (!$this->existFileInStorage($retention->filename, $folder)) {
+                    (new \App\CoreFacturalo\Facturalo)->createPdf($retention, 'dispatch', 'a4');
+                }
                 break;
             case 'xml':
                 $folder = 'signed';

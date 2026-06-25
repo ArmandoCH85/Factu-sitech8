@@ -1531,19 +1531,19 @@ export default {
                 total_charge += parseFloat(row.total_charge)
 
                 if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                    total_taxed += parseFloat(row.total_value_without_rounding)
                 }
                 if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
+                    total_exonerated += parseFloat(row.total_value_without_rounding)
                 }
                 if (row.affectation_igv_type_id === '30') {
-                    total_unaffected += parseFloat(row.total_value)
+                    total_unaffected += parseFloat(row.total_value_without_rounding)
                 }
                 if (row.affectation_igv_type_id === '40') {
-                    total_exportation += parseFloat(row.total_value)
+                    total_exportation += parseFloat(row.total_value_without_rounding)
                 }
                 if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
-                    total_free += parseFloat(row.total_value)
+                    total_free += parseFloat(row.total_value_without_rounding)
                 }
 
                 total_value += parseFloat(row.total_value)
@@ -1557,22 +1557,22 @@ export default {
             });
 
             // isc
-            this.form.total_base_isc = _.round(total_base_isc, 2)
-            this.form.total_isc = _.round(total_isc, 2)
+            this.form.total_base_isc = _.round(total_base_isc, this.decimal_quantity)
+            this.form.total_isc = _.round(total_isc, this.decimal_quantity)
 
-            this.form.total_exportation = _.round(total_exportation, 2)
-            this.form.total_taxed = _.round(total_taxed, 2)
-            this.form.total_exonerated = _.round(total_exonerated, 2)
-            this.form.total_unaffected = _.round(total_unaffected, 2)
-            this.form.total_free = _.round(total_free, 2)
-            this.form.total_igv = _.round(total_igv, 2)
-            this.form.total_value = _.round(total_value, 2)
+            this.form.total_exportation = _.round(total_exportation, this.decimal_quantity)
+            this.form.total_taxed = _.round(total_taxed, this.decimal_quantity)
+            this.form.total_exonerated = _.round(total_exonerated, this.decimal_quantity)
+            this.form.total_unaffected = _.round(total_unaffected, this.decimal_quantity)
+            this.form.total_free = _.round(total_free, this.decimal_quantity)
+            this.form.total_igv = _.round(total_igv, this.decimal_quantity)
+            this.form.total_value = _.round(total_value, this.decimal_quantity)
             // this.form.total_taxes = _.round(total_igv, 2)
 
             //impuestos (isc + igv)
-            this.form.total_taxes = _.round(total_igv + total_isc, 2)
+            this.form.total_taxes = _.round(total_igv + total_isc, this.decimal_quantity)
 
-            this.form.total = _.round(total, 2)
+            this.form.total = _.round(total, this.decimal_quantity)
 
             this.calculatePerception()
 

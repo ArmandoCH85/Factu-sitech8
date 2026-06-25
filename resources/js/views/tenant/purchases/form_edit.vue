@@ -376,16 +376,16 @@
                                             <td class="text-start">{{ getWarehouseDescription(row) }}</td>
                                             <td class="text-start">{{ row.lot_code }}</td>
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
-                                            <td class="text-end">{{ row.quantity }}</td>
+                                            <td class="text-end">{{ parseInt(row.quantity) }}</td>
                                             <td class="text-end">{{ currency_type.symbol }}
-                                                {{ getFormatUnitPriceRow(row.unit_value) }}
+                                                {{ formatDecimal(row.unit_value) }}
                                             </td>
                                             <td class="text-end">{{ currency_type.symbol }}
-                                                {{ getFormatUnitPriceRow(row.unit_price) }}
+                                                {{ formatDecimal(row.unit_price) }}
                                             </td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total_discount }}</td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total_charge }}</td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total_discount) }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total_charge) }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total) }}</td>
                                             <td class="text-end">
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
@@ -404,32 +404,32 @@
                             <!-- Totales -->
                             <div class="col-md-12">
                                 <p v-if="form.total_exportation > 0" class="text-end">
-                                    OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ form.total_exportation }}
+                                    OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ formatDecimal(form.total_exportation) }}
                                 </p>
                                 <p v-if="form.total_free > 0" class="text-end">
-                                    OP.GRATUITAS: {{ currency_type.symbol }} {{ form.total_free }}
+                                    OP.GRATUITAS: {{ currency_type.symbol }} {{ formatDecimal(form.total_free) }}
                                 </p>
                                 <p v-if="form.total_unaffected > 0" class="text-end">
-                                    OP.INAFECTAS: {{ currency_type.symbol }} {{ form.total_unaffected }}
+                                    OP.INAFECTAS: {{ currency_type.symbol }} {{ formatDecimal(form.total_unaffected) }}
                                 </p>
                                 <p v-if="form.total_exonerated > 0" class="text-end">
-                                    OP.EXONERADAS: {{ currency_type.symbol }} {{ form.total_exonerated }}
+                                    OP.EXONERADAS: {{ currency_type.symbol }} {{ formatDecimal(form.total_exonerated) }}
                                 </p>
                                 <p v-if="form.total_taxed > 0" class="text-end">
-                                    OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}
+                                    OP.GRAVADA: {{ currency_type.symbol }} {{ formatDecimal(form.total_taxed) }}
                                 </p>
                                 <p v-if="form.total_igv > 0" class="text-end">
-                                    IGV: {{ currency_type.symbol }} {{ form.total_igv }}
+                                    IGV: {{ currency_type.symbol }} {{ formatDecimal(form.total_igv) }}
                                 </p>
                                 <p v-if="form.total_isc > 0" class="text-end">
-                                    ISC: {{ currency_type.symbol }} {{ form.total_isc }}
+                                    ISC: {{ currency_type.symbol }} {{ formatDecimal(form.total_isc) }}
                                 </p>
                                 <p v-if="form.total_discount > 0" class="text-end">
-                                    DESCUENTOS TOTALES: {{ currency_type.symbol }} {{ form.total_discount }}
+                                    DESCUENTOS TOTALES: {{ currency_type.symbol }} {{ formatDecimal(form.total_discount) }}
                                 </p>
 
                                 <h3 v-if="form.total > 0" class="text-end">
-                                    <b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}
+                                    <b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ formatDecimal(form.total) }}
                                 </h3>
 
                                 <template v-if="is_perception_agent">
@@ -478,7 +478,7 @@
                                     </div>
 
                                     <h3 v-if="form.total > 0 && !hide_button" class="text-end">
-                                        <b>MONTO TOTAL : </b>{{ currency_type.symbol }} {{ total_amount }}
+                                        <b>MONTO TOTAL : </b>{{ currency_type.symbol }} {{ formatDecimal(total_amount) }}
                                     </h3>
                                 </template>
                             </div>
@@ -581,7 +581,7 @@ export default {
             purchaseNewId: null,
             localHasGlobalIgv: false,
             warehouses: [],
-
+            decimal_quantity: 2
         }
     },
     async created() {
@@ -625,6 +625,7 @@ export default {
         await this.changeHasPayment()
         await this.changeHasClient()
         this.initGlobalIgv()
+        this.loadDecimalQuantity()
     },
     computed: {
         creditPaymentMethod: function () {
@@ -638,6 +639,23 @@ export default {
         },
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuracion general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         setDescriptionOfItem(item)
         {
             return showNamePdfOfDescription(item, this.configuration.show_pdf_name)

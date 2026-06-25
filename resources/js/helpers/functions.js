@@ -272,37 +272,37 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let total = total_value + total_taxes
 
-    row.total_charge = _.round(total_charge, 2)
-    row.total_discount = _.round(total_discount, 2)
-    row.total_charge = _.round(total_charge, 2)
-    row.total_value = _.round(total_value, 2)
-    row.total_base_igv = _.round(total_base_igv, 2)
-    row.total_igv = _.round(total_igv, 2)
-    row.total_taxes = _.round(total_taxes, 2)
-    row.total = _.round(total, 2)
+    row.total_charge = _.round(total_charge, 6)
+    row.total_discount = _.round(total_discount, 6)
+    row.total_charge = _.round(total_charge, 6)
+    row.total_value = _.round(total_value, 6)
+    row.total_base_igv = _.round(total_base_igv, 6)
+    row.total_igv = _.round(total_igv, 6)
+    row.total_taxes = _.round(total_taxes, 6)
+    row.total = _.round(total, 6)
 
 
     //procedimiento para agregar isc
     if (has_isc) {
 
-        row.total_base_isc = _.round(total_value, 2) //total valor antes de aplicar isc
-        row.total_isc = _.round(total_value * (row.percentage_isc / 100), 2)
+        row.total_base_isc = _.round(total_value, 6) //total valor antes de aplicar isc
+        row.total_isc = _.round(total_value * (row.percentage_isc / 100), 6)
         // row.total_isc = _.round(row.total_base_isc * (row.percentage_isc / 100), 2)
 
         //calcular nueva base incrementando el valor actual + isc
         total_base_igv += row.total_isc
-        row.total_base_igv = _.round(total_base_igv, 2)
+        row.total_base_igv = _.round(total_base_igv, 6)
 
         total_igv = total_base_igv * (percentage_igv / 100)
-        row.total_igv = _.round(total_igv, 2)
+        row.total_igv = _.round(total_igv, 6)
 
         //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
         total_taxes = total_igv + row.total_isc + total_plastic_bag_taxes
         // total_taxes = total_igv + row.total_isc
-        row.total_taxes = _.round(total_taxes, 2)
+        row.total_taxes = _.round(total_taxes, 6)
 
         total = total_value + total_taxes
-        row.total = _.round(total, 2)
+        row.total = _.round(total, 6)
 
         //calcular nuevo precio unitario
         row.unit_price = _.round(total / row.quantity, 6)

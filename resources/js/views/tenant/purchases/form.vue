@@ -541,14 +541,14 @@
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-end">{{ row.quantity }}</td>
                                             <td class="text-end">{{ currency_type.symbol }}
-                                                                   {{ getFormatUnitPriceRow(row.unit_value) }}
+                                                                   {{ formatDecimal(row.unit_value) }}
                                             </td>
                                             <td class="text-end">{{ currency_type.symbol }}
-                                                                   {{ getFormatUnitPriceRow(row.unit_price) }}
+                                                                   {{ formatDecimal(row.unit_price) }}
                                             </td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total_discount }}</td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total_charge }}</td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total_discount) }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total_charge) }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total) }}</td>
                                             <td class="text-end">
 
                                                 <button v-if="applyLotsGroup(row.item)"
@@ -615,31 +615,31 @@
 
                                 <p v-if="form.total_exportation > 0"
                                    class="text-end">OP.EXPORTACIÓN: {{ currency_type.symbol }}
-                                                                     {{ form.total_exportation }}</p>
+                                                                     {{ formatDecimal(form.total_exportation) }}</p>
                                 <p v-if="form.total_free > 0"
                                    class="text-end">OP.GRATUITAS: {{ currency_type.symbol }} {{
-                                        form.total_free
+                                        formatDecimal(form.total_free)
                                                               }}</p>
                                 <p v-if="form.total_unaffected > 0"
                                    class="text-end">OP.INAFECTAS: {{ currency_type.symbol }}
-                                                                    {{ form.total_unaffected }}</p>
+                                                                    {{ formatDecimal(form.total_unaffected) }}</p>
                                 <p v-if="form.total_exonerated > 0"
                                    class="text-end">OP.EXONERADAS: {{ currency_type.symbol }}
-                                                                    {{ form.total_exonerated }}</p>
+                                                                    {{ formatDecimal(form.total_exonerated) }}</p>
                                 <p v-if="form.total_taxed > 0"
                                    class="text-end">OP.GRAVADA: {{ currency_type.symbol }} {{
-                                        form.total_taxed
+                                        formatDecimal(form.total_taxed)
                                                                }}</p>
                                 <p v-if="form.total_igv > 0"
-                                   class="text-end">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
+                                   class="text-end">IGV: {{ currency_type.symbol }} {{ formatDecimal(form.total_igv) }}</p>
 
                                 <p v-if="form.total_isc > 0"
-                                   class="text-end">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
+                                   class="text-end">ISC: {{ currency_type.symbol }} {{ formatDecimal(form.total_isc) }}</p>
 
                                 <p v-if="form.total_discount > 0" class="text-end">DESCUENTOS TOTALES: {{ currency_type.symbol }} {{ form.total_discount }}</p>
 
                                 <h3 v-if="form.total > 0"
-                                    class="text-end"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}
+                                    class="text-end"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ formatDecimal(form.total) }}
                                 </h3>
 
                                 <template v-if="is_perception_agent">
@@ -699,7 +699,7 @@
                                     <h3 v-if="form.total > 0 && !hide_button"
                                         class="text-end"><b>MONTO TOTAL : </b>{{
                                             currency_type.symbol
-                                                                                                   }} {{ total_amount }}
+                                                                                                   }} {{ formatDecimal(total_amount) }}
                                     </h3>
 
 
@@ -882,7 +882,8 @@ export default {
             ,
             isEditing: false,
             resourceId: null,
-            pageTitle: 'Nueva Compra'
+            pageTitle: 'Nueva Compra',
+            decimal_quantity: 2
         }
     },
     watch: {
@@ -953,13 +954,31 @@ export default {
         this.loadEstablishment()
         this.searchPurchaseOrder();
         // this.localHasGlobalIgv = this.hasGlobalIgv;
-        this.initGlobalIgv()
+        this.initGlobalIgv();
+        this.loadDecimalQuantity();
         this.$eventHub.$on("reloadDataPersons", customer_id => {
             this.reloadDataCustomers(customer_id);
             this.supplierSearchTerm = ''
         });
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuracion general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         saveInputLotGroup(params)
         {
             this.form.items[params.index].lot_code = params.data.lot_code
@@ -1051,7 +1070,7 @@ export default {
             this.customers = this.all_customers
         },
         getFormatUnitPriceRow(unit_price) {
-            return _.round(unit_price, 6)
+            return this.formatDecimal(unit_price)
             // return unit_price.toFixed(6)
         },
         async isGeneratePurchaseOrder()

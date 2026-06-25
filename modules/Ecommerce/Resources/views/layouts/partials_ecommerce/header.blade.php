@@ -269,17 +269,20 @@ div.cart-dropdown {
             </div>
 
             <div class="category-dropdown" id="category-dropdown">
-                <button type="button" class="category-dropdown-toggle" id="category-toggle">
+                <button type="button" class="category-dropdown-toggle" id="category-toggle" @if(count($categories) == 0) style="cursor: default; pointer-events: none;" @endif>
                     <span class="category-toggle-left">
                         <span>Categorías</span>
                     </span>
 
+                    @if(count($categories) > 0)
                     <svg class="category-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M6 9l6 6l6 -6" />
                     </svg>
+                    @endif
                 </button>
 
+                @if(count($categories) > 0)
                 <div class="category-menu" id="category-menu">
                     <div class="category-menu-grid">
                         @foreach ($categories as $category)
@@ -302,16 +305,17 @@ div.cart-dropdown {
                         @endforeach
                     </div>
                 </div>
+                @endif
             </div>
-            <div class="customlinks">
+            <div class="customlinks" style="display: flex !important; align-items: center; flex-shrink: 0; white-space: nowrap; margin-right: 15px !important;">
                 @if(!empty($customLinks['title_one']) && !empty($customLinks['link_one']))
-                    <a href="{{ $customLinks['link_one'] }}" class="ml-3" style="font-weight: 500;" target="_blank">{{ $customLinks['title_one'] }}</a>
+                    <a href="{{ $customLinks['link_one'] }}" style="display: inline-block !important; font-weight: 500; font-size: 14px; color: var(--title-color); text-decoration: none; margin-left: 12px; white-space: nowrap;" target="_blank">{{ $customLinks['title_one'] }}</a>
                 @endif
                 @if(!empty($customLinks['title_two']) && !empty($customLinks['link_two']))
-                    <a href="{{ $customLinks['link_two'] }}" class="ml-3" style="font-weight: 500;" target="_blank">{{ $customLinks['title_two'] }}</a>
+                    <a href="{{ $customLinks['link_two'] }}" style="display: inline-block !important; font-weight: 500; font-size: 14px; color: var(--title-color); text-decoration: none; margin-left: 12px; white-space: nowrap;" target="_blank">{{ $customLinks['title_two'] }}</a>
                 @endif
                 @if(!empty($customLinks['title_three']) && !empty($customLinks['link_three']))
-                    <a href="{{ $customLinks['link_three'] }}" class="ml-3" style="font-weight: 500;" target="_blank">{{ $customLinks['title_three'] }}</a>
+                    <a href="{{ $customLinks['link_three'] }}" style="display: inline-block !important; font-weight: 500; font-size: 14px; color: var(--title-color); text-decoration: none; margin-left: 12px; white-space: nowrap;" target="_blank">{{ $customLinks['title_three'] }}</a>
                 @endif
             </div>
 

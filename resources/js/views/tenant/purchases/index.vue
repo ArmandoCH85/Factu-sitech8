@@ -122,13 +122,13 @@
                             <td v-if="col.visible && col.key === 'purchase_order'" :key="col.key" class="text-end">
                                 <span v-if="row.purchase_order">{{ row.purchase_order.prefix }}-{{ row.purchase_order.id }}</span>
                             </td>
-                            <td v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_free }}</td>
-                            <td v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_unaffected }}</td>
-                            <td v-if="col.visible && col.key === 'total_exonerated'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_exonerated }}</td>
-                            <td v-if="col.visible && col.key === 'total_taxed'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_taxed }}</td>
-                            <td v-if="col.visible && col.key === 'total_igv'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_igv }}</td>
-                            <td v-if="col.visible && col.key === 'total_perception'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_perception ? row.total_perception : 0 }}</td>
-                            <td v-if="col.visible && col.key === 'total'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total }}</td>
+                            <td v-if="col.visible && col.key === 'total_free'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_free) }}</td>
+                            <td v-if="col.visible && col.key === 'total_unaffected'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_unaffected) }}</td>
+                            <td v-if="col.visible && col.key === 'total_exonerated'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_exonerated) }}</td>
+                            <td v-if="col.visible && col.key === 'total_taxed'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_taxed) }}</td>
+                            <td v-if="col.visible && col.key === 'total_igv'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total_igv) }}</td>
+                            <td v-if="col.visible && col.key === 'total_perception'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ row.total_perception ? formatDecimal(row.total_perception) : formatDecimal(0) }}</td>
+                            <td v-if="col.visible && col.key === 'total'" :key="col.key" class="text-end">{{ row.currency_type_id === 'PEN' ? 'S/' : '$' }} {{ formatDecimal(row.total) }}</td>
                             <td v-if="col.visible && col.key === 'actions'" :key="col.key" class="text-end">
                                 <el-dropdown trigger="click" @command="handleCommand($event, row)">
                                     <el-button class="btn-dropdown">
@@ -251,7 +251,8 @@ export default {
                 total:            { title: "Total",          visible: true,  order: 18 },
                 actions:          { title: "Acciones",       visible: true,  order: 19 },
             },
-            permissions: {}
+            permissions: {},
+            decimal_quantity: 2
         };
     },
     computed: {
@@ -270,8 +271,26 @@ export default {
             this.permissions = response.data.permissions;
         });
         this.getDocumentTypes();
+        this.loadDecimalQuantity();
     },
     methods: {
+        loadDecimalQuantity() {
+            // Obtener la configuracion general para los decimales
+            this.$http ? this.$http.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }) :
+            (window.axios && window.axios.get('/configurations/record').then(response => {
+                if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                    this.decimal_quantity = response.data.data.decimal_quantity;
+                }
+            }));
+        },
+        formatDecimal(value) {
+            if (value === undefined || value === null || isNaN(value)) return '';
+            return Number(value).toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity });
+        },
         formatDate(date) {
             if (!date) return null;
             return moment(date).format("DD-MM-YYYY");

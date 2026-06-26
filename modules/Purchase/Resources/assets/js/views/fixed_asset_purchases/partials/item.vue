@@ -236,7 +236,8 @@
                 attribute_types: [],
                 showAdditionalInfo: false,
                 loading_search: false,
-                itemSearchTerm: ''
+                itemSearchTerm: '',
+                decimal_quantity: 2
             }
         },
         watch: {
@@ -252,6 +253,7 @@
             }
         },
         created() {
+            this.loadDecimalQuantity()
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
 
@@ -270,6 +272,25 @@
             })
         },
         methods: {
+            async loadDecimalQuantity() {
+                try {
+                    const response = await this.$http.get('/configurations/record')
+                    const decimalQuantity = response.data.data.decimal_quantity
+
+                    this.decimal_quantity = parseInt(decimalQuantity || 2)
+                } catch (error) {
+                    this.decimal_quantity = 2
+                }
+            },
+            formatDecimal(value) {
+                const number = parseFloat(value || 0)
+
+                if (isNaN(number)) {
+                    return Number(0).toFixed(this.decimal_quantity)
+                }
+
+                return number.toFixed(this.decimal_quantity)
+            },
             handleCloseDialog() {
               if (this.hasUnsavedChanges()) {
                 this.$confirm('¿Estás seguro de cerrar el formulario? Se perderán los datos no guardados.', 'Confirmar', {
@@ -389,7 +410,7 @@
             },
             changeItem() {
                 this.form.item = _.find(this.items, {'id': this.form.fixed_asset_item_id})
-                this.form.unit_price = this.form.item.purchase_unit_price
+                this.form.unit_price = this.form.item.purchase_unit_price > 0 ? this.formatDecimal(this.form.item.purchase_unit_price) : 0
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             },
             async clickAddItem() {
@@ -399,7 +420,7 @@
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv)
-                this.row.fixed_asset_item_id = await this.row.item_id
+                this.row.fixed_asset_item_id = this.form.fixed_asset_item_id
                 this.initForm()
                 this.$emit('add', this.row)
             },

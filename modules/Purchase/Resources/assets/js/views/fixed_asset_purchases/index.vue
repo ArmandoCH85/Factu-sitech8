@@ -70,13 +70,13 @@
                         </td>
 
                         <td class="text-center">{{ row.currency_type_id }}</td>
-                        <td v-if="columns.total_free.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_free }}</td>
-                        <td v-if="columns.total_unaffected.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_unaffected }}</td>
-                        <td v-if="columns.total_exonerated.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_exonerated }}</td>
-                        <td v-if="columns.total_taxed.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_taxed }}</td>
-                        <td v-if="columns.total_igv.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total_igv }}</td>
+                        <td v-if="columns.total_free.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_free) }}</td>
+                        <td v-if="columns.total_unaffected.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_unaffected) }}</td>
+                        <td v-if="columns.total_exonerated.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_exonerated) }}</td>
+                        <td v-if="columns.total_taxed.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_taxed) }}</td>
+                        <td v-if="columns.total_igv.visible" class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total_igv) }}</td>
                         <!-- <td v-if="columns.total_perception.visible" class="text-end">{{ row.total_perception ? row.total_perception : 0 }}</td> -->
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total   }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
                         <td class="text-end">
 
                             <a v-if="row.state_type_id != '11'" :href="`/${resource}/create/${row.id}`" type="button" class="btn btn-xs btn-info btn-shad me-1" title="Editar">
@@ -117,6 +117,7 @@
                 showDialogOptions: false,
                 showDialogPurchasePayments: false,
                 showImportDialog: false,
+                decimal_quantity: 2,
                 columns: {
                     date_of_due: {
                         title: 'F. Vencimiento',
@@ -151,9 +152,29 @@
             }
         },
         created() {
+            this.loadDecimalQuantity();
             this.loadColumnVisibility();
         },
         methods: { 
+            async loadDecimalQuantity() {
+                try {
+                    const response = await this.$http.get('/configurations/record')
+                    const decimalQuantity = response.data.data.decimal_quantity
+
+                    this.decimal_quantity = parseInt(decimalQuantity || 2)
+                } catch (error) {
+                    this.decimal_quantity = 2
+                }
+            },
+            formatDecimal(value) {
+                const number = parseFloat(value || 0)
+
+                if (isNaN(number)) {
+                    return Number(0).toFixed(this.decimal_quantity)
+                }
+
+                return number.toFixed(this.decimal_quantity)
+            },
             saveColumnVisibility() {
                 localStorage.setItem('columnVisibilityFixedpurchases', JSON.stringify(this.columns));
             },

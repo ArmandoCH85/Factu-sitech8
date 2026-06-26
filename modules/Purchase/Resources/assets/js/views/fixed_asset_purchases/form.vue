@@ -172,11 +172,11 @@
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-end">{{ row.quantity }}</td>
                                             <td class="text-end">{{ currency_type.symbol }}
-                                                {{ getFormatUnitPriceRow(row.unit_price) }}
+                                                {{ formatDecimal(row.unit_price) }}
                                             </td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total_discount }}</td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total_charge }}</td>
-                                            <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total_discount) }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total_charge) }}</td>
+                                            <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total) }}</td>
                                             <td class="text-end">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                         @click.prevent="clickRemoveItem(index)">
@@ -193,21 +193,21 @@
                             </div>
                             <div class="col-md-12">
                                 <p class="text-end" v-if="form.total_exportation > 0">OP.EXPORTACIÓN:
-                                    {{ currency_type.symbol }} {{ form.total_exportation }}</p>
+                                    {{ currency_type.symbol }} {{ formatDecimal(form.total_exportation) }}</p>
                                 <p class="text-end" v-if="form.total_free > 0">OP.GRATUITAS: {{ currency_type.symbol }}
-                                    {{ form.total_free }}</p>
+                                    {{ formatDecimal(form.total_free) }}</p>
                                 <p class="text-end" v-if="form.total_unaffected > 0">OP.INAFECTAS: {{
                                         currency_type.symbol
-                                    }} {{ form.total_unaffected }}</p>
+                                    }} {{ formatDecimal(form.total_unaffected) }}</p>
                                 <p class="text-end" v-if="form.total_exonerated > 0">OP.EXONERADAS:
-                                    {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
+                                    {{ currency_type.symbol }} {{ formatDecimal(form.total_exonerated) }}</p>
                                 <p class="text-end" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }}
-                                    {{ form.total_taxed }}</p>
+                                    {{ formatDecimal(form.total_taxed) }}</p>
                                 <p class="text-end" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }}
-                                    {{ form.total_igv }}</p>
+                                    {{ formatDecimal(form.total_igv) }}</p>
                                 <h3 class="text-end" v-if="form.total > 0"><b>TOTAL COMPRAS: </b>{{
                                         currency_type.symbol
-                                    }} {{ form.total }}</h3>
+                                    }} {{ formatDecimal(form.total) }}</h3>
     
                                 <!-- <template v-if="is_perception_agent">
                                     <hr>
@@ -347,6 +347,7 @@ export default {
             loading_search: false,
             purchaseNewId: null,
             supplierSearchTerm: '',
+            decimal_quantity: 2,
         }
     },
     watch: {
@@ -357,7 +358,7 @@ export default {
         }
     },
     async created() {
-
+        await this.loadDecimalQuantity()
         this.title_form = (this.id) ? 'Editar Compra' : 'Nueva Compra'
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
@@ -392,6 +393,25 @@ export default {
 
     },
     methods: {
+        async loadDecimalQuantity() {
+            try {
+                const response = await this.$http.get('/configurations/record')
+                const decimalQuantity = response.data.data.decimal_quantity
+
+                this.decimal_quantity = parseInt(decimalQuantity || 2)
+            } catch (error) {
+                this.decimal_quantity = 2
+            }
+        },
+        formatDecimal(value) {
+            const number = parseFloat(value || 0)
+
+            if (isNaN(number)) {
+                return Number(0).toFixed(this.decimal_quantity)
+            }
+
+            return number.toFixed(this.decimal_quantity)
+        },
         async isUpdate() {
 
             // console.log(this.id);
@@ -399,12 +419,14 @@ export default {
                 await this.$http.get(`/${this.resource}/record/${this.id}`)
                     .then(response => {
                         this.form = response.data.data.fa_purchase;
+                        this.form.exchange_rate_sale = parseFloat(this.form.exchange_rate_sale)
+                        this.form.items.forEach(row => row.quantity = parseInt(row.quantity))
                     })
             }
 
         },
         getFormatUnitPriceRow(unit_price) {
-            return _.round(unit_price, 6)
+            return this.formatDecimal(unit_price)
             // return unit_price.toFixed(6)
         },
         initInputPerson() {
@@ -631,15 +653,15 @@ export default {
                 total += parseFloat(row.total)
             });
 
-            this.form.total_exportation = _.round(total_exportation, 2)
-            this.form.total_taxed = _.round(total_taxed, 2)
-            this.form.total_exonerated = _.round(total_exonerated, 2)
-            this.form.total_unaffected = _.round(total_unaffected, 2)
-            this.form.total_free = _.round(total_free, 2)
-            this.form.total_igv = _.round(total_igv, 2)
-            this.form.total_value = _.round(total_value, 2)
-            this.form.total_taxes = _.round(total_igv, 2)
-            this.form.total = _.round(total, 2)
+            this.form.total_exportation = parseFloat(this.formatDecimal(total_exportation))
+            this.form.total_taxed = parseFloat(this.formatDecimal(total_taxed))
+            this.form.total_exonerated = parseFloat(this.formatDecimal(total_exonerated))
+            this.form.total_unaffected = parseFloat(this.formatDecimal(total_unaffected))
+            this.form.total_free = parseFloat(this.formatDecimal(total_free))
+            this.form.total_igv = parseFloat(this.formatDecimal(total_igv))
+            this.form.total_value = parseFloat(this.formatDecimal(total_value))
+            this.form.total_taxes = parseFloat(this.formatDecimal(total_igv))
+            this.form.total = parseFloat(this.formatDecimal(total))
 
             // this.calculatePerception()
 
@@ -675,9 +697,9 @@ export default {
                     });
 
                     this.is_perception_agent = (quantity_item_perception > 0) ? true : false
-                    this.form.total_perception = _.round(total_perception, 2)
+                    this.form.total_perception = parseFloat(this.formatDecimal(total_perception))
                     total_amount = this.form.total + parseFloat(this.form.total_perception)
-                    this.total_amount = _.round(total_amount, 2)
+                    this.total_amount = parseFloat(this.formatDecimal(total_amount))
 
                 } else {
 

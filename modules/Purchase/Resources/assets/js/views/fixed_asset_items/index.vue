@@ -34,7 +34,7 @@
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.name }}</td>
                         <td>{{ row.description }}</td>
-                        <td v-if="typeUser != 'seller'" class="text-end">{{ row.purchase_unit_price }}</td>
+                        <td v-if="typeUser != 'seller'" class="text-end">{{ formatDecimal(row.purchase_unit_price) }}</td>
                         <td class="text-end">
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn btn-xs btn-info btn-shad me-1" title="Editar" @click.prevent="clickCreate(row.id)">
@@ -85,12 +85,39 @@
                 showWarehousesDetail: false,
                 resource: 'fixed-asset/items',
                 recordId: null,
-                warehousesDetail:[]
+                warehousesDetail:[],
+                decimal_quantity: 2
             }
         },
         created() {
+            this.loadDecimalQuantity()
         },
         methods: { 
+            loadDecimalQuantity() {
+                // Obtener la configuración general para los decimales
+                this.$http ? this.$http.get('/configurations/record').then(response => {
+                    if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                        this.decimal_quantity = response.data.data.decimal_quantity;
+                    }
+                }) :
+                (window.axios && window.axios.get('/configurations/record').then(response => {
+                    if (response.data && response.data.data && response.data.data.decimal_quantity) {
+                        this.decimal_quantity = response.data.data.decimal_quantity;
+                    }
+                }));
+            },
+            formatDecimal(value) {
+                if (value === undefined || value === null || value === '') return '';
+
+                const stringValue = value.toString();
+                const prefix = stringValue.replace(/[0-9.,\-\s]/g, '');
+                const cleanValue = stringValue.replace(/[^0-9.\-]/g, '');
+                const number = Number(cleanValue);
+
+                if (isNaN(number)) return value;
+
+                return `${prefix ? prefix + ' ' : ''}${number.toLocaleString('en-US', { minimumFractionDigits: this.decimal_quantity, maximumFractionDigits: this.decimal_quantity })}`;
+            },  
             clickCreate(recordId = null) {
                 this.recordId = recordId
                 this.showDialog = true

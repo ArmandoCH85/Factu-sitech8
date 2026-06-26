@@ -43,7 +43,7 @@
                             >Pagos</button>
                         </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
-                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ row.total }}</td>
+                        <td class="text-end">{{row.currency_type_id === 'PEN' ? 'S/' : '$'}} {{ formatDecimal(row.total) }}</td>
 
                         <td class="text-end">
 
@@ -105,12 +105,33 @@
                 showDialogPayments: false,
                 showDialogExpensePayments: false,
                 recordId: null,
-                showDialogOptions: false
+                showDialogOptions: false,
+                decimal_quantity: 2
             }
         },
         created() {
+            this.loadDecimalQuantity()
         },
         methods: {
+            async loadDecimalQuantity() {
+                try {
+                    const response = await this.$http.get('/configurations/record')
+                    const decimalQuantity = response.data.data.decimal_quantity
+
+                    this.decimal_quantity = parseInt(decimalQuantity || 2)
+                } catch (error) {
+                    this.decimal_quantity = 2
+                }
+            },
+            formatDecimal(value) {
+                const number = parseFloat(value || 0)
+
+                if (isNaN(number)) {
+                    return Number(0).toFixed(this.decimal_quantity)
+                }
+
+                return number.toFixed(this.decimal_quantity)
+            },
             clickPrint(external_id){
                 window.open(`/${this.resource}/print/${external_id}`, '_blank');
             },

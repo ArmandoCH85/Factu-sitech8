@@ -187,7 +187,7 @@
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ row.description }}</td>
-                                                <td class="text-end">{{ currency_type.symbol }} {{ row.total }}</td>
+                                                <td class="text-end">{{ currency_type.symbol }} {{ formatDecimal(row.total) }}</td>
                                                 <td class="text-end">
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
@@ -199,7 +199,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <h3 class="text-end" v-if="form.total > 0"><b>TOTAL: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
+                                <h3 class="text-end" v-if="form.total > 0"><b>TOTAL: </b>{{ currency_type.symbol }} {{ formatDecimal(form.total) }}</h3>
                             </div>
                         </div>
                     </div>
@@ -213,6 +213,7 @@
             <expense-form-item :showDialog.sync="showDialogAddItem"
                                :currency-type="currency_type"
                                :exchange-rate-sale="form.exchange_rate_sale"
+                               :decimal-quantity="decimal_quantity"
                                @add="addRow"></expense-form-item>
     
             <person-form :showDialog.sync="showDialogNewPerson"
@@ -283,6 +284,7 @@
                 expenseNewId: null,
                 loading_search: false,
                 supplierSearchTerm: '',
+                decimal_quantity: 2
             }
         },
         watch: {
@@ -293,6 +295,7 @@
             }
         },
         async created() {
+            await this.loadDecimalQuantity()
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -322,6 +325,25 @@
             await this.isUpdate()
         },
         methods: {
+            async loadDecimalQuantity() {
+                try {
+                    const response = await this.$http.get('/configurations/record')
+                    const decimalQuantity = response.data.data.decimal_quantity
+
+                    this.decimal_quantity = parseInt(decimalQuantity || 2)
+                } catch (error) {
+                    this.decimal_quantity = 2
+                }
+            },
+            formatDecimal(value) {
+                const number = parseFloat(value || 0)
+
+                if (isNaN(number)) {
+                    return Number(0).toFixed(this.decimal_quantity)
+                }
+
+                return number.toFixed(this.decimal_quantity)
+            },
             async isUpdate(){
 
                 if (this.id) {
@@ -449,7 +471,7 @@
                     row.total = row.total_original * exchange_rate_sale;
                 }
 
-                row.total = _.round(row.total,2)
+                row.total = parseFloat(this.formatDecimal(row.total))
 
                 return row
             },
@@ -458,7 +480,7 @@
                 this.form.items.forEach((row) => {
                     total += parseFloat(row.total)
                 });
-                this.form.total = _.round(total, 2)
+                this.form.total = parseFloat(this.formatDecimal(total))
                 this.form.payments[0].payment = this.form.total
             },
             submit() {

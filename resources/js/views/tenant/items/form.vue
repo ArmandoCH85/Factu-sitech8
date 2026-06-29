@@ -2310,15 +2310,27 @@ this.activeName = null
                     this.close();
 
                 } else {
-                    this.$message.error(response.data.message);
+                    const msg = response.data.message || '';
+                    if (msg.toLowerCase().includes('código interno') || msg.toLowerCase().includes('internal id')) {
+                        this.errors = { internal_id: [msg] };
+                    } else {
+                        this.$message.error(msg || 'Error al guardar el producto');
+                    }
                 }
 
             } catch (error) {
                 if (error.response?.status === 422) {
-                    this.errors = error.response.data;
+                    this.errors = error.response.data.errors || error.response.data;
+                } else if (error.response?.data?.message) {
+                    const msg = error.response.data.message.toLowerCase();
+                    if (msg.includes('código interno') || msg.includes('internal id')) {
+                        this.errors = { internal_id: [error.response.data.message] };
+                    } else {
+                        this.$message.error(error.response.data.message);
+                    }
                 } else {
                     console.log(error);
-                    this.$message.error(error.response?.data?.message);
+                    this.$message.error('Server Error');
                 }
             } finally {
                 this.loading_submit = false;

@@ -1682,7 +1682,7 @@
                                             </div>
                                             <template v-else>
                                                 {{ currency_type.symbol }}
-                                                {{ row.total }}
+                                                {{ formatDecimal(row.total) }}
                                             </template>
                                         </td>
 
@@ -1908,7 +1908,7 @@
                                                                 currency_type.symbol
                                                             }}
                                                             {{
-                                                                form.total_free
+                                                                formatDecimal(form.total_free)
                                                             }}
                                                         </td>
                                                     </tr>
@@ -1940,7 +1940,7 @@
                                                                 currency_type.symbol
                                                             }}
                                                             {{
-                                                                form.total_exonerated
+                                                                formatDecimal(form.total_exonerated)
                                                             }}
                                                         </td>
                                                     </tr>
@@ -1955,7 +1955,7 @@
                                                                 currency_type.symbol
                                                             }}
                                                             {{
-                                                                form.total_taxed
+                                                                formatDecimal(form.total_taxed)
                                                             }}
                                                         </td>
                                                     </tr>
@@ -1971,7 +1971,7 @@
                                                                 currency_type.symbol
                                                             }}
                                                             {{
-                                                                form.total_discount
+                                                                formatDecimal(form.total_discount)
                                                             }}
                                                         </td>
                                                         <!-- <td>{{ currency_type.symbol }} {{ form.total_prepayment }}</td> -->
@@ -1986,7 +1986,7 @@
                                                             {{
                                                                 currency_type.symbol
                                                             }}
-                                                            {{ form.total_igv }}
+                                                            {{ formatDecimal(form.total_igv) }}
                                                         </td>
                                                     </tr>
                                                     <tr
@@ -1999,7 +1999,7 @@
                                                             {{
                                                                 currency_type.symbol
                                                             }}
-                                                            {{ form.total_isc }}
+                                                            {{ formatDecimal(form.total_isc) }}
                                                         </td>
                                                     </tr>
                                                     <tr
@@ -2031,7 +2031,7 @@
                                                             {{
                                                                 currency_type.symbol
                                                             }}
-                                                            {{ form.subtotal }}
+                                                            {{ formatDecimal(form.subtotal) }}
                                                         </td>
                                                     </tr>
 
@@ -2046,7 +2046,7 @@
                                                                 currency_type.symbol
                                                             }}
                                                             {{
-                                                                totalDiscount
+                                                                formatDecimal(totalDiscount)
                                                             }}
                                                         </td>
                                                     </tr>
@@ -2103,7 +2103,7 @@
                                                                 {{
                                                                     currency_type.symbol
                                                                 }}
-                                                                {{ form.total }}
+                                                                {{ formatDecimal(form.total) }}
                                                             </td>
                                                         </tr>
                                                         <tr
@@ -2173,7 +2173,7 @@
                                                                 {{
                                                                     currency_type.symbol
                                                                 }}
-                                                                {{ form.total }}
+                                                                {{ formatDecimal(form.total) }}
                                                             </td>
                                                         </tr>
                                                     </template>
@@ -2905,7 +2905,7 @@
                                             </td>
                                             <td>
                                                 {{ currency_type.symbol }}
-                                                {{ form.retention.amount }}
+                                                {{ formatDecimal(form.retention.amount) }}
                                             </td>
                                         </tr>
                                     </template>
@@ -2914,56 +2914,56 @@
                                         <td>OP.EXPORTACIÓN:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_exportation }}
+                                            {{ formatDecimal(form.total_exportation) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_free > 0">
                                         <td>OP.GRATUITAS:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_free }}
+                                            {{ formatDecimal(form.total_free) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_unaffected > 0">
                                         <td>OP.INAFECTAS:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_unaffected }}
+                                            {{ formatDecimal(form.total_unaffected) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_exonerated > 0">
                                         <td>OP.EXONERADAS:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_exonerated }}
+                                            {{ formatDecimal(form.total_exonerated) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_taxed > 0">
                                         <td>OP.GRAVADA:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_taxed }}
+                                            {{ formatDecimal(form.total_taxed) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_prepayment > 0">
                                         <td>ANTICIPOS:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_discount }}
+                                            {{ formatDecimal(form.total_discount) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_igv > 0">
                                         <td>IGV:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_igv }}
+                                            {{ formatDecimal(form.total_igv) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_isc > 0">
                                         <td>ISC:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total_isc }}
+                                            {{ formatDecimal(form.total_isc) }}
                                         </td>
                                     </tr>
                                     <tr v-if="form.total_plastic_bag_taxes > 0">
@@ -2983,7 +2983,7 @@
                                         <td>SUBTOTAL:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.subtotal }}
+                                            {{ formatDecimal(form.subtotal) }}
                                         </td>
                                     </tr>
 
@@ -2991,7 +2991,7 @@
                                         <td>DESCUENTOS TOTALES:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ totalDiscount }}
+                                            {{ formatDecimal(totalDiscount) }}
                                         </td>
                                     </tr>
 
@@ -3019,7 +3019,7 @@
                                         <td><strong>TOTAL A PAGAR</strong>:</td>
                                         <td>
                                             {{ currency_type.symbol }}
-                                            {{ form.total }}
+                                            {{ formatDecimal(form.total) }}
                                         </td>
                                     </tr>
 
@@ -4155,7 +4155,8 @@ export default {
             total_consumption_charge : 0,
             consigneds:[],
             consigned_addresses:[],
-            customerSearchTerm: ''
+            customerSearchTerm: '',
+            decimal_quantity: 2,
         };
     },
     computed: {
@@ -4307,6 +4308,7 @@ export default {
         }
     },
     async created() {
+        await this.loadDecimalQuantity()
         await this.initComponent();
         await this.getPercentageIgv();
          
@@ -4471,6 +4473,25 @@ export default {
         }
     },
     methods: {
+        async loadDecimalQuantity() {
+                try {
+                    const response = await this.$http.get('/configurations/record')
+                    const decimalQuantity = response.data.data.decimal_quantity
+
+                    this.decimal_quantity = parseInt(decimalQuantity || 2)
+                } catch (error) {
+                    this.decimal_quantity = 2
+                }
+            },
+            formatDecimal(value) {
+                const number = parseFloat(value || 0)
+
+                if (isNaN(number)) {
+                    return Number(0).toFixed(this.decimal_quantity)
+                }
+
+                return number.toFixed(this.decimal_quantity)
+            },
         async initComponent() {
             this.loadConfiguration();
             this.$store.commit("setConfiguration", this.configuration);
@@ -7905,12 +7926,12 @@ export default {
             let total = this.getTotal();
 
             let payment = 0;
-            let amount = _.round(total / payment_count, 2);
+            let amount = parseFloat(this.formatDecimal(total / payment_count));
             // console.log(amount);
             _.forEach(this.form.payments, row => {
                 payment += amount;
                 if (total - payment < 0) {
-                    amount = _.round(total - payment + amount, 2);
+                    amount = parseFloat(this.formatDecimal(total - payment + amount, 6));
                 }
                 row.payment = amount;
                 // console.error(row.payment)

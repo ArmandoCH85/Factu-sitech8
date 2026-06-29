@@ -211,7 +211,9 @@ table, tr, td, th {
 p {
     font-size: 12px !important;
 }
-
+.desc-5 {
+  font-size: 12px !important;
+}
 .desc {
   font-size: 10px !important;
 }

@@ -1742,6 +1742,7 @@ export default {
             this.items[index].sale_unit_price = price.price;
             this.items[index].unit_type_id = price.unit_type_id;
             this.items[index].presentation = price
+            this.ChangeSelectedPrice()
             this.$message.success("Precio seleccionado");
         },
         clickWarehouseDetail(item) {

@@ -21,6 +21,7 @@ use Maatwebsite\Excel\Excel;
 use Carbon\Carbon;
 use App\Exports\ClientExport;
 use App\Models\System\Configuration;
+use App\Models\Tenant\PersonAddress;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
@@ -167,10 +168,23 @@ class PersonController extends Controller
             $addressesByPerson->each(function ($item) use($addresses) {
                 if (!collect($addresses)->contains('id', $item->id))  $item->delete();
             });
-        } else {
-            foreach ($addresses as $row) {
-                $person->addresses()->updateOrCreate(['id' => $row['id']], $row);
-            }
+        } 
+
+        foreach ($addresses as $row) {
+            $data = [
+                'address' => $row['address'],
+                'department_id' => $row['location_id'][0],
+                'province_id' => $row['location_id'][1],
+                'district_id' => $row['location_id'][2],
+                'country_id' => $request->input('country_id'),
+                'phone' => $row['phone'],
+                'email' => $row['email'],
+                'has_consigned' => $row['has_consigned'],
+                'consigned_id' => $row['consigned_id'],
+                'establishment_code' => $row['establishment_code']
+            ];
+
+            $person->addresses()->updateOrCreate(['id' => $row['id']], $data);
         }
 
         $optional_email = $request->optional_email;

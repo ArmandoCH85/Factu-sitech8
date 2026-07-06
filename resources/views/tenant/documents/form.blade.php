@@ -1,0 +1,30 @@
+@extends('tenant.layouts.app')
+
+@push('styles')
+    <style type="text/css">
+        .v-modal {
+            opacity: 0.2 !important;
+        }
+        .border-custom {
+            border-color: rgba(0,136,204, .5) !important;
+        }
+        @media only screen and (min-width: 768px) {
+        	.inner-wrapper {
+			    padding-top: 60px !important;
+			}
+        }
+    </style>
+@endpush
+
+@section('content')
+    <tenant-documents-invoice-generate
+        :is_contingency="{{ json_encode($is_contingency) }}"
+        :type-user="{{json_encode(Auth::user()->type)}}"
+        :auth-user="{{json_encode(Auth::user()->getDataOnlyAuthUser())}}"
+        :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
+        :document-id="{{ $documentId ?? 0 }}"
+        :is-update="{{ json_encode($isUpdate ?? false) }}"
+        :table="{{ json_encode($table ?? null) }}"
+        :table-id="{{ json_encode($table_id ?? null) }}"
+        :id-user="{{json_encode(Auth::user()->id)}}"></tenant-documents-invoice-generate>
+@endsection

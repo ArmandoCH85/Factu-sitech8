@@ -4402,6 +4402,11 @@ export default {
         //parse items from multiple sale notes not group
         this.processItemsForNotesNotGroup();
 
+        // ponytail: el template tiene v-if="loading_form" y este flag se prendía
+        // arriba pero nunca se apagaba → la pantalla quedaba en loading eterno
+        // y el botón "+ Agregar Producto" nunca aparecía.
+        this.loading_form = false;
+
         const lotsItems = localStorage.getItem("lotsItems");
         if (lotsItems) {
             const lotsParsed = JSON.parse(lotsItems);

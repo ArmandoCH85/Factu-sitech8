@@ -58,7 +58,9 @@ class CacheHelper
             return Cache::tags($tags)->remember($key, $ttl, $callback);
         }
 
-        return Cache::remember($key, $ttl, $callback);
+        $version = static::ensureTagVersion($tags);
+
+        return Cache::remember(static::versionedKey($tags, $version, $key), $ttl, $callback);
     }
 
     /**
@@ -71,15 +73,16 @@ class CacheHelper
     {
         if (static::supportsTags()) {
             Cache::tags($tags)->forget($key);
-        } else {
-            Cache::forget($key);
+            return;
         }
+
+        Cache::forget($key);
     }
 
     /**
      * Vacía todas las entradas asociadas a un tag. Usa tags si el driver lo
-     * soporta. Si no, simplemente no hace nada (no se puede vaciar por grupo
-     * sin soporte de tags, pero tampoco hay caché estancada que limpiar).
+     * soporta. Si no, bumpea una versión embebida en la clave para invalidar
+     * cualquier entrada versionada sin tags.
      *
      * @param string|array $tags
      */
@@ -87,8 +90,41 @@ class CacheHelper
     {
         if (static::supportsTags()) {
             Cache::tags($tags)->flush();
+            return;
         }
-        // En drivers sin tags no hay entradas etiquetadas que vaciar.
-        // La caché se invalida naturalmente por TTL o por forget() individual.
+
+        static::ensureTagVersion($tags);
+        Cache::increment(static::versionCounterKey($tags));
+    }
+
+    /**
+     * Clave estable del contador de versión para un tag (o grupo de tags).
+     */
+    private static function versionCounterKey(string|array $tags): string
+    {
+        $flat = is_array($tags) ? implode('_', $tags) : $tags;
+
+        return "tagver_{$flat}";
+    }
+
+    /**
+     * Asegura que el contador de versión para el tag exista y devuelve su valor actual.
+     */
+    private static function ensureTagVersion(string|array $tags): int
+    {
+        $counter = static::versionCounterKey($tags);
+        Cache::add($counter, 1, 60 * 60 * 24 * 365);
+
+        return (int) Cache::get($counter, 1);
+    }
+
+    /**
+     * Construye la clave versionada que will use when el driver no soporta tags.
+     */
+    private static function versionedKey(string|array $tags, int $version, string $key): string
+    {
+        $counter = static::versionCounterKey($tags);
+
+        return "{$counter}_v{$version}_{$key}";
     }
 }

@@ -239,9 +239,7 @@
 
     @stack('scripts')
 
-    <script src="{{ asset('js/sign-message.js') }}"></script>
-    <script src="{{ asset('js/sha-256.min.js') }}"></script>
-    <script src="{{ asset('js/rsvp-3.1.0.min.js') }}"></script>
+    {{-- QZ Tray stack (sign-message/sha-256/rsvp) se carga solo en páginas que aún lo usan vía @push('scripts'). El layout activo usa el mixin buhoprinter.js, no window.qz. --}}
     {{-- <script src="{{ asset('js/vendor.js') }}"></script> --}}
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>

@@ -11,6 +11,47 @@ define('LARAVEL_START', microtime(true));
 
 /*
 |--------------------------------------------------------------------------
+| FrankenPHP SAPI fix (ponytail)
+|--------------------------------------------------------------------------
+| FrankenPHP runs under the cli SAPI, so Laravel's runningInConsole() returns
+| true even for HTTP requests. This prevents hyn/multi-tenant from identifying
+| the tenant hostname and loading tenant routes. Set the env var before Laravel
+| boots so Application::runningInConsole() picks it up. Only affects HTTP requests
+| (artisan doesn't go through index.php).
+*/
+if (!getenv('APP_RUNNING_IN_CONSOLE')) {
+    putenv('APP_RUNNING_IN_CONSOLE=false');
+    $_ENV['APP_RUNNING_IN_CONSOLE'] = 'false';
+    $_SERVER['APP_RUNNING_IN_CONSOLE'] = 'false';
+}
+
+/*
+|--------------------------------------------------------------------------
+| FrankenPHP multi-app env isolation fix (ponytail)
+|--------------------------------------------------------------------------
+| FrankenPHP shares the PHP process across all Caddy sites. Dotenv's default
+| immutable repository won't overwrite env vars set by a previous request to
+| a different app (e.g. DB_DATABASE from despacho leaking into pro8). Force-set
+| all .env vars here so this app's env is authoritative on every request.
+*/
+if (is_file(__DIR__ . '/../.env')) {
+    foreach (file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#') continue;
+        if (!str_contains($line, '=')) continue;
+        [$k, $v] = explode('=', $line, 2);
+        $k = trim($k);
+        $v = trim($v);
+        if ($v !== '' && $v[0] !== '$') {
+            putenv("$k=$v");
+            $_ENV[$k] = $v;
+            $_SERVER[$k] = $v;
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | Register The Auto Loader
 |--------------------------------------------------------------------------
 |
@@ -35,7 +76,7 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require __DIR__.'/../bootstrap/app.php';
 
 /*
 |--------------------------------------------------------------------------

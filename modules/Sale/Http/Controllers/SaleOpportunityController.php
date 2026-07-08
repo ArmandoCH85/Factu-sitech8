@@ -117,20 +117,23 @@ class SaleOpportunityController extends Controller
 
     public function searchCustomers(Request $request)
     {
+        $input = trim((string) $request->input);
 
-        $customers = Person::where('number','like', "%{$request->input}%")
-                            ->orWhere('name','like', "%{$request->input}%")
-                            ->whereType('customers')->orderBy('name')
-                            ->get()->transform(function($row) {
-                                return [
-                                    'id' => $row->id,
-                                    'description' => $row->number.' - '.$row->name,
-                                    'name' => $row->name,
-                                    'number' => $row->number,
-                                    'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code
-                                ];
-                            });
+        // ponytail: mismas reglas que DocumentController@searchCustomers —
+        // solo clientes habilitados, del vendedor actual, con addresses.
+        $query = Person::whereType('customers')
+            ->whereIsEnabled()
+            ->whereFilterCustomerBySeller('customers')
+            ->where(function ($q) use ($input) {
+                $q->where('number', 'like', "%{$input}%")
+                  ->orWhere('name', 'like', "%{$input}%");
+            })
+            ->orderBy('name');
+
+        $customers = $query->get()->transform(function ($row) {
+            /** @var Person $row */
+            return $row->getCollectionData();
+        });
 
         return compact('customers');
     }
@@ -276,16 +279,16 @@ class SaleOpportunityController extends Controller
         switch ($table) {
             case 'customers':
 
-                $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
-                    return [
-                        'id' => $row->id,
-                        'description' => $row->number.' - '.$row->name,
-                        'name' => $row->name,
-                        'number' => $row->number,
-                        'identity_document_type_id' => $row->identity_document_type_id,
-                        'identity_document_type_code' => $row->identity_document_type->code
-                    ];
-                });
+                $customers = Person::whereType('customers')
+                    ->whereIsEnabled()
+                    ->whereFilterCustomerBySeller('customers')
+                    ->orderBy('name')
+                    ->take(20)
+                    ->get()
+                    ->transform(function($row) {
+                        /** @var Person $row */
+                        return $row->getCollectionData();
+                    });
                 return $customers;
 
                 break;

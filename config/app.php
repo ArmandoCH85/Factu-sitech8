@@ -188,7 +188,6 @@ return [
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
         ZanySoft\Zip\ZipServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
         
 
     ],

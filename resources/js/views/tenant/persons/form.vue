@@ -81,6 +81,14 @@
                                                    @click.prevent="searchCustomer">
                                             {{ form.identity_document_type_id === '6' ? 'SUNAT' : 'RENIEC' }}
                                         </el-button>
+                                        {{-- ponytail: genera DNI/RUC aleatorio único para testing --}}
+                                        <el-button v-if="form.identity_document_type_id === '6' || form.identity_document_type_id === '1'"
+                                                   size="mini"
+                                                   icon="el-icon-magic-stick"
+                                                   :loading="loading_random_number"
+                                                   title="Generar número aleatorio único"
+                                                   @click.prevent="generateRandomNumber">
+                                        </el-button>
                                     </div>
 
                                     <small v-if="errors.number"
@@ -793,6 +801,7 @@ export default {
             showDialogConsignedForm: false, 
             errors: {},
             api_service_token: false,
+            loading_random_number: false,
             form: {
                 optional_email: []
             },
@@ -1269,6 +1278,26 @@ export default {
         },
         searchCustomer() {
             this.searchServiceNumberByType()
+        },
+        async generateRandomNumber() {
+            // ponytail: helper de testing — DNI(8) o RUC(11) aleatorio, valida
+            // unicidad contra /persons/search-data. Probabilidad de colisión
+            // negligible (1/1e8 y 1/1e11); tras 10 intentos se acepta el último.
+            const digits = this.form.identity_document_type_id === '6' ? 11 : 8;
+            this.loading_random_number = true;
+            try {
+                let candidate = null;
+                for (let i = 0; i < 10; i++) {
+                    candidate = String(Math.floor(Math.random() * 10 ** digits)).padStart(digits, '0');
+                    const { data } = await this.$http.get(`/persons/search-data/customers?input=${candidate}`);
+                    if (!data || data.length === 0) break;
+                }
+                this.form.number = candidate;
+            } catch (e) {
+                this.$message.error('No se pudo generar el número');
+            } finally {
+                this.loading_random_number = false;
+            }
         },
         searchNumber(data) {
             //cambios apiperu

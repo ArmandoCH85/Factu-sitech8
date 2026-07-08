@@ -11,6 +11,8 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\CrmActivity;
+use App\Models\Tenant\CrmPipelineStage;
 use Modules\Inventory\Models\InventoryKardex;
 use Modules\Purchase\Models\PurchaseOrder;
 
@@ -44,12 +46,24 @@ class SaleOpportunity extends ModelTenant
         'total',
         'filename',
         'detail',
-        'observation'
-
+        'observation',
+        // CRM Comercial KISS — additive, do not remove
+        'crm_stage_id',
+        'crm_source',
+        'expected_close_date',
+        'won_at',
+        'lost_at',
+        'last_activity_at',
+        'next_activity_at',
     ];
 
     protected $casts = [
-        'date_of_issue' => 'date', 
+        'date_of_issue' => 'date',
+        'expected_close_date' => 'date',
+        'won_at' => 'datetime',
+        'lost_at' => 'datetime',
+        'last_activity_at' => 'datetime',
+        'next_activity_at' => 'datetime',
     ];
 
     public function getEstablishmentAttribute($value)
@@ -127,6 +141,48 @@ class SaleOpportunity extends ModelTenant
     {
         return $this->hasOne(PurchaseOrder::class);
     }
- 
-     
+
+    // ---- CRM Comercial KISS relations (additive — DO NOT modify above) ----
+
+    /**
+     * All CRM activities tied to this opportunity (timeline).
+     */
+    public function crmActivities()
+    {
+        return $this->hasMany(CrmActivity::class);
+    }
+
+    /**
+     * Note activities tied to this opportunity.
+     */
+    public function crmNotes()
+    {
+        return $this->hasMany(CrmActivity::class)->where('type', 'note');
+    }
+
+    /**
+     * Task activities tied to this opportunity.
+     */
+    public function crmTasks()
+    {
+        return $this->hasMany(CrmActivity::class)->where('type', 'task');
+    }
+
+    /**
+     * Call activities tied to this opportunity.
+     */
+    public function crmCalls()
+    {
+        return $this->hasMany(CrmActivity::class)->where('type', 'call');
+    }
+
+    /**
+     * Pipeline stage (CRM) the opportunity belongs to.
+     */
+    public function crmStage()
+    {
+        return $this->belongsTo(CrmPipelineStage::class, 'crm_stage_id');
+    }
+
+
 }

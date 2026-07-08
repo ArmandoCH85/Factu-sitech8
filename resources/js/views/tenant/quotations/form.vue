@@ -1830,6 +1830,10 @@ export default {
 
         await this.createQuotationFromSO();
         await this.initRecord();
+        // ponytail: el template tiene v-if="loading_form" y este flag se prendía
+        // en created() pero nunca se apagaba → la pantalla quedaba en loading
+        // eterno y el form (con su botón "+ Agregar Producto") nunca se mostraba.
+        this.loading_form = false;
     },
     computed: {
         getCustomer(){

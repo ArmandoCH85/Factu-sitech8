@@ -5,7 +5,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\System\Configuration;
 use App\Http\Controllers\AdminReseller\UserController as AdminResellerUserController;
 
+// ponytail: forzar identificacion del hostname para hyn/multi-tenant bajo FrankenPHP
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+if (!$hostname && request()->getHost()) {
+    app(Hyn\Tenancy\Environment::class)->identifyHostname();
+    $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+}
 
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
@@ -33,6 +38,11 @@ if ($hostname) {
         Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
 
         Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
+
+        // ponytail: alias corto /sale-opp -> /sale-opportunities (la URL real)
+        Route::get('sale-opp', function () {
+            return redirect('sale-opportunities');
+        });
         // Route::get('/ecommerce/color-ecommerce', [\App\Http\Controllers\Tenant\ConfigurationController::class, 'getColorEcommerce']);
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant','check.email.verified'])->group(function () {

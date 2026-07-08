@@ -67,6 +67,43 @@ if($current_hostname) {
 
             });
 
+            /**
+             * crm/                                  (Dashboard — KPIs)
+             * crm/leads                             (Lista de leads)
+             * crm/opportunities                     (Lista de deals)
+             * crm/opportunities/{id}                (Detalle + timeline)
+             * crm/opportunities/{id}/stage          (Cambiar stage; POST)
+             * crm/opportunities/{id}/won            (Marcar ganado)
+             * crm/opportunities/{id}/lost           (Marcar perdido)
+             * crm/opportunities/{id}/quotation      (Crear cotizacion desde op.)
+             * crm/activities                        (Crear actividad)
+             * crm/activities/{id}/complete          (Completar actividad)
+             * crm/activities/{id}                   (Eliminar actividad — DELETE)
+             */
+            Route::prefix('crm')->name('tenant.crm.')->group(function () {
+
+                Route::get('/', 'CrmCommercialController@indexDashboard')->name('dashboard');
+
+                Route::get('/leads', 'CrmCommercialController@leads')->name('leads');
+                Route::get('/leads/create', 'CrmCommercialController@createLead')->name('leads.create');
+                Route::post('/leads', 'CrmCommercialController@storeLead')->name('leads.store');
+
+                Route::get('/opportunities', 'CrmCommercialController@opportunities')->name('opportunities');
+                Route::get('/opportunities/{id}', 'CrmCommercialController@showOpportunity')->name('show');
+
+                Route::post('/opportunities/{id}/stage', 'CrmCommercialController@changeStage')->name('stage');
+                Route::post('/opportunities/{id}/won', 'CrmCommercialController@markWon')->name('won');
+                Route::post('/opportunities/{id}/lost', 'CrmCommercialController@markLost')->name('lost');
+                Route::post('/opportunities/{id}/quotation', 'CrmCommercialController@createQuotationFromOpportunity')->name('quotation');
+                Route::post('/opportunities/{id}/quotation-file', 'CrmCommercialController@uploadQuotationFile')->name('quotation.file');
+                Route::get('/opportunities/{id}/quotation-file/{filename}', 'CrmCommercialController@downloadQuotationFile')->name('quotation.file.download');
+
+                Route::post('/activities', 'CrmCommercialController@storeActivity')->name('activities.store');
+                Route::post('/activities/{id}/complete', 'CrmCommercialController@completeActivity')->name('activities.complete');
+                Route::delete('/activities/{id}', 'CrmCommercialController@destroyActivity')->name('activities.destroy');
+
+            });
+
             Route::prefix('payment-method-types')->group(function () {
 
                 Route::get('/records', 'PaymentMethodTypeController@records');

@@ -120,6 +120,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
             return true;
         }
 
+        if ($this->isResellerSystemMasterAdministrator()) {
+            return true;
+        }
+
         return (bool) $this->can_create_clients;
     }
 

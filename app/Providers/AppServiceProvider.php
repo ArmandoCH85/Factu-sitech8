@@ -6,6 +6,8 @@ use App\Models\System\PaymentOrder;
 use App\Models\Tenant\Document;
 use App\Observers\DocumentObserver;
 use App\Observers\PaymentOrderObserver;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +35,22 @@ class AppServiceProvider extends ServiceProvider
 		}
 		Document::observe(DocumentObserver::class);
 		PaymentOrder::observe(PaymentOrderObserver::class);
+
+        // ponytail: macros faltantes usados por Person::scopeWhereFilterSearchData,
+        // Dispatcher/Driver/Transport controllers. Antes no existían y el endpoint
+        // /persons/search-data/{type}?input=... explotaba con 500.
+        Builder::macro('generalWhereLikeColumn', function ($column, $value) {
+            return $this->where($column, 'like', '%' . $value . '%');
+        });
+        Builder::macro('generalOrWhereLikeColumn', function ($column, $value) {
+            return $this->orWhere($column, 'like', '%' . $value . '%');
+        });
+        QueryBuilder::macro('generalWhereLikeColumn', function ($column, $value) {
+            return $this->where($column, 'like', '%' . $value . '%');
+        });
+        QueryBuilder::macro('generalOrWhereLikeColumn', function ($column, $value) {
+            return $this->orWhere($column, 'like', '%' . $value . '%');
+        });
 
 		// ── AGREGADO (RECIENTE) ──────────────────────────────────────
         // Se movió este método desde ForgotPasswordController para centralizar
